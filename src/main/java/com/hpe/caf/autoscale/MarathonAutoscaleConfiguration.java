@@ -1,4 +1,4 @@
-package com.hp.caf.autoscale;
+package com.hpe.caf.autoscale;
 
 
 import javax.validation.constraints.Min;

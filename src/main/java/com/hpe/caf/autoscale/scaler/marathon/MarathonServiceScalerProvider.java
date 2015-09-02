@@ -1,12 +1,12 @@
-package com.hp.caf.autoscale.scaler.marathon;
+package com.hpe.caf.autoscale.scaler.marathon;
 
 
-import com.hp.caf.api.ConfigurationException;
-import com.hp.caf.api.ConfigurationSource;
-import com.hp.caf.api.autoscale.ScalerException;
-import com.hp.caf.api.autoscale.ServiceScaler;
-import com.hp.caf.api.autoscale.ServiceScalerProvider;
-import com.hp.caf.autoscale.MarathonAutoscaleConfiguration;
+import com.hpe.caf.api.ConfigurationException;
+import com.hpe.caf.api.ConfigurationSource;
+import com.hpe.caf.api.autoscale.ScalerException;
+import com.hpe.caf.api.autoscale.ServiceScaler;
+import com.hpe.caf.api.autoscale.ServiceScalerProvider;
+import com.hpe.caf.autoscale.MarathonAutoscaleConfiguration;
 import mesosphere.marathon.client.MarathonClient;
 
 import java.net.MalformedURLException;

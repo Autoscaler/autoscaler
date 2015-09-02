@@ -1,11 +1,11 @@
-package com.hp.caf.autoscale.source.marathon;
+package com.hpe.caf.autoscale.source.marathon;
 
 
-import com.hp.caf.api.HealthResult;
-import com.hp.caf.api.HealthStatus;
-import com.hp.caf.api.autoscale.ScalerException;
-import com.hp.caf.api.autoscale.ScalingConfiguration;
-import com.hp.caf.api.autoscale.ServiceSource;
+import com.hpe.caf.api.HealthResult;
+import com.hpe.caf.api.HealthStatus;
+import com.hpe.caf.api.autoscale.ScalerException;
+import com.hpe.caf.api.autoscale.ScalingConfiguration;
+import com.hpe.caf.api.autoscale.ServiceSource;
 import mesosphere.marathon.client.Marathon;
 import mesosphere.marathon.client.model.v2.App;
 import mesosphere.marathon.client.utils.MarathonException;

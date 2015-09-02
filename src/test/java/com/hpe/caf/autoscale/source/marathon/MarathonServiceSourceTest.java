@@ -1,8 +1,8 @@
-package com.hp.caf.autoscale.source.marathon;
+package com.hpe.caf.autoscale.source.marathon;
 
 
-import com.hp.caf.api.autoscale.ScalerException;
-import com.hp.caf.api.autoscale.ScalingConfiguration;
+import com.hpe.caf.api.autoscale.ScalerException;
+import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import mesosphere.marathon.client.Marathon;
 import mesosphere.marathon.client.model.v2.App;
 import mesosphere.marathon.client.model.v2.Group;

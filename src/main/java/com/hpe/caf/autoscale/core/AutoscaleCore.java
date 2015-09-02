@@ -1,17 +1,17 @@
-package com.hp.caf.autoscale.core;
+package com.hpe.caf.autoscale.core;
 
 
-import com.hp.caf.api.ConfigurationSource;
-import com.hp.caf.api.Election;
-import com.hp.caf.api.ElectionCallback;
-import com.hp.caf.api.ElectionException;
-import com.hp.caf.api.ElectionFactory;
-import com.hp.caf.api.ServicePath;
-import com.hp.caf.api.autoscale.ScalerException;
-import com.hp.caf.api.autoscale.ServiceScaler;
-import com.hp.caf.api.autoscale.ServiceSource;
-import com.hp.caf.api.autoscale.WorkloadAnalyserFactory;
-import com.hp.caf.api.autoscale.WorkloadAnalyserFactoryProvider;
+import com.hpe.caf.api.ConfigurationSource;
+import com.hpe.caf.api.Election;
+import com.hpe.caf.api.ElectionCallback;
+import com.hpe.caf.api.ElectionException;
+import com.hpe.caf.api.ElectionFactory;
+import com.hpe.caf.api.ServicePath;
+import com.hpe.caf.api.autoscale.ScalerException;
+import com.hpe.caf.api.autoscale.ServiceScaler;
+import com.hpe.caf.api.autoscale.ServiceSource;
+import com.hpe.caf.api.autoscale.WorkloadAnalyserFactory;
+import com.hpe.caf.api.autoscale.WorkloadAnalyserFactoryProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

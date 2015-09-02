@@ -1,4 +1,4 @@
-package com.hp.caf.autoscale.core;
+package com.hpe.caf.autoscale.core;
 
 
 import io.dropwizard.Configuration;

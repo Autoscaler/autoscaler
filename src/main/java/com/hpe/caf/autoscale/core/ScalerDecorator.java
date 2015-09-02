@@ -1,10 +1,10 @@
-package com.hp.caf.autoscale.core;
+package com.hpe.caf.autoscale.core;
 
 
-import com.hp.caf.api.HealthResult;
-import com.hp.caf.api.autoscale.InstanceInfo;
-import com.hp.caf.api.autoscale.ScalerException;
-import com.hp.caf.api.autoscale.ServiceScaler;
+import com.hpe.caf.api.HealthResult;
+import com.hpe.caf.api.autoscale.InstanceInfo;
+import com.hpe.caf.api.autoscale.ScalerException;
+import com.hpe.caf.api.autoscale.ServiceScaler;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;

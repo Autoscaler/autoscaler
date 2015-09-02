@@ -1,11 +1,11 @@
-package com.hp.caf.autoscale.core;
+package com.hpe.caf.autoscale.core;
 
 
-import com.hp.caf.api.autoscale.ScalerException;
-import com.hp.caf.api.autoscale.ScalingConfiguration;
-import com.hp.caf.api.autoscale.ServiceScaler;
-import com.hp.caf.api.autoscale.WorkloadAnalyser;
-import com.hp.caf.api.autoscale.WorkloadAnalyserFactory;
+import com.hpe.caf.api.autoscale.ScalerException;
+import com.hpe.caf.api.autoscale.ScalingConfiguration;
+import com.hpe.caf.api.autoscale.ServiceScaler;
+import com.hpe.caf.api.autoscale.WorkloadAnalyser;
+import com.hpe.caf.api.autoscale.WorkloadAnalyserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

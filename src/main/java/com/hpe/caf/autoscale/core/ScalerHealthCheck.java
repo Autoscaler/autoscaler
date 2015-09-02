@@ -1,10 +1,10 @@
-package com.hp.caf.autoscale.core;
+package com.hpe.caf.autoscale.core;
 
 
 import com.codahale.metrics.health.HealthCheck;
-import com.hp.caf.api.HealthReporter;
-import com.hp.caf.api.HealthResult;
-import com.hp.caf.api.HealthStatus;
+import com.hpe.caf.api.HealthReporter;
+import com.hpe.caf.api.HealthResult;
+import com.hpe.caf.api.HealthStatus;
 
 import java.util.Objects;
 

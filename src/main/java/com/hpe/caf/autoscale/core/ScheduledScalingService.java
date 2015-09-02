@@ -1,7 +1,7 @@
-package com.hp.caf.autoscale.core;
+package com.hpe.caf.autoscale.core;
 
 
-import com.hp.caf.api.autoscale.ScalingConfiguration;
+import com.hpe.caf.api.autoscale.ScalingConfiguration;
 
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;

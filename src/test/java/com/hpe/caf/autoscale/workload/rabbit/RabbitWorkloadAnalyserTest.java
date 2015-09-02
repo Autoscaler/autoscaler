@@ -1,9 +1,9 @@
-package com.hp.caf.autoscale.workload.rabbit;
+package com.hpe.caf.autoscale.workload.rabbit;
 
 
-import com.hp.caf.api.autoscale.InstanceInfo;
-import com.hp.caf.api.autoscale.ScalerException;
-import com.hp.caf.api.autoscale.ScalingOperation;
+import com.hpe.caf.api.autoscale.InstanceInfo;
+import com.hpe.caf.api.autoscale.ScalerException;
+import com.hpe.caf.api.autoscale.ScalingOperation;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;

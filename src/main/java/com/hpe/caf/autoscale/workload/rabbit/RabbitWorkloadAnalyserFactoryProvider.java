@@ -1,11 +1,11 @@
-package com.hp.caf.autoscale.workload.rabbit;
+package com.hpe.caf.autoscale.workload.rabbit;
 
 
-import com.hp.caf.api.ConfigurationException;
-import com.hp.caf.api.ConfigurationSource;
-import com.hp.caf.api.autoscale.ScalerException;
-import com.hp.caf.api.autoscale.WorkloadAnalyserFactory;
-import com.hp.caf.api.autoscale.WorkloadAnalyserFactoryProvider;
+import com.hpe.caf.api.ConfigurationException;
+import com.hpe.caf.api.ConfigurationSource;
+import com.hpe.caf.api.autoscale.ScalerException;
+import com.hpe.caf.api.autoscale.WorkloadAnalyserFactory;
+import com.hpe.caf.api.autoscale.WorkloadAnalyserFactoryProvider;
 
 import java.net.MalformedURLException;
 

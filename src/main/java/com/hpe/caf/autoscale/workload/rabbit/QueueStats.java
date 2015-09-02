@@ -1,4 +1,4 @@
-package com.hp.caf.autoscale.workload.rabbit;
+package com.hpe.caf.autoscale.workload.rabbit;
 
 
 /**

@@ -1,8 +1,8 @@
-package com.hp.caf.autoscale.workload.rabbit;
+package com.hpe.caf.autoscale.workload.rabbit;
 
 
-import com.hp.caf.api.ContainsStringKeys;
-import com.hp.caf.api.Encrypted;
+import com.hpe.caf.api.ContainsStringKeys;
+import com.hpe.caf.api.Encrypted;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

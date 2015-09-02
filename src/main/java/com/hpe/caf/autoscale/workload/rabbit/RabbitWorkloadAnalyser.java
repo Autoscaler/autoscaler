@@ -1,12 +1,12 @@
-package com.hp.caf.autoscale.workload.rabbit;
+package com.hpe.caf.autoscale.workload.rabbit;
 
 
 import com.google.common.collect.EvictingQueue;
-import com.hp.caf.api.autoscale.InstanceInfo;
-import com.hp.caf.api.autoscale.ScalerException;
-import com.hp.caf.api.autoscale.ScalingAction;
-import com.hp.caf.api.autoscale.ScalingOperation;
-import com.hp.caf.api.autoscale.WorkloadAnalyser;
+import com.hpe.caf.api.autoscale.InstanceInfo;
+import com.hpe.caf.api.autoscale.ScalerException;
+import com.hpe.caf.api.autoscale.ScalingAction;
+import com.hpe.caf.api.autoscale.ScalingOperation;
+import com.hpe.caf.api.autoscale.WorkloadAnalyser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

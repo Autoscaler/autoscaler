@@ -1,10 +1,10 @@
-package com.hp.caf.autoscale.workload.rabbit;
+package com.hpe.caf.autoscale.workload.rabbit;
 
 
-import com.hp.caf.api.HealthResult;
-import com.hp.caf.api.HealthStatus;
-import com.hp.caf.api.autoscale.WorkloadAnalyser;
-import com.hp.caf.api.autoscale.WorkloadAnalyserFactory;
+import com.hpe.caf.api.HealthResult;
+import com.hpe.caf.api.HealthStatus;
+import com.hpe.caf.api.autoscale.WorkloadAnalyser;
+import com.hpe.caf.api.autoscale.WorkloadAnalyserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

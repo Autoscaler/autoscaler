@@ -70,7 +70,7 @@
  The following command-line should start the application:
  
  ```
- java -cp "*" com.hp.caf.autoscale.core.AutoscaleApplication server [yaml]
+ java -cp "*" com.hpe.caf.autoscale.core.AutoscaleApplication server [yaml]
  ```
  
 ### The ServiceSource component

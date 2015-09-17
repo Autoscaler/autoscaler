@@ -32,7 +32,6 @@
   based services, this is typically the queue name to monitor
  - autoscale.scalingprofile: the name of the profile to use for scaling, if the
   `WorkloadAnalyser` supports profiles
-  This must be set and be a positive integer
  - autoscale.maxinstances: maximum number of instances. This must be set and be
   a positive integer
  - autoscale.mininstances: minimum number of instances. This must be set and be

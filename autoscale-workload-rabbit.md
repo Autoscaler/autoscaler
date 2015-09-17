@@ -6,6 +6,8 @@
  management server to determine the workload of a service using a RabbitMQ
  queue.
 
+ The `autoscale.metric` key name for this module is `rabbitmq`.
+
 
 ## Configuration
 

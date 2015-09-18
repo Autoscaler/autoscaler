@@ -7,6 +7,9 @@ import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.api.autoscale.ServiceScalerProvider;
 import com.hpe.caf.autoscale.MarathonAutoscaleConfiguration;
+import feign.Feign;
+import feign.Request;
+import mesosphere.marathon.client.Marathon;
 import mesosphere.marathon.client.MarathonClient;
 
 import java.net.MalformedURLException;
@@ -15,6 +18,9 @@ import java.net.URL;
 
 public class MarathonServiceScalerProvider implements ServiceScalerProvider
 {
+    private static final int MARATHON_TIMEOUT = 10_000;
+
+
     @Override
     public ServiceScaler getServiceScaler(final ConfigurationSource configurationSource)
             throws ScalerException
@@ -22,7 +28,9 @@ public class MarathonServiceScalerProvider implements ServiceScalerProvider
         try {
             MarathonAutoscaleConfiguration config = configurationSource.getConfiguration(MarathonAutoscaleConfiguration.class);
             URL url = new URL(config.getEndpoint());
-            return new MarathonServiceScaler(MarathonClient.getInstance(url.toString()), config.getMaximumInstances(), url);
+            Feign.Builder builder = Feign.builder().options(new Request.Options(MARATHON_TIMEOUT, MARATHON_TIMEOUT));
+            Marathon marathon = MarathonClient.getInstance(builder, url.toString());
+            return new MarathonServiceScaler(marathon, config.getMaximumInstances(), url);
         } catch (ConfigurationException | MalformedURLException e) {
             throw new ScalerException("Failed to create service scaler", e);
         }

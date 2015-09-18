@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.squareup.okhttp.OkHttpClient;
+import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.client.Response;
 import retrofit.http.GET;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -31,19 +34,24 @@ public class RabbitStatsReporter
     private static final String RMQ_DELIVER_DETAILS = "deliver_get_details";
     private static final String RMQ_PUBLISH_DETAILS = "publish_details";
     private static final String RMQ_RATE = "rate";
+    private static final int RMQ_TIMEOUT = 10;
 
 
     public RabbitStatsReporter(final String endpoint, final String user, final String pass, final String vhost)
     {
         this.vhost = Objects.requireNonNull(vhost);
         String credentials = user + ":" + pass;
+        OkHttpClient ok = new OkHttpClient();
+        ok.setReadTimeout(RMQ_TIMEOUT, TimeUnit.SECONDS);
+        ok.setConnectTimeout(RMQ_TIMEOUT, TimeUnit.SECONDS);
         // build up a RestAdapter that will automatically handle authentication for us
-        RestAdapter.Builder builder = new RestAdapter.Builder().setEndpoint(endpoint).setClient(new OkClient(new OkHttpClient()));
+        RestAdapter.Builder builder = new RestAdapter.Builder().setEndpoint(endpoint).setClient(new OkClient(ok));
         builder.setRequestInterceptor(requestFacade -> {
             String str = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
             requestFacade.addHeader("Accept", "application/json");
             requestFacade.addHeader("Authorization", str);
         });
+        builder.setErrorHandler(new RabbitApiErrorHandler());
         RestAdapter adapter = builder.build();
         rabbitApi = adapter.create(RabbitManagementApi.class);
     }
@@ -85,6 +93,17 @@ public class RabbitStatsReporter
     public interface RabbitManagementApi
     {
         @GET("/api/queues/{vhost}/{queue}")
-        Response getQueueStatus(@Path("vhost") final String vhost, @Path("queue") final String queueName);
+        Response getQueueStatus(@Path("vhost") final String vhost, @Path("queue") final String queueName)
+            throws ScalerException;
+    }
+
+
+    private static class RabbitApiErrorHandler implements ErrorHandler
+    {
+        @Override
+        public Throwable handleError(final RetrofitError retrofitError)
+        {
+            return new ScalerException("Failed to contact RabbitMQ management API", retrofitError);
+        }
     }
 }

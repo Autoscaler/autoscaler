@@ -1,6 +1,7 @@
 package com.hpe.caf.autoscale.workload.rabbit;
 
 
+import com.hpe.caf.api.Configuration;
 import com.hpe.caf.api.ContainsStringKeys;
 import com.hpe.caf.api.Encrypted;
 
@@ -14,6 +15,7 @@ import java.util.Map;
 /**
  * Configuration for a RabbitWorkloadAnalyser.
  */
+@Configuration
 public class RabbitWorkloadAnalyserConfiguration
 {
     public static final String DEFAULT_PROFILE_NAME = "default";

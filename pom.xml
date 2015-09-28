@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.hpe.caf</groupId>
         <artifactId>caf-maven</artifactId>
-        <version>4</version>
+        <version>6</version>
     </parent>
 
     <dependencies>
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>cc.roden</groupId>
             <artifactId>marathon-client</artifactId>
-            <version>0.4.9</version>
+            <version>${marathon.client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

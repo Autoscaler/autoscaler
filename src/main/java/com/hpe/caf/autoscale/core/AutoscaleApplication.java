@@ -23,8 +23,8 @@ import com.hpe.caf.api.autoscale.WorkloadAnalyserFactoryProvider;
 import com.hpe.caf.cipher.NullCipherProvider;
 import com.hpe.caf.config.system.SystemBootstrapConfiguration;
 import com.hpe.caf.election.NullElectionFactoryProvider;
-import com.hpe.caf.util.ComponentLoader;
-import com.hpe.caf.util.ComponentLoaderException;
+import com.hpe.caf.util.ModuleLoader;
+import com.hpe.caf.util.ModuleLoaderException;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
 import org.slf4j.Logger;
@@ -69,18 +69,18 @@ public class AutoscaleApplication extends Application<AutoscaleConfiguration>
      */
     @Override
     public void run(final AutoscaleConfiguration autoscaleConfiguration, final Environment environment)
-        throws ScalerException, ConfigurationException, ComponentLoaderException, CipherException, ElectionException
+        throws ScalerException, ConfigurationException, ModuleLoaderException, CipherException, ElectionException
     {
         LOG.info("Starting up");
         BootstrapConfiguration bootstrap = new SystemBootstrapConfiguration();
         ServicePath servicePath = bootstrap.getServicePath();
-        Codec codec = ComponentLoader.getService(Codec.class);
-        Cipher cipher = ComponentLoader.getService(CipherProvider.class, NullCipherProvider.class).getCipher(bootstrap);
-        ConfigurationSource config = ComponentLoader.getService(ConfigurationSourceProvider.class).getConfigurationSource(bootstrap, cipher, servicePath, codec);
-        ServiceSource source = ComponentLoader.getService(ServiceSourceProvider.class).getServiceSource(config, servicePath);
-        ServiceScaler scaler = ComponentLoader.getService(ServiceScalerProvider.class).getServiceScaler(config);
-        ElectionFactory electionFactory = ComponentLoader.getService(ElectionFactoryProvider.class, NullElectionFactoryProvider.class).getElectionManager( config);
-        Collection<WorkloadAnalyserFactoryProvider> workloadProviders = ComponentLoader.getServices(WorkloadAnalyserFactoryProvider.class);
+        Codec codec = ModuleLoader.getService(Codec.class);
+        Cipher cipher = ModuleLoader.getService(CipherProvider.class, NullCipherProvider.class).getCipher(bootstrap);
+        ConfigurationSource config = ModuleLoader.getService(ConfigurationSourceProvider.class).getConfigurationSource(bootstrap, cipher, servicePath, codec);
+        ServiceSource source = ModuleLoader.getService(ServiceSourceProvider.class).getServiceSource(config, servicePath);
+        ServiceScaler scaler = ModuleLoader.getService(ServiceScalerProvider.class).getServiceScaler(config);
+        ElectionFactory electionFactory = ModuleLoader.getService(ElectionFactoryProvider.class, NullElectionFactoryProvider.class).getElectionManager( config);
+        Collection<WorkloadAnalyserFactoryProvider> workloadProviders = ModuleLoader.getServices(WorkloadAnalyserFactoryProvider.class);
         ScheduledExecutorService scheduler = getDefaultScheduledExecutorService(autoscaleConfiguration.getExecutorThreads());
         AutoscaleCore core = new AutoscaleCore(config, source, scaler, workloadProviders, electionFactory, scheduler, servicePath);
 

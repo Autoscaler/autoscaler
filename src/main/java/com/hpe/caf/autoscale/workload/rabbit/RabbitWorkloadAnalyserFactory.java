@@ -16,7 +16,7 @@ import java.net.URL;
 import java.util.Objects;
 
 
-public class RabbitWorkloadAnalyserFactory extends WorkloadAnalyserFactory
+public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
 {
     private final RabbitWorkloadAnalyserConfiguration config;
     private final RabbitStatsReporter provider;

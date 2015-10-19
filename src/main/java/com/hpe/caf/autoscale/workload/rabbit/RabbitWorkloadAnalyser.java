@@ -17,7 +17,7 @@ import java.util.Objects;
  * Performs analysis over time on results returned from a RabbitStatsReporter and
  * makes scaling recommendations based upon it.
  */
-public class RabbitWorkloadAnalyser extends WorkloadAnalyser
+public class RabbitWorkloadAnalyser implements WorkloadAnalyser
 {
     private long counter = 0;
     private final RabbitWorkloadProfile profile;

@@ -28,7 +28,7 @@ import java.util.Set;
  * and retrieve information about running tasks. It will create ScalingConfiguration
  * objects based upon this data.
  */
-public class MarathonServiceSource extends ServiceSource
+public class MarathonServiceSource implements ServiceSource
 {
     private final Marathon marathon;
     private final URL url;

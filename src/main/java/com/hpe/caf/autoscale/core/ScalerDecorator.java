@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * requests to the actual ServiceScaler. If it is not, the scale up or down requests
  * will be discarded. This allows the rest of the application to behave identically.
  */
-public class ScalerDecorator extends ServiceScaler
+public class ScalerDecorator implements ServiceScaler
 {
     private final ServiceScaler realScaler;
     private final AtomicBoolean master;

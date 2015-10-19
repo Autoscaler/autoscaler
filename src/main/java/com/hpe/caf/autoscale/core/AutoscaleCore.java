@@ -6,12 +6,12 @@ import com.hpe.caf.api.Election;
 import com.hpe.caf.api.ElectionCallback;
 import com.hpe.caf.api.ElectionException;
 import com.hpe.caf.api.ElectionFactory;
-import com.hpe.caf.api.ServicePath;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.api.autoscale.ServiceSource;
 import com.hpe.caf.api.autoscale.WorkloadAnalyserFactory;
 import com.hpe.caf.api.autoscale.WorkloadAnalyserFactoryProvider;
+import com.hpe.caf.naming.ServicePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

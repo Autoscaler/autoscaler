@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * Marathon server to trigger scaling of a service, and return information on the
  * number of instances of a configured task.
  */
-public class MarathonServiceScaler extends ServiceScaler
+public class MarathonServiceScaler implements ServiceScaler
 {
     private Marathon marathon;
     private final int maximumInstances;

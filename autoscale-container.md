@@ -7,6 +7,18 @@ standard modules. Sample configuration is also supplied in the code base.
 
 ### Component versions and release notes
 
+*Container version 2*
+
+- autoscale-core 9.0
+- autoscale-marathon-shared 1
+- autoscale-scaler-marathon 9.0
+- autoscale-source-marathon 9.0
+- autoscaler-workload-rabbit 9.0
+- caf-api 9.0
+- codec-json 9.0
+- config-file 9.0
+- tini 0.6
+
 *Container version 1* - first release
 
 - autoscale-core 7.0

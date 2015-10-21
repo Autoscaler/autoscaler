@@ -9,6 +9,30 @@
     <version>2</version>
     <packaging>pom</packaging>
 
+    <properties>
+        <caf-ConfigurationSource.groupId>com.hpe.caf.config</caf-ConfigurationSource.groupId>
+        <caf-ConfigurationSource.artifactId>config-file</caf-ConfigurationSource.artifactId>
+        <caf-ConfigurationSource.version>9.0</caf-ConfigurationSource.version>
+
+        <caf-Codec.groupId>com.hpe.caf.codec</caf-Codec.groupId>
+        <caf-Codec.artifactId>codec-json</caf-Codec.artifactId>
+        <caf-Codec.version>9.0</caf-Codec.version>
+
+        <autoscaler-ServiceSource.groupId>com.hpe.caf.autoscale</autoscaler-ServiceSource.groupId>
+        <autoscaler-ServiceSource.artifactId>autoscale-source-marathon</autoscaler-ServiceSource.artifactId>
+        <autoscaler-ServiceSource.version>9.0</autoscaler-ServiceSource.version>
+
+        <autoscaler-ServiceScaler.groupId>com.hpe.caf.autoscale</autoscaler-ServiceScaler.groupId>
+        <autoscaler-ServiceScaler.artifactId>autoscale-scaler-marathon</autoscaler-ServiceScaler.artifactId>
+        <autoscaler-ServiceScaler.version>9.0</autoscaler-ServiceScaler.version>
+
+        <autoscaler-WorkloadAnalyser.groupId>com.hpe.caf.autoscale</autoscaler-WorkloadAnalyser.groupId>
+        <autoscaler-WorkloadAnalyser.artifactId>autoscale-workload-rabbit</autoscaler-WorkloadAnalyser.artifactId>
+        <autoscaler-WorkloadAnalyser.version>9.0</autoscaler-WorkloadAnalyser.version>
+
+
+    </properties>
+
     <parent>
         <groupId>com.hpe.caf</groupId>
         <artifactId>caf-maven</artifactId>
@@ -22,9 +46,9 @@
             <version>9.0</version>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.config</groupId>
-            <artifactId>config-file</artifactId>
-            <version>9.0</version>
+            <groupId>${caf-ConfigurationSource.groupId}</groupId>
+            <artifactId>${caf-ConfigurationSource.artifactId}</artifactId>
+            <version>${caf-ConfigurationSource.version}</version>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf.autoscale</groupId>
@@ -37,24 +61,24 @@
             <version>1</version>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.autoscale</groupId>
-            <artifactId>autoscale-source-marathon</artifactId>
-            <version>9.0</version>
+            <groupId>${autoscaler-ServiceSource.groupId}</groupId>
+            <artifactId>${autoscaler-ServiceSource.artifactId}</artifactId>
+            <version>${autoscaler-ServiceSource.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.autoscale</groupId>
-            <artifactId>autoscale-scaler-marathon</artifactId>
-            <version>9.0</version>
+            <groupId>${autoscaler-ServiceScaler.groupId}</groupId>
+            <artifactId>${autoscaler-ServiceScaler.artifactId}</artifactId>
+            <version>${autoscaler-ServiceScaler.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.autoscale</groupId>
-            <artifactId>autoscale-workload-rabbit</artifactId>
-            <version>9.0</version>
+            <groupId>${autoscaler-WorkloadAnalyser.groupId}</groupId>
+            <artifactId>${autoscaler-WorkloadAnalyser.artifactId}</artifactId>
+            <version>${autoscaler-WorkloadAnalyser.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.codec</groupId>
-            <artifactId>codec-json</artifactId>
-            <version>9.0</version>
+            <groupId>${caf-Codec.groupId}</groupId>
+            <artifactId>${caf-Codec.artifactId}</artifactId>
+            <version>${caf-Codec.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.krallin</groupId>
@@ -84,13 +108,20 @@
                     <images>
                         <image>
                             <alias>autoscale-container</alias>
-                            <name>caf/${project.artifactId}:${project.version}</name>
+                            <name>caf/autoscale-marathon-rabbit:${project.version}</name>
                             <build>
                                 <maintainer>andrew.reid@hpe.com</maintainer>
                                 <from>java:8</from>
                                 <tags>
                                     <tag>latest</tag>
                                 </tags>
+                                <labels>
+                                    <com.hpe.caf.api.worker.configurationsource>groupId:${caf-ConfigurationSource.groupId},artifactId:${caf-ConfigurationSource.artifactId},version:${caf-ConfigurationSource.version}</com.hpe.caf.api.worker.configurationsource>
+                                    <com.hpe.caf.api.codec>groupId:${caf-Codec.groupId},artifactId:${caf-Codec.artifactId},version:${caf-Codec.version}</com.hpe.caf.api.codec>
+                                    <com.hpe.caf.api.autoscale.servicesource>groupId:${autoscaler-ServiceSource.groupId},artifactId:${autoscaler-ServiceSource.artifactId},version:${autoscaler-ServiceSource.version}</com.hpe.caf.api.autoscale.servicesource>
+                                    <com.hpe.caf.api.autoscale.servicescaler>groupId:${autoscaler-ServiceScaler.groupId},artifactId:${autoscaler-ServiceScaler.artifactId},version:${autoscaler-ServiceScaler.version}</com.hpe.caf.api.autoscale.servicescaler>
+                                    <com.hpe.caf.api.autoscale.workloadanalyser>groupId:${autoscaler-WorkloadAnalyser.groupId},artifactId:${autoscaler-WorkloadAnalyser.artifactId},version:${autoscaler-WorkloadAnalyser.version}</com.hpe.caf.api.autoscale.workloadanalyser>
+                                </labels>
                                 <entryPoint>
                                     <exec>
                                         <args>/maven/tini-${tini.version}.exe</args>

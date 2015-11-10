@@ -6,91 +6,80 @@
 
     <groupId>com.hpe.caf.autoscale</groupId>
     <artifactId>autoscale-marathon-rabbit-container</artifactId>
-    <version>2</version>
+    <version>3-SNAPSHOT</version>
     <packaging>pom</packaging>
-
-    <properties>
-        <caf-ConfigurationSource.groupId>com.hpe.caf.config</caf-ConfigurationSource.groupId>
-        <caf-ConfigurationSource.artifactId>config-file</caf-ConfigurationSource.artifactId>
-        <caf-ConfigurationSource.version>9.0</caf-ConfigurationSource.version>
-
-        <caf-Codec.groupId>com.hpe.caf.codec</caf-Codec.groupId>
-        <caf-Codec.artifactId>codec-json</caf-Codec.artifactId>
-        <caf-Codec.version>9.0</caf-Codec.version>
-
-        <autoscaler-ServiceSource.groupId>com.hpe.caf.autoscale</autoscaler-ServiceSource.groupId>
-        <autoscaler-ServiceSource.artifactId>autoscale-source-marathon</autoscaler-ServiceSource.artifactId>
-        <autoscaler-ServiceSource.version>9.0</autoscaler-ServiceSource.version>
-
-        <autoscaler-ServiceScaler.groupId>com.hpe.caf.autoscale</autoscaler-ServiceScaler.groupId>
-        <autoscaler-ServiceScaler.artifactId>autoscale-scaler-marathon</autoscaler-ServiceScaler.artifactId>
-        <autoscaler-ServiceScaler.version>9.0</autoscaler-ServiceScaler.version>
-
-        <autoscaler-WorkloadAnalyser.groupId>com.hpe.caf.autoscale</autoscaler-WorkloadAnalyser.groupId>
-        <autoscaler-WorkloadAnalyser.artifactId>autoscale-workload-rabbit</autoscaler-WorkloadAnalyser.artifactId>
-        <autoscaler-WorkloadAnalyser.version>9.0</autoscaler-WorkloadAnalyser.version>
-
-
-    </properties>
 
     <parent>
         <groupId>com.hpe.caf</groupId>
-        <artifactId>caf-maven</artifactId>
-        <version>9</version>
+        <artifactId>caf-latest-develop</artifactId>
+        <version>1-SNAPSHOT</version>
+        <relativePath>../caf-latest-develop</relativePath>
     </parent>
+
+    <properties>
+        <caf.autoscale-scaler.impl>autoscale-scaler-marathon</caf.autoscale-scaler.impl>
+        <caf.autoscale-scaler.version>${caf.autoscale-scaler-marathon.version}</caf.autoscale-scaler.version>
+        <caf.autoscale-source.impl>autoscale-source-marathon</caf.autoscale-source.impl>
+        <caf.autoscale-source.version>${caf.autoscale-source-marathon.version}</caf.autoscale-source.version>
+        <caf.autoscale-workload.impl>autoscale-workload-rabbit</caf.autoscale-workload.impl>
+        <caf.autoscale-workload.version>${caf.autoscale-workload-rabbit.version}</caf.autoscale-workload.version>
+        <caf.config.impl>config-file</caf.config.impl>
+        <caf.config.version>${caf.config-file.version}</caf.config.version>
+        <caf.codec.impl>codec-json</caf.codec.impl>
+        <caf.codec.version>${caf.codec-json.version}</caf.codec.version>
+        <caf.worker-store.impl>worker-store-cs</caf.worker-store.impl>
+        <caf.worker-store.version>${caf.worker-store-cs.version}</caf.worker-store.version>
+        <caf.worker-queue.impl>worker-queue-rabbit</caf.worker-queue.impl>
+        <caf.worker-queue.version>${caf.worker-queue-rabbit.version}</caf.worker-queue.version>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-api</artifactId>
-            <version>9.0</version>
         </dependency>
         <dependency>
-            <groupId>${caf-ConfigurationSource.groupId}</groupId>
-            <artifactId>${caf-ConfigurationSource.artifactId}</artifactId>
-            <version>${caf-ConfigurationSource.version}</version>
+            <groupId>com.hpe.caf.config</groupId>
+            <artifactId>${caf.config.impl}</artifactId>
+            <version>${caf.config.version}</version>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf.autoscale</groupId>
             <artifactId>autoscale-core</artifactId>
-            <version>9.0</version>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf.autoscale</groupId>
             <artifactId>autoscale-marathon-shared</artifactId>
-            <version>1</version>
         </dependency>
         <dependency>
-            <groupId>${autoscaler-ServiceSource.groupId}</groupId>
-            <artifactId>${autoscaler-ServiceSource.artifactId}</artifactId>
-            <version>${autoscaler-ServiceSource.version}</version>
+            <groupId>com.hpe.caf.autoscale</groupId>
+            <artifactId>${caf.autoscale-source.impl}</artifactId>
+            <version>${caf.autoscale-source.version}</version>
         </dependency>
         <dependency>
-            <groupId>${autoscaler-ServiceScaler.groupId}</groupId>
-            <artifactId>${autoscaler-ServiceScaler.artifactId}</artifactId>
-            <version>${autoscaler-ServiceScaler.version}</version>
+            <groupId>com.hpe.caf.autoscale</groupId>
+            <artifactId>${caf.autoscale-scaler.impl}</artifactId>
+            <version>${caf.autoscale-scaler.version}</version>
         </dependency>
         <dependency>
-            <groupId>${autoscaler-WorkloadAnalyser.groupId}</groupId>
-            <artifactId>${autoscaler-WorkloadAnalyser.artifactId}</artifactId>
-            <version>${autoscaler-WorkloadAnalyser.version}</version>
+            <groupId>com.hpe.caf.autoscale</groupId>
+            <artifactId>${caf.autoscale-workload.impl}</artifactId>
+            <version>${caf.autoscale-workload.version}</version>
         </dependency>
         <dependency>
-            <groupId>${caf-Codec.groupId}</groupId>
-            <artifactId>${caf-Codec.artifactId}</artifactId>
-            <version>${caf-Codec.version}</version>
+            <groupId>com.hpe.caf.codec</groupId>
+            <artifactId>${caf.codec.impl}</artifactId>
+            <version>${caf.codec.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.krallin</groupId>
             <artifactId>tini</artifactId>
-            <version>${tini.version}</version>
             <scope>runtime</scope>
             <type>exe</type>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -116,11 +105,11 @@
                                     <tag>latest</tag>
                                 </tags>
                                 <labels>
-                                    <com.hpe.caf.api.worker.configurationsource>groupId:${caf-ConfigurationSource.groupId},artifactId:${caf-ConfigurationSource.artifactId},version:${caf-ConfigurationSource.version}</com.hpe.caf.api.worker.configurationsource>
-                                    <com.hpe.caf.api.codec>groupId:${caf-Codec.groupId},artifactId:${caf-Codec.artifactId},version:${caf-Codec.version}</com.hpe.caf.api.codec>
-                                    <com.hpe.caf.api.autoscale.servicesource>groupId:${autoscaler-ServiceSource.groupId},artifactId:${autoscaler-ServiceSource.artifactId},version:${autoscaler-ServiceSource.version}</com.hpe.caf.api.autoscale.servicesource>
-                                    <com.hpe.caf.api.autoscale.servicescaler>groupId:${autoscaler-ServiceScaler.groupId},artifactId:${autoscaler-ServiceScaler.artifactId},version:${autoscaler-ServiceScaler.version}</com.hpe.caf.api.autoscale.servicescaler>
-                                    <com.hpe.caf.api.autoscale.workloadanalyser>groupId:${autoscaler-WorkloadAnalyser.groupId},artifactId:${autoscaler-WorkloadAnalyser.artifactId},version:${autoscaler-WorkloadAnalyser.version}</com.hpe.caf.api.autoscale.workloadanalyser>
+                                    <com.hpe.caf.api.worker.configurationsource>groupId:com.hpe.caf.config,artifactId:${caf.config.impl},version:${caf.config.version}</com.hpe.caf.api.worker.configurationsource>
+                                    <com.hpe.caf.api.codec>groupId:com.hpe.caf.codec,artifactId:${caf.codec.impl},version:${caf.codec.version}</com.hpe.caf.api.codec>
+                                    <com.hpe.caf.api.autoscale.servicesource>groupId:com.hpe.caf.autoscale,artifactId:${caf.autoscale-source.impl},version:${caf.autoscale-source.version}</com.hpe.caf.api.autoscale.servicesource>
+                                    <com.hpe.caf.api.autoscale.servicescaler>groupId:com.hpe.caf.autoscale,artifactId:${caf.autoscale-scaler.impl},version:${caf.autoscale-scaler.version}</com.hpe.caf.api.autoscale.servicescaler>
+                                    <com.hpe.caf.api.autoscale.workloadanalyser>groupId:com.hpe.caf.autoscale,artifactId:${caf.autoscale-workload.impl},version:${caf.autoscale-workload.version}</com.hpe.caf.api.autoscale.workloadanalyser>
                                 </labels>
                                 <entryPoint>
                                     <exec>

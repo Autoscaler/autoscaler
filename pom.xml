@@ -113,7 +113,6 @@
                             <goal>push</goal>
                         </goals>
                         <configuration>
-                            <registry>${docker.dev.repo}</registry>
                             <image>autoscale-container</image>
                         </configuration>
                     </execution>
@@ -125,7 +124,7 @@
                     <images>
                         <image>
                             <alias>autoscale-container</alias>
-                            <name>caf/autoscale-marathon-rabbit:${project.version}</name>
+                            <name>${docker.dev.repo}/caf/autoscale-marathon-rabbit:${project.version}</name>
                             <build>
                                 <maintainer>andrew.reid@hpe.com</maintainer>
                                 <from>java:8</from>

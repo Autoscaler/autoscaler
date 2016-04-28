@@ -1,4 +1,4 @@
-# autoscale-scaler-marathon
+# autoscale-source-marathon
 
 ---
 

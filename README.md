@@ -5,48 +5,6 @@ container that includes the CAF autoscale application along with
 standard modules. Sample configuration is also supplied in the code base.
 
 
-### Component versions and release notes
-
-*Container version 3*
-
-- autoscale-core 10.1
-- autoscale-marathon-shared 2
-- autoscale-scaler-marathon 10.1
-- autoscale-source-marathon 10.1
-- autoscaler-workload-rabbit 10.1
-- caf-api 11.0
-- codec-json 10.1
-- config-file 10.0
-- tini 0.9.0
-
-*Container version 2*
-
-- autoscale-core 9.0
-- autoscale-marathon-shared 1
-- autoscale-scaler-marathon 9.0
-- autoscale-source-marathon 9.0
-- autoscaler-workload-rabbit 9.0
-- caf-api 9.0
-- codec-json 9.0
-- config-file 9.0
-- tini 0.6
-
-*Container version 1* - first release
-
-- autoscale-core 7.0
-- autoscale-marathon-shared 1
-- autoscale-scaler-marathon 7.0
-- autoscale-source-marathon 7.0
-- autoscale-workload-rabbit 7.0
-- caf-api 7.0
-- codec-json 7.0
-- config-file 7.0
-- tini 0.6
-
-Note this container does not include `election` or `cipher` components at
-this time.
-
-
 ### Container deployment
 
 Since this container uses `config-file`, the appropriate configuration files

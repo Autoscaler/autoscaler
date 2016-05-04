@@ -178,12 +178,12 @@
  deployment template. You will need the following dependencies in your project
  to create a fully functioning container:
  
- - autoscale-core
- - caf-api
- - An implementation of ServiceSource
- - An implementation of ServiceScaler
- - An implementation of WorkloadAnalyser
- - An implementation of Codec
- - An implementation of Cipher (optional)
- - An implementation of Election (optional)
+ - [autoscale-core](https://github.hpe.com/caf/autoscale-core)
+ - [caf-api](https://github.hpe.com/caf/caf-api)
+ - An implementation of ServiceSource (i.e. [autoscale-source-marathon](https://github.hpe.com/caf/autoscale-source-marathon))
+ - An implementation of ServiceScaler (i.e. [autoscale-scaler-marathon](https://github.hpe.com/caf/autoscale-scaler-marathon))
+ - An implementation of WorkloadAnalyser (i.e. [autoscale-workload-rabbit](https://github.hpe.com/caf/autoscale-workload-rabbit))
+ - An implementation of Codec (i.e. [codec-json](https://github.hpe.com/caf/codec-json))
+ - An implementation of Cipher (optional) (i.e. [cipher-null](https://github.hpe.com/caf/cipher-null))
+ - An implementation of Election (optional) (i.e. [election-null](https://github.hpe.com/caf/election-null))
     

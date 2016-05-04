@@ -4,25 +4,26 @@ This repository consists of the source to build a pre-defined CAF approved
 container that includes the CAF autoscale application along with
 standard modules. Sample configuration is also supplied in the code base.
 
+To get the autoscale application up and running look at the [Quick Start](#quick-start) section below.
+
 
 ### Container deployment
 
-Since this container uses `config-file`, the appropriate configuration files
+Since this container uses [config-file](https://github.hpe.com/caf/config-file), the appropriate configuration files
 should either be mounted as a volume or injected into the sandbox via the use
 of Marathon URI template configuration. The following configuration resources
 are *required*:
 
-- MarathonAutoscaleConfiguration
-- RabbitWorkloadAnalyserConfiguration
+- [MarathonAutoscaleConfiguration](https://github.hpe.com/caf/autoscale-container/blob/develop/example-configs/cfg_autoscaler_marathon_MarathonAutoscaleConfiguration)
+- [RabbitWorkloadAnalyserConfiguration](https://github.hpe.com/caf/autoscale-container/blob/develop/example-configs/cfg_autoscaler_marathon_RabbitWorkloadAnalyserConfiguration)
 
-See the documentation for the Marathon autoscaler components and
-`autoscale-workload-rabbit` for details about these specific configuration
+See the documentation for the Marathon autoscaler components and [autoscale-workload-rabbit](https://github.hpe.com/caf/autoscale-workload-rabbit) for details about these specific configuration
 resources.
 
 
 ### Health checks
 
-The `autoscale-core` application inherently exposes standard and
+The [autoscale-core](https://github.hpe.com/caf/autoscale-core) application inherently exposes standard and
 module-specific health checks. If you expose the admin port (defualt 8081)
 then this can be accessed via HTTP to examine metrics and healt checks.
 The health check REST call will return HTTP 500 if any health check fails.
@@ -85,7 +86,7 @@ versions.
 ### Quick start
 
 Assuming Marathon and RabbitMQ are already deployed, take the sample
-configuration files present in `example-configs` and change the endpoints to
+configuration files present in [example-configs](https://github.hpe.com/caf/autoscale-container/tree/develop/example-configs) and change the endpoints to
 match your deployments. Create a Marathon template to deploy making sure the
 `id` of this autoscale template is in the same subgroup as the services that
 it should scale. Put the configuration files on your configuration server and
@@ -127,7 +128,7 @@ after a scale up or down command is issued. This prevents unusual values
 being considered when the system is in an unstable state.
 
 Finally the `autoscale.profile` can be an arbitrary string, but one that should
-exist in the `RabbitWorkloadAnalyserConfiguration` resource deployed inside the
+exist in the [RabbitWorkloadAnalyserConfiguration](https://github.hpe.com/caf/autoscale-container/blob/develop/example-configs/cfg_autoscaler_marathon_RabbitWorkloadAnalyserConfiguration) resource deployed inside the
 autoscale container.
 
 Deploy/redeploy the services and the autoscale container. After one or two

@@ -8,7 +8,7 @@
 
 ## Configuration
 
- The configuration source for this module is `MarathonAutoscaleConfiguration`.
+ The configuration source for this module is [MarathonAutoscaleConfiguration](https://github.hpe.com/caf/autoscale-container/blob/develop/example-configs/cfg_autoscaler_marathon_MarathonAutoscaleConfiguration).
  The following configuration options are present:
 
  - endpoint: the fully qualified URL to the Marathon endpoint including port.

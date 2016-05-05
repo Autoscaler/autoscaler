@@ -65,8 +65,8 @@ resources.
 ### Health checks
 
 The `autoscale-core` application inherently exposes standard and
-module-specific health checks. If you expose the admin port (defualt 8081)
-then this can be accessed via HTTP to examine metrics and healt checks.
+module-specific health checks. If you expose the admin port (default 8081)
+then this can be accessed via HTTP to examine metrics and health checks.
 The health check REST call will return HTTP 500 if any health check fails.
 For details on the health checks for specific components, examine the module
 documentation.

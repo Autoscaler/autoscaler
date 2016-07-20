@@ -132,6 +132,10 @@
                                     <tag>latest</tag>
                                 </tags>
                                 <labels>
+                                    <Build.Number>${project.version}</Build.Number>
+                                    <Build.Date>${maven.build.timestamp}</Build.Date>
+                                    <Git.Branch>${git.branch}</Git.Branch>
+                                    <Git.Commit>${git.revision}</Git.Commit>
                                     <com.hpe.caf.api.worker.configurationsource>groupId:com.hpe.caf.config,artifactId:${caf.config.impl},version:${caf.config.version}</com.hpe.caf.api.worker.configurationsource>
                                     <com.hpe.caf.api.codec>groupId:com.hpe.caf.codec,artifactId:${caf.codec.impl},version:${caf.codec.version}</com.hpe.caf.api.codec>
                                     <com.hpe.caf.api.autoscale.servicesource>groupId:com.hpe.caf.autoscale,artifactId:${caf.autoscale-source.impl},version:${caf.autoscale-source.version}</com.hpe.caf.api.autoscale.servicesource>

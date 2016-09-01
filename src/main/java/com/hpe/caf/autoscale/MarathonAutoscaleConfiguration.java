@@ -17,11 +17,17 @@ public class MarathonAutoscaleConfiguration
     @NotNull
     @Size(min = 1)
     private String endpoint;
+
     /**
      * The absolute maximum instances for any service in Marathon.
      */
     @Min(1)
     private int maximumInstances;
+
+    /**
+     * The Marathon group to be auto-scaled
+     */
+    private String groupId;
 
 
     public MarathonAutoscaleConfiguration() { }
@@ -48,5 +54,17 @@ public class MarathonAutoscaleConfiguration
     public void setMaximumInstances(final int maximumInstances)
     {
         this.maximumInstances = maximumInstances;
+    }
+
+
+    public String getGroupId()
+    {
+        return groupId;
+    }
+
+
+    public void setGroupId(final String groupId)
+    {
+        this.groupId = groupId;
     }
 }

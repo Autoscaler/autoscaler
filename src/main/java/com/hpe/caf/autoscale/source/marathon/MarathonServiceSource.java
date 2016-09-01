@@ -16,11 +16,13 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import mesosphere.marathon.client.model.v2.Group;
 
 
 /**
@@ -78,9 +80,42 @@ public class MarathonServiceSource implements ServiceSource
             throws ScalerException
     {
         try {
-            return marathon.getGroup(groupPath).getApps();
+            return getAllGroupApps(marathon.getGroup(groupPath));
         } catch (MarathonException e) {
             throw new ScalerException("Failed to get group apps", e);
+        }
+    }
+
+
+    /**
+     * Returns all the applications under specified Marathon group,
+     * even if they are in sub-groups.
+     */
+    private static Collection<App> getAllGroupApps(final Group group)
+    {
+        if (group.getGroups().isEmpty()) {
+            return group.getApps();
+        }
+        else {
+            final Collection<App> apps = new ArrayList<>();
+            addAllGroupAppsToCollection(apps, group);
+            return apps;
+        }
+    }
+
+
+    /**
+     * Adds the applications that are under the specified group into the specified collection.
+     */
+    private static void addAllGroupAppsToCollection(final Collection<App> apps, final Group group)
+    {
+        assert apps != null;
+        assert group != null;
+
+        apps.addAll(group.getApps());
+
+        for (final Group subGroup : group.getGroups()) {
+            addAllGroupAppsToCollection(apps, subGroup);
         }
     }
 

@@ -128,9 +128,6 @@
                             <build>
                                 <maintainer>andrew.reid@hpe.com</maintainer>
                                 <from>java:8</from>
-                                <tags>
-                                    <tag>latest</tag>
-                                </tags>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>
                                     <Build.Date>${maven.build.timestamp}</Build.Date>

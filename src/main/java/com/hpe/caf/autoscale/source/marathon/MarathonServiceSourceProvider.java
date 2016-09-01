@@ -28,17 +28,39 @@ public class MarathonServiceSourceProvider implements ServiceSourceProvider
             throws ScalerException
     {
         try {
-            Iterator<String> groupIterator = servicePath.groupIterator();
-            StringBuilder groupPath = new StringBuilder();
-            while (groupIterator.hasNext()) {
-                groupPath.append(groupIterator.next()).append('/');
-            }
-            MarathonAutoscaleConfiguration config = configurationSource.getConfiguration(MarathonAutoscaleConfiguration.class);
+            final MarathonAutoscaleConfiguration config = configurationSource.getConfiguration(MarathonAutoscaleConfiguration.class);
+            final String groupId = getGroupId(config, servicePath);
             Feign.Builder builder = Feign.builder().options(new Request.Options(MARATHON_TIMEOUT, MARATHON_TIMEOUT));
             Marathon marathon = MarathonClient.getInstance(builder, config.getEndpoint());
-            return new MarathonServiceSource(marathon, groupPath.toString(), new URL(config.getEndpoint()));
+            return new MarathonServiceSource(marathon, groupId, new URL(config.getEndpoint()));
         } catch (ConfigurationException | MalformedURLException e) {
             throw new ScalerException("Failed to create service source", e);
         }
+    }
+
+    /**
+     * Gets the groupId from configuration or falls back to using the autoscaler service path
+     */
+    private static String getGroupId(final MarathonAutoscaleConfiguration config, final ServicePath servicePath)
+    {
+        final String groupId = config.getGroupId();
+
+        return (groupId == null || groupId.length() == 0)
+            ? getGroupIdFromServicePath(servicePath)
+            : groupId;
+    }
+
+    /**
+     * Gets the groupId from the autoscaler service path
+     */
+    private static String getGroupIdFromServicePath(final ServicePath servicePath)
+    {
+        final Iterator<String> groupIterator = servicePath.groupIterator();
+        final StringBuilder groupPath = new StringBuilder();
+        while (groupIterator.hasNext()) {
+            groupPath.append(groupIterator.next()).append('/');
+        }
+
+        return groupPath.toString();
     }
 }

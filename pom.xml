@@ -6,7 +6,7 @@
 
     <groupId>com.hpe.caf.autoscale</groupId>
     <artifactId>autoscale-core</artifactId>
-    <version>10.2-SNAPSHOT</version>
+    <version>10.2.0-SNAPSHOT</version>
 
     <parent>
         <groupId>com.hpe.caf</groupId>

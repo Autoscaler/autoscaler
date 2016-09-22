@@ -191,7 +191,7 @@
 
     <ciManagement>
         <system>hudson</system>
-        <url>http://cafbuilder.hpswlabs.hp.com:8080/job/autoscale-container/</url>
+        <url>http://cafbuilder.hpeswlab.net:8080/job/autoscale-container/</url>
     </ciManagement>
 
 </project>

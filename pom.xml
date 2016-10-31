@@ -7,20 +7,25 @@
     <groupId>com.hpe.caf.caf</groupId>
     <artifactId>autoscale-api</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-	
+
     <parent>
         <groupId>com.hpe.caf</groupId>
         <artifactId>caf-latest-develop</artifactId>
         <version>1-SNAPSHOT</version>
         <relativePath>../caf-latest-develop</relativePath>
     </parent>
-	
-	 <dependencies>
+
+    <dependencies>
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-api</artifactId>
         </dependency>
-	</dependencies>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

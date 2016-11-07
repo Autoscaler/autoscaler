@@ -10,23 +10,22 @@
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>com.hpe.caf</groupId>
-        <artifactId>caf-latest-develop</artifactId>
-        <version>1-SNAPSHOT</version>
-        <relativePath>../caf-latest-develop</relativePath>
+        <groupId>com.github.cafapi</groupId>
+        <artifactId>caf-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
         <caf.autoscale-scaler.impl>autoscale-scaler-marathon</caf.autoscale-scaler.impl>
-        <caf.autoscale-scaler.version>${caf.autoscale-scaler-marathon.version}</caf.autoscale-scaler.version>
+        <caf.autoscale-scaler.version>10.2.0-SNAPSHOT</caf.autoscale-scaler.version>
         <caf.autoscale-source.impl>autoscale-source-marathon</caf.autoscale-source.impl>
-        <caf.autoscale-source.version>${caf.autoscale-source-marathon.version}</caf.autoscale-source.version>
+        <caf.autoscale-source.version>10.2.1-SNAPSHOT</caf.autoscale-source.version>
         <caf.autoscale-workload.impl>autoscale-workload-rabbit</caf.autoscale-workload.impl>
-        <caf.autoscale-workload.version>${caf.autoscale-workload-rabbit.version}</caf.autoscale-workload.version>
+        <caf.autoscale-workload.version>10.2.0-SNAPSHOT</caf.autoscale-workload.version>
         <caf.config.impl>config-file</caf.config.impl>
-        <caf.config.version>${caf.config-file.version}</caf.config.version>
+        <caf.config.version>1.0.0-SNAPSHOT</caf.config.version>
         <caf.codec.impl>codec-json</caf.codec.impl>
-        <caf.codec.version>${caf.codec-json.version}</caf.codec.version>
+        <caf.codec.version>1.0.0-SNAPSHOT</caf.codec.version>
         <caf.worker-store.impl>worker-store-cs</caf.worker-store.impl>
         <caf.worker-store.version>${caf.worker-store-cs.version}</caf.worker-store.version>
         <caf.worker-queue.impl>worker-queue-rabbit</caf.worker-queue.impl>
@@ -35,21 +34,24 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.hpe.caf</groupId>
+            <groupId>com.github.cafapi</groupId>
             <artifactId>caf-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.config</groupId>
+            <groupId>com.github.cafapi.config</groupId>
             <artifactId>${caf.config.impl}</artifactId>
             <version>${caf.config.version}</version>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf.autoscale</groupId>
             <artifactId>autoscale-core</artifactId>
+            <version>10.2.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf.autoscale</groupId>
             <artifactId>autoscale-marathon-shared</artifactId>
+            <version>3.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf.autoscale</groupId>
@@ -67,7 +69,7 @@
             <version>${caf.autoscale-workload.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.codec</groupId>
+            <groupId>com.github.cafapi.codec</groupId>
             <artifactId>${caf.codec.impl}</artifactId>
             <version>${caf.codec.version}</version>
         </dependency>

@@ -9,10 +9,9 @@
     <version>10.2.1-SNAPSHOT</version>
 
     <parent>
-        <groupId>com.hpe.caf</groupId>
-        <artifactId>caf-latest-develop</artifactId>
-        <version>1-SNAPSHOT</version>
-        <relativePath>../caf-latest-develop</relativePath>
+        <groupId>com.github.cafapi</groupId>
+        <artifactId>caf-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -24,6 +23,7 @@
         <dependency>
             <groupId>com.hpe.caf.autoscale</groupId>
             <artifactId>autoscale-marathon-shared</artifactId>
+            <version>3.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>cc.roden</groupId>

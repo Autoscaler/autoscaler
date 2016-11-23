@@ -25,7 +25,7 @@ features:
 
 social:
     title: Get Involved
-    subtitle: Get involved in the CAF project. Suggest new features, report issues or take part in development.
+    subtitle: Get involved in the Autoscaler project. Suggest new features, report issues or take part in development.
     social_list:
         - icon: hpe-social-twitter
           title: Twitter

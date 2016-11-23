@@ -31,8 +31,8 @@ social:
           title: Twitter
           subtitle: Follow us on Twitter to keep up with the latest news and updates from the team or to get in touch with us!
           link:
-            title: '@cafautoscale'
-            url: http://twitter.com/@cafautoscale
+            title: '@cafautoscaler'
+            url: http://twitter.com/@cafautoscaler
         - icon: hpe-social-github
           title: GitHub
           subtitle: Fork an Autoscale repository on GitHub and submit a pull request to help contribute to the project! Or if you have discovered an issue, report it to us.

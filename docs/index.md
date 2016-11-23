@@ -3,8 +3,8 @@ layout: landing
 
 logo: assets/img/caflogo.png
 background_image: assets/img/landing_3.jpg
-title: Common Application Framework <br><small>From the Information Management and Governance Research and Development Team at Hewlett Packard Enterprise</small>
-slogan: Containerized microservices scaled easily and quickly to meet demands of your applications
+title: Autoscaler<br><small>From the Information Management and Governance Research and Development Team at Hewlett Packard Enterprise</small>
+slogan: Automatic on-demand scaling of microservices
 button:
     title: Learn More
     url: pages/en-us/Overview
@@ -29,19 +29,19 @@ social:
     social_list:
         - icon: hpe-social-twitter
           title: Twitter
-          subtitle: Follow us on Twitter to keep up with the latest news and updates from the CAF team or to get in touch with us!
+          subtitle: Follow us on Twitter to keep up with the latest news and updates from the team or to get in touch with us!
           link:
-            title: '@twitterhandle'
-            url: http://twitter.com
+            title: '@cafautoscale'
+            url: http://twitter.com/@cafautoscale
         - icon: hpe-social-github
           title: GitHub
-          subtitle: Fork CAF services on GitHub and submit a pull request to help contribute to the project! Or if you have discovered an issue, report it to us.
+          subtitle: Fork an Autoscale repository on GitHub and submit a pull request to help contribute to the project! Or if you have discovered an issue, report it to us.
           link:
-            title: Fork CAF
-            url: https://github.hpe.com/caf/autoscale-container
+            title: Fork Autoscale 
+            url: https://github.hpe.com/caf/autoscale-core
         - icon: hpe-chat
           title: Blog
-          subtitle: Follow our blog to find out all of the exciting news and announcements regarding CAF.
+          subtitle: Follow our blog to find out all of the exciting news and announcements regarding Autoscaling.
           link:
             title: Read More Here
             url: pages/en-us/blog/index.html

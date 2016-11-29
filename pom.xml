@@ -90,9 +90,9 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.jolokia</groupId>
+                <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>${docker.maven.version}</version>
+                <version>${fabric8.docker.maven.version}</version>
                 <executions>
                     <execution>
                         <id>start</id>
@@ -124,6 +124,7 @@
                     <watchInterval>500</watchInterval>
                     <logDate>default</logDate>
                     <verbose>true</verbose>
+                    <autoPull>always</autoPull>
                     <images>
                         <image>
                             <alias>autoscale-container</alias>

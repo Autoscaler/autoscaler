@@ -55,7 +55,7 @@ An implementation of `ServiceSource` acquires service information and produces a
 
 ### The ServiceScaler component
 
-The following classes and interfaces are relevant to the `ServiceSource` component:
+The following classes and interfaces are relevant to the `ServiceSscaler` component:
  
 * ServiceScaler: abstract class that acts as a base implementation
 * ServiceScalerProvider: interface for acquiring a ServiceScaler

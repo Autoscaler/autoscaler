@@ -80,7 +80,19 @@ public class MarathonServiceSource implements ServiceSource
             throws ScalerException
     {
         try {
-            return getAllGroupApps(marathon.getGroup(groupPath));
+            Collection<App> apps = new ArrayList<>();
+            String[] groupPaths;
+            if(groupPath.contains(",")){
+                LOG.info("Multiple Marathon groups detected: {} splitting on ','.", groupPath);
+                groupPaths = groupPath.split(",");
+            }
+            else{
+                groupPaths = new String[]{groupPath};
+            }
+            for(String groupPath:groupPaths){
+                apps.addAll(getAllGroupApps(marathon.getGroup(groupPath)));
+            }
+            return apps;
         } catch (MarathonException e) {
             throw new ScalerException("Failed to get group apps", e);
         }

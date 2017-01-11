@@ -51,7 +51,7 @@ public class AutoscaleScheduler
     private final ServiceScaler scaler;
     private static final int INITIAL_SCALING_DELAY = 30;
     private static final Logger LOG = LoggerFactory.getLogger(AutoscaleScheduler.class);
-
+    private final Governor governor = new GovernorImpl();
 
     public AutoscaleScheduler(final Map<String, WorkloadAnalyserFactory> analyserFactories, final ServiceScaler scaler,
             final ScheduledExecutorService scheduler, final ServiceValidator serviceValidator)
@@ -162,7 +162,8 @@ public class AutoscaleScheduler
         if ( scheduledServices.containsKey(config.getId()) ) {
             cancel(config.getId());
         }
-        ScheduledFuture future = scheduler.scheduleWithFixedDelay(new ScalerThread(analyser, scaler, config.getId(), config.getMinInstances(),
+        governor.register(config);
+        ScheduledFuture future = scheduler.scheduleWithFixedDelay(new ScalerThread(governor, analyser, scaler, config.getId(), config.getMinInstances(),
                                                                                    config.getMaxInstances(), config.getBackoffAmount()),
                                                                   initialDelay, config.getInterval(), TimeUnit.SECONDS);
         scheduledServices.put(config.getId(), new ScheduledScalingService(config, future));
@@ -179,6 +180,7 @@ public class AutoscaleScheduler
             LOG.debug("Cancelling service {}", id);
             scheduledServices.get(id).getSchedule().cancel(true);
             scheduledServices.remove(id);
+            governor.remove(id);
         }
     }
 

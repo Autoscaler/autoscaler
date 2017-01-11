@@ -33,9 +33,12 @@ public class ScalerThread implements Runnable
     private boolean backoff = false;
     private static final Logger LOG = LoggerFactory.getLogger(ScalerThread.class);
 
+    private Governor governor;
+
 
     /**
      * Create a new ScalerThread.
+     * @param governor a Governor instance to prevent one service from starving others
      * @param workloadAnalyser the method for this thread to analyse the workload of a service
      * @param serviceScaler the method for this thread to scale a service
      * @param serviceReference the named reference to the service this thread will analyse and scale
@@ -43,9 +46,10 @@ public class ScalerThread implements Runnable
      * @param maxInstances the maximum number of instances of the service that can be instantiated
      * @param backoffAmount the number of analysis runs to skip after a scaling is triggered
      */
-    public ScalerThread(final WorkloadAnalyser workloadAnalyser, final ServiceScaler serviceScaler, final String serviceReference, final int minInstances, final int maxInstances,
+    public ScalerThread(final Governor governor, final WorkloadAnalyser workloadAnalyser, final ServiceScaler serviceScaler, final String serviceReference, final int minInstances, final int maxInstances,
             final int backoffAmount)
     {
+        this.governor = governor;
         this.analyser = Objects.requireNonNull(workloadAnalyser);
         this.scaler = Objects.requireNonNull(serviceScaler);
         this.serviceRef = Objects.requireNonNull(serviceReference);
@@ -93,6 +97,7 @@ public class ScalerThread implements Runnable
     {
         try {
             InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
+            governor.recordInstances(serviceRef, instances);
             ScalingAction action;
             if ( firstRun ) {
                 LOG.debug("Performing initial scaling checks for service {}", serviceRef);
@@ -101,6 +106,9 @@ public class ScalerThread implements Runnable
             } else {
                 action = analyser.analyseWorkload(instances);
             }
+
+            action = governor.govern(serviceRef, action);
+
             switch (action.getOperation()) {
                 case SCALE_UP:
                     scaleUp(instances, action.getAmount());

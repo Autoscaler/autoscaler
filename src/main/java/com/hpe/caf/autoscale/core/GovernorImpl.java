@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class GovernorImpl implements Governor {
 
+    private static final double reduceToPercentage = 0.90;
     private final Map<String, InstanceInfo> instanceInfoMap = new ConcurrentHashMap<>() ;
     private final Map<String, ScalingConfiguration> scalingConfigurationMap = new ConcurrentHashMap<>();
 
@@ -54,7 +55,13 @@ public class GovernorImpl implements Governor {
                         return new ScalingAction(ScalingOperation.NONE, 0);
                     }
                     else if(lastInstanceInfo.getTotalInstances()>scalingConfiguration.getMinInstances()){
-                        int amount = lastInstanceInfo.getTotalInstances() - scalingConfiguration.getMinInstances();
+                        //Gradually reduce the totalInstances by a percentage until Minimums are met.
+                        //This should be configurable, however there should be a Governor specific configuration
+                        //to allow different Governor implementations to be added without polluting the AutoscaleConfiguration
+
+                        int target = Math.max(scalingConfiguration.getMinInstances(), (int)Math.floor(lastInstanceInfo.getTotalInstances() * reduceToPercentage));
+                        int amount = lastInstanceInfo.getTotalInstances() - target;
+
                         return new ScalingAction(ScalingOperation.SCALE_DOWN, amount);
                     }
                 }

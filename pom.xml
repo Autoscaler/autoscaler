@@ -6,7 +6,7 @@
 
     <groupId>com.hpe.caf.autoscale</groupId>
     <artifactId>autoscale-marathon-rabbit-container</artifactId>
-    <version>3.1.1</version>
+    <version>3.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -20,7 +20,7 @@
         <caf.autoscale-scaler.impl>autoscale-scaler-marathon</caf.autoscale-scaler.impl>
         <caf.autoscale-scaler.version>10.1</caf.autoscale-scaler.version>
         <caf.autoscale-source.impl>autoscale-source-marathon</caf.autoscale-source.impl>
-        <caf.autoscale-source.version>10.2.1</caf.autoscale-source.version>
+        <caf.autoscale-source.version>10.2.1-1</caf.autoscale-source.version>
         <caf.autoscale-workload.impl>autoscale-workload-rabbit</caf.autoscale-workload.impl>
         <caf.autoscale-workload.version>10.1</caf.autoscale-workload.version>
         <caf.config.impl>config-file</caf.config.impl>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.hpe.caf.autoscale</groupId>
             <artifactId>autoscale-core</artifactId>
-            <version>10.2.0</version>
+            <version>10.2.0-1</version>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf.autoscale</groupId>

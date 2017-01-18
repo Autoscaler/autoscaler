@@ -1,6 +1,6 @@
 {
   "name": "AutoScaler",
-  "version": "3.1.1",
+  "version": "3.1.1-SNAPSHOT",
   "description": "CAF AutoScaler Project",
     "dependencies": {
       "grunt": "^1.0.1",

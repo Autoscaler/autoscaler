@@ -6,7 +6,7 @@
 
     <groupId>com.hpe.caf.autoscale</groupId>
     <artifactId>autoscale-core</artifactId>
-    <version>10.2.0</version>
+    <version>10.2.0-SNAPSHOT</version>
 
     <parent>
         <groupId>com.github.cafapi</groupId>
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>autoscale-api</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.0-1</version>
         </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>

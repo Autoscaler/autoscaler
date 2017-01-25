@@ -12,7 +12,7 @@
     <parent>
         <groupId>com.github.cafapi</groupId>
         <artifactId>caf-parent</artifactId>
-        <version>1.2.0-10</version>
+        <version>1.5.1-19</version>
         <relativePath />
     </parent>
 
@@ -24,20 +24,18 @@
         <caf.autoscale-workload.impl>autoscale-workload-rabbit</caf.autoscale-workload.impl>
         <caf.autoscale-workload.version>10.1</caf.autoscale-workload.version>
         <caf.config.impl>config-file</caf.config.impl>
-        <caf.config.version>1.2.0-109</caf.config.version>
+        <caf.config.version>1.4.1-117</caf.config.version>
         <caf.codec.impl>codec-json</caf.codec.impl>
         <caf.codec.version>1.2.0-109</caf.codec.version>
         <caf.worker-store.impl>worker-store-cs</caf.worker-store.impl>
-        <caf.worker-store.version>${caf.worker-store-cs.version}</caf.worker-store.version>
         <caf.worker-queue.impl>worker-queue-rabbit</caf.worker-queue.impl>
-        <caf.worker-queue.version>${caf.worker-queue-rabbit.version}</caf.worker-queue.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.github.cafapi</groupId>
             <artifactId>caf-api</artifactId>
-            <version>1.2.0-109</version>
+            <version>1.4.1-117</version>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.config</groupId>
@@ -83,6 +81,11 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

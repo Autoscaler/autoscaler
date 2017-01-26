@@ -27,7 +27,7 @@ The [MarathonAutoscaleConfiguration](https://github.hpe.com/caf/chateau/blob/dev
 
 `endpoint`: The fully qualified URL to the Marathon endpoint including port. Must not be null or empty. <br>
 `maximumInstances`: The absolute upper ceiling for a number of service instances. The minimum value is 1. <br>
-`groupId`: The group in Marathon which the Autoscaler will monitor. All the services directly in this group, and also in all sub-groups, will be monitored and autoscaled as necessary.
+`groupId`: List of comma-separated groups in Marathon that the Autoscaler will monitor. All the services directly in these groups, and also in all of their sub-groups, will be monitored and autoscaled as necessary.
 
 The [RabbitWorkloadAnalyserConfiguration](https://github.hpe.com/caf/chateau/blob/develop/services/autoscaler/configuration-files/cfg_%24%7Bmarathon-group%7D_%24%7Bservice-groupname%7D_autoscaler_RabbitWorkloadAnalyserConfiguration) file configures a WorkloadAnalyser that uses the RabbitMQ management server to determine the workload of a service using a RabbitMQ queue. It contains the following properties:
 

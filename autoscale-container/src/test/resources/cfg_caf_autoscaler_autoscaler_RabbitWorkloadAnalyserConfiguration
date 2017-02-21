@@ -1,0 +1,11 @@
+{
+    "rabbitManagementEndpoint": "http://192.168.56.10:15672",
+    "rabbitManagementUser": "guest",
+    "rabbitManagementPassword": "guest",
+    "profiles": {
+        "default": {
+            "scalingDelay": "10",
+            "backlogGoal": "300"
+        }
+    }
+}

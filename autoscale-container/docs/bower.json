@@ -1,0 +1,21 @@
+{
+  "name": "AutoScaler",
+  "authors": [
+    "Gregory Lucy <gregory.lucy@hpe.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    ".",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "caf-templates": "^2.0.3"
+  }
+}

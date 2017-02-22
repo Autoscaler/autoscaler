@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hpe.caf.autoscale</groupId>
+    <artifactId>autoscale-aggregator</artifactId>
+    <version>4.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Autoscaler</name>
+    <description>Provides on-demand scaling of services, allowing you to efficiently dedicate resources where they are needed most in your Mesos cluster, and minimizing costs and ensuring user satisfaction.</description>
+    
+    <parent>
+        <groupId>com.github.cafapi</groupId>
+        <artifactId>caf-parent</artifactId>
+        <version>1.6.0-30</version>
+        <relativePath />
+    </parent>
+
+    <modules>
+        <module>autoscale-api</module>
+        <module>autoscale-core</module>
+        <module>autoscale-container</module>
+        <module>autoscale-marathon-shared</module>
+        <module>autoscale-workload-rabbit</module>
+        <module>autoscale-scaler-marathon</module>
+        <module>autoscale-source-marathon</module>
+    </modules>
+
+</project>

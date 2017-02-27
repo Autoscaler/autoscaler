@@ -6,7 +6,6 @@ import com.hpe.caf.api.HealthReporter;
 
 /**
  * Creates WorkloadAnalyser instances for a specific target and profile.
- * @since 9.0
  */
 public interface WorkloadAnalyserFactory extends HealthReporter
 {

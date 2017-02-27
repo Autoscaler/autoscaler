@@ -63,7 +63,7 @@ public class RabbitWorkloadAnalyserConfigurationTest {
 
         Assert.assertNotNull("Configuration passed back should not be null", rabbitWorkloadAnalyserConfiguration);
 
-        Assert.assertEquals("Expected Rabbit Endpoint should match endpoint read in","http://192.168.56.10:15672", rabbitWorkloadAnalyserConfiguration.getRabbitManagementEndpoint());
+        Assert.assertEquals("Expected Rabbit Endpoint should match endpoint read in","http://localhost:15672", rabbitWorkloadAnalyserConfiguration.getRabbitManagementEndpoint());
         Assert.assertEquals("Expected Rabbit User should match user read in","guest", rabbitWorkloadAnalyserConfiguration.getRabbitManagementUser());
         Assert.assertEquals("Expected Rabbit User Password should match user password read in","guest", rabbitWorkloadAnalyserConfiguration.getRabbitManagementPassword());
 

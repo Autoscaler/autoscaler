@@ -4,7 +4,6 @@ package com.hpe.caf.api.autoscale;
 /**
  * A WorkloadAnalyser examines the workload of a service and makes
  * recommendations upon how to scale it at a given time.
- * @since 9.0
  */
 public interface WorkloadAnalyser
 {

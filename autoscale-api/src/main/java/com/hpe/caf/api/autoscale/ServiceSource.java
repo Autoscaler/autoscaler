@@ -9,7 +9,6 @@ import java.util.Set;
 /**
  * A ServiceSource is responsible for finding and returning services
  * that an autoscaler can handle and scale.
- * @since 9.0
  */
 public interface ServiceSource extends HealthReporter
 {

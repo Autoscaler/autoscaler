@@ -6,7 +6,6 @@ import com.hpe.caf.api.ConfigurationSource;
 
 /**
  * Boilerplate for acquiring a WorkloadAnalyserFactory. It is holds the unique name for the WorkloadAnalyser.
- * @since 5.0
  */
 public interface WorkloadAnalyserFactoryProvider
 {

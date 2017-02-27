@@ -6,7 +6,6 @@ import java.util.Objects;
 
 /**
  * A representation of a scaling request to be handled by the autoscaler.
- * @since 5.0
  */
 public final class ScalingAction
 {

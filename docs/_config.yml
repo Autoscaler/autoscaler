@@ -3,7 +3,7 @@ email: caf@hpe.com
 
 description: AutoScaler Description
 #baseurl: "/documentation"
-baseurl: "https://pages.github.hpe.com/caf/autoscale-container"
+baseurl: "https://pages.github.hpe.com/caf/autoscaler"
 
 # Build settings
 exclude: ['node_modules']

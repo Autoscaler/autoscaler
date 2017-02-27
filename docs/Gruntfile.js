@@ -38,7 +38,7 @@ module.exports = function(grunt) {
             },
             pages: {
                 options: {
-                    remote: 'git@github.hpe.com:caf/autoscale-container.git',
+                    remote: 'git@github.hpe.com:caf/autoscaler.git',
                     login: '',
                     token: '',
                     branch: 'gh-pages'

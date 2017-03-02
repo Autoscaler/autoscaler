@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.hpe.caf.autoscale</groupId>
+    <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-aggregator</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Autoscaler</name>
@@ -14,10 +31,45 @@
     
     <parent>
         <groupId>com.github.cafapi</groupId>
-        <artifactId>caf-parent</artifactId>
-        <version>1.6.0-30</version>
+        <artifactId>caf-common</artifactId>
+        <version>1.6.0-176</version>
         <relativePath />
     </parent>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>arogan92</id>
+            <name>Adam Rogan</name>
+            <email>adam.pau.rogan@hpe.com</email>
+        </developer>
+        <developer>
+            <id>CJComac</id>
+            <name>Christopher Comac</name>
+            <email>christopher.jam.comac@hpe.com</email>
+        </developer>
+        <developer>
+            <id>dermot-hardy</id>
+            <name>Dermot Hardy</name>
+            <email>dermot.hardy@hpe.com</email>
+        </developer>
+        <developer>
+            <id>glucy</id>
+            <name>Gregory Lucy</name>
+            <email>gregory.lucy@hpe.com</email>
+        </developer>
+        <developer>
+            <id>mulhollandc</id>
+            <name>Connor Mulholland</name>
+            <email>connor.mulholland@hpe.com</email>
+        </developer>
+    </developers>
 
     <modules>
         <module>autoscale-api</module>
@@ -28,5 +80,11 @@
         <module>autoscale-scaler-marathon</module>
         <module>autoscale-source-marathon</module>
     </modules>
+
+    <scm>
+        <connection>scm:git:https://github.com/AutoScaler/autoscaler.git</connection>
+        <developerConnection>scm:git:https://github.com/AutoScaler/autoscaler.git</developerConnection>
+        <url>https://github.com/AutoScaler/autoscaler</url>
+    </scm>
 
 </project>

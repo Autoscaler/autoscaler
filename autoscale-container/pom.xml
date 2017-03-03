@@ -1,34 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-         http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.autoscaler</groupId>
+    <groupId>com.hpe.caf.autoscale</groupId>
     <artifactId>autoscale-marathon-rabbit-container</artifactId>
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>com.github.autoscaler</groupId>
+        <groupId>com.hpe.caf.autoscale</groupId>
         <artifactId>autoscale-aggregator</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -55,27 +38,27 @@
             <version>${caf.config.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.autoscaler</groupId>
+            <groupId>com.hpe.caf.autoscale</groupId>
             <artifactId>autoscale-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.autoscaler</groupId>
+            <groupId>com.hpe.caf.autoscale</groupId>
             <artifactId>autoscale-marathon-shared</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.autoscaler</groupId>
+            <groupId>com.hpe.caf.autoscale</groupId>
             <artifactId>${caf.autoscale-source.impl}</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.autoscaler</groupId>
+            <groupId>com.hpe.caf.autoscale</groupId>
             <artifactId>${caf.autoscale-scaler.impl}</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.autoscaler</groupId>
+            <groupId>com.hpe.caf.autoscale</groupId>
             <artifactId>${caf.autoscale-workload.impl}</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -143,7 +126,7 @@
                     <images>
                         <image>
                             <alias>autoscale-container</alias>
-                            <name>autoscaler/autoscale-marathon-rabbit:${project.version}</name>
+                            <name>${docker.dev.repo}/caf/autoscale-marathon-rabbit:${project.version}</name>
                             <build>
                                 <maintainer>andrew.reid@hpe.com</maintainer>
                                 <from>java:8</from>
@@ -154,9 +137,9 @@
                                     <Git.Commit>${git.revision}</Git.Commit>
                                     <com.hpe.caf.api.worker.configurationsource>groupId:com.hpe.caf.config,artifactId:${caf.config.impl},version:${caf.config.version}</com.hpe.caf.api.worker.configurationsource>
                                     <com.hpe.caf.api.codec>groupId:com.hpe.caf.codec,artifactId:${caf.codec.impl},version:${caf.codec.version}</com.hpe.caf.api.codec>
-                                    <com.hpe.caf.api.autoscale.servicesource>groupId:com.github.autoscaler,artifactId:${caf.autoscale-source.impl},version:${project.version}</com.hpe.caf.api.autoscale.servicesource>
-                                    <com.hpe.caf.api.autoscale.servicescaler>groupId:com.github.autoscaler,artifactId:${caf.autoscale-scaler.impl},version:${project.version}</com.hpe.caf.api.autoscale.servicescaler>
-                                    <com.hpe.caf.api.autoscale.workloadanalyser>groupId:com.github.autoscaler,artifactId:${caf.autoscale-workload.impl},version:${project.version}</com.hpe.caf.api.autoscale.workloadanalyser>
+                                    <com.hpe.caf.api.autoscale.servicesource>groupId:com.hpe.caf.autoscale,artifactId:${caf.autoscale-source.impl},version:${project.version}</com.hpe.caf.api.autoscale.servicesource>
+                                    <com.hpe.caf.api.autoscale.servicescaler>groupId:com.hpe.caf.autoscale,artifactId:${caf.autoscale-scaler.impl},version:${project.version}</com.hpe.caf.api.autoscale.servicescaler>
+                                    <com.hpe.caf.api.autoscale.workloadanalyser>groupId:com.hpe.caf.autoscale,artifactId:${caf.autoscale-workload.impl},version:${project.version}</com.hpe.caf.api.autoscale.workloadanalyser>
                                 </labels>
                                 <entryPoint>
                                     <exec>

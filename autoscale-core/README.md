@@ -178,11 +178,11 @@
  deployment template. You will need the following dependencies in your project
  to create a fully functioning container:
  
- - [autoscale-core](https://github.hpe.com/caf/autoscale-core)
+ - [autoscale-core](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-core)
  - [caf-api](https://github.com/CAFapi/caf-common/tree/develop/caf-api)
- - An implementation of ServiceSource (i.e. [autoscale-source-marathon](https://github.hpe.com/caf/autoscale-source-marathon))
- - An implementation of ServiceScaler (i.e. [autoscale-scaler-marathon](https://github.hpe.com/caf/autoscale-scaler-marathon))
- - An implementation of WorkloadAnalyser (i.e. [autoscale-workload-rabbit](https://github.hpe.com/caf/autoscale-workload-rabbit))
+ - An implementation of ServiceSource (i.e. [autoscale-source-marathon](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-source-marathon))
+ - An implementation of ServiceScaler (i.e. [autoscale-scaler-marathon](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-scaler-marathon))
+ - An implementation of WorkloadAnalyser (i.e. [autoscale-workload-rabbit](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-workload-rabbit))
  - An implementation of Codec (i.e. [codec-json](https://github.com/CAFapi/caf-common/tree/develop/codec-json))
  - An implementation of Cipher (optional) (i.e. [cipher-null](https://github.com/CAFapi/caf-common/tree/develop/cipher-null))
  - An implementation of Election (optional) (i.e. [election-null](https://github.com/CAFapi/caf-common/tree/develop/election-null))

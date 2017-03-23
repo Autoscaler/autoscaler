@@ -38,7 +38,7 @@ social:
           subtitle: Fork an Autoscale repository on GitHub and submit a pull request to help contribute to the project! Or if you have discovered an issue, report it to us.
           link:
             title: Fork Autoscale 
-            url: https://github.hpe.com/caf/autoscaler/tree/develop/autoscale-core
+            url: https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-core
         - icon: hpe-chat
           title: Blog
           subtitle: Follow our blog to find out all of the exciting news and announcements regarding Autoscaling.

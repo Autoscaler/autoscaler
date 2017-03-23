@@ -80,10 +80,3 @@
  - Non-transient communication failures with the RabbitMQ host
  - The `ServiceScaler` not providing reliable information on the number of
   instances
-
-
-## Maintainers
-
- The following people are contacts for developing and maintaining this module:
-
- - Richard Hickman (Cambridge, UK, richard.hickman@hp.com)

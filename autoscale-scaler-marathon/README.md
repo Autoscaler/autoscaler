@@ -34,10 +34,3 @@
  for this module:
 
  - Network failures to the Marathon endpoint
-
-
-## Maintainers
-
- The following people are contacts for developing and maintaining this module:
-
- - Richard Hickman (Cambridge, UK, richard.hickman@hp.com)

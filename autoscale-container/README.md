@@ -9,7 +9,7 @@ To get the autoscale application up and running look at the [Quick Start](#quick
 
 ### Container deployment
 
-Since this container uses [config-file](https://github.hpe.com/caf/config-file), the appropriate configuration files
+Since this container uses [config-file](https://github.com/CAFapi/caf-common/tree/develop/config-file), the appropriate configuration files
 should either be mounted as a volume or injected into the sandbox via the use
 of Marathon URI template configuration. The following configuration resources
 are *required*:
@@ -131,12 +131,3 @@ Finally the `autoscale.profile` can be an arbitrary string, but one that should 
 
 Deploy/redeploy the services and the autoscale container. After one or two
 minutes the autoscale container should find the services and start monitoring.
-
-
-### Maintainers and bug reports
-
-All bugs should be filed against the CAF Jira project. The following people
-developed or maintain this project:
-
-- Andy Reid (Belfast, UK) - andrew.reid@hpe.com
-- Richard Hickman (Cambridge, UK) - richard.hickman@hpe.com

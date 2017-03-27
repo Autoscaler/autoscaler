@@ -35,9 +35,9 @@ social:
             url: http://twitter.com/@cafautoscaler
         - icon: hpe-social-github
           title: GitHub
-          subtitle: Fork an Autoscale repository on GitHub and submit a pull request to help contribute to the project! Or if you have discovered an issue, report it to us.
+          subtitle: Fork an Autoscaler repository on GitHub and submit a pull request to help contribute to the project! Or if you have discovered an issue, report it to us.
           link:
-            title: Fork Autoscale 
+            title: Fork Autoscaler 
             url: https://github.com/Autoscaler/autoscaler
         - icon: hpe-chat
           title: Blog

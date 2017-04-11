@@ -5,16 +5,16 @@ title: Getting Started
 
 # Getting Started
 
-## Deploying the Autoscaler with Chateau
+## Deploying the Autoscaler on Marathon
 
-**[Chateau](https://github.hpe.com/caf/chateau)** can launch workers and services, such as the Autoscaler.
+Marathon is a production grade container orchestration platform for Apache Mesos, and this is how to deploy the [Autoscaler](https://autoscaler.github.io/autoscaler) using curl request to marathon.
 
+If you have done a `git clone https://github.com/jobservice/job-service` then you will see a `marathon-files` folder in the repo.
 
-- To download and set up Chateau, follow the instructions in the [README.md](https://github.hpe.com/caf/chateau/blob/develop/README.md). 
+1. Run a command prompt and cd into the marathon-files folder.
+2. If you do not already have one, create a docker login tar `docker.tar.gz` which contains the docker information file. This file will contain docker login information allowing images to be downloaded.
+2. Run the following command: `curl -vX POST http://<marathon-host>:8080/v2/apps -d @marathon-autoscaler.json --header "Content-Type: application/json"`
 
-- To deploy the Autoscaler, follow the [Service Deployment](https://github.hpe.com/caf/chateau/blob/develop/deployment.md) guide and use the following option with the deployment shell script.
-
-  `./deploy-service.sh autoscaler`
 
 
 ## The Autoscaler in Action

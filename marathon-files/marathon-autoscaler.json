@@ -1,0 +1,52 @@
+{
+    "id": "/demo/service/autoscaler",
+    "cpus": 0.1,
+    "mem": 512,
+    "instances": 1,
+    "container": {
+        "type": "DOCKER",
+        "docker": {
+            "image": "rh7-artifactory.svs.hpeswlab.net:8444/caf/autoscale-marathon-rabbit:3.1.2-10",
+            "network": "BRIDGE",
+            "portMappings": [{
+                "containerPort": 8081,
+                "hostPort": 0,
+                "servicePort": 0,
+                "protocol": "tcp"
+            }],
+            "forcePullImage": true
+        }
+    },
+    "env": {
+        "_JAVA_OPTIONS": "-Xms256m -Xmx512m",
+        "CAF_CONFIG_PATH": "/mnt/mesos/sandbox"
+    },
+    "healthChecks": [{
+        "path": "/healthcheck",
+        "portIndex": 0,
+        "protocol": "HTTP",
+        "gracePeriodSeconds": 300,
+        "intervalSeconds": 120,
+        "maxConsecutiveFailures": 5,
+        "timeoutSeconds": 20
+    }],
+    "labels": {
+        "MARATHON_SINGLE_INSTANCE_APP": "true",
+        "template.date": "2017-02-20",
+        "template.build": "1fe20a7"
+    },
+    "fetch": [{
+        "uri": "/vagrant/marathon-files/cfg_demo_service_autoscaler_MarathonAutoscaleConfiguration"
+    }, {
+        "uri": "/vagrant/marathon-files/cfg_demo_service_autoscaler_RabbitWorkloadAnalyserConfiguration"
+    }, {
+        "uri": "/vagrant/marathon-files/docker.tar.gz",
+        "extract": true
+    }, {
+        "uri": "/vagrant/marathon-files/nossl.txt"
+    }],
+    "upgradeStrategy": {
+        "minimumHealthCapacity": 0,
+        "maximumOverCapacity": 0
+    }
+}

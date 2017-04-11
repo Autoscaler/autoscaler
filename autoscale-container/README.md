@@ -15,11 +15,11 @@ Configuration of the AutoScaler is supported through the following environment v
 
  - `CAF_MARATHON_URL`  
     Default: `http://marathon:8080`  
-    Used to specify the Marathon API endpoint.  Alternatively `CAF_MARATHON_HOST` and `CAF_MARATHON_PORT` may instead by specified individually.
+    Used to specify the Marathon API endpoint.  Alternatively `CAF_MARATHON_HOST` and `CAF_MARATHON_PORT` may instead be specified individually.
 
  - `CAF_RABBITMQ_MGMT_URL`  
     Default: `http://rabbitmq:15678`  
-    Used to specify the RabbitMQ Management API Endpoint.  Alternatively `CAF_RABBITMQ_HOST` and `CAF_RABBITMQ_MGMT_PORT` may instead by specified individually.
+    Used to specify the RabbitMQ Management API Endpoint.  Alternatively `CAF_RABBITMQ_HOST` and `CAF_RABBITMQ_MGMT_PORT` may instead be specified individually.
 
  - `CAF_RABBITMQ_MGMT_USERNAME`  
     Default: `guest`  

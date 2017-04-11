@@ -19,7 +19,7 @@
 # JavaScript-encoded config files that are built into the container
 if [ -z "$CAF_APPNAME" ] && [ -z "$CAF_CONFIG_PATH" ];
 then
-  export CAF_APPNAME=caf/worker
+  export CAF_APPNAME=caf/autoscaler
   export CAF_CONFIG_PATH=/maven/config
   export CAF_CONFIG_DECODER=JavascriptDecoder
   export CAF_CONFIG_ENABLE_SUBSTITUTOR=false

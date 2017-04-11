@@ -195,6 +195,18 @@
                     </images>
                 </configuration>
             </plugin>
+
+            <!-- Exclude the test and example configuration files when checking license headers -->
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <excludes combine.children="append">
+                        <exclude>example-configs/**</exclude>
+                        <exclude>src/test/resources/cfg_caf_autoscaler_autoscaler_RabbitWorkloadAnalyserConfiguration</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

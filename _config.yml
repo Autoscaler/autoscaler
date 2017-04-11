@@ -3,7 +3,7 @@ email: caf@hpe.com
 
 description: AutoScaler Description
 #baseurl: "/documentation"
-baseurl: "https://autoscaler.github.io/autoscaler"
+baseurl: "/autoscaler"
 
 # Build settings
 exclude: ['node_modules']

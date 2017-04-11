@@ -43,22 +43,18 @@
         <dependency>
             <groupId>com.github.cafapi.config</groupId>
             <artifactId>config-system</artifactId>
-            <version>1.2.0-109</version>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.cipher</groupId>
             <artifactId>cipher-null</artifactId>
-            <version>1.2.0-109</version>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.election</groupId>
             <artifactId>election-null</artifactId>
-            <version>1.2.0-109</version>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.util</groupId>
             <artifactId>util-moduleloader</artifactId>
-            <version>1.2.0-109</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

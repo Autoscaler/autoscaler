@@ -36,9 +36,7 @@
         <caf.autoscale-source.impl>autoscale-source-marathon</caf.autoscale-source.impl>
         <caf.autoscale-workload.impl>autoscale-workload-rabbit</caf.autoscale-workload.impl>
         <caf.config.impl>config-file</caf.config.impl>
-        <caf.config.version>1.4.1-117</caf.config.version>
         <caf.codec.impl>codec-json</caf.codec.impl>
-        <caf.codec.version>1.2.0-109</caf.codec.version>
         <caf.worker-store.impl>worker-store-cs</caf.worker-store.impl>
         <caf.worker-queue.impl>worker-queue-rabbit</caf.worker-queue.impl>
     </properties>
@@ -47,12 +45,10 @@
         <dependency>
             <groupId>com.github.cafapi</groupId>
             <artifactId>caf-api</artifactId>
-            <version>1.4.1-117</version>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.config</groupId>
             <artifactId>${caf.config.impl}</artifactId>
-            <version>${caf.config.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
@@ -82,7 +78,6 @@
         <dependency>
             <groupId>com.github.cafapi.codec</groupId>
             <artifactId>${caf.codec.impl}</artifactId>
-            <version>${caf.codec.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.krallin</groupId>
@@ -152,11 +147,6 @@
                                     <Build.Date>${maven.build.timestamp}</Build.Date>
                                     <Git.Branch>${git.branch}</Git.Branch>
                                     <Git.Commit>${git.revision}</Git.Commit>
-                                    <com.hpe.caf.api.worker.configurationsource>groupId:com.hpe.caf.config,artifactId:${caf.config.impl},version:${caf.config.version}</com.hpe.caf.api.worker.configurationsource>
-                                    <com.hpe.caf.api.codec>groupId:com.hpe.caf.codec,artifactId:${caf.codec.impl},version:${caf.codec.version}</com.hpe.caf.api.codec>
-                                    <com.hpe.caf.api.autoscale.servicesource>groupId:com.github.autoscaler,artifactId:${caf.autoscale-source.impl},version:${project.version}</com.hpe.caf.api.autoscale.servicesource>
-                                    <com.hpe.caf.api.autoscale.servicescaler>groupId:com.github.autoscaler,artifactId:${caf.autoscale-scaler.impl},version:${project.version}</com.hpe.caf.api.autoscale.servicescaler>
-                                    <com.hpe.caf.api.autoscale.workloadanalyser>groupId:com.github.autoscaler,artifactId:${caf.autoscale-workload.impl},version:${project.version}</com.hpe.caf.api.autoscale.workloadanalyser>
                                 </labels>
                                 <entryPoint>
                                     <exec>

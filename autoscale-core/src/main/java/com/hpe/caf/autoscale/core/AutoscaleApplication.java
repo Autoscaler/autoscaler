@@ -17,12 +17,15 @@ package com.hpe.caf.autoscale.core;
 
 
 import com.hpe.caf.api.BootstrapConfiguration;
+import com.hpe.caf.api.CafConfigurationDecoderProvider;
 import com.hpe.caf.api.Cipher;
 import com.hpe.caf.api.CipherException;
 import com.hpe.caf.api.CipherProvider;
 import com.hpe.caf.api.Codec;
+import com.hpe.caf.api.ConfigurationDecoderProvider;
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSourceProvider;
+import com.hpe.caf.api.Decoder;
 import com.hpe.caf.api.ElectionException;
 import com.hpe.caf.api.ElectionFactory;
 import com.hpe.caf.api.ElectionFactoryProvider;
@@ -91,7 +94,10 @@ public class AutoscaleApplication extends Application<AutoscaleConfiguration>
         ServicePath servicePath = bootstrap.getServicePath();
         Codec codec = ModuleLoader.getService(Codec.class);
         Cipher cipher = ModuleLoader.getService(CipherProvider.class, NullCipherProvider.class).getCipher(bootstrap);
-        ManagedConfigurationSource config = ModuleLoader.getService(ConfigurationSourceProvider.class).getConfigurationSource(bootstrap, cipher, servicePath, codec);
+        ConfigurationDecoderProvider decoderProvider = ModuleLoader.getService(ConfigurationDecoderProvider.class,
+                                                                               CafConfigurationDecoderProvider.class);
+        Decoder decoder = decoderProvider.getDecoder(bootstrap, codec);
+        ManagedConfigurationSource config = ModuleLoader.getService(ConfigurationSourceProvider.class).getConfigurationSource(bootstrap, cipher, servicePath, decoder);
         ServiceSource source = ModuleLoader.getService(ServiceSourceProvider.class).getServiceSource(config, servicePath);
         ServiceScaler scaler = ModuleLoader.getService(ServiceScalerProvider.class).getServiceScaler(config);
         ElectionFactory electionFactory = ModuleLoader.getService(ElectionFactoryProvider.class, NullElectionFactoryProvider.class).getElectionManager( config);

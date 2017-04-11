@@ -9,16 +9,42 @@ To get the autoscale application up and running look at the [Quick Start](#quick
 
 ### Container deployment
 
-Since this container uses [config-file](https://github.com/CAFapi/caf-common/tree/develop/config-file), the appropriate configuration files
-should either be mounted as a volume or injected into the sandbox via the use
-of Marathon URI template configuration. The following configuration resources
-are *required*:
+### Configuration
 
-- [MarathonAutoscaleConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/autoscale-container/example-configs/cfg_autoscaler_marathon_MarathonAutoscaleConfiguration)
-- [RabbitWorkloadAnalyserConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/autoscale-container/example-configs/cfg_autoscaler_marathon_RabbitWorkloadAnalyserConfiguration)
+Configuration of the AutoScaler is supported through the following environment variables:
 
-See the documentation for the Marathon autoscaler components and [autoscale-workload-rabbit](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-workload-rabbit) for details about these specific configuration
-resources.
+ - `CAF_MARATHON_URL`  
+    Default: `http://marathon:8080`  
+    Used to specify the Marathon API endpoint.  Alternatively `CAF_MARATHON_HOST` and `CAF_MARATHON_PORT` may instead by specified individually.
+
+ - `CAF_RABBITMQ_MGMT_URL`  
+    Default: `http://rabbitmq:15678`  
+    Used to specify the RabbitMQ Management API Endpoint.  Alternatively `CAF_RABBITMQ_HOST` and `CAF_RABBITMQ_MGMT_PORT` may instead by specified individually.
+
+ - `CAF_RABBITMQ_MGMT_USERNAME`  
+    Default: `guest`  
+    Used to specify the username used to connect to RabbitMQ.  If `CAF_RABBITMQ_MGMT_USERNAME` is not specified then `CAF_RABBITMQ_USERNAME` will also be checked before falling back to the default.
+
+ - `CAF_RABBITMQ_MGMT_PASSWORD`  
+    Default: `guest`  
+    Used to specify the password used to connect to RabbitMQ.  If `CAF_RABBITMQ_MGMT_PASSWORD` is not specified then `CAF_RABBITMQ_PASSWORD` will also be checked before falling back to the default.
+
+ - `CAF_AUTOSCALER_MARATHON_GROUP`  
+    Defaults to the group where the autoscaler itself is deployed  
+    Used to specify the Marathon group which the autoscaler is monitoring.  Only applications deployed directly or indirectly within this group are auto-scaled.
+
+ - `CAF_AUTOSCALER_SCALING_DELAY`  
+    Minimum: `1`  
+    Default: `10`  
+    Used to specify the number of queue statistics records that must be acquired sequentially before performing analysis upon them and issuing a scaling recommendation. This means the period in time between making scaling recommendations is the service interval multiplied by the scalingDelay. This number should be small enough to respond to varying load but big enough to avoid erratic behaviour.
+
+ - `CAF_AUTOSCALER_BACKLOG_GOAL`  
+    Default: `300`  
+    Used to specify the amount of time, in seconds, that we ideally want to complete the current backlog of messages in. This is effectively a quality of service parameter, where lower will trigger more aggressive scaling.
+
+ - `CAF_AUTOSCALER_MAXIMUM_INSTANCES`  
+    Default: `100`  
+    Used to specify the maximum number of instances that any worker can be scaled to.
 
 
 ### Health checks

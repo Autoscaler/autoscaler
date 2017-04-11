@@ -42,6 +42,10 @@
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.config</groupId>
+            <artifactId>config-decoder</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafapi.config</groupId>
             <artifactId>config-system</artifactId>
         </dependency>
         <dependency>

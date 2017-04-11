@@ -51,6 +51,10 @@
             <artifactId>${caf.config.impl}</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.github.cafapi.decoder</groupId>
+            <artifactId>decoder-js</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-core</artifactId>
             <version>${project.version}</version>
@@ -170,6 +174,10 @@
                                                 <includes>
                                                     <include>*.yaml</include>
                                                 </includes>
+                                            </fileSet>
+                                            <fileSet>
+                                                <directory>src/main/config</directory>
+                                                <outputDirectory>config</outputDirectory>
                                             </fileSet>
                                         </fileSets>
                                         <dependencySets>

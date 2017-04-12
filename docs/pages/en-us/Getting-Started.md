@@ -5,20 +5,20 @@ title: Getting Started
 
 # Getting Started
 
-The autoscaler's extensibile design facilitates integration with orchestration technologies such as Marathon, Docker Stack and Kubernetes. Out of the box the we provide an Autoscaler container for use with Marathon and RabbitMQ. When deployed this application monitors RabbitMQ queues and scales Marathon applications consuming from the queues.
+The Autoscaler's extensibile design facilitates integration with orchestration technologies such as Marathon, Docker Stack and Kubernetes. Out of the box the we provide an Autoscaler container for use with Marathon and RabbitMQ. When deployed this application monitors RabbitMQ queues and scales Marathon applications consuming from the queues.
 
 ## Deploying the Autoscaler on Marathon
 
-1. Download and extract the Marathon [deployment files](https://github.com/Autoscaler/autoscaler/archive/develop.zip).
+1. Download and extract the Marathon [deployment files](https://github.com/Autoscaler/autoscaler/archive/develop.zip)
 2. Open `marathon-files/cfg_demo_service_autoscaler_MarathonAutoscaleConfiguration`
 3. Set `endpoint` to the host and port for your Marathon installation.
-4. Open `marathon-files/cfg_demo_service_autoscaler_RabbitWorkloadAnalyserConfiguration`.
-5. Set `rabbitManagementEndpoint` to the host and port of your RabbitMQ Management console.
-6. Set the `rabbitManagementUser` and `rabbitManagementPassword` to the appropriate values for your RabbitMQ instance.
-7. Use curl to deploy the application to Marathon.
+4. Open `marathon-files/cfg_demo_service_autoscaler_RabbitWorkloadAnalyserConfiguration`
+5. Set `rabbitManagementEndpoint` to the host and port of your RabbitMQ Management console
+6. Set the `rabbitManagementUser` and `rabbitManagementPassword` to the appropriate values for your RabbitMQ instance
+7. Use curl to deploy the application to Marathon
 `curl -vX POST http://<marathon-host>:8080/v2/apps -d @marathon-autoscaler.json --header "Content-Type: application/json"`
 
-__Note that the uris listed in marathon-autoscaler.json must be accessible from the Mesos agent. See [Marathon Application Basics](http://mesosphere.github.io/marathon/docs/application-basics.html#using-resources-in-applications) for more information.__ 
+__Note that the URIs listed in marathon-autoscaler.json must be accessible from the Mesos agent. See [Marathon Application Basics](http://mesosphere.github.io/marathon/docs/application-basics.html#using-resources-in-applications) for more information.__ 
 
 ## The Autoscaler in Action
 

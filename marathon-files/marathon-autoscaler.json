@@ -31,9 +31,7 @@
         "timeoutSeconds": 20
     }],
     "labels": {
-        "MARATHON_SINGLE_INSTANCE_APP": "true",
-        "template.date": "2017-02-20",
-        "template.build": "1fe20a7"
+        "MARATHON_SINGLE_INSTANCE_APP": "true"
     },
     "fetch": [{
         "uri": "/marathon-files/cfg_demo_service_autoscaler_MarathonAutoscaleConfiguration"

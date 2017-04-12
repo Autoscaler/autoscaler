@@ -6,7 +6,7 @@
     "container": {
         "type": "DOCKER",
         "docker": {
-            "image": "rh7-artifactory.svs.hpeswlab.net:8444/caf/autoscale-marathon-rabbit:3.1.2-10",
+            "image": "autoscaler/autoscale-marathon-rabbit:1.0.0",
             "network": "BRIDGE",
             "portMappings": [{
                 "containerPort": 8081,
@@ -36,14 +36,9 @@
         "template.build": "1fe20a7"
     },
     "fetch": [{
-        "uri": "/vagrant/marathon-files/cfg_demo_service_autoscaler_MarathonAutoscaleConfiguration"
+        "uri": "/marathon-files/cfg_demo_service_autoscaler_MarathonAutoscaleConfiguration"
     }, {
-        "uri": "/vagrant/marathon-files/cfg_demo_service_autoscaler_RabbitWorkloadAnalyserConfiguration"
-    }, {
-        "uri": "/vagrant/marathon-files/docker.tar.gz",
-        "extract": true
-    }, {
-        "uri": "/vagrant/marathon-files/nossl.txt"
+        "uri": "/marathon-files/cfg_demo_service_autoscaler_RabbitWorkloadAnalyserConfiguration"
     }],
     "upgradeStrategy": {
         "minimumHealthCapacity": 0,

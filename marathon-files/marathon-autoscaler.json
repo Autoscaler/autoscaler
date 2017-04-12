@@ -1,0 +1,45 @@
+{
+    "id": "/demo/service/autoscaler",
+    "cpus": 0.1,
+    "mem": 512,
+    "instances": 1,
+    "container": {
+        "type": "DOCKER",
+        "docker": {
+            "image": "autoscaler/autoscale-marathon-rabbit:1.0.0",
+            "network": "BRIDGE",
+            "portMappings": [{
+                "containerPort": 8081,
+                "hostPort": 0,
+                "servicePort": 0,
+                "protocol": "tcp"
+            }],
+            "forcePullImage": true
+        }
+    },
+    "env": {
+        "_JAVA_OPTIONS": "-Xms256m -Xmx512m",
+        "CAF_CONFIG_PATH": "/mnt/mesos/sandbox"
+    },
+    "healthChecks": [{
+        "path": "/healthcheck",
+        "portIndex": 0,
+        "protocol": "HTTP",
+        "gracePeriodSeconds": 300,
+        "intervalSeconds": 120,
+        "maxConsecutiveFailures": 5,
+        "timeoutSeconds": 20
+    }],
+    "labels": {
+        "MARATHON_SINGLE_INSTANCE_APP": "true"
+    },
+    "fetch": [{
+        "uri": "/marathon-files/cfg_demo_service_autoscaler_MarathonAutoscaleConfiguration"
+    }, {
+        "uri": "/marathon-files/cfg_demo_service_autoscaler_RabbitWorkloadAnalyserConfiguration"
+    }],
+    "upgradeStrategy": {
+        "minimumHealthCapacity": 0,
+        "maximumOverCapacity": 0
+    }
+}

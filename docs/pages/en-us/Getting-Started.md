@@ -5,31 +5,32 @@ title: Getting Started
 
 # Getting Started
 
+The autoscaler's extensibile design facilitates integration with orchestration technologies such as Marathon, Docker Stack and Kubernetes. Out of the box the we provide an Autoscaler container for use with Marathon and RabbitMQ. When deployed this application monitors RabbitMQ queues and scales Marathon applications consuming from the queues.
+
 ## Deploying the Autoscaler on Marathon
 
-Marathon is a production grade container orchestration platform for Apache Mesos, and this is how to deploy the [Autoscaler](https://autoscaler.github.io/autoscaler) using curl request to marathon.
+1. Download and extract the Marathon [deployment files](https://github.com/Autoscaler/autoscaler/archive/develop.zip).
+2. Open `marathon-files/cfg_demo_service_autoscaler_MarathonAutoscaleConfiguration`
+3. Set `endpoint` to the host and port for your Marathon installation.
+4. Open `marathon-files/cfg_demo_service_autoscaler_RabbitWorkloadAnalyserConfiguration`.
+5. Set `rabbitManagementEndpoint` to the host and port of your RabbitMQ Management console.
+6. Set the `rabbitManagementUser` and `rabbitManagementPassword` to the appropriate values for your RabbitMQ instance.
+7. Use curl to deploy the application to Marathon.
+`curl -vX POST http://<marathon-host>:8080/v2/apps -d @marathon-autoscaler.json --header "Content-Type: application/json"`
 
-If you have done a `git clone https://github.com/jobservice/job-service` then you will see a `marathon-files` folder in the repo.
-
-1. Run a command prompt and cd into the marathon-files folder.
-2. If you do not already have one, create a docker login tar `docker.tar.gz` which contains the docker information file. This file will contain docker login information allowing images to be downloaded.
-2. Run the following command: `curl -vX POST http://<marathon-host>:8080/v2/apps -d @marathon-autoscaler.json --header "Content-Type: application/json"`
-
-
+__Note that the uris listed in marathon-autoscaler.json must be accessible from the Mesos agent. See [Marathon Application Basics](http://mesosphere.github.io/marathon/docs/application-basics.html#using-resources-in-applications) for more information.__ 
 
 ## The Autoscaler in Action
 
-The Autoscaler can be observed functioning within Marathon. As more tasks are placed on the incoming Rabbit queue, the Autoscaler will create more instances of the required services in response to the demand. When the demand is complete, the Autoscaler scales down the instances that are no longer required.
+The Autoscaler will increase the number of instances for an associated Marathon application in response to the number of messages waiting to be processed on that application's queue. When the number of messages is reduced, the Autoscaler reduces the number of instances accordingly.
 
-Chateau already configures the Autoscaler for use through the **MarathonAutoscaleConfiguration** and **RabbitWorkloadAnalyserConfiguration** files.
-
-The [MarathonAutoscaleConfiguration](https://github.hpe.com/caf/chateau/blob/develop/services/autoscaler/configuration-files/cfg_%24%7Bmarathon-group%7D_%24%7Bservice-groupname%7D_autoscaler_MarathonAutoscaleConfiguration) file specifies properties relating to the Autoscaler within Marathon. It contains a number of properties:
+The [MarathonAutoscaleConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/marathon-files/cfg_demo_service_autoscaler_MarathonAutoscaleConfiguration) file specifies properties relating to the Autoscaler within Marathon. It contains a number of properties:
 
 `endpoint`: The fully qualified URL to the Marathon endpoint including port. Must not be null or empty. <br>
 `maximumInstances`: The absolute upper ceiling for a number of service instances. The minimum value is 1. <br>
 `groupId`: Comma-separated list of Group IDs in Marathon that the Autoscaler will monitor. All of the services in these groups and subsequent sub-groups will be monitored and autoscaled as necessary.
 
-The [RabbitWorkloadAnalyserConfiguration](https://github.hpe.com/caf/chateau/blob/develop/services/autoscaler/configuration-files/cfg_%24%7Bmarathon-group%7D_%24%7Bservice-groupname%7D_autoscaler_RabbitWorkloadAnalyserConfiguration) file configures a WorkloadAnalyser that uses the RabbitMQ management server to determine the workload of a service using a RabbitMQ queue. It contains the following properties:
+The [RabbitWorkloadAnalyserConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/marathon-files/cfg_demo_service_autoscaler_RabbitWorkloadAnalyserConfiguration) file configures a WorkloadAnalyser that uses the RabbitMQ management server to determine the workload of a service using a RabbitMQ queue. It contains the following properties:
 
 `rabbitManagementEndpoint`: A valid URL that is the HTTP endpoint of the RabbitMQ server. <br>
 `rabbitManagementUser`: The RabbitMQ management user, which is used for basic HTTP authentication. <br>
@@ -54,7 +55,7 @@ Services deployed by Marathon (such as Example-Worker) contain **labels** in the
 #### Label Definitions
 
 `autoscale.scalingtarget` - The RabbitMQ queue name to monitor <br>
-`autoscale.scalingprofile` - Can be an arbitrary string and has a default profile setting that must also be present in [RabbitWorkloadAnalyserConfiguration](https://github.hpe.com/caf/chateau/blob/develop/services/autoscaler/configuration-files/cfg_%24%7Bmarathon-group%7D_%24%7Bservice-groupname%7D_autoscaler_RabbitWorkloadAnalyserConfiguration). <br>
+`autoscale.scalingprofile` - Can be an arbitrary string and has a default profile setting that must also be present in [RabbitWorkloadAnalyserConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/marathon-files/cfg_demo_service_autoscaler_RabbitWorkloadAnalyserConfiguration). <br>
 `autoscale.mininstances`: The minimum number of instances a worker can have, set as your level of resources and quality of service dictate<br>
 `autoscale.metric`: Dictates the scaling methodology used. This should be set to "rabbitmq". <br>
 `autoscale.maxinstances`: The maximum number of instances a worker can have; set as your level of resources and quality of service dictate.<br>
@@ -111,7 +112,7 @@ DEBUG [2016-10-27 15:20:57,663] com.hpe.caf.autoscale.core.ScalerThread: Workloa
 DEBUG [2016-10-27 15:20:57,687] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=0, publishRate=0.0, consumeRate=0.0}
 ```
 
-The number of incoming messages does not exceed the Autoscaler's set limit for when a new instance should be scaled up (determined by the properties scalingDelay and backlogGoal in [RabbitWorkloadAnalyserConfiguration](https://github.hpe.com/caf/chateau/blob/develop/services/autoscaler/configuration-files/cfg_%24%7Bmarathon-group%7D_%24%7Bservice-groupname%7D_autoscaler_RabbitWorkloadAnalyserConfiguration)). The single running instance will finish the work, as shown by the following logs from Example-Worker:
+The number of incoming messages does not exceed the Autoscaler's set limit for when a new instance should be scaled up (determined by the properties scalingDelay and backlogGoal in [RabbitWorkloadAnalyserConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/marathon-files/cfg_demo_service_autoscaler_RabbitWorkloadAnalyserConfiguration)). The single running instance will finish the work, as shown by the following logs from Example-Worker:
 <br>
 
 ```
@@ -228,12 +229,3 @@ DEBUG [2016-10-27 15:57:14,872] com.hpe.caf.autoscale.core.ScalerThread: Workloa
 DEBUG [2016-10-27 15:57:14,894] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=76, publishRate=0.0, consumeRate=0.8}
 ```
 
-
-
-
-
-## Links
-
-For more information on Chateau, go [here](https://github.hpe.com/caf/chateau).
-
-For more information on Autoscaler templates and configuration and property files, see [here](https://github.hpe.com/caf/chateau/blob/develop/services/autoscaler/README.md).

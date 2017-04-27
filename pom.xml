@@ -73,6 +73,7 @@
     </developers>
 
     <modules>
+        <module>docs</module>
         <module>autoscale-api</module>
         <module>autoscale-core</module>
         <module>autoscale-container</module>

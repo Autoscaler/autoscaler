@@ -129,9 +129,6 @@
                         <goals>
                             <goal>push</goal>
                         </goals>
-                        <configuration>
-                            <image>autoscale-container</image>
-                        </configuration>
                     </execution>
                 </executions>
                 <configuration>

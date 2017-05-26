@@ -70,6 +70,11 @@
             <name>Connor Mulholland</name>
             <email>connor.mulholland@hpe.com</email>
         </developer>
+        <developer>
+            <id>trevorgetty</id>
+            <name>Trevor Getty</name>
+            <email>trevor.getty@hpe.com</email>
+        </developer>
     </developers>
 
     <modules>
@@ -77,10 +82,14 @@
         <module>autoscale-api</module>
         <module>autoscale-core</module>
         <module>autoscale-container</module>
+        <module>autoscale-docker-swarm-shared</module>
+        <module>autoscale-docker-swarm-container</module>
         <module>autoscale-marathon-shared</module>
-        <module>autoscale-workload-rabbit</module>
+        <module>autoscale-scaler-docker-swarm</module>
         <module>autoscale-scaler-marathon</module>
-        <module>autoscale-source-marathon</module>
+        <module>autoscale-source-docker-swarm</module>
+        <module>autoscale-source-marathon</module>        
+        <module>autoscale-workload-rabbit</module>       
     </modules>
 
     <scm>

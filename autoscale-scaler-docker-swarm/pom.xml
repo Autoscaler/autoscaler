@@ -27,6 +27,10 @@
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-scaler-docker-swarm</artifactId>
     
+    <properties>
+        <skipITs>true</skipITs>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>com.github.cafapi</groupId>
@@ -42,10 +46,6 @@
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-docker-swarm-shared</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -67,23 +67,6 @@
             <scope>test</scope>
         </dependency>
 
-        
-        <!-- TREV TODO Decide on json simple or jackson for json serialization ? -->
-<!--        <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
-            <type>jar</type>
-        </dependency>-->
-        
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-            <version>2.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
+       
     </dependencies>    
 </project>

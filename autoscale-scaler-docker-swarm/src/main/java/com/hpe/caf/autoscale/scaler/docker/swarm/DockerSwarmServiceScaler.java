@@ -20,8 +20,8 @@ import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ServiceScaler;
-import com.hpe.caf.autoscale.scaler.endpoint.docker.DockerSwarm;
-import com.hpe.caf.autoscale.scaler.endpoint.HttpClientException;
+import com.hpe.caf.autoscale.endpoint.docker.DockerSwarm;
+import com.hpe.caf.autoscale.endpoint.HttpClientException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  */
 public class DockerSwarmServiceScaler implements ServiceScaler
 {
-    private DockerSwarm dockerClient;
+    private final DockerSwarm dockerClient;
     private final int maximumInstances;
     private final URL url;
     private static final Logger LOG = LoggerFactory.getLogger(ServiceScaler.class);

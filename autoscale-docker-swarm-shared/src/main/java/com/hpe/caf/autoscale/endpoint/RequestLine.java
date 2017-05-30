@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.autoscale.scaler.endpoint;
+package com.hpe.caf.autoscale.endpoint;
 
 import static java.lang.annotation.ElementType.METHOD;
 import java.lang.annotation.Inherited;

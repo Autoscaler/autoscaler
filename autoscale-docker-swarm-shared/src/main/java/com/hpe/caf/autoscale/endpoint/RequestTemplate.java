@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.autoscale.scaler.endpoint;
+package com.hpe.caf.autoscale.endpoint;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -44,24 +44,6 @@ public class RequestTemplate
         this.requestUrl = requestUrl;
 
         validateUrl();
-    }
-
-    private static String urlDecode(String arg)
-    {
-        try {
-            return URLDecoder.decode(arg, UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static String urlEncode(Object arg)
-    {
-        try {
-            return URLEncoder.encode(String.valueOf(arg), UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public String getRequestUrl()
@@ -95,7 +77,26 @@ public class RequestTemplate
     {
         this.parameters = parameters;
     }
+    
+    public static String urlDecode(String arg)
+    {
+        try {
+            return URLDecoder.decode(arg, UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    public static String urlEncode(Object arg)
+    {
+        try {
+            return URLEncoder.encode(String.valueOf(arg), UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    
     private void validateUrl()
     {
         if (requestUrl == null || requestUrl.isEmpty()) {

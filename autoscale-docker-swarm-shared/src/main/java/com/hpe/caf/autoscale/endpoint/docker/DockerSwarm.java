@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.autoscale.scaler.endpoint.docker;
+package com.hpe.caf.autoscale.endpoint.docker;
 
-import com.hpe.caf.autoscale.scaler.endpoint.HttpClientException;
-import com.hpe.caf.autoscale.scaler.endpoint.HttpClientSupport.ObjectList;
-import com.hpe.caf.autoscale.scaler.endpoint.HttpClientSupport.TypedList;
-import com.hpe.caf.autoscale.scaler.endpoint.Param;
+import com.hpe.caf.autoscale.endpoint.HttpClientException;
+import com.hpe.caf.autoscale.endpoint.HttpClientSupport.ObjectList;
+import com.hpe.caf.autoscale.endpoint.HttpClientSupport.TypedList;
+import com.hpe.caf.autoscale.endpoint.Param;
 import com.jayway.jsonpath.DocumentContext;
 
 /**
@@ -35,7 +35,17 @@ public interface DockerSwarm {
     /**
      * Return a filtered list of services.
      * @param filters
+     * @return 
      * @throws HttpClientException 
      */
-    public void getServicesFiltered(@Param("filters") String filters) throws HttpClientException;
+    public DocumentContext getServicesFiltered(@Param("filters") final String filters) throws HttpClientException;
+    
+    /**
+     * Supporting method, to allow consumers to build up a simple filters String for querying a specific service list by its stack.
+     * @param filterByType
+     * @param filterKeyName
+     * @param filterKeyValue
+     * @return 
+     */
+    public String buildServiceFilter(final String filterByType, final String filterKeyName, final String filterKeyValue);    
 }

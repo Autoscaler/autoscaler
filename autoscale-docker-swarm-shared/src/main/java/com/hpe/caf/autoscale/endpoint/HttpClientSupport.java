@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.autoscale.scaler.endpoint;
+package com.hpe.caf.autoscale.endpoint;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +32,8 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
@@ -41,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Support class, which allows people to easily construct and issue REST based requests to an endpoing.
- * 
+ *
  */
 public class HttpClientSupport
 {
@@ -58,11 +60,11 @@ public class HttpClientSupport
     {
     }
 
-    public HttpClientSupport(final URL endpoint, final URL proxyEndpoint ) throws HttpClientException
+    public HttpClientSupport(final URL endpoint, final URL proxyEndpoint) throws HttpClientException
     {
         Objects.requireNonNull(endpoint);
         url = endpoint;
-        
+
         builder = HttpClientBuilder.create();
 
         try {
@@ -94,7 +96,17 @@ public class HttpClientSupport
     public <T> T getRequest(final RequestTemplate request, Class<T> responseType) throws HttpClientException
     {
         try (CloseableHttpClient client = builder.build()) {
-            HttpGet get = new HttpGet(url + request.getRequestUrl());
+
+            // use the uriBuilder, to create the HttpGetRequest with the query string correctly encoded.
+            URIBuilder uriBuilder = new URIBuilder(url + request.getRequestUrl());
+
+            if (!request.getParameters().isEmpty()) {
+                for (NameValuePair param : request.getParameters()) {
+                    uriBuilder.setParameter(param.getName(), param.getValue());
+                }
+            }
+            
+            HttpGet get = new HttpGet(uriBuilder.build());
 
             if (!request.getHeaders().isEmpty()) {
                 for (NameValuePair header : request.getHeaders()) {
@@ -135,7 +147,6 @@ public class HttpClientSupport
                     }
                 }
 
-                
                 try {
                     return JsonSerialization.readValue(content, responseType);
                 } catch (IOException e) {
@@ -151,42 +162,9 @@ public class HttpClientSupport
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException(ex);
         }
 
     }
-//
-//    private void testParsers(String content) throws HttpClientException
-//    {
-//        // json-simple ( json parser with simple .get operations, fast...
-//        JSONParser parser = new JSONParser();
-//        try {
-//            Object parseObj = parser.parse(content);
-//            // Now what is it -> JsonArray / JsonObj ?
-//            if (parseObj instanceof JSONArray) {
-//                JSONArray jsonArray = (JSONArray) parseObj;
-//                System.out.println("Got the jsonArray: " + jsonArray);
-//                JSONObject objWithID = (JSONObject) jsonArray.get(0);
-//                Object id = objWithID.get("ID");
-//            } else if (parseObj instanceof JSONObject) {
-//                JSONObject jsonObj = (JSONObject) parseObj;
-//                System.out.println("Got the jsonObject: " + jsonObj);
-//                // try query for number / id.
-//            }
-//            
-//            // use this instead of Jackson?
-//        } catch (ParseException ex) {
-//            LOG.debug("IOException during http request, response contains text: {%s}", content);
-//            throw new HttpClientException("Failed to parse the response into JSON.", ex);
-//        }
-//        
-//        // jayway jsonPath using google default JsonProvider which is v quick ( under Apache license )
-//        DocumentContext document = JsonPath.parse(content);
-//        List<String> ids = document.read("$..ID");
-//        Object jsonObj = document.json();
-//        if ( jsonObj instanceof JSONArray )
-//        {
-//            JSONArray arrayNodes = ((JSONArray) jsonObj);
-//            long numElements = arrayNodes.size();
-//        }
-//    }
 }

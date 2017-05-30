@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.autoscale.scaler.endpoint;
+package com.hpe.caf.autoscale.endpoint;
 
 import static java.lang.annotation.ElementType.PARAMETER;
 import java.lang.annotation.Retention;
@@ -29,30 +29,7 @@ public @interface Param
 
     /**
      * The name of the template parameter.
+     * @return 
      */
     String value();
-
-    /**
-     * How to expand the value of this parameter, if {@link ToStringExpander} isn't adequate.
-     */
-    Class<? extends Expander> expander() default ToStringExpander.class;
-
-    interface Expander
-    {
-
-        /**
-         * Expands the value into a string. Does not accept or return null.
-         */
-        String expand(Object value);
-    }
-
-    final class ToStringExpander implements Expander
-    {
-
-        @Override
-        public String expand(Object value)
-        {
-            return value.toString();
-        }
-    }
 }

@@ -13,34 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.autoscale.scaler.docker.swarm;
+package com.hpe.caf.autoscale.source.docker.swarm;
 
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.api.autoscale.ScalerException;
-import com.hpe.caf.api.autoscale.ServiceScaler;
-import com.hpe.caf.api.autoscale.ServiceScalerProvider;
+import com.hpe.caf.api.autoscale.ServiceSource;
+import com.hpe.caf.api.autoscale.ServiceSourceProvider;
 import com.hpe.caf.autoscale.DockerSwarmAutoscaleConfiguration;
 import com.hpe.caf.autoscale.endpoint.docker.DockerSwarm;
 import com.hpe.caf.autoscale.endpoint.docker.DockerSwarmClient;
+import com.hpe.caf.naming.ServicePath;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class DockerSwarmServiceScalerProvider implements ServiceScalerProvider
+public class DockerSwarmServiceSourceProvider implements ServiceSourceProvider
 {
+
     @Override
-    public ServiceScaler getServiceScaler(final ConfigurationSource configurationSource)
+    public ServiceSource getServiceSource(final ConfigurationSource configurationSource, final ServicePath servicePath)
         throws ScalerException
     {
         try {
             final DockerSwarmAutoscaleConfiguration config = configurationSource.getConfiguration(DockerSwarmAutoscaleConfiguration.class);
-            final DockerSwarm dockerClient = DockerSwarmClient.getInstance(config);            
+            final DockerSwarm dockerClient = DockerSwarmClient.getInstance(config);
             final URL url = new URL(config.getEndpoint());
-            
-            return new DockerSwarmServiceScaler(dockerClient, config.getMaximumInstances(), url);
+            final String stackId = getStackId(config, servicePath);
+
+            return new DockerSwarmServiceSource(dockerClient, stackId, url);
         } catch (ConfigurationException | MalformedURLException e) {
-            throw new ScalerException("Failed to create service scaler", e);
+            throw new ScalerException("Failed to create service source", e);
         }
+    }
+
+    /**
+     * Gets the stackId from configuration, if no valid configuration given, decision was taken to error out and not to look through
+     * all stacks deployed on the swarm.
+     */
+    private static String getStackId(final DockerSwarmAutoscaleConfiguration config, final ServicePath servicePath) throws ConfigurationException
+    {
+        final String stackPath = config.getStackId();
+
+        if (stackPath == null || stackPath.isEmpty() ) {
+            throw new ConfigurationException("Invalid configuration, no valid autoscaler stack identifier has been specified for scaling.");
+        }
+        return stackPath;
     }
 }

@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.autoscale.scaler.docker.swarm;
+package com.hpe.caf.autoscale.shared.docker.swarm;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Utf8;
 import com.hpe.caf.autoscale.DockerSwarmAutoscaleConfiguration;
 import com.hpe.caf.codec.JsonCodec;
-import com.hpe.caf.codec.ObjectMapperFactory;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

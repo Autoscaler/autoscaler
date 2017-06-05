@@ -53,7 +53,7 @@ public class DeveloperEndpointIT
         DockerSwarm dockerClient = buildDockerSwarmClient();
         DockerSwarmAutoscaleConfiguration config = buildDockerConfiguration();
 
-        DockerSwarmServiceSource source = new DockerSwarmServiceSource(dockerClient, config.getStackId(), new URL(config.getEndpoint()));
+        DockerSwarmServiceSource source = new DockerSwarmServiceSource(config, new URL(config.getEndpoint()));
 
         Set<ScalingConfiguration> scalingItems = source.getServices();
 

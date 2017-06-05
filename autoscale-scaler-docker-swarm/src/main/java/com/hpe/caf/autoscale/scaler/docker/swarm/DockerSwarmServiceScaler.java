@@ -22,12 +22,11 @@ import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ServiceScaler;
+import com.hpe.caf.autoscale.DockerSwarmAutoscaleConfiguration;
 import com.hpe.caf.autoscale.endpoint.docker.DockerSwarm;
 import com.hpe.caf.autoscale.endpoint.HttpClientException;
 import com.hpe.caf.autoscale.endpoint.docker.DockerSwarmService;
-import com.hpe.caf.autoscale.json.JsonPathQueryAssistance;
 import static com.hpe.caf.autoscale.json.JsonPathQueryAssistance.queryForValueAsInteger;
-import static com.hpe.caf.autoscale.json.JsonPathQueryAssistance.queryForValueAsString;
 import com.jayway.jsonpath.DocumentContext;
 
 import org.slf4j.Logger;
@@ -39,7 +38,6 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Objects;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * A ServiceScaler uses a Docker Java client library to make calls to a Docker Swarm server to trigger scaling of a service, and return
@@ -50,12 +48,15 @@ public class DockerSwarmServiceScaler implements ServiceScaler
     private final DockerSwarm dockerClient;
     private final int maximumInstances;
     private final URL url;
+    private final DockerSwarmAutoscaleConfiguration config;
+    
     private static final Logger LOG = LoggerFactory.getLogger(ServiceScaler.class);
 
-    public DockerSwarmServiceScaler(final DockerSwarm dockerClient, final int maxInstances, final URL url)
+    public DockerSwarmServiceScaler(final DockerSwarm dockerClient, final DockerSwarmAutoscaleConfiguration config, final URL url)
     {
         this.dockerClient = Objects.requireNonNull(dockerClient);
-        maximumInstances = Math.max(1, maxInstances);
+        this.config = Objects.requireNonNull(config);
+        this.maximumInstances = Math.max(1, config.getMaximumInstances());
         this.url = Objects.requireNonNull(url);
     }
 
@@ -197,7 +198,7 @@ public class DockerSwarmServiceScaler implements ServiceScaler
     {
         // TREV TODO -> Check HTTPS comms with this.
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(url.getHost(), url.getPort()), 5000);
+            socket.connect(new InetSocketAddress(url.getHost(), url.getPort()), Integer.valueOf(config.getHealthCheckTimeoutInSecs().toString())* 1000);
             return HealthResult.RESULT_HEALTHY;
         } catch (IOException e) {
             LOG.warn("Connection failure to HTTP endpoint", e);

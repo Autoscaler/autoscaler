@@ -20,9 +20,11 @@ import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import com.hpe.caf.api.autoscale.ServiceSource;
+import com.hpe.caf.autoscale.DockerSwarmAutoscaleConfiguration;
 import com.hpe.caf.autoscale.endpoint.HttpClientException;
 import com.hpe.caf.autoscale.endpoint.docker.DockerSwarm;
 import com.hpe.caf.autoscale.endpoint.docker.DockerSwarmApp;
+import com.hpe.caf.autoscale.endpoint.docker.DockerSwarmClient;
 import com.hpe.caf.autoscale.endpoint.docker.DockerSwarmFilters;
 import static com.hpe.caf.autoscale.endpoint.docker.DockerSwarmFilters.buildServiceFilter;
 import com.jayway.jsonpath.DocumentContext;
@@ -51,13 +53,17 @@ public class DockerSwarmServiceSource implements ServiceSource
     private final DockerSwarm dockerSwarm;
     private final URL url;
     private final String stackPath;
+    private final DockerSwarmAutoscaleConfiguration config;
     private static final Logger LOG = LoggerFactory.getLogger(DockerSwarmServiceSource.class);
 
-    public DockerSwarmServiceSource(final DockerSwarm dockerSwarm, final String stackPath, final URL url)
+    public DockerSwarmServiceSource(final DockerSwarmAutoscaleConfiguration config, final URL url)
     {
-        this.stackPath = Objects.requireNonNull(stackPath);
+        this.config = Objects.requireNonNull(config);
+        this.dockerSwarm = DockerSwarmClient.getInstance(config);
+        Objects.requireNonNull(dockerSwarm);
+        
+        this.stackPath = Objects.requireNonNull(config.getStackId());
         this.url = Objects.requireNonNull(url);
-        this.dockerSwarm = Objects.requireNonNull(dockerSwarm);
     }
 
     /**
@@ -207,7 +213,7 @@ public class DockerSwarmServiceSource implements ServiceSource
     public HealthResult healthCheck()
     {
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(url.getHost(), url.getPort()), 5000);
+            socket.connect(new InetSocketAddress(url.getHost(), url.getPort()), Integer.valueOf(config.getHealthCheckTimeoutInSecs().toString())*1000);
             return HealthResult.RESULT_HEALTHY;
         } catch (IOException e) {
             LOG.warn("Connection failure to HTTP endpoint", e);

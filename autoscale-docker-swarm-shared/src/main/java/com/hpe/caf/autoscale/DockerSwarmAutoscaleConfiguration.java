@@ -45,6 +45,13 @@ public class DockerSwarmAutoscaleConfiguration
     private Long timeoutInSecs;
 
     /**
+     * The timeout to be used by the healthcheck when communicating with the docker swarm endpoint
+     */
+    @NotNull
+    @Min(1)
+    private Long healthCheckTimeoutInSecs;
+
+    /**
      * Whether to use HTTPS certificate for endpoint communication.
      */
     @NotNull
@@ -118,6 +125,16 @@ public class DockerSwarmAutoscaleConfiguration
     public void setTimeoutInSecs(Long timeoutInSecs)
     {
         this.timeoutInSecs = timeoutInSecs;
+    }
+
+    public Long getHealthCheckTimeoutInSecs()
+    {
+        return healthCheckTimeoutInSecs;
+    }
+
+    public void setHealthCheckTimeoutInSecs(Long healthCheckTimeoutInSecs)
+    {
+        this.healthCheckTimeoutInSecs = healthCheckTimeoutInSecs;
     }
 
     public Boolean getTlsVerify()

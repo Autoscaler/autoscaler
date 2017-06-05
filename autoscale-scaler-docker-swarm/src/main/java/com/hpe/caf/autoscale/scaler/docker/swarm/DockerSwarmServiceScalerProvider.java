@@ -38,7 +38,7 @@ public class DockerSwarmServiceScalerProvider implements ServiceScalerProvider
             final DockerSwarm dockerClient = DockerSwarmClient.getInstance(config);            
             final URL url = new URL(config.getEndpoint());
             
-            return new DockerSwarmServiceScaler(dockerClient, config.getMaximumInstances(), url);
+            return new DockerSwarmServiceScaler(dockerClient, config, url);
         } catch (ConfigurationException | MalformedURLException e) {
             throw new ScalerException("Failed to create service scaler", e);
         }

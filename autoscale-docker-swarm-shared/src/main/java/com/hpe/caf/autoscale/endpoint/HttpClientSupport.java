@@ -62,7 +62,7 @@ public class HttpClientSupport
         builder = HttpClientBuilder.create();
 
         try {
-            // if we have a proxy setup in configuration then use it for our communication with docker.
+            // if we have a proxy setup in configuration then use it for our communication with endpoint.
             if (proxyEndpoint != null && proxyEndpoint.toURI() != null) {
                 builder.setProxy(HttpHost.create(proxyEndpoint.toString()));
             }

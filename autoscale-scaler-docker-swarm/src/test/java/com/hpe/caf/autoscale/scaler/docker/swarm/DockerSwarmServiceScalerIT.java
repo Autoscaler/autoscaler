@@ -79,7 +79,7 @@ public class DockerSwarmServiceScalerIT
         DockerSwarm dockerClient = buildDockerSwarmClient();
         DockerSwarmAutoscaleConfiguration config = buildDockerConfiguration();
 
-        DockerSwarmServiceScaler scaler = new DockerSwarmServiceScaler(dockerClient, config.getMaximumInstances(), new URL(
+        DockerSwarmServiceScaler scaler = new DockerSwarmServiceScaler(dockerClient, config, new URL(
                                                                        config.getEndpoint()));
         Assert.assertNotNull(scaler);
 
@@ -102,7 +102,7 @@ public class DockerSwarmServiceScalerIT
         DockerSwarm dockerClient = buildDockerSwarmClient();
         DockerSwarmAutoscaleConfiguration config = buildDockerConfiguration();
 
-        DockerSwarmServiceScaler scaler = new DockerSwarmServiceScaler(dockerClient, config.getMaximumInstances(), new URL(
+        DockerSwarmServiceScaler scaler = new DockerSwarmServiceScaler(dockerClient, config, new URL(
                                                                        config.getEndpoint()));
         Assert.assertNotNull(scaler);
 
@@ -129,7 +129,7 @@ public class DockerSwarmServiceScalerIT
         DockerSwarm dockerClient = buildDockerSwarmClient();
         DockerSwarmAutoscaleConfiguration config = buildDockerConfiguration();
 
-        DockerSwarmServiceScaler scaler = new DockerSwarmServiceScaler(dockerClient, config.getMaximumInstances(), new URL(
+        DockerSwarmServiceScaler scaler = new DockerSwarmServiceScaler(dockerClient, config, new URL(
                                                                        config.getEndpoint()));
         Assert.assertNotNull(scaler);
 

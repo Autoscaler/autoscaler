@@ -21,8 +21,6 @@ import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ServiceSource;
 import com.hpe.caf.api.autoscale.ServiceSourceProvider;
 import com.hpe.caf.autoscale.DockerSwarmAutoscaleConfiguration;
-import com.hpe.caf.autoscale.endpoint.docker.DockerSwarm;
-import com.hpe.caf.autoscale.endpoint.docker.DockerSwarmClient;
 import com.hpe.caf.naming.ServicePath;
 
 import java.net.MalformedURLException;
@@ -37,11 +35,10 @@ public class DockerSwarmServiceSourceProvider implements ServiceSourceProvider
     {
         try {
             final DockerSwarmAutoscaleConfiguration config = configurationSource.getConfiguration(DockerSwarmAutoscaleConfiguration.class);
-            final DockerSwarm dockerClient = DockerSwarmClient.getInstance(config);
             final URL url = new URL(config.getEndpoint());
             final String stackId = getStackId(config, servicePath);
 
-            return new DockerSwarmServiceSource(dockerClient, stackId, url);
+            return new DockerSwarmServiceSource(config,  url);
         } catch (ConfigurationException | MalformedURLException e) {
             throw new ScalerException("Failed to create service source", e);
         }
@@ -56,6 +53,7 @@ public class DockerSwarmServiceSourceProvider implements ServiceSourceProvider
         final String stackPath = config.getStackId();
 
         if (stackPath == null || stackPath.isEmpty() ) {
+            // TREV TODO Check should we fallback to service path - discussion still happening
             throw new ConfigurationException("Invalid configuration, no valid autoscaler stack identifier has been specified for scaling.");
         }
         return stackPath;

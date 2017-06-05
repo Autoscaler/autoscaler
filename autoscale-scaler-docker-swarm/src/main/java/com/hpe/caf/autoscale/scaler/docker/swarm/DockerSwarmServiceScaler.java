@@ -15,6 +15,8 @@
  */
 package com.hpe.caf.autoscale.scaler.docker.swarm;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hpe.caf.api.HealthResult;
 import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.InstanceInfo;
@@ -22,6 +24,11 @@ import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.autoscale.endpoint.docker.DockerSwarm;
 import com.hpe.caf.autoscale.endpoint.HttpClientException;
+import com.hpe.caf.autoscale.endpoint.docker.DockerSwarmService;
+import com.hpe.caf.autoscale.json.JsonPathQueryAssistance;
+import static com.hpe.caf.autoscale.json.JsonPathQueryAssistance.queryForValueAsInteger;
+import static com.hpe.caf.autoscale.json.JsonPathQueryAssistance.queryForValueAsString;
+import com.jayway.jsonpath.DocumentContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +37,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -56,21 +64,78 @@ public class DockerSwarmServiceScaler implements ServiceScaler
         throws ScalerException
     {
         try {
-//            GetAppResponse appGet = marathon.getApp(serviceReference);
-//            App app = appGet.getApp();
-//            int current = app.getTasksRunning() + app.getTasksStaged();
-//            int target = Math.min(maximumInstances, current + amount);
-//            if ( target > current ) {
-//                app.setInstances(Math.min(maximumInstances, app.getTasksRunning() + app.getTasksStaged() + amount));
-//                LOG.debug("Scaling service {} up by {} instances", serviceReference, amount);
-//                marathon.updateApp(serviceReference, app, true);
-//            }
 
+            DockerSwarmService serviceItem = getServiceAsObject(serviceReference);
+            InstanceInfo instanceInfo = serviceItem.getInstanceInformation();
 
-            throw new NotImplementedException();
-        } catch (HttpClientException e) {
-            throw new ScalerException("Failed to scale up service " + serviceReference, e);
+            int current = instanceInfo.getTotalInstances();
+            int target = Math.min(maximumInstances, current + amount);
+            if (target > current) {
+                LOG.debug("Scaling service {} up by {} instances to {} total replicas", serviceReference, amount, target);
+                scaleServiceInformation(serviceReference, target, serviceItem);
+            }
+
+        } catch (HttpClientException ex) {
+            throw new ScalerException("Failed to scale up service " + serviceReference, ex);
+        } catch (Exception ex) {
+            throw new ScalerException("Failed to scale up service " + serviceReference, ex);
         }
+    }
+
+    /**
+     * Change the service scaling information whether up or down, just give a requested amount of instances.
+     *
+     * @param serviceReference
+     * @param target
+     * @param serviceItem
+     * @return
+     * @throws JsonProcessingException
+     * @throws HttpClientException
+     * @throws Exception
+     */
+    private boolean scaleServiceInformation(final String serviceReference, int target, DockerSwarmService serviceItem)
+        throws JsonProcessingException, HttpClientException, Exception
+    {
+        // We want to get a hold of the entire JSON spec object in order to use it to then update the service
+        LinkedHashMap serviceObject = serviceItem.getServiceRepresentation();
+        if (!serviceObject.containsKey("Spec")) {
+            throw new Exception("Invalid service configuration desont' contain a Specification object.");
+        }
+        LinkedHashMap specObject = (LinkedHashMap) serviceObject.get("Spec");
+        // It must contain an existing specification.
+        Objects.requireNonNull(specObject);
+        final Integer version = queryForValueAsInteger(serviceItem, 1, "$..Version.Index");
+        Objects.requireNonNull(version, "No valid version information found for service: " + serviceReference);
+        /**
+         * update the replicas count to the new expected value, if any element in our json isn't there add it, as the default is
+         * replicated. Except where the type is Mode.global as this isn't scaleable.
+         */
+        if (!specObject.containsKey("Mode")) {
+            // it doesn't contain mode yet, so add it, default is replicated anyway.
+            specObject.put("Mode", new LinkedHashMap<>().put("Replicated", new LinkedHashMap<>()));
+        }
+        LinkedHashMap modeNode = (LinkedHashMap) specObject.get("Mode");
+        if (!modeNode.containsKey("Replicated")) {
+            // now if it doesn't contain replicated, check quickly if this is a global item, if so it can't be scaled,
+            // Check =>  should it be marked with maxInstances of 1 to prevent it entering here.
+            if (modeNode.containsKey("Global")) {
+                // exit now without scaling.
+                LOG.warn(
+                    "Service: {} is a global service and cannot be scaled beyond one singleton per swarm node, prevent warning by marking as maxInstances=1");
+                // TREV TODO should we error here instead?
+                return true;
+            }
+            modeNode.put("Replicated", new LinkedHashMap<>());
+        }
+        LinkedHashMap replicatedNode = (LinkedHashMap) modeNode.get("Replicated");
+        replicatedNode.replace("Replicas", target);
+        /**
+         * turn the replicated mode node into a JSON string to be supplied to the update method *
+         */
+        final String updateSpecification = new ObjectMapper().writeValueAsString(specObject);
+        LOG.debug("About to update sevice: {} version: {} with updated spec: {}", serviceReference, version, updateSpecification);
+        dockerClient.updateService(serviceReference, version, updateSpecification);
+        return false;
     }
 
     @Override
@@ -78,33 +143,45 @@ public class DockerSwarmServiceScaler implements ServiceScaler
         throws ScalerException
     {
         try {
-//            GetAppResponse appGet = marathon.getApp(serviceReference);
-//            App app = appGet.getApp();
-//            int current = app.getTasksRunning() + app.getTasksStaged();
-//            if ( current > 0 ) {
-//                app.setInstances(Math.max(0, current - amount));
-//                LOG.debug("Scaling service {} down by {} instances", serviceReference, amount);
-//                marathon.updateApp(serviceReference, app, true);
-//            }
-            throw new NotImplementedException();
-        } catch (HttpClientException e) {
-            throw new ScalerException("Failed to scale down service " + serviceReference, e);
+            DockerSwarmService serviceItem = getServiceAsObject(serviceReference);
+            InstanceInfo instanceInfo = serviceItem.getInstanceInformation();
+
+            int current = instanceInfo.getTotalInstances();
+            if (current == 0) {
+                // already at 0 instances, just leave.
+                return;
+            }
+
+            int target = Math.max(0, current - amount);
+            if (target >= current) {
+                return;
+            }
+
+            LOG.debug("Scaling service {} down by {} instances to {} total replicas", serviceReference, amount, target);
+            scaleServiceInformation(serviceReference, target, serviceItem);
+
+        } catch (HttpClientException ex) {
+            throw new ScalerException("Failed to scale down service " + serviceReference, ex);
+        } catch (Exception ex) {
+            throw new ScalerException("Failed to scale downservice " + serviceReference, ex);
         }
     }
 
+    /**
+     * Get information about the application specified by the service reference 'serviceId'
+     *
+     * @param serviceReference
+     * @return
+     * @throws ScalerException
+     */
     @Override
     public InstanceInfo getInstanceInfo(final String serviceReference)
         throws ScalerException
     {
         try {
-            throw new NotImplementedException();
-//            GetAppResponse appGet = marathon.getApp(serviceReference);
-//            Collection<ServiceHost> hosts = appGet.getApp()
-//                                                  .getTasks()
-//                                                  .stream()
-//                                                  .map(t -> new ServiceHost(t.getHost(), t.getPorts()))
-//                                                  .collect(Collectors.toCollection(LinkedList::new));
-//            return new InstanceInfo(appGet.getApp().getTasksRunning(), appGet.getApp().getTasksStaged(), hosts);
+            InstanceInfo instanceInfo = getServiceInstanceInfo(serviceReference);
+            LOG.trace("getInstanceInfo for serviceReference: {%s} returned \r\n getTotalInstances: ", instanceInfo.getTotalInstances());
+            return instanceInfo;
         } catch (HttpClientException e) {
             throw new ScalerException("Failed to get number of instances of " + serviceReference, e);
         }
@@ -126,5 +203,37 @@ public class DockerSwarmServiceScaler implements ServiceScaler
             LOG.warn("Connection failure to HTTP endpoint", e);
             return new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to REST endpoint: " + url);
         }
+    }
+
+    /**
+     * Get information about the specific service.
+     *
+     * @param serviceReference Service reference to be inspected
+     * @return InstanceInformation obtained about a given service.
+     * @throws ScalerException
+     */
+    private InstanceInfo getServiceInstanceInfo(final String serviceReference) throws ScalerException
+    {
+        try {
+            DockerSwarmService serviceItem = getServiceAsObject(serviceReference);
+            return serviceItem.getInstanceInformation();
+        } catch (Exception ex) {
+            throw new ScalerException(ex.getMessage(), ex);
+        }
+
+    }
+
+    private DockerSwarmService getServiceAsObject(final String serviceReference) throws ScalerException, HttpClientException
+    {
+        DocumentContext documentContext = dockerClient.getService(serviceReference);
+        LinkedHashMap serviceInformation = documentContext.json();
+        if (serviceInformation == null || serviceInformation.isEmpty()) {
+            // we have no valid service objects returned.
+            throw new ScalerException(
+                String.format("Failed to get correct service information for reference: %s.", serviceReference));
+        }
+
+        DockerSwarmService requestedService = new DockerSwarmService(documentContext, serviceInformation, serviceReference);
+        return requestedService;
     }
 }

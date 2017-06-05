@@ -16,6 +16,7 @@
 package com.hpe.caf.autoscale.endpoint.docker;
 
 import com.hpe.caf.autoscale.DockerSwarmAutoscaleConfiguration;
+import com.hpe.caf.autoscale.endpoint.Entity;
 import com.hpe.caf.autoscale.endpoint.HttpClientException;
 import com.hpe.caf.autoscale.endpoint.HttpClientSupport;
 import com.hpe.caf.autoscale.endpoint.Param;
@@ -30,10 +31,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.hpe.caf.autoscale.reflection.ReflectionAssistance.getCallingMethod;
+import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 
 /**
@@ -86,8 +92,9 @@ public class DockerSwarmClient implements DockerSwarm
     }
 
     /**
-     * *
+     *
      * Start REST implementations
+     *
      */
     /**
      * get a list of all services being run in the swarm.
@@ -116,19 +123,74 @@ public class DockerSwarmClient implements DockerSwarm
     }
 
     /**
+     * Return details of the specific service specified by the serviceId.
      *
-     * @param filterByType
-     * @param filterKeyName
-     * @param filterKeyValue
+     * @param serviceId
      * @return
+     * @throws HttpClientException
      */
     @Override
-    public String buildServiceFilter(final String filterByType, final String filterKeyName, final String filterKeyValue)
+    @RequestLine(responseType = DocumentContext.class, action = "GET", request = "/services/{serviceId}")
+    public DocumentContext getService(@Param("serviceId") final String serviceId) throws HttpClientException
     {
-        String filterByLabel = String.format("{\"%s\":{\"%s=%s\":true}}", filterByType, filterKeyName, filterKeyValue);
+        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class, serviceId);
+    }
 
-        LOG.trace("Built service filter: " + filterByLabel);
-        return filterByLabel;
+    /**
+     * Update / scale the specific service using the new specification given
+     *
+     * @param serviceId The service to update
+     * @param versionId The previous specification version that we are updating to prevent race conditions.
+     * @param serviceSpecification The new service specification
+     * @throws HttpClientException
+     */
+    @Override
+    @RequestLine(responseType = void.class, action = "POST", request = "/services/{serviceId}/update?version={versionId}")
+    public void updateService(@Param("serviceId") final String serviceId, @Param("versionId") final int versionId,
+                              @Entity("specification") final String serviceSpecification) throws HttpClientException
+    {
+        invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class, serviceId, versionId, serviceSpecification);
+    }
+
+    /**
+     * get a list of all tasks being run in the swarm.
+     *
+     * @return
+     * @throws HttpClientException
+     */
+    @Override
+    @RequestLine(responseType = DocumentContext.class, action = "GET", request = "/tasks")
+    public DocumentContext getTasks() throws HttpClientException
+    {
+        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class);
+    }
+
+    /**
+     * Get a list of tasks, filtered by some objects.
+     *
+     * @param filters
+     * @return
+     * @throws HttpClientException
+     */
+    @Override
+    @RequestLine(responseType = DocumentContext.class, action = "GET", request = "/tasks")
+    public DocumentContext getTasksFiltered(@Param("filters") final String filters) throws HttpClientException
+    {
+        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class, filters);
+    }
+
+    /**
+     * Return details of the specific task specified by the taskId.
+     *
+     * @param taskId
+     * @return
+     * @throws HttpClientException
+     */
+    @Override
+    @RequestLine(responseType = DocumentContext.class, action = "GET", request = "/tasks/{taskId}")
+    public DocumentContext getTask(@Param("taskId") final String taskId) throws HttpClientException
+    {
+        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class, taskId);
     }
 
     /**
@@ -138,20 +200,21 @@ public class DockerSwarmClient implements DockerSwarm
     private <T> T invokeAction(final Class<?> classToSearch, final Method callingMethod, Class<T> responseType,
                                final Object... requestParameterValues) throws InvalidParameterException, HttpClientException
     {
-        RequestLine requestLine = getRequestLineInformation(classToSearch, callingMethod);
-        List<NameValuePair> parameters = getRequestParameterInformation(classToSearch, callingMethod, requestParameterValues);
+        final RequestLine requestLine = getRequestLineInformation(classToSearch, callingMethod);
+        final List<NameValuePair> parameters = getRequestParameterInformation(classToSearch, callingMethod, requestParameterValues);
 
         RequestTemplate request = new RequestTemplate(requestLine.request());
         if (parameters != null && parameters.size() > 0) {
             request.setParameters(parameters);
         }
 
-        switch (requestLine.action()) {
-            case "GET":
-                return httpClient.getRequest(request, responseType);
-            default:
-                throw new HttpClientException("Invalid request action type: " + requestLine.action());
+        final HttpEntity httpEntity = getRequestEntityInformation(classToSearch, callingMethod, requestParameterValues);
+        if (httpEntity != null) {
+            request.setEntity(httpEntity);
         }
+
+        return httpClient.issueRequest(request, responseType, requestLine.action());
+
     }
 
     private List<NameValuePair> getRequestParameterInformation(final Class<?> classToSearch, final Method methodToSearch,
@@ -177,7 +240,7 @@ public class DockerSwarmClient implements DockerSwarm
             }
 
             String reqParamName = reqParamInfo.value();
-            if (currentParamIndex > requestParameterValues.length) {
+            if (requestParameterValues.length == 0 || currentParamIndex > requestParameterValues.length) {
                 throw new InvalidParameterException(
                     "Unable to find a match in the actual parameters supplied, for each parameter in the signature, namely item: " + reqParamName);
             }
@@ -195,6 +258,71 @@ public class DockerSwarmClient implements DockerSwarm
         }
 
         return requestParameters;
+    }
+
+    private HttpEntity getRequestEntityInformation(final Class<?> classToSearch, final Method methodToSearch,
+                                                   final Object... requestParameterValues) throws InvalidParameterException, HttpClientException
+    {
+        if (methodToSearch.getParameterCount() == 0) {
+            // no params on this object, return nothing.
+            return null;
+        }
+
+        List<NameValuePair> requestParameters = new ArrayList<>();
+
+        Parameter[] parameters = methodToSearch.getParameters();
+
+        for (Parameter param : parameters) {
+            // the correct parameter to be used as an entity will be marked with the Entity annotation.            
+            final Entity reqEntityInfo = param.getAnnotation(Entity.class);
+
+            if (reqEntityInfo == null) {
+                continue;
+            }
+
+            final String reqEntityName = reqEntityInfo.value();
+            
+            // obtain the current index of this parameter in the method var args list.
+            final int currentParamIndex = getPrivateField(param, "index");
+
+            if (requestParameterValues.length == 0 || currentParamIndex > requestParameterValues.length) {
+                throw new InvalidParameterException(
+                    "Unable to find a match in the actual parameters supplied, for each parameter in the signature, namely item: " + reqEntityName);
+            }
+
+            Object reqParamValue = requestParameterValues[currentParamIndex];
+            if (reqParamValue == null) {
+                // not sure what to about null as a request value, maybe pass word null?
+                // for now throwing, and can implement when needed.
+                throw new InvalidParameterException(
+                    "Unable to pass null parameter value for now unsupported see paramater name: " + reqEntityName);
+            }
+
+            // so now we have the name of the param, and the actual value of it, create the Entity object
+            return new StringEntity(reqParamValue.toString(), StandardCharsets.UTF_8);
+        }
+
+        return null;
+    }
+
+    private int getPrivateField(final Parameter param, final String paramName) throws HttpClientException, SecurityException
+    {
+        Field indexField;
+        try {
+            indexField = param.getClass().getDeclaredField(paramName);
+        } catch (NoSuchFieldException | SecurityException ex) {
+            LOG.error("error recieved while trying to find out the current parameter index", ex);
+            throw new HttpClientException("Unable to make the HttpRequest as we cannot find the required request entity information",
+                                          ex);
+        }
+        indexField.setAccessible(true);
+        try {
+            return (int) indexField.get(param);
+        } catch (IllegalArgumentException | IllegalAccessException ex) {
+            LOG.error("error recieved while trying to get access to current parameter index", ex);
+            throw new HttpClientException("Unable to make the HttpRequest as we cannot access the required request entity information",
+                                          ex);
+        }
     }
 
     private RequestLine getRequestLineInformation(final Class<?> classToSearch, final Method methodToSearch) throws InvalidParameterException

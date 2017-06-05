@@ -24,6 +24,7 @@ import com.hpe.caf.autoscale.endpoint.HttpClientException;
 import com.hpe.caf.autoscale.endpoint.docker.DockerSwarm;
 import com.hpe.caf.autoscale.endpoint.docker.DockerSwarmApp;
 import com.hpe.caf.autoscale.endpoint.docker.DockerSwarmFilters;
+import static com.hpe.caf.autoscale.endpoint.docker.DockerSwarmFilters.buildServiceFilter;
 import com.jayway.jsonpath.DocumentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,8 +130,8 @@ public class DockerSwarmServiceSource implements ServiceSource
         assert apps != null;
         assert stackId != null;
 
-        DocumentContext applicationsResponse = dockerSwarm.getServicesFiltered(dockerSwarm.buildServiceFilter(
-            DockerSwarmFilters.ServiceFilterByType.LABEL, DockerSwarmFilters.ServiceFilterKeys.DOCKER_STACK, stackId));
+        DocumentContext applicationsResponse = dockerSwarm.getServicesFiltered(buildServiceFilter(
+            DockerSwarmFilters.ServiceFilterByType.LABEL, DockerSwarmFilters.FilterLabelKeys.DOCKER_STACK, stackId));
 
         // query the list of all the apps, for all apps, that have a label autoscale.metric, in this way we know it is one we should
         // be interested in.        

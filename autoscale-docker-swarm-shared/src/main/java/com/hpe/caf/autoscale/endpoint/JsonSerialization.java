@@ -94,20 +94,7 @@ class JsonSerialization
             return (T) document.json();
         }
 
-        // it will probably fail, but try to get the reader to return it in expected type.
-        try {
-            // TREV TODO TIDY!
-//        Object object = document.read("$..*");
-//        LinkedList<Object> objects = document.read("$..*");
-
-            T coercedIt = document.json();
-            if (coercedIt != null) {
-                return (T) coercedIt;
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
+        // try to coerce the type     
         return (T) document.json();
     }
 

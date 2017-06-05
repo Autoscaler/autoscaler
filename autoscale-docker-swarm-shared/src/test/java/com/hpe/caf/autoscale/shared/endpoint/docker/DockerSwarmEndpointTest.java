@@ -1,4 +1,4 @@
-package com.hpe.caf.autoscale.shared.endpoint.docker.testing;
+package com.hpe.caf.autoscale.shared.endpoint.docker;
 
 /*
  * Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
@@ -40,7 +40,7 @@ import org.mockito.runners.MockitoJUnitRunner;
  * @author Trevor Getty <trevor.getty@hpe.com>
  */
 @RunWith(MockitoJUnitRunner.class)
-public class DeveloperEndpointTest
+public class DockerSwarmEndpointTest
 {
     @Mock
     DockerSwarm dockerClient;
@@ -56,7 +56,7 @@ public class DeveloperEndpointTest
             Mockito.when(dockerClient.getServices()).thenReturn(documentContext);
             
         } catch (IOException ex) {
-            Logger.getLogger(DeveloperEndpointTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DockerSwarmEndpointTest.class.getName()).log(Level.SEVERE, null, ex);
             throw new RuntimeException(ex);
         }
         
@@ -78,18 +78,6 @@ public class DeveloperEndpointTest
         // Try getting all ids.
         LinkedList<String> allIds = document.read("$..ID", LinkedList.class);
         Assert.assertTrue(allIds.size() > 0);
-        //Assert.assertTrue("Object list item, contains a field called ID", (LinkedHashMap)().containsKey("ID"));    
-    }
-
-
-    private DockerSwarm buildDockerSwarmClient()
-    {
-
-        DockerSwarmAutoscaleConfiguration config = new DockerSwarmAutoscaleConfiguration();
-        config.setEndpoint("http://192.168.56.10:2375");
-        config.setProxyEndpoint("http://getty5:8888");
-        config.setTimeoutInSecs(new Long(10));
-
-        return DockerSwarmClient.getInstance(config);
+        Assert.assertEquals("Service IDs match", "1go9020n17eyhufay1nbponlu", allIds.stream().findFirst().get());    
     }
 }

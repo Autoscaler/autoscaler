@@ -16,36 +16,75 @@
 package com.hpe.caf.autoscale.endpoint.docker;
 
 import com.hpe.caf.autoscale.endpoint.HttpClientException;
-import com.hpe.caf.autoscale.endpoint.HttpClientSupport.ObjectList;
-import com.hpe.caf.autoscale.endpoint.HttpClientSupport.TypedList;
 import com.hpe.caf.autoscale.endpoint.Param;
 import com.jayway.jsonpath.DocumentContext;
 
 /**
  * Interface describing the communication with the Docker Swarm REST endpoint.
  */
-public interface DockerSwarm {
+public interface DockerSwarm
+{
 
     /**
      * Return a list of services.
-     * @return 
+     *
+     * @return
      */
     public DocumentContext getServices() throws HttpClientException;
-    
+
     /**
      * Return a filtered list of services.
+     *
      * @param filters
-     * @return 
-     * @throws HttpClientException 
+     * @return
+     * @throws HttpClientException
      */
     public DocumentContext getServicesFiltered(@Param("filters") final String filters) throws HttpClientException;
+
+    /**
+     * Return details of the specific service specified by the serviceId.
+     *
+     * @param serviceId
+     * @return
+     * @throws HttpClientException
+     */
+    public DocumentContext getService(@Param("serviceId") final String serviceId) throws HttpClientException;
+
+    /**
+     * Update / scale the specific service using the new specification given
+     *
+     * @param serviceId The service to update
+     * @param versionId The previous specification version that we are updating to prevent race conditions.
+     * @param serviceSpecification The new service specification
+     * @throws HttpClientException
+     */
+    public void updateService(@Param("serviceId") final String serviceId, @Param("versionId") final int versionId,
+                              @Param("specification") final String serviceSpecification) throws HttpClientException;
+
     
     /**
-     * Supporting method, to allow consumers to build up a simple filters String for querying a specific service list by its stack.
-     * @param filterByType
-     * @param filterKeyName
-     * @param filterKeyValue
-     * @return 
+     * Return a list of tasks.
+     *
+     * @return
      */
-    public String buildServiceFilter(final String filterByType, final String filterKeyName, final String filterKeyValue);    
+    public DocumentContext getTasks() throws HttpClientException;
+
+    /**
+     * Return a filtered list of tasks by filters like service name, label e.g. stack name etc.
+     *
+     * @param filters
+     * @return
+     * @throws HttpClientException
+     */
+    public DocumentContext getTasksFiltered(@Param("filters") final String filters) throws HttpClientException;
+
+    /**
+     * Return details of the specific service specified by the serviceId.
+     *
+     * @param taskId
+     * @return
+     * @throws HttpClientException
+     */
+    public DocumentContext getTask(@Param("taskId") final String taskId) throws HttpClientException;
+    
 }

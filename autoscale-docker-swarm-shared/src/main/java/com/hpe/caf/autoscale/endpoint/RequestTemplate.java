@@ -22,6 +22,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
+import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 
 /**
@@ -29,11 +30,9 @@ import org.apache.http.NameValuePair;
  */
 public class RequestTemplate
 {
-
+    private HttpEntity entity = null;
     private Collection<NameValuePair> headers = new ArrayList<>();
-
     private Collection<NameValuePair> parameters = new ArrayList<>();
-
     private String requestUrl;
 
     public RequestTemplate(final String requestUrl)
@@ -46,16 +45,14 @@ public class RequestTemplate
         validateUrl();
     }
 
-    public String getRequestUrl()
+    public HttpEntity getEntity()
     {
-        return requestUrl;
+        return entity;
     }
 
-    public void setRequestUrl(String requestUrl)
+    public void setEntity(HttpEntity entity)
     {
-        this.requestUrl = requestUrl;
-
-        validateUrl();
+        this.entity = entity;
     }
 
     public Collection<NameValuePair> getHeaders()
@@ -77,7 +74,19 @@ public class RequestTemplate
     {
         this.parameters = parameters;
     }
-    
+
+    public String getRequestUrl()
+    {
+        return requestUrl;
+    }
+
+    public void setRequestUrl(String requestUrl)
+    {
+        this.requestUrl = requestUrl;
+
+        validateUrl();
+    }
+
     public static String urlDecode(String arg)
     {
         try {
@@ -96,7 +105,6 @@ public class RequestTemplate
         }
     }
 
-    
     private void validateUrl()
     {
         if (requestUrl == null || requestUrl.isEmpty()) {

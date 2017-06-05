@@ -28,7 +28,7 @@
     <artifactId>autoscale-source-docker-swarm</artifactId>
     
     <properties>
-        <skipTests>true</skipTests>
+        <skipITs>true</skipITs>
     </properties>
     
     <dependencies>

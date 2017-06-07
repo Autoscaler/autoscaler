@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 ({
-    endpoint: getenv("CAF_DOCKER_SWARM_ENDPOINT")
-            || ("http://" + (getenv("CAF_DOCKER_SWARM_HOST") || "localhost") + ":" + (getenv("CAF_DOCKER_SWARM_PORT") || "2375")),
+    endpoint: getenv("DOCKER_HOST")
+            || ("unix:///var/run/docker.sock"),
     maximumInstances: getenv("CAF_AUTOSCALER_MAXIMUM_INSTANCES") || 100,
     groupId: getenv("CAF_AUTOSCALER_DOCKER_SWARM_STACK") || undefined,
-    timeoutInSecs: getenv("CAF_DOCKER_SWARM_ENDPOINT_TIMEOUT_SECS") || 5,
-    healthCheckTimeoutInSecs: getenv("CAF_DOCKER_SWARM_HEALTHCHECK_TIMEOUT_SECS") || 5,
-    
-    /* optional debugging on endpoint communication */
-    proxyEndpoint: getenv("CAF_DOCKER_SWARM_ENDPOINT_PROXY"),
+    timeoutInSecs: getenv("CAF_DOCKER_SWARM_TIMEOUT") || 5,
+    healthCheckTimeoutInSecs: getenv("CAF_DOCKER_SWARM_HEALTHCHECK_TIMEOUT") || 5,
     
     /** optional https settings **/
-    tlsVerify: getenv("CAF_DOCKER_SWARM_TLS_VERIFY") || false,
-    certificatePath: getenv("CAF_DOCKER_SWARM_TLS_CERT_PATH") || undefined
+    tlsVerify: getenv("DOCKER_TLS_VERIFY") || false,
+    certificatePath: getenv("DOCKER_CERT_PATH") || undefined,
+    
+    /* optional debugging on endpoint communication */
+    proxyEndpoint: (tlsVerify && getenv("HTTPS_PROXY")) || getenv("HTTP_PROXY") || undefined
 });

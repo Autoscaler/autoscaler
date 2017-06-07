@@ -122,9 +122,10 @@ versions.
 
 ### Quick start
 
-Assuming Docker Swarm and RabbitMQ are already deployed, take the sample
-deployment files present in [docker-compose.yml](./autoscale-docker-swarm-container/example-deployment/docker-compose.yml). 
 For more information on deployment against Docker Swarm refer to [autoscale-deploy](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-deploy)
+
+Assuming Docker Swarm and RabbitMQ are already deployed, take the sample
+deployment files present in [docker-compose.yml](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-deploy/docker-compose.yml). 
 
 Change the endpoints to match your deployments. Make sure the StackId property in the compose file is in the same stack id/name as the services that it should scale. Put the deployment files on your swarm node. 
 

@@ -206,7 +206,8 @@
                 <configuration>
                     <excludes combine.children="append">
                         <exclude>example-configs/**</exclude>
-                        <exclude>src/test/resources/cfg_caf_autoscaler_autoscaler_RabbitWorkloadAnalyserConfiguration</exclude>
+                        <exclude>docker-compose.yml</exclude>
+                        <exclude>rabbitmq.env</exclude>
                     </excludes>
                 </configuration>
             </plugin>

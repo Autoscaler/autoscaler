@@ -17,8 +17,8 @@
     endpoint: getenv("DOCKER_HOST")
             || ("unix:///var/run/docker.sock"),
     maximumInstances: getenv("CAF_AUTOSCALER_MAXIMUM_INSTANCES") || 100,
-    groupId: getenv("CAF_AUTOSCALER_DOCKER_SWARM_STACK") || undefined,
-    timeoutInSecs: getenv("CAF_DOCKER_SWARM_TIMEOUT") || 5,
+    stackId: getenv("CAF_AUTOSCALER_DOCKER_SWARM_STACK") || undefined,
+    timeoutInSecs: getenv("CAF_DOCKER_SWARM_TIMEOUT") || 30,
     healthCheckTimeoutInSecs: getenv("CAF_DOCKER_SWARM_HEALTHCHECK_TIMEOUT") || 5,
     
     /** optional https settings **/

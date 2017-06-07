@@ -47,15 +47,15 @@ Configuration of the AutoScaler is supported through the following environment v
     Used to specify the maximum number of instances that any worker can be scaled to.
 
  - `CAF_DOCKER_SWARM_TIMEOUT`  
-    Default: 30
+    Default: `30`  
     Used to specify the max length of time in seconds that a docker REST call can take before a timeout out occurs.  
 
  -  `CAF_DOCKER_SWARM_HEALTHCHECK_TIMEOUT`  
-    Default: 5    
+    Default: `5`  
     Used to specify the max length of time in seconds that the Docker endpoint healthcheck can take before a timeout occurs.
 
  - `HTTP_PROXY`  
-    Optional
+    (Optional)
     Used to specify an HTTP based proxy, for the Docker REST endpoint communication. 
 
 ### Health checks

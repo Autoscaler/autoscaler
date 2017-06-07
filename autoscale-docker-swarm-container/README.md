@@ -19,7 +19,7 @@ Configuration of the AutoScaler is supported through the following environment v
 
  - `CAF_RABBITMQ_MGMT_URL`  
     Default: `http://rabbitmq:15678`  
-    Used to specify the RabbitMQ Management API Endpoint.  Alternatively `CAF_RABBITMQ_HOST` and `CAF_RABBITMQ_MGMT_PORT` may instead be specified individually.
+     Used to specify the RabbitMQ Management API Endpoint.  Alternatively `CAF_RABBITMQ_HOST` and `CAF_RABBITMQ_MGMT_PORT` may instead be specified individually.
 
  - `CAF_RABBITMQ_MGMT_USERNAME`  
     Default: `guest`  
@@ -30,8 +30,7 @@ Configuration of the AutoScaler is supported through the following environment v
     Used to specify the password used to connect to RabbitMQ.  If `CAF_RABBITMQ_MGMT_PASSWORD` is not specified then `CAF_RABBITMQ_PASSWORD` will also be checked before falling back to the default.
 
  - `CAF_AUTOSCALER_DOCKER_SWARM_STACK`  
-    Defaults to the group where the autoscaler itself is deployed.
-    Used to specify the docker stack(s) which the autoscaler is monitoring.  Only applications deployed directly or indirectly within this group are auto-scaled.
+    Required property used to specify the docker stack(s) which the autoscaler is monitoring.  Only applications deployed directly or indirectly within this group are auto-scaled.
     To specify multiple stacks use a comma delimted list e.g. "JobService,DataProcessing".
 
  - `CAF_AUTOSCALER_SCALING_DELAY`  
@@ -47,15 +46,15 @@ Configuration of the AutoScaler is supported through the following environment v
     Default: `100`  
     Used to specify the maximum number of instances that any worker can be scaled to.
 
- - `CAF_DOCKER_SWARM_TIMEOUT`
+ - `CAF_DOCKER_SWARM_TIMEOUT`  
     Default: 30
     Used to specify the max length of time in seconds that a docker REST call can take before a timeout out occurs.  
 
- -  `CAF_DOCKER_SWARM_HEALTHCHECK_TIMEOUT`
+ -  `CAF_DOCKER_SWARM_HEALTHCHECK_TIMEOUT`  
     Default: 5    
     Used to specify the max length of time in seconds that the Docker endpoint healthcheck can take before a timeout occurs.
 
- - `HTTP_PROXY`
+ - `HTTP_PROXY`  
     Optional
     Used to specify an HTTP based proxy, for the Docker REST endpoint communication. 
 

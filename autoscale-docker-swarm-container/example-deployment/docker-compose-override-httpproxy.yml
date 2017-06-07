@@ -1,0 +1,7 @@
+version: '3'
+services:
+  autoscaler:
+    environment:
+      - DOCKER_HOST=http://192.168.56.10:2375
+      - HTTP_PROXY=http://getty5:8888
+ 

@@ -98,32 +98,7 @@
 
     <build>
         <plugins>
-
-            <!-- Process the local configuration files -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
-                <executions>
-                    <execution>
-                        <id>process-config-files</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/config-files</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/config</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
+            <!-- container image build definition -->
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
@@ -222,7 +197,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>process-example-deployment</id>
+                        <id>process-deployment-files</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -231,7 +206,7 @@
                             <outputDirectory>${project.build.directory}/deployment</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/example-deployment</directory>
+                                    <directory>src/main/deployment</directory>
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>
@@ -246,7 +221,7 @@
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration>
                     <excludes combine.children="append">
-                        <exclude>example-deployment/**</exclude>
+                        <exclude>src/main/deployment/**</exclude>
                         <exclude>docker-compose.yml</exclude>
                         <exclude>rabbitmq.env</exclude>
                     </excludes>

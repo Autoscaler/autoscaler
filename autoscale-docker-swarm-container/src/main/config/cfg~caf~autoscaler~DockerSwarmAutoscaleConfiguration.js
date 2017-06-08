@@ -26,5 +26,14 @@
     certificatePath: getenv("DOCKER_CERT_PATH") || undefined,
     
     /* optional debugging on endpoint communication */
-    proxyEndpoint: (tlsVerify && getenv("HTTPS_PROXY")) || getenv("HTTP_PROXY") || undefined
+    proxyEndpoint: function () { 
+        var dockerHost = getenv("DOCKER_HOST");
+        if ( dockerHost !== undefined && dockerHost.startsWith("https") ){
+            return getenv("HTTPS_PROXY");
+        } else if ( dockerHost !== undefined && dockerHost.startsWith("http") )
+        {
+            return getenv("HTTP_PROXY");
+        }
+        return undefined;
+    }
 });

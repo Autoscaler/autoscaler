@@ -4,6 +4,7 @@ services:
     env_file:
       - ./rabbitmq.env
     environment:
+      - DOCKER_HOST=http://192.168.56.10:2375
       - CAF_AUTOSCALER_MAXIMUM_INSTANCES=4
       - CAF_AUTOSCALER_DOCKER_SWARM_STACK=jobservicedemo
       - CAF_DOCKER_SWARM_TIMEOUT=30

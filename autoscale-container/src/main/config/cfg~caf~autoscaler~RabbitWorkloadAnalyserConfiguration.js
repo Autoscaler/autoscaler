@@ -15,7 +15,7 @@
  */
 ({
     rabbitManagementEndpoint: getenv("CAF_RABBITMQ_MGMT_URL")
-            || ("http://" + (getenv("CAF_RABBITMQ_HOST") || "rabbitmq") + ":" + (getenv("CAF_RABBITMQ_MGMT_PORT") || "15678")),
+            || ("http://" + (getenv("CAF_RABBITMQ_HOST") || "rabbitmq") + ":" + (getenv("CAF_RABBITMQ_MGMT_PORT") || "15672")),
     rabbitManagementUser: getenv("CAF_RABBITMQ_MGMT_USERNAME") || getenv("CAF_RABBITMQ_USERNAME") || "guest",
     rabbitManagementPassword: getenv("CAF_RABBITMQ_MGMT_PASSWORD") || getenv("CAF_RABBITMQ_PASSWORD") || "guest",
     profiles: {

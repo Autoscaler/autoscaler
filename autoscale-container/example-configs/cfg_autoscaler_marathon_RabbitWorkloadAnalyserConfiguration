@@ -1,5 +1,5 @@
 {
-    "rabbitManagementEndpoint":"http://localhost:15678",
+    "rabbitManagementEndpoint":"http://localhost:15672",
     "rabbitManagementUser":"user",
     "rabbitManagementPassword":"pass",
     "profiles":{

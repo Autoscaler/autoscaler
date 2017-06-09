@@ -17,6 +17,7 @@ layouts_dir:  caf-templates/_layouts
 includes_dir: caf-templates/_includes
 sass:
     sass_dir: caf-templates/_sass
+custom_stylesheet: assets/css/site.css
 
 paginate: 5
 paginate_path: "/pages/en-us/blog/page:num/"

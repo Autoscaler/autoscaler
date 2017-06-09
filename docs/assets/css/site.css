@@ -104,6 +104,7 @@ a:visited {
 .splash-page .splash-header {
     padding-top: 54px;
     background: #73c7bd;
+	background: url(../img/autoscale-header.png), url(../img/autoscale-header-image-2.png), linear-gradient(to bottom,  #153344 0%,#1e4753 100%);
     background-image: linear-gradient(to right,  #73c7bd 0%,#92d7d0 100%);
     box-shadow: none;
     height: 500px;

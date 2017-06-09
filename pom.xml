@@ -81,13 +81,13 @@
         <module>docs</module>
         <module>autoscale-api</module>
         <module>autoscale-core</module>
-        <module>autoscale-container</module>
-        <module>autoscale-docker-swarm-shared</module>
-        <module>autoscale-docker-swarm-container</module>
+        <module>autoscale-dockerswarm-shared</module>
+        <module>autoscale-dockerswarm-container</module>
         <module>autoscale-marathon-shared</module>
-        <module>autoscale-scaler-docker-swarm</module>
+        <module>autoscale-marathon-container</module>
+        <module>autoscale-scaler-dockerswarm</module>
         <module>autoscale-scaler-marathon</module>
-        <module>autoscale-source-docker-swarm</module>
+        <module>autoscale-source-dockerswarm</module>
         <module>autoscale-source-marathon</module>        
         <module>autoscale-workload-rabbit</module>       
     </modules>

@@ -1,0 +1,11 @@
+{
+    "rabbitManagementEndpoint":"http://localhost:15672",
+    "rabbitManagementUser":"user",
+    "rabbitManagementPassword":"pass",
+    "profiles":{
+        "default":{
+            "scalingDelay": 10,
+            "backlogGoal": 10
+        }
+    }
+}

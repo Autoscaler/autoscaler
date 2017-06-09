@@ -4,7 +4,7 @@ title: Features
 banner: 
     icon: 'assets/img/autoscaler-graphic.png'
     title: Autoscaler
-    subtitle: Automatic scaling of microservices
+    subtitle: Automatic on-demand scaling of microservices
     links:
         - title: GitHub 
           url: https://github.com/Autoscaler/autoscaler 

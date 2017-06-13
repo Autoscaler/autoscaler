@@ -111,7 +111,7 @@ a:visited {
 }
 
 .splash-page .splash-header .caf-brand {
-    background: url(../../img/autoscale-header.png), url(../../img/autoscale-header-image-2.png), linear-gradient(to bottom,  #000 0%,#b8ffd8 100%);
+    background: url(../img/autoscaler-header.png), url(../img/autoscaler-header-image-2.png), #000;
     background-repeat: no-repeat;
     background-size: contain;
     background-position: left bottom;
@@ -157,7 +157,7 @@ a:visited {
 
 
 .splash-page .splash-header .caf-brand .download-caf {
-    background-color: #24524E;
+    background-color: #b8ffd8;
     color: #fff;
     padding: 15px 65px;
     height: auto;
@@ -165,8 +165,12 @@ a:visited {
     transition: background-color 0.3s ease-in-out;
 }
 
+.splash-page .splash-header .caf-brand .download-caf:focus, .splash-page .splash-header .caf-brand .download-caf:visited, .splash-page .splash-header .caf-brand .download-caf:active {
+	color: #000;
+}
+
 .splash-page .splash-header .caf-brand .download-caf:hover {
-    background-color: #0B3935;
+    background-color: #6EAF8C;
 }
 
 .splash-page hr {

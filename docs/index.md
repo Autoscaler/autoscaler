@@ -11,13 +11,13 @@ features:
     title: About Autoscaler
     subtitle: The Autoscaler service provides on-demand scaling of services, allowing you to efficiently dedicate resources where they are needed most in your Mesos cluster and minimizing costs and ensuring user satisfaction.
     feature_list:
-        - image: ../../img/elastic-scaling-icon.png
+        - image: assets/img/elastic-scaling-icon.png
           title: Elastic Scaling
           subtitle: Easily scale up and down Workers based on key metrics. Allocate resources where they are needed most.
-        - image: ../../img/extensibility-icon.png
+        - image: assets/img/extensibility-icon.png
           title: Extensibility
           subtitle: Pluggable support for monitoring workloads, scaling decisions and scaling commands allows the Autoscaler to be used in many different environments.
-        - image: ../../img/ready-to-go-icon.png
+        - image: assets/img/ready-to-go-icon.png
           title: Ready to go
           subtitle: Out of the box support for the Worker Framework, RabbitMQ and Marathon makes it easy to start scaling today!
 

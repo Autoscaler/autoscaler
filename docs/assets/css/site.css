@@ -3,15 +3,15 @@
 */
 
 body {
-    background-color: #e5e5e5;
+    background-color: #000;
 }
 
 h3 {
-    color: #000;
+    color: #fff;
 }
 
 p {
-    color: #000;
+    color: #fff;
 }
 
 a {
@@ -21,9 +21,13 @@ a {
 
 a:hover,
 a:visited {
-    color: #fff;
+    color: #000;
 }
 
+.container.m-t-xl.m-b-xl {
+	background-color: #e5e5e5;
+    color: #fff;
+}
 
 /*
     Page Layout
@@ -185,23 +189,23 @@ a:visited {
 }
 
 .splash-page .social-card .title {
-    color: #fff;
+    color: #000;
 }
 
 .splash-page .social-card .subtitle {
-    color: #E9E9E9;
+    color: #000;
 }
 
 .splash-page .social-card .link {
-    color: #74E291;
+    color: #b8ffd8;
 }
 
 .splash-page .social-card .link:hover {
-    color: #289645;
+    color: #fff;
 }
 
 .splash-page .section-title {
-    color: #fff;
+    color: #000;
 }
 
 .splash-page .section-subtitle {
@@ -209,11 +213,11 @@ a:visited {
 }
 
 .feature-list .feature .title {
-    color: #fff;
+    color: #000;
 }
 
 .feature-list .feature .subtitle {
-    color: #E9E9E9;
+    color: #000;
 }
 
 /*

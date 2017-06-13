@@ -73,7 +73,7 @@ a:visited {
 }
 
 .top-header .container .menu .menu-item.active a {
-    color: #fff;
+    color: #cdcdcd;
 }
 
 .top-header .container .menu .menu-item a {
@@ -87,7 +87,7 @@ a:visited {
 }
 
 .top-header .container .menu .menu-item a:hover {
-    color: #fff;
+    color: #807f7f;
 }
 
 .top-header .menu-toggle {
@@ -212,6 +212,7 @@ a:visited {
 
 .splash-page .section-subtitle {
     font-size: 20px;
+    color: #000;
 }
 
 .feature-list .feature .title {
@@ -373,7 +374,7 @@ localize-button .btn.inline-dropdown.dropdown-toggle:hover > span {
 .content-container .docs-content h6
 {
     font-family: Metric;
-    color: #000;
+    color: #fff;
 }
 
 .content-container .docs-content .no-posts {

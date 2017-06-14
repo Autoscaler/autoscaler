@@ -109,7 +109,7 @@ a:visited {
     Splash Page
 */
 
-.splash-page .ng-scope {
+.splash-page .ng-scope .body {
     background-color: #e5e5e5;
 }
 

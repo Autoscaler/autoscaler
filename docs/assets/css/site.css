@@ -105,6 +105,10 @@ a:visited {
     Splash Page
 */
 
+.splash-page .ng-scope {
+    background-color: #e5e5e5;
+}
+
 .splash-page .splash-header {
     padding-top: 54px;
     background: #000;

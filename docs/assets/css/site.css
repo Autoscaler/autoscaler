@@ -21,7 +21,7 @@ a {
 
 a:hover,
 a:visited {
-    color: #000;
+    color: #e5e5e5;
 }
 
 .container.m-t-xl.m-b-xl {
@@ -73,7 +73,7 @@ a:visited {
 }
 
 .top-header .container .menu .menu-item.active a {
-    color: #ababab;
+    color: #3d6850;
 }
 
 .top-header .container .menu .menu-item.active:hover a {
@@ -115,14 +115,13 @@ a:visited {
 
 .splash-page .splash-header {
     padding-top: 54px;
-    background: #000;
+    background: url(../img/autoscaler-header.png), url(../img/autoscaler-header-image-2.png), #000;
     box-shadow: none;
     height: 500px;
     border-bottom: 1px solid #0a0f15;
 }
 
 .splash-page .splash-header .caf-brand {
-    background: url(../img/autoscaler-header.png), url(../img/autoscaler-header-image-2.png), #000;
     background-repeat: no-repeat;
     background-size: contain;
     background-position: left bottom;
@@ -195,7 +194,7 @@ a:visited {
 }
 
 .splash-page .social-card .icon {
-    color: #74E291;
+    color: #4E5F84;
 }
 
 .splash-page .social-card .title {
@@ -207,7 +206,7 @@ a:visited {
 }
 
 .splash-page .social-card .link {
-    color: #b8ffd8;
+    color: #4E5F84;
 }
 
 .splash-page .social-card .link:hover {
@@ -244,7 +243,7 @@ a:visited {
 .content-container .docs-content h3 {
     font-family: Metric;
     color: #fff;
-    border-color: #171717;
+    border-color: #fff;
     margin-top: 2em;
 }
 
@@ -327,6 +326,7 @@ localize-button .btn.inline-dropdown.dropdown-toggle:hover > span {
 @media (max-width: 992px) {
     .sidebar {
         background-color: #1b282e;
+        top: 54px;
     }
 }
 
@@ -462,7 +462,7 @@ code {
 */
 .flip-container .front,
 .flip-container .back {
-    background-color: #354247;
+    background-color: #171717;
     box-shadow: none;
     border: 1px solid #192023;
 }
@@ -476,7 +476,7 @@ code {
 }
 
 .docs-content pre {
-    background-color: #354247;
+    background-color: #171717;
     border-color: #192023;
     color: #E9E9E9;    
 }
@@ -487,7 +487,7 @@ code {
 
 .docs-content .table tr th,
 .docs-content .table tr td {
-    border-color: #323d43;
+    border-color: #171717;
 }
 
 /*

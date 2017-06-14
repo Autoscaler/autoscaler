@@ -510,8 +510,7 @@ code {
     Footer 
 */ 
 .footer-banner .footer-logo { 
-    max-height: 36px; 
-    display: block;  
-    margin: 0 auto;  
-    width: 180px; 
+    max-height: 36px;
+    display: block;
+    margin: 0 auto;
 +} 

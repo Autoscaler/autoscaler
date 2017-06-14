@@ -73,7 +73,11 @@ a:visited {
 }
 
 .top-header .container .menu .menu-item.active a {
-    color: #cdcdcd;
+    color: #ababab;
+}
+
+.top-header .container .menu .menu-item.active:hover a {
+    background-color: #3d6850;
 }
 
 .top-header .container .menu .menu-item a {
@@ -87,7 +91,7 @@ a:visited {
 }
 
 .top-header .container .menu .menu-item a:hover {
-    color: #807f7f;
+    color: #fff;
 }
 
 .top-header .menu-toggle {

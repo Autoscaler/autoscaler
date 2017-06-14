@@ -74,13 +74,13 @@
 
     <modules>
         <module>docs</module>
-<!--        <module>autoscale-api</module>
+        <module>autoscale-api</module>
         <module>autoscale-core</module>
         <module>autoscale-container</module>
         <module>autoscale-marathon-shared</module>
         <module>autoscale-workload-rabbit</module>
         <module>autoscale-scaler-marathon</module>
-        <module>autoscale-source-marathon</module>-->
+        <module>autoscale-source-marathon</module>
     </modules>
 
     <scm>

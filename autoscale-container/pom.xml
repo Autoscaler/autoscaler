@@ -142,7 +142,7 @@
                             <name>rh7-artifactory.svs.hpeswlab.net:8443/caf/autoscale-marathon-rabbit:${project.version}</name>
                             <build>
                                 <maintainer>andrew.reid@hpe.com</maintainer>
-                                <from>java:8</from>
+                                <from>cafinternal/prereleases:java8-with-tini-image-1.0.0-SNAPSHOT</from>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>
                                     <Build.Date>${maven.build.timestamp}</Build.Date>
@@ -151,7 +151,7 @@
                                 </labels>
                                 <entryPoint>
                                     <exec>
-                                        <args>/maven/tini-${tini.version}.exe</args>
+                                        <args>/tini</args>
                                         <args>-v</args>
                                         <args>--</args>
                                         <args>/maven/scaler.sh</args>
@@ -177,22 +177,6 @@
                                                 <outputDirectory>config</outputDirectory>
                                             </fileSet>
                                         </fileSets>
-                                        <dependencySets>
-                                            <dependencySet>
-                                                <useProjectArtifact>false</useProjectArtifact>
-                                                <scope>runtime</scope>
-                                                <excludes>
-                                                    <exclude>com.github.krallin:tini</exclude>
-                                                </excludes>
-                                            </dependencySet>
-                                            <dependencySet>
-                                                <useProjectArtifact>false</useProjectArtifact>
-                                                <fileMode>0755</fileMode>
-                                                <includes>
-                                                    <include>com.github.krallin:tini</include>
-                                                </includes>
-                                            </dependencySet>
-                                        </dependencySets>
                                     </inline>
                                 </assembly>
                             </build>

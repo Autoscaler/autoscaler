@@ -139,7 +139,7 @@
                     <images>
                         <image>
                             <alias>autoscale-container</alias>
-                            <name>rh7-artifactory.svs.hpeswlab.net:8443/caf/autoscale-marathon-rabbit:${project.version}</name>
+                            <name>cafinternal/prereleases:autoscale-marathon-rabbit-1.0.0-SNAPSHOT</name>
                             <build>
                                 <maintainer>andrew.reid@hpe.com</maintainer>
                                 <from>cafinternal/prereleases:java8-with-tini-image-1.0.0-SNAPSHOT</from>

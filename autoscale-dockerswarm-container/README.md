@@ -15,7 +15,7 @@ Configuration of the AutoScaler is supported through the following environment v
 
  - `DOCKER_HOST`  
     Default: `unix:///var/run/docker.sock`  
-    Used to specify the Docker Swarm REST endpoint.  Supports unix sockets and tcp type connections e.g. http://machine:2375.
+    Used to specify the Docker Swarm REST endpoint.  Supports unix sockets and tcp type connections e.g. `http://machine:2375`.
 
  - `CAF_RABBITMQ_MGMT_URL`  
     Default: `http://rabbitmq:15672`  
@@ -56,11 +56,19 @@ Configuration of the AutoScaler is supported through the following environment v
 
  - `HTTP_PROXY`  
     (Optional)
-    Used to specify an HTTP based proxy, for the Docker REST endpoint communication. 
+    Used to specify an HTTP based proxy, which is used during the Docker REST endpoint communication. 
+ 
+ - `HTTPS_PROXY`  
+    (Optional)
+    Used to specify an HTTP based proxy, which is used during the Docker REST endpoint communication. 
+
+ - `NO_PROXY`  
+    (Optional)
+    Used to specify an ignore list for HTTP based proxy communication.
 
 ### Health checks
 
-The [autoscale-core](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-core) application inherently exposes standard and
+The [autoscale-core](../autoscale-core) application inherently exposes standard and
 module-specific health checks. If you expose the admin port (default 8081)
 then this can be accessed via HTTP to examine metrics and health checks.
 The health check REST call will return HTTP 500 if any health check fails.

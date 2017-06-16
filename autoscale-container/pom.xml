@@ -172,7 +172,7 @@
                                             </fileSet>
                                         </fileSets>
                                         <dependencySets>
-                                            <dependencySet>                                                
+                                            <dependencySet>
                                                 <useProjectArtifact>false</useProjectArtifact>
                                                 <scope>runtime</scope>
                                             </dependencySet>

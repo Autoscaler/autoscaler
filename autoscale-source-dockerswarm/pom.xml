@@ -42,11 +42,9 @@
             <artifactId>autoscale-dockerswarm-shared</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- TREV TODO Move json-path versino to dependency management -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>2.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

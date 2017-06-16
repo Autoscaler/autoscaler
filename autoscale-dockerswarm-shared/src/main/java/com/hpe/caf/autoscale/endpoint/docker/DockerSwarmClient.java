@@ -241,7 +241,6 @@ public class DockerSwarmClient implements DockerSwarm
 
         for (Parameter param : parameters) {
             // all params that are for the actual query are marked with the @Param annotation 
-            // TREV TODO ensure headers aren't picked up here also!
             Param reqParamInfo = param.getAnnotation(Param.class
             );
 

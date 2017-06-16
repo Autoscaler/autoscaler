@@ -123,7 +123,6 @@ public class DockerSwarmServiceScaler implements ServiceScaler
                 // exit now without scaling.
                 LOG.warn(
                     "Service: {} is a global service and cannot be scaled beyond one singleton per swarm node, prevent warning by marking as maxInstances=1");
-                // TREV TODO should we error here instead?
                 return true;
             }
             modeNode.put("Replicated", new LinkedHashMap<>());
@@ -196,7 +195,7 @@ public class DockerSwarmServiceScaler implements ServiceScaler
     @Override
     public HealthResult healthCheck()
     {
-        // TREV TODO -> Check HTTPS comms with this.
+        // TODO -> Check HTTPS comms with this.
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(url.getHost(), url.getPort()), Integer.valueOf(config.getHealthCheckTimeoutInSecs().toString())* 1000);
             return HealthResult.RESULT_HEALTHY;

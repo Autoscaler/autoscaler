@@ -53,7 +53,7 @@ public class DockerSwarmServiceSourceProvider implements ServiceSourceProvider
         final String stackPath = config.getStackId();
 
         if (stackPath == null || stackPath.isEmpty() ) {
-            // TREV TODO Check should we fallback to service path - discussion still happening
+            // Check should we fallback to service path - CAF-3093
             throw new ConfigurationException("Invalid configuration, no valid autoscaler stack identifier has been specified for scaling.");
         }
         return stackPath;

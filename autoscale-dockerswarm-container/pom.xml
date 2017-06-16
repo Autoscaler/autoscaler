@@ -242,8 +242,6 @@
                 <configuration>
                     <excludes combine.children="append">
                         <exclude>src/main/deployment/**</exclude>
-                        <exclude>docker-compose.yml</exclude>
-                        <exclude>rabbitmq.env</exclude>
                     </excludes>
                 </configuration>
             </plugin>

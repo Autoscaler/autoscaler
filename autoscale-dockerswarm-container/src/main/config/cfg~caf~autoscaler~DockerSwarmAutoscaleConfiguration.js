@@ -20,20 +20,8 @@
     stackId: getenv("CAF_AUTOSCALER_DOCKER_SWARM_STACK") || undefined,
     timeoutInSecs: getenv("CAF_DOCKER_SWARM_TIMEOUT") || 30,
     healthCheckTimeoutInSecs: getenv("CAF_DOCKER_SWARM_HEALTHCHECK_TIMEOUT") || 5,
-    
+
     /** optional https settings **/
     tlsVerify: getenv("DOCKER_TLS_VERIFY") || false,
-    certificatePath: getenv("DOCKER_CERT_PATH") || undefined,
-    
-    /* optional debugging on endpoint communication */
-    proxyEndpoint: function () { 
-        var dockerHost = getenv("DOCKER_HOST");
-        if ( dockerHost !== undefined && dockerHost.startsWith("https") ){
-            return getenv("HTTPS_PROXY");
-        } else if ( dockerHost !== undefined && dockerHost.startsWith("http") )
-        {
-            return getenv("HTTP_PROXY");
-        }
-        return undefined;
-    }
+    certificatePath: getenv("DOCKER_CERT_PATH") || undefined
 });

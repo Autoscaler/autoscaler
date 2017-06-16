@@ -36,7 +36,6 @@ import java.lang.reflect.Parameter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.entity.StringEntity;
@@ -71,21 +70,14 @@ public class DockerSwarmClient implements DockerSwarm
             throw new HttpClientException("Unable to construct a valid URL from the DockerSwarmAutoscaleConfiguration", ex);
         }
 
-        URL proxyEndpoint = null;
-
-        try {
-            if (config.getProxyEndpoint() != null && !config.getProxyEndpoint().isEmpty()) {
-                proxyEndpoint = new URL(config.getProxyEndpoint());
-            }
-        } catch (MalformedURLException ex) {
-            LOG.error("Unable to construct a valid URL from the DockerSwarmAutoscaleConfiguration proxyEndpoint.", ex);
-            throw new HttpClientException("Unable to construct a valid URL from the DockerSwarmAutoscaleConfiguration", ex);
-        }
-
-        httpClient = new HttpClientSupport(endpoint, proxyEndpoint);
+        httpClient = new HttpClientSupport(endpoint);
     }
 
-    // For mocking, here is an alternative constructor for unit tests.
+    /**
+     * For mocking, here is an alternative constructor for unit tests.
+     *
+     * @param httpClientSupport
+     */
     private DockerSwarmClient(final HttpClientSupport httpClientSupport)
     {
         this.httpClient = httpClientSupport;
@@ -104,9 +96,11 @@ public class DockerSwarmClient implements DockerSwarm
      */
     @Override
     @RequestLine(responseType = DocumentContext.class, action = "GET", request = "/services")
-    public DocumentContext getServices() throws HttpClientException
+    public DocumentContext
+        getServices() throws HttpClientException
     {
-        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class);
+        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class
+        );
     }
 
     /**
@@ -117,9 +111,11 @@ public class DockerSwarmClient implements DockerSwarm
      */
     @Override
     @RequestLine(responseType = DocumentContext.class, action = "GET", request = "/services")
-    public DocumentContext getServicesFiltered(@Param("filters") final String filters) throws HttpClientException
+    public DocumentContext getServicesFiltered(@Param("filters")
+        final String filters) throws HttpClientException
     {
-        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class, filters);
+        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class,
+                            filters);
     }
 
     /**
@@ -131,9 +127,11 @@ public class DockerSwarmClient implements DockerSwarm
      */
     @Override
     @RequestLine(responseType = DocumentContext.class, action = "GET", request = "/services/{serviceId}")
-    public DocumentContext getService(@Param("serviceId") final String serviceId) throws HttpClientException
+    public DocumentContext getService(@Param("serviceId")
+        final String serviceId) throws HttpClientException
     {
-        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class, serviceId);
+        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class,
+                            serviceId);
     }
 
     /**
@@ -146,10 +144,14 @@ public class DockerSwarmClient implements DockerSwarm
      */
     @Override
     @RequestLine(responseType = void.class, action = "POST", request = "/services/{serviceId}/update?version={versionId}")
-    public void updateService(@Param("serviceId") final String serviceId, @Param("versionId") final int versionId,
-                              @Entity("specification") final String serviceSpecification) throws HttpClientException
+    public void updateService(@Param("serviceId")
+        final String serviceId, @Param("versionId")
+                              final int versionId,
+                              @Entity("specification")
+                              final String serviceSpecification) throws HttpClientException
     {
-        invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class, serviceId, versionId, serviceSpecification);
+        invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class,
+                     serviceId, versionId, serviceSpecification);
     }
 
     /**
@@ -160,9 +162,11 @@ public class DockerSwarmClient implements DockerSwarm
      */
     @Override
     @RequestLine(responseType = DocumentContext.class, action = "GET", request = "/tasks")
-    public DocumentContext getTasks() throws HttpClientException
+    public DocumentContext
+        getTasks() throws HttpClientException
     {
-        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class);
+        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class
+        );
     }
 
     /**
@@ -174,9 +178,11 @@ public class DockerSwarmClient implements DockerSwarm
      */
     @Override
     @RequestLine(responseType = DocumentContext.class, action = "GET", request = "/tasks")
-    public DocumentContext getTasksFiltered(@Param("filters") final String filters) throws HttpClientException
+    public DocumentContext getTasksFiltered(@Param("filters")
+        final String filters) throws HttpClientException
     {
-        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class, filters);
+        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class,
+                            filters);
     }
 
     /**
@@ -188,9 +194,11 @@ public class DockerSwarmClient implements DockerSwarm
      */
     @Override
     @RequestLine(responseType = DocumentContext.class, action = "GET", request = "/tasks/{taskId}")
-    public DocumentContext getTask(@Param("taskId") final String taskId) throws HttpClientException
+    public DocumentContext getTask(@Param("taskId")
+        final String taskId) throws HttpClientException
     {
-        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class, taskId);
+        return invokeAction(this.getClass(), getCallingMethod(this.getClass()), DocumentContext.class,
+                            taskId);
     }
 
     /**
@@ -230,10 +238,12 @@ public class DockerSwarmClient implements DockerSwarm
         Parameter[] parameters = methodToSearch.getParameters();
 
         int currentParamIndex = 0;
+
         for (Parameter param : parameters) {
             // all params that are for the actual query are marked with the @Param annotation 
             // TREV TODO ensure headers aren't picked up here also!
-            Param reqParamInfo = param.getAnnotation(Param.class);
+            Param reqParamInfo = param.getAnnotation(Param.class
+            );
 
             if (reqParamInfo == null) {
                 continue;
@@ -274,14 +284,15 @@ public class DockerSwarmClient implements DockerSwarm
 
         for (Parameter param : parameters) {
             // the correct parameter to be used as an entity will be marked with the Entity annotation.            
-            final Entity reqEntityInfo = param.getAnnotation(Entity.class);
+            final Entity reqEntityInfo = param.getAnnotation(Entity.class
+            );
 
             if (reqEntityInfo == null) {
                 continue;
             }
 
             final String reqEntityName = reqEntityInfo.value();
-            
+
             // obtain the current index of this parameter in the method var args list.
             final int currentParamIndex = getPrivateField(param, "index");
 
@@ -327,7 +338,8 @@ public class DockerSwarmClient implements DockerSwarm
 
     private RequestLine getRequestLineInformation(final Class<?> classToSearch, final Method methodToSearch) throws InvalidParameterException
     {
-        RequestLine requestLineInfo = methodToSearch.getAnnotation(RequestLine.class);
+        RequestLine requestLineInfo = methodToSearch.getAnnotation(RequestLine.class
+        );
 
         // The request can be made up for a type / url / params.
         // GET /services "id=123"

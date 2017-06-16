@@ -54,7 +54,7 @@ public class HttpClientSupport
     private final HttpClientBuilder builder;
     private final URL url;
 
-    public HttpClientSupport(final URL endpoint, final URL proxyEndpoint) throws HttpClientException
+    public HttpClientSupport(final URL endpoint) throws HttpClientException
     {
         Objects.requireNonNull(endpoint);
         url = endpoint;
@@ -62,7 +62,9 @@ public class HttpClientSupport
         builder = HttpClientBuilder.create();
 
         try {
-            // if we have a proxy setup in configuration then use it for our communication with endpoint.
+            // Adhere to the standard NO_PROXY / HTTP_PROXY / HTTPS_PROXY environment info.
+            // and use it for communication with our http endpoint.
+            final URL proxyEndpoint = HttpProxySupport.getProxyAsUrl(endpoint);
             if (proxyEndpoint != null && proxyEndpoint.toURI() != null) {
                 builder.setProxy(HttpHost.create(proxyEndpoint.toString()));
             }
@@ -165,18 +167,18 @@ public class HttpClientSupport
     private void checkForError(final CloseableHttpResponse response) throws IOException, ParseException, HttpClientException
     {
         if (response.getStatusLine().getStatusCode() != 200) {
-            
+
             // Check if we have  a valid http error message in the response
             HttpEntity entity = response.getEntity();
             if (entity != null) {
                 String content = EntityUtils.toString(entity);
                 LOG.error("HttpRequest failed with code: {} reason: {}",
-                                  response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+                          response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
                 LOG.error("Http error response: {}", content);
             }
             throw new HttpClientException(
                 String.format("Request failed with code: {%s} reason: {%s}",
-                                      response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                              response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
         }
     }
 

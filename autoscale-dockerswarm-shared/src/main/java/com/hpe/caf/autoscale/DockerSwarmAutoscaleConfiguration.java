@@ -32,12 +32,6 @@ public class DockerSwarmAutoscaleConfiguration
     private String endpoint;
 
     /**
-     * A proxy url, to be used for debugging communication made to the Docker Swarm REST endpoint. Uses HttpHost format, of format
-     * "scheme://host:port"
-     */
-    private String proxyEndpoint;
-
-    /**
      * The timeout to be used when communicating with the docker swarm endpoint.
      */
     @NotNull
@@ -85,16 +79,6 @@ public class DockerSwarmAutoscaleConfiguration
     public void setEndpoint(final String endpoint)
     {
         this.endpoint = endpoint;
-    }
-
-    public String getProxyEndpoint()
-    {
-        return proxyEndpoint;
-    }
-
-    public void setProxyEndpoint(String proxyEndpoint)
-    {
-        this.proxyEndpoint = proxyEndpoint;
     }
 
     public int getMaximumInstances()

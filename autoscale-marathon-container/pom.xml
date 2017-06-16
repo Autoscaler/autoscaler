@@ -136,7 +136,7 @@
                             <name>cafinternal/prereleases:autoscale-marathon-rabbit-${project.version}</name>
                             <build>
                                 <maintainer>andrew.reid@hpe.com</maintainer>
-                                <from>cafinternal/prereleases:java8-with-tini-image-1.0.0-SNAPSHOT</from>
+                                <from>cafapi/java8-with-tini:1.0.0</from>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>
                                     <Build.Date>${maven.build.timestamp}</Build.Date>

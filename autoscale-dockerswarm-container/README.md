@@ -78,9 +78,8 @@ documentation.
 
 ### Logging
 
-Currently the logging is accessible via the Marathon sandbox until a CAF
-approved logging mechanism is agreed upon. Debug logging is enabled by default
-in this container.
+Currently the logging is accessible via the docker container logs. Debug logging is enabled by default
+in this container.  The default log level can be controlled by supplying a CAF_LOG_LEVEL environment variable value.
 
 
 ### Scaling
@@ -110,7 +109,6 @@ Recommended values:
 - 128-196MB of RAM
 - 0.1 CPUs per 10 services monitored
 - Slow I/O is acceptable
-- Preferred to be network-local to Marathon and RabbitMQ
 
 
 ### Failure modes
@@ -131,7 +129,7 @@ versions.
 ### Quick start
 
 Assuming Docker Swarm and RabbitMQ are already deployed, take the sample
-deployment files present in [docker-compose.yml](./autoscale-dockerswarm-container/src/main/config/deployment/docker-compose.yml). 
+deployment files present in [docker-compose.yml](src/main/config/deployment/docker-compose.yml). 
 
 - Update the image `${project.version}` tag with the correct version information.  
 N.B. If you have built the repository this file will already have been populated correctly and will be located in: `/target/deployment/`.

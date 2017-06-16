@@ -84,12 +84,6 @@
             <artifactId>${caf.codec.impl}</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.krallin</groupId>
-            <artifactId>tini</artifactId>
-            <scope>runtime</scope>
-            <type>exe</type>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -177,6 +171,12 @@
                                                 <outputDirectory>config</outputDirectory>
                                             </fileSet>
                                         </fileSets>
+                                        <dependencySets>
+                                            <dependencySet>                                                
+                                                <useProjectArtifact>false</useProjectArtifact>
+                                                <scope>runtime</scope>
+                                            </dependencySet>
+                                        </dependencySets>
                                     </inline>
                                 </assembly>
                             </build>

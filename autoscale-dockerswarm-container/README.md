@@ -129,7 +129,7 @@ versions.
 ### Quick start
 
 Assuming Docker Swarm and RabbitMQ are already deployed, take the sample
-deployment files present in [docker-compose.yml](src/main/config/deployment/docker-compose.yml). 
+deployment files present in [docker-compose.yml](src/main/deployment/docker-compose.yml). 
 
 - Update the image `${project.version}` tag with the correct version information.  
 N.B. If you have built the repository this file will already have been populated correctly and will be located in: `/target/deployment/`.

@@ -118,7 +118,7 @@
                                 </labels>
                                 <entryPoint>
                                     <exec>
-                                        <args>/maven/tini-${tini.version}.exe</args>
+                                        <args>/tini</args>
                                         <args>-v</args>
                                         <args>--</args>
                                         <args>/maven/scaler.sh</args>

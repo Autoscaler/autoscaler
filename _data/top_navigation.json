@@ -10,7 +10,7 @@
         "primary": false
     }, {
         "title": {
-            "en-us": "Team"
+            "en-us": "Meet the Team"
         },
         "url": {
             "en-us": "pages/en-us/Team"
@@ -22,7 +22,7 @@
             "en-us": "Blog"
         },
         "url": {
-            "en-us": "pages/en-us/blog"
+            "en-us": "pages/en-us/Blog"
         },
         "icon": "",
         "primary": false

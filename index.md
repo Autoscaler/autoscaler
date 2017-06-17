@@ -1,10 +1,8 @@
 ---
 layout: landing
 
-logo: assets/img/caflogo.png
-background_image: assets/img/landing_3.jpg
-title: Autoscaler<br><small>From the Information Management and Governance Research and Development Team at Hewlett Packard Enterprise</small>
-slogan: Automatic on-demand scaling of microservices
+title: Autoscaler
+slogan: Cross-Platform, Cloud Ready, Microservices 
 button:
     title: Learn More
     url: pages/en-us/Overview
@@ -13,13 +11,13 @@ features:
     title: About Autoscaler
     subtitle: The Autoscaler service provides on-demand scaling of services, allowing you to efficiently dedicate resources where they are needed most in your Mesos cluster and minimizing costs and ensuring user satisfaction.
     feature_list:
-        - icon: hpe-directions
+        - image: assets/img/elastic-scaling-icon.png
           title: Elastic Scaling
           subtitle: Easily scale up and down Workers based on key metrics. Allocate resources where they are needed most.
-        - icon: hpe-cubes
+        - image: assets/img/extensibility-icon.png
           title: Extensibility
           subtitle: Pluggable support for monitoring workloads, scaling decisions and scaling commands allows the Autoscaler to be used in many different environments.
-        - icon: hpe-user-worker
+        - image: assets/img/ready-to-go-icon.png
           title: Ready to go
           subtitle: Out of the box support for the Worker Framework, RabbitMQ and Marathon makes it easy to start scaling today!
 

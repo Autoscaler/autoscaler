@@ -2,7 +2,7 @@ title: AutoScaler
 email: caf@hpe.com
 
 description: AutoScaler Description
-#baseurl: "/documentation"
+#baseurl: "/autoscaler"
 baseurl: "/autoscaler"
 
 # Build settings
@@ -17,6 +17,9 @@ layouts_dir:  caf-templates/_layouts
 includes_dir: caf-templates/_includes
 sass:
     sass_dir: caf-templates/_sass
+
+navigation_image: assets/img/autoscaler-logo.png
+custom_stylesheet: assets/css/site.css
 
 paginate: 5
 paginate_path: "/pages/en-us/blog/page:num/"

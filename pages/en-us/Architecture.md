@@ -1,11 +1,18 @@
 ---
 layout: default
 title: Architecture
+banner: 
+    icon: 'assets/img/autoscaler-graphic.png'
+    title: Autoscaler
+    subtitle: Automatic on-demand scaling of microservices
+    links:
+        - title: GitHub 
+          url: https://github.com/Autoscaler/autoscaler 
 ---
 
 # Architecture
 
-The Autoscaler service monitors the Marathon microservice message throughput statistics and scales microservice instances up or down according to their configuration. By scaling microservices according to their demand, the Autoscaler enables efficient system resource allocation. The following high-level architecture description explains the relationship of the Autoscaler and its components.
+The Autoscaler service monitors Marathon microservice message throughput statistics and scales microservice instances up or down according to their configuration. By scaling microservices according to their demand, the Autoscaler enables efficient system resource allocation. The following high-level architecture description explains the relationship of the Autoscaler and its components.
 
 ## Overview
 

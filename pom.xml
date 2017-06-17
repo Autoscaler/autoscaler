@@ -23,7 +23,7 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-aggregator</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1-39</version>
     <packaging>pom</packaging>
 
     <name>Autoscaler</name>

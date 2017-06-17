@@ -79,12 +79,6 @@
             <artifactId>${caf.codec.impl}</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.krallin</groupId>
-            <artifactId>tini</artifactId>
-            <scope>runtime</scope>
-            <type>exe</type>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -112,10 +106,10 @@
                     <images>
                         <image>
                             <alias>autoscale-container</alias>
-                            <name>rh7-artifactory.svs.hpeswlab.net:8443/caf/autoscale-dockerswarm-rabbit:${project.version}</name>
+                            <name>cafinternal/prereleases:autoscale-dockerswarm-rabbit-${project.version}</name>
                             <build>
                                 <maintainer>andrew.reid@hpe.com</maintainer>
-                                <from>java:8</from>
+                                <from>cafapi/java8-with-tini-image:1.0.0</from>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>
                                     <Build.Date>${maven.build.timestamp}</Build.Date>
@@ -154,16 +148,6 @@
                                             <dependencySet>
                                                 <useProjectArtifact>false</useProjectArtifact>
                                                 <scope>runtime</scope>
-                                                <excludes>
-                                                    <exclude>com.github.krallin:tini</exclude>
-                                                </excludes>
-                                            </dependencySet>
-                                            <dependencySet>
-                                                <useProjectArtifact>false</useProjectArtifact>
-                                                <fileMode>0755</fileMode>
-                                                <includes>
-                                                    <include>com.github.krallin:tini</include>
-                                                </includes>
                                             </dependencySet>
                                         </dependencySets>
                                     </inline>

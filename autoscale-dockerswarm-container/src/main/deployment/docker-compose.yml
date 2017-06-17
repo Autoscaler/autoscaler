@@ -8,5 +8,5 @@ services:
       - CAF_AUTOSCALER_MAXIMUM_INSTANCES=4
       - CAF_AUTOSCALER_DOCKER_SWARM_STACK=jobservicedemo
       - CAF_DOCKER_SWARM_TIMEOUT=30
-    image: rh7-artifactory.svs.hpeswlab.net:8443/caf/autoscale-dockerswarm-rabbit:${project.version}
+    image: cafinternal/prereleases:autoscale-dockerswarm-rabbit-${project.version}
  

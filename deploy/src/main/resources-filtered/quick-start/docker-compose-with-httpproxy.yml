@@ -1,0 +1,14 @@
+version: '3'
+services:
+  autoscaler:
+    env_file:
+      - ./rabbitmq.env
+    environment:
+      DOCKER_HOST: ${DOCKER_HOST:-http://192.168.56.10:2375}
+      CAF_AUTOSCALER_MAXIMUM_INSTANCES: 4
+      CAF_AUTOSCALER_DOCKER_SWARM_STACK: jobservicedemo
+      CAF_DOCKER_SWARM_TIMEOUT: 30
+      HTTP_PROXY: ${HTTP_PROXY}
+      HTTPS_PROXY: ${HTTPS_PROXY}
+      NO_PROXY: ${NO_PROXY}
+    image: autoscaler/autoscale-dockerswarm-rabbit-1.1.0

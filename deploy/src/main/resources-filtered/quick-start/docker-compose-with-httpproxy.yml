@@ -12,4 +12,3 @@ services:
       HTTPS_PROXY: ${HTTPS_PROXY}
       NO_PROXY: ${NO_PROXY}
     image: autoscaler/autoscale-dockerswarm-rabbit:{project.version}
-    

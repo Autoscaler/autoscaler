@@ -4,8 +4,8 @@ services:
     env_file:
       - ./rabbitmq.env
     environment:
-      DOCKER_HOST: ${DOCKER_HOST}
-      CAF_AUTOSCALER_DOCKER_SWARM_STACK: ${CAF_AUTOSCALER_DOCKER_SWARM_STACK}
+      DOCKER_HOST: ${DOCKER_HOST:-<DOCKER_HOST_HERE_PLEASE_SET>}
+      CAF_AUTOSCALER_DOCKER_SWARM_STACK: ${CAF_AUTOSCALER_DOCKER_SWARM_STACK:-autoscalerdemo}
     image: autoscaler/autoscale-dockerswarm-rabbit:${project.version}
     ports:
       - "${AUTOSCALER_PORT:-9981}:8081"

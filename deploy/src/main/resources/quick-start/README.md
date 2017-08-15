@@ -72,8 +72,8 @@ For the download, configuration and deployment of the Autoscaler Service follow 
       </tr>
       <tr>
         <td>DOCKER_HOST</td>
-        <td><i>unspecified</i></td>
-        <td>Used to specify the Docker Swarm REST endpoint. Supports unix sockets and tcp type connections e.g. http://machine:2375</td>
+        <td>DOCKER_HOST_HERE_PLEASE_SET</td>
+        <td>Used to specify the Docker Swarm REST endpoint. Note: You must set this before deploying the swarm in order for the Autoscaler to function e.g. http://machine:2375</td>
 		<td>&#10004</td>
       </tr>
 	  <tr>
@@ -109,7 +109,7 @@ For the download, configuration and deployment of the Autoscaler Service follow 
 	  <tr>
 		<td>CAF_AUTOSCALER_DOCKER_SWARM_STACK</td>
 		<td><i>unspecified</i></td>
-		<td>Used to identify the stack within which the Autoscaler will monitor</td>
+		<td>Used to identify the stack within which the Autoscaler will monitor. Note: You must set this in order for the Autoscaler to function. e.g. autoscalerdemo</td>
 		<td>&#10004</td>
 	  <tr>
         <td>CAF_DOCKER_SWARM_TIMEOUT</td>

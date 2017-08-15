@@ -78,6 +78,7 @@
     </developers>
 
     <modules>
+        <module>deploy</module>
         <module>docs</module>
         <module>autoscale-api</module>
         <module>autoscale-core</module>

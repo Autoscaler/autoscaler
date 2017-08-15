@@ -106,7 +106,7 @@
                     <images>
                         <image>
                             <alias>autoscale-container</alias>
-                            <name>cafinternal/prereleases:autoscale-dockerswarm-rabbit-${project.version}</name>
+                            <name>${dockerCafInternalOrg}autoscale-dockerswarm-rabbit${dockerProjectVersion}</name>
                             <build>
                                 <maintainer>andrew.reid@hpe.com</maintainer>
                                 <from>cafapi/java8-with-tini:1.0.0</from>

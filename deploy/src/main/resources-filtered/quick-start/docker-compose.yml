@@ -7,6 +7,8 @@ services:
       DOCKER_HOST: ${DOCKER_HOST}
       CAF_AUTOSCALER_DOCKER_SWARM_STACK: ${CAF_AUTOSCALER_DOCKER_SWARM_STACK}
     image: autoscaler/autoscale-dockerswarm-rabbit:${project.version}
+    ports:
+      - "${AUTOSCALER_PORT:-9981}:8081"
   jobservice:
     depends_on:
       - rabbitmq

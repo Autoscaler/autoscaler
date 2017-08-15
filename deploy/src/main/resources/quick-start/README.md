@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Autoscaler service provides on-demand scaling of services, allowing you to efficiently dedicate resources where they are needed most in your Mesos cluster, and minimizing costs and ensuring user satisfaction. 
+The Autoscaler service provides on-demand scaling of services, allowing you to efficiently dedicate resources where they are needed most, and minimizing costs and ensuring user satisfaction. 
 
 ## Deployment Repository
 
@@ -11,10 +11,10 @@ This repository provides the necessary files to easily get started using the Aut
 ### Prerequisites
 
 - Docker must be available on the system
-- Docker Swarm should be enabled
-- The services to be governed, if they are not being deployed at the same side as the Autoscaler, are deployed on a set Docker Stack
+- Docker Swarm must be enabled
+- Services that are to be governed should be deployed on the same stack as the Autoscaler Service.
 
-The deployment files are written in [Docker Compose v3](https://docs.docker.com/compose/compose-file) format and is compatible with Docker Stack.
+The deployment files are written in [Docker Compose v3](https://docs.docker.com/compose/compose-file/) format and is compatible with Docker Stack.
 
 ## Demonstration
 
@@ -27,7 +27,7 @@ The pipes represent asynchronous message queues on RabbitMQ.
 
 1. **Autoscaler Service**
 	
-	The Autoscaler service monitors Worker input queues and scales Worker's up and down according to their workloads. The Autoscaler tracks the input and workload of specified Worker queues and calculates whether a Worker should be scaled up or down based on Labels provided within the Workers. The Labels set within each service to be tracked contain information such as the maximum and minimum amount of instances and the target queue to monitor. The Autoscaler can keep track of multiple microservices asyncronously depending on the performance specs of the host machine.
+	The Autoscaler service monitors Worker input queues and scales Worker's up and down according to their workloads. The Autoscaler tracks the input and workload of specified Worker queues and calculates whether a Worker should be scaled up or down based on Labels provided within the Workers. The Labels set within each service to be tracked contain information such as the maximum and minimum amount of instances and the type of metric to be used. The Autoscaler can keep track of multiple microservices asyncronously depending on the performance specs of the host machine.
 
 2. **Example Worker**
 
@@ -46,11 +46,9 @@ autoscaler:
     env_file:
       - ./rabbitmq.env
     environment:
-      DOCKER_HOST: ${DOCKER_HOST:-http://192.168.56.10:2375}
-      CAF_AUTOSCALER_MAXIMUM_INSTANCES: 4
+      DOCKER_HOST: ${DOCKER_HOST}
       CAF_AUTOSCALER_DOCKER_SWARM_STACK: ${CAF_AUTOSCALER_DOCKER_SWARM_STACK}
-      CAF_DOCKER_SWARM_TIMEOUT: 30
-    image: autoscaler/autoscale-dockerswarm-rabbit:${project.version}
+    image: autoscaler/autoscale-dockerswarm-rabbit:1.1.0
 ```
 
 For the download, configuration and deployment of the Autoscaler Service follow the instructions below.
@@ -63,57 +61,73 @@ For the download, configuration and deployment of the Autoscaler Service follow 
 
 2. **Configuration**
 
-	Configure the external parameters if required. If no external parameters are configured, the default values will be used. The following parameters may be set:
+	Configure the external parameters if required. These properties can be set by updating the Docker Compose file and adding them into the Autoscaler Service environment. You are required to set your Docker Host and Stack name in order for Autoscaler to function correctly. If no values are configured for the optional parameters, the default values will be used. The following may be set:
 
 	<table>
       <tr>
         <th>Environment Variable</th>
         <th>Default</th>
         <th>Description</th>
+		<th>Required?</th>
       </tr>
       <tr>
         <td>DOCKER_HOST</td>
-        <td>unix:///var/run/docker.sock</td>
+        <td><i>unspecified</i></td>
         <td>Used to specify the Docker Swarm REST endpoint. Supports unix sockets and tcp type connections e.g. http://machine:2375</td>
+		<td>&#10004</td>
       </tr>
 	  <tr>
         <td>CAF_RABBITMQ_HOST</td>
         <td>rabbitmq</td>
         <td>Used to specify the RabbitMQ Management API Endpoint. e.g http://rabbitmq:15672</td>
+		<td>&#10006</td>
       </tr>
 	  <tr>
         <td>CAF_RABBITMQ_PORT</td>
         <td>5672</td>
         <td>Used to specify the RabbitMQ Management API Endpoint. e.g http://rabbitmq:15672</td>
+		<td>&#10006</td>
       </tr>
 	  <tr>
         <td>CAF_RABBITMQ_USERNAME</td>
         <td>guest</td>
         <td>Used to specify the username used to connect to RabbitMQ.</td>
+		<td>&#10006</td>
       </tr>
 	  <tr>
         <td>CAF_RABBITMQ_PASSWORD</td>
         <td>guest</td>
         <td>Used to specify the password used to connect to RabbitMQ.</td>
+		<td>&#10006</td>
       </tr>
 	  <tr>
         <td>CAF_AUTOSCALER_MAXIMUM_INSTANCES</td>
         <td>100</td>
         <td>Used to specify the maximum number of instances that any worker can be scaled to.</td>
+		<td>&#10006</td>
       </tr>
 	  <tr>
 		<td>CAF_AUTOSCALER_DOCKER_SWARM_STACK</td>
-		<td>unspecified</td>
+		<td><i>unspecified</i></td>
 		<td>Used to identify the stack within which the Autoscaler will monitor</td>
+		<td>&#10004</td>
 	  <tr>
         <td>CAF_DOCKER_SWARM_TIMEOUT</td>
         <td>30</td>
         <td>Used to specify the max length of time in seconds that a docker REST call can take before a timeout out occurs.</td>
+		<td>&#10006</td>
       </tr>
 	  <tr>
         <td>CAF_DOCKER_SWARM_HEALTHCHECK_TIMEOUT</td>
         <td>5</td>
         <td>Used to specify the max length of time in seconds that the Docker endpoint healthcheck can take before a timeout occurs.</td>
+		<td>&#10006</td>
+      </tr>
+	  <tr>
+        <td>AUTOSCALER_PORT</td>
+        <td>9981</td>
+        <td>This is the port the Autoscaler Service is configured to listen on. This can be used to run a healthcheck request on the Autoscaler.</td>
+		<td>&#10006</td>
       </tr>
     </table> 
 
@@ -140,7 +154,7 @@ For the download, configuration and deployment of the Autoscaler Service follow 
 
 	##### Example
 
-	The Job Service microservices already have these labels specified. You can see the labels set under some of the components, for example with worker-langdetect.
+	Some workers in the autoscalerdemo already have these labels specified. You can see the labels set under some of the components, for example with worker-langdetect.
 
 	```
     	labels:
@@ -167,13 +181,19 @@ For the download, configuration and deployment of the Autoscaler Service follow 
 
 	##### Example
 
-	Running this command with the docker-compose.yml file supplied will bring up the Job Service as well as the Autoscaler Service.
+	Running this command with the docker-compose.yml file supplied will bring up the autoscalerdemo. This consists of the Job Service microservices, workers which can be scaled and the Autoscaler Service.
 
 ## Testing the Autoscaler
 
 #### Healthcheck
 
-The [autoscale-core](https://github.com/Autoscaler/autoscaler/blob/develop/autoscale-core) application inherently exposes standard and module-specific health checks. If you expose the admin port (default 8081) then this can be accessed via HTTP to examine metrics and health checks. The health check REST call will return HTTP 500 if any health check fails. For details on the health checks for specific components, examine the module documentation.
+The autoscale-core application inherently exposes standard and module-specific health checks. If you expose the admin port (default 8081) then this can be accessed via HTTP to examine metrics and health checks. The health check REST call will return HTTP 500 if any health check fails.
+
+Run the following CURL command
+
+`http://<DOCKER_HOST>:9981/healthcheck`
+
+Replace `<DOCKER_HOST>` with the name of your own Docker Host and adjust the port if you are not using the default. You can adjust the port by setting the `AUTOSCALER_PORT` environment variable.
 
 #### File Testing
 
@@ -183,7 +203,7 @@ The Input directory can be configured through an environment variable, otherwise
 
 `- ${JOB_SERVICE_DEMO_INPUT_DIR:-./input-files}:/mnt/caf-worker-input-dir:ro`
 
-For further information on what type of files to supply to the Job Service, refer to the [Worker-Globfilter repository](https://github.com/JobService/worker-globfilter).
+For further information on what how to submit work to the Job Service, refer to the [Worker-Globfilter repository](https://github.com/JobService/worker-globfilter/blob/v2.1.0/README.md).
 
 ## Rabbit.env
 
@@ -196,19 +216,28 @@ This file holds environment information relating to the RabbitMQ management serv
 A second Docker Compose file, `docker-compose-with-httpproxy.yml` is supplied for using Autoscaler behind a proxy. If required, this file should be deployed with the following environment variables set:
 
 <table>
+	  <tr>
+        <th>Environment Variable</th>
+        <th>Default</th>
+        <th>Description</th>
+		<th>Example</th>
+      </tr>
       <tr>
         <td>HTTP_PROXY</td>
         <td><b>No Default</b></td>
         <td>Used to specify an HTTP based proxy, which is used during the Docker REST endpoint communication.</td>
+		<td>http://proxy.somewebservice.net:8080</td>
       </tr>
 	  <tr>
         <td>HTTPS_PROXY</td>
         <td><b>No Default</b></td>
         <td>Used to specify an HTTPS based proxy, which is used during the Docker REST endpoint communication.</td>
+		<td>https://proxy.somewebservice.net:8080</td>
       </tr>
 	  <tr>
         <td>NO_PROXY</td>
         <td><b>No Default</b></td>
         <td>Used to specify an ignore list for HTTP based proxy communication.</td>
+		<td>192.168.59.103</td>
       </tr>
 </table>

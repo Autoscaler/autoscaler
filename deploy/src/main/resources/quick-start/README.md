@@ -46,9 +46,11 @@ autoscaler:
     env_file:
       - ./rabbitmq.env
     environment:
-      DOCKER_HOST: ${DOCKER_HOST}
-      CAF_AUTOSCALER_DOCKER_SWARM_STACK: ${CAF_AUTOSCALER_DOCKER_SWARM_STACK}
+      DOCKER_HOST: ${DOCKER_HOST:-<DOCKER_HOST_HERE_PLEASE_SET>}
+      CAF_AUTOSCALER_DOCKER_SWARM_STACK: ${CAF_AUTOSCALER_DOCKER_SWARM_STACK:-autoscalerdemo}
     image: autoscaler/autoscale-dockerswarm-rabbit:1.1.0
+	ports:
+      - "${AUTOSCALER_PORT:-9981}:8081"
 ```
 
 For the download, configuration and deployment of the Autoscaler Service follow the instructions below.

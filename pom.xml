@@ -33,14 +33,14 @@
     <parent>
         <groupId>com.github.cafapi</groupId>
         <artifactId>caf-common</artifactId>
-        <version>1.9.0-197</version>
+        <version>1.13.0-239</version>
         <relativePath />
     </parent>
     
     <properties>
         <dockerHubOrganization>autoscaler</dockerHubOrganization>
-        <dockerAutoscalerOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeparator}</dockerAutoscalerOrg>
-        <dockerProjectVersion>${dockerVersionSeparator}${project.version}</dockerProjectVersion>
+        <dockerAutoscalerOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerAutoscalerOrg>
+        <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
     </properties>
 
     <licenses>

@@ -29,13 +29,19 @@
     <name>Autoscaler</name>
     <description>Provides on-demand scaling of services, allowing you to efficiently dedicate resources where they are needed most in your Mesos cluster, and minimizing costs and ensuring user satisfaction.</description>
     <url>https://autoscaler.github.io/autoscaler/</url>
-    
+       
     <parent>
         <groupId>com.github.cafapi</groupId>
         <artifactId>caf-common</artifactId>
         <version>1.9.0-197</version>
         <relativePath />
     </parent>
+    
+    <properties>
+        <dockerHubOrganization>autoscaler</dockerHubOrganization>
+        <dockerAutoscalerOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeparator}</dockerAutoscalerOrg>
+        <dockerProjectVersion>${dockerVersionSeparator}${project.version}</dockerProjectVersion>
+    </properties>
 
     <licenses>
         <license>

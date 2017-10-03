@@ -1,7 +1,5 @@
-package com.hpe.caf.autoscale.shared.endpoint.docker;
-
 /*
- * Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
+ * Copyright 2015-2017 EntIT Software LLC, a Micro Focus company.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +13,8 @@ package com.hpe.caf.autoscale.shared.endpoint.docker;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.hpe.caf.autoscale.shared.endpoint.docker;
+
 import com.hpe.caf.autoscale.DockerSwarmAutoscaleConfiguration;
 import com.hpe.caf.autoscale.endpoint.docker.DockerSwarm;
 import com.hpe.caf.autoscale.endpoint.docker.DockerSwarmClient;

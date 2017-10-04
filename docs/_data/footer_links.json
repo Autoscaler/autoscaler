@@ -8,7 +8,7 @@
         }
     }],
     "feedback_url": "https://github.com/Autoscaler/autoscaler/issues",
-    "copyright": "© 2017 Hewlett Packard Enterprise",
+    "copyright": "© 2017 EntIT Software LLC, a Micro Focus company.",
     "footer_logo": "assets/img/autoscaler-logo.png",
     "footer_columns": [{
     "title": {

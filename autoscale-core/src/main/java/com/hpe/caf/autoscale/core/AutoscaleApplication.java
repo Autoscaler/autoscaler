@@ -123,7 +123,7 @@ public class AutoscaleApplication extends Application<AutoscaleConfiguration>
     }
 
     @Override
-    public void initialize(Bootstrap<WorkerConfiguration> bootstrap)
+    public void initialize(Bootstrap<AutoscaleConfiguration> bootstrap)
     {
         bootstrap.setConfigurationSourceProvider(
             new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(), new EnvironmentVariableSubstitutor(false, true))

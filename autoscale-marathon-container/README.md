@@ -1,4 +1,4 @@
-# autoscale-container
+# Autoscaler Marathon Service Container
 
 This repository consists of the source to build a pre-defined CAF approved
 container that includes the CAF autoscale application along with
@@ -46,6 +46,10 @@ Configuration of the AutoScaler is supported through the following environment v
     Default: `100`  
     Used to specify the maximum number of instances that any worker can be scaled to.
 
+ -  `CAF_LOG_LEVEL`  
+    Default: `INFO`  
+    Used to specify the required level of logging.
+
 
 ### Health checks
 
@@ -59,9 +63,7 @@ documentation.
 
 ### Logging
 
-Currently the logging is accessible via the Marathon sandbox until a CAF
-approved logging mechanism is agreed upon. Debug logging is enabled by default
-in this container.
+Currently the logging is accessible via the Marathon sandbox. The default log level in this container is `INFO` and this can be configured by supplying the required level in the `CAF_LOG_LEVEL` environment variable.
 
 
 ### Scaling

@@ -82,8 +82,7 @@ documentation.
 
 ### Logging
 
-Currently the logging is accessible via the docker container logs. Debug logging is enabled by default
-in this container. The default log level in this container is `INFO` and this can be configured by supplying the required level in the `CAF_LOG_LEVEL` environment variable.
+Currently the logging is accessible via the docker container logs. The default log level in this container is `INFO` and this can be configured by supplying the required level in the `CAF_LOG_LEVEL` environment variable.
 
 
 ### Scaling

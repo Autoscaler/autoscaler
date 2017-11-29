@@ -213,9 +213,44 @@ Note in the compose file that many of the services depend on the environment fil
 
 This file holds environment information relating to the RabbitMQ management service. Having the information held at a single location where each microservice can depend on allows for easy configuration where changes will be applied across all services in one go.
 
-## Using Autoscaler with a Proxy
+## Override Files
+Docker Compose supports the concept of Override Files which can be used to modify the service definitions in the main Docker Compose files, or to add extra service definitions.
 
-A second Docker Compose file, `docker-compose-with-httpproxy.yml` is supplied for using Autoscaler behind a proxy. If required, this file should be deployed with the following environment variables set:
+The following override files are supplied alongside the main Docker Compose file for the service:
+
+<table>
+  <tr>
+    <th>Override File</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>docker&#8209;compose.debug.yml</td>
+    <td>This override file can be used by developers to help with debugging. It increases the logging levels, puts the services into a mode where a Java debugger can be attached to them, and exposes endpoints which are not normally exposed outside of the internal network.<p>
+    <p>        
+    The following additional endpoints are exposed to the external network:<p>
+    <ol>
+      <li>Job Service Database Connection Port</li>
+      <li>RabbitMQ UI Port</li>
+      <li>Java Debugging Port for all Workers</li>
+      <li>Admin / HealthCheck Port for all Workers</li>
+    </ol>
+    <p>
+    The override file itself can be examined to check which ports these internal ports are exposed on. The external ports are not used for the normal operation of the services so they can be safely modified if they clash with any other services running on the host.</td>
+  </tr>
+  <tr>
+    <td>docker&#8209;compose&#8209;with&#8209;httpproxy.yml</td>
+    <td>This override file can be used when the Autoscaler is running behind a proxy.
+  </tr>
+</table>
+
+Use the -f switch to apply override files. For example, to start the services with the docker-compose.debug.yml file applied run the following command:
+
+    docker-compose -f docker-compose.yml -f docker-compose.debug.yml up
+
+
+### Using Autoscaler with a Proxy
+
+An override file, `docker-compose-with-httpproxy.yml` is supplied for using Autoscaler behind a proxy. If required, this file should be deployed with the following environment variables set:
 
 <table>
 	  <tr>

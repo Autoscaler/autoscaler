@@ -9,6 +9,7 @@ services:
     image: autoscaler/autoscale-dockerswarm-rabbit:${project.version}
     ports:
       - "${AUTOSCALER_PORT:-9981}:8081"
+
   jobservice:
     depends_on:
       - rabbitmq

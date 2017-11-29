@@ -133,7 +133,7 @@
                     <images>
                         <image>
                             <alias>autoscale-container</alias>
-                            <name>cafinternal/prereleases:autoscale-marathon-rabbit-${project.version}</name>
+                            <name>${dockerAutoscalerOrg}autoscale-marathon-rabbit${dockerProjectVersion}</name>
                             <build>
                                 <maintainer>andrew.reid@hpe.com</maintainer>
                                 <from>cafapi/opensuse-jre8:1.2</from>

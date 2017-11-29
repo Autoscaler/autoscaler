@@ -44,6 +44,9 @@ import com.hpe.caf.naming.ServicePath;
 import com.hpe.caf.util.ModuleLoader;
 import com.hpe.caf.util.ModuleLoaderException;
 import io.dropwizard.Application;
+import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
+import io.dropwizard.configuration.SubstitutingSourceProvider;
+import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +122,13 @@ public class AutoscaleApplication extends Application<AutoscaleConfiguration>
         });
     }
 
+    @Override
+    public void initialize(Bootstrap<AutoscaleConfiguration> bootstrap)
+    {
+        bootstrap.setConfigurationSourceProvider(
+            new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(), new EnvironmentVariableSubstitutor(false, true))
+        );
+    }
 
     /**
      * Get a default implementation of a ScheduledExecutorService as used by the autoscaler.

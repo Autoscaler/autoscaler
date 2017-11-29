@@ -1,4 +1,4 @@
-# Autoscaler Docker Swarm Service Deployment
+# Autoscaler Docker Swarm Service Container
 
 This repository consists of the source to build a pre-defined CAF approved
 container that includes the CAF autoscale application along with
@@ -54,6 +54,10 @@ Configuration of the AutoScaler is supported through the following environment v
     Default: `5`  
     Used to specify the max length of time in seconds that the Docker endpoint healthcheck can take before a timeout occurs.
 
+ -  `CAF_LOG_LEVEL`  
+    Default: `INFO`  
+    Used to specify the required level of logging.
+
  - `HTTP_PROXY`  
     (Optional)
     Used to specify an HTTP based proxy, which is used during the Docker REST endpoint communication. 
@@ -78,8 +82,7 @@ documentation.
 
 ### Logging
 
-Currently the logging is accessible via the docker container logs. Debug logging is enabled by default
-in this container.  The default log level can be controlled by supplying a CAF_LOG_LEVEL environment variable value.
+Currently the logging is accessible via the docker container logs. The default log level in this container is `INFO` and this can be configured by supplying the required level in the `CAF_LOG_LEVEL` environment variable.
 
 
 ### Scaling

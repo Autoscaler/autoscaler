@@ -26,4 +26,4 @@ then
 fi
 
 cd /maven
-java -cp "*" com.hpe.caf.autoscale.core.AutoscaleApplication server scaler.yaml
+java $CAF_AUTOSCALER_JAVA_OPTS -cp "*" com.hpe.caf.autoscale.core.AutoscaleApplication server scaler.yaml

@@ -7,7 +7,7 @@ team_members:
 
     - name: Dermot Hardy
       email: dermot.hardy@microfocus.com
-      avatar: /assets/img/user.png
+      avatar: /assets/img/Team/dermot.png
       social:
         - title: GitHub
           icon: hpe-social-github
@@ -18,7 +18,7 @@ team_members:
           
     - name: Adam Rogan
       email: adam.pau.rogan@microfocus.com
-      avatar: /assets/img/user.png
+      avatar: /assets/img/Team/adam.png
       social:
        - title: GitHub
          icon: hpe-social-github
@@ -29,7 +29,7 @@ team_members:
 
     - name: Christopher Comac
       email: christopher.jam.comac@microfocus.com
-      avatar: /assets/img/user.png
+      avatar: /assets/img/Team/christopher.png
       social:
        - title: GitHub
          icon: hpe-social-github
@@ -40,7 +40,7 @@ team_members:
 
     - name: Gregory Lucy
       email: gregory.lucy@microfocus.com
-      avatar: /assets/img/user.png
+      avatar: /assets/img/Team/greg.png
       social:
        - title: GitHub
          icon: hpe-social-github

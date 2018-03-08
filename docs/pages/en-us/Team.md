@@ -6,7 +6,7 @@ header: The Auto Scaler Team
 team_members:
 
     - name: Dermot Hardy
-      email: dermot.hardy:hpe.com
+      email: dermot.hardy@microfocus.com
       avatar: /assets/img/user.png
       social:
         - title: GitHub
@@ -14,10 +14,10 @@ team_members:
           url: https://github.hpe.com/dermot-hardy
         - title: Email
           icon: hpe-social-email
-          url: mailto:dermot.hardy@hpe.com
+          url: mailto:dermot.hardy@microfocus.com
           
     - name: Adam Rogan
-      email: adam.pau.rogan@hpe.com
+      email: adam.pau.rogan@microfocus.com
       avatar: /assets/img/user.png
       social:
        - title: GitHub
@@ -25,10 +25,10 @@ team_members:
          url: https://github.hpe.com/adam-pau-rogan
        - title: Email
          icon: hpe-social-email
-         url: mailto:adam.pau.rogan@hpe.com
+         url: mailto:adam.pau.rogan@microfocus.com
 
     - name: Christopher Comac
-      email: christopher.jam.comac@hpe.com
+      email: christopher.jam.comac@microfocus.com
       avatar: /assets/img/user.png
       social:
        - title: GitHub
@@ -36,10 +36,10 @@ team_members:
          url: https://github.hpe.com/christopher-jam-comac
        - title: Email
          icon: hpe-social-email
-         url: mailto:christopher.jam.comac@hpe.com
+         url: mailto:christopher.jam.comac@microfocus.com
 
     - name: Gregory Lucy
-      email: gregory.lucy@hpe.com
+      email: gregory.lucy@microfocus.com
       avatar: /assets/img/user.png
       social:
        - title: GitHub
@@ -47,5 +47,5 @@ team_members:
          url: https://github.hpe.com/gregory-lucy
        - title: Email
          icon: hpe-social-email
-         url: mailto:gregory.lucy@hpe.com
+         url: mailto:gregory.lucy@microfocus.com
 ---

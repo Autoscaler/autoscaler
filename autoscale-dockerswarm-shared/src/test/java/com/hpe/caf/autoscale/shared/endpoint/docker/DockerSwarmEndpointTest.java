@@ -37,7 +37,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  *
- * @author Trevor Getty <trevor.getty@hpe.com>
+ * @author Trevor Getty <trevor.getty@microfocus.com>
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DockerSwarmEndpointTest

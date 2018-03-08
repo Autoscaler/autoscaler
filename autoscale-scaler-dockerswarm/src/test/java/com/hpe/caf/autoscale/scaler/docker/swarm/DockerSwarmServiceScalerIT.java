@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Trevor Getty <trevor.getty@hpe.com>
+ * @author Trevor Getty <trevor.getty@microfocus.com>
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DockerSwarmServiceScalerIT

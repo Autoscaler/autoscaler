@@ -19,9 +19,9 @@ package com.hpe.caf.autoscale.source.marathon;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import mesosphere.marathon.client.Marathon;
-import mesosphere.marathon.client.model.v2.App;
+import mesosphere.marathon.client.MarathonException;
 import mesosphere.marathon.client.model.v2.Group;
-import mesosphere.marathon.client.utils.MarathonException;
+import mesosphere.marathon.client.model.v2.VersionedApp;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -54,7 +54,7 @@ public class MarathonServiceSourceTest
     public void getServicesTest()
         throws MarathonException, MalformedURLException, ScalerException
     {
-        App app = Mockito.mock(App.class);
+        VersionedApp app = Mockito.mock(VersionedApp.class);
         Mockito.when(app.getId()).thenReturn(APP_ID);
         Map<String, String> labels = new HashMap<>();
         labels.put(ScalingConfiguration.KEY_WORKLOAD_METRIC, METRIC);
@@ -66,7 +66,7 @@ public class MarathonServiceSourceTest
         labels.put(ScalingConfiguration.KEY_BACKOFF_AMOUNT, String.valueOf(BACKOFF));
         Mockito.when(app.getLabels()).thenReturn(labels);
 
-        App app2 = Mockito.mock(App.class);
+        VersionedApp app2 = Mockito.mock(VersionedApp.class);
         Mockito.when(app2.getId()).thenReturn(BAD_APP_ID);
         Mockito.when(app2.getLabels()).thenReturn(new HashMap<>());
 
@@ -92,12 +92,12 @@ public class MarathonServiceSourceTest
      */
     @Test
     public void multipleGroupPathTest() throws MarathonException, ScalerException, MalformedURLException {
-        App app1 = new App();
+        VersionedApp app1 = new VersionedApp();
         app1.setLabels(new HashMap<>());
         app1.getLabels().put(ScalingConfiguration.KEY_WORKLOAD_METRIC, "somemetric");
         app1.setId("/group1/app1");
 
-        App app2 = new App();
+        VersionedApp app2 = new VersionedApp();
         app2.setLabels(new HashMap<>());
         app2.getLabels().put(ScalingConfiguration.KEY_WORKLOAD_METRIC, "somemetric");
         app2.setId("/group2/app2");

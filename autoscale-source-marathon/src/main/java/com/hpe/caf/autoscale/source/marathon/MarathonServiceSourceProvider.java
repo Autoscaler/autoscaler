@@ -23,8 +23,6 @@ import com.hpe.caf.api.autoscale.ServiceSource;
 import com.hpe.caf.api.autoscale.ServiceSourceProvider;
 import com.hpe.caf.autoscale.MarathonAutoscaleConfiguration;
 import com.hpe.caf.naming.ServicePath;
-import feign.Feign;
-import feign.Request;
 import mesosphere.marathon.client.Marathon;
 import mesosphere.marathon.client.MarathonClient;
 
@@ -35,9 +33,6 @@ import java.util.Iterator;
 
 public class MarathonServiceSourceProvider implements ServiceSourceProvider
 {
-    private static final int MARATHON_TIMEOUT = 10_000;
-
-
     @Override
     public ServiceSource getServiceSource(final ConfigurationSource configurationSource, final ServicePath servicePath)
             throws ScalerException
@@ -45,8 +40,7 @@ public class MarathonServiceSourceProvider implements ServiceSourceProvider
         try {
             final MarathonAutoscaleConfiguration config = configurationSource.getConfiguration(MarathonAutoscaleConfiguration.class);
             final String groupId = getGroupId(config, servicePath);
-            Feign.Builder builder = Feign.builder().options(new Request.Options(MARATHON_TIMEOUT, MARATHON_TIMEOUT));
-            Marathon marathon = MarathonClient.getInstance(builder, config.getEndpoint());
+            Marathon marathon = MarathonClient.getInstance(config.getEndpoint());
             return new MarathonServiceSource(marathon, groupId, new URL(config.getEndpoint()));
         } catch (ConfigurationException | MalformedURLException e) {
             throw new ScalerException("Failed to create service source", e);

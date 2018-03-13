@@ -19,10 +19,10 @@ package com.hpe.caf.autoscale.scaler.marathon;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import mesosphere.marathon.client.Marathon;
-import mesosphere.marathon.client.model.v2.App;
+import mesosphere.marathon.client.MarathonException;
 import mesosphere.marathon.client.model.v2.GetAppResponse;
 import mesosphere.marathon.client.model.v2.Task;
-import mesosphere.marathon.client.utils.MarathonException;
+import mesosphere.marathon.client.model.v2.VersionedApp;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -43,7 +43,7 @@ public class MarathonServiceScalerTest
     public void scaleUpTest()
         throws MarathonException, ScalerException, MalformedURLException
     {
-        App app = Mockito.mock(App.class);
+        VersionedApp app = Mockito.mock(VersionedApp.class);
         Mockito.when(app.getTasksRunning()).thenReturn(1);
         Mockito.when(app.getTasksStaged()).thenReturn(0);
         GetAppResponse appResponse = Mockito.mock(GetAppResponse.class);
@@ -74,7 +74,7 @@ public class MarathonServiceScalerTest
     public void scaleDownTest()
         throws MarathonException, ScalerException, MalformedURLException
     {
-        App app = Mockito.mock(App.class);
+        VersionedApp app = Mockito.mock(VersionedApp.class);
         Mockito.when(app.getTasksRunning()).thenReturn(1);
         Mockito.when(app.getTasksStaged()).thenReturn(0);
         GetAppResponse appResponse = Mockito.mock(GetAppResponse.class);
@@ -105,7 +105,7 @@ public class MarathonServiceScalerTest
     public void scaleUpTestMax()
         throws MarathonException, ScalerException, MalformedURLException
     {
-        App app = Mockito.mock(App.class);
+        VersionedApp app = Mockito.mock(VersionedApp.class);
         Mockito.when(app.getTasksRunning()).thenReturn(1);
         Mockito.when(app.getTasksStaged()).thenReturn(0);
         GetAppResponse appResponse = Mockito.mock(GetAppResponse.class);
@@ -124,7 +124,7 @@ public class MarathonServiceScalerTest
     public void scaleDownTestMin()
         throws MarathonException, ScalerException, MalformedURLException
     {
-        App app = Mockito.mock(App.class);
+        VersionedApp app = Mockito.mock(VersionedApp.class);
         Mockito.when(app.getTasksRunning()).thenReturn(0);
         Mockito.when(app.getTasksStaged()).thenReturn(0);
         GetAppResponse appResponse = Mockito.mock(GetAppResponse.class);
@@ -149,7 +149,7 @@ public class MarathonServiceScalerTest
         Mockito.when(task1.getHost()).thenReturn(host1);
         Mockito.when(task1.getPorts()).thenReturn(ports1);
 
-        App app = Mockito.mock(App.class);
+        VersionedApp app = Mockito.mock(VersionedApp.class);
         Mockito.when(app.getTasks()).thenReturn(Collections.singletonList(task1));
         Mockito.when(app.getTasksRunning()).thenReturn(1);
         Mockito.when(app.getTasksStaged()).thenReturn(0);

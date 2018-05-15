@@ -46,6 +46,7 @@
         <dockerHubOrganization>autoscaler</dockerHubOrganization>
         <dockerAutoscalerOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerAutoscalerOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
+        <gitRepo>https://github.com/AutoScaler/autoscaler</gitRepo>
     </properties>
 
     <licenses>
@@ -117,7 +118,7 @@
     <scm>
         <connection>scm:git:https://github.com/AutoScaler/autoscaler.git</connection>
         <developerConnection>scm:git:https://github.com/AutoScaler/autoscaler.git</developerConnection>
-        <url>https://github.com/AutoScaler/autoscaler</url>
+        <url>${gitRepo}</url>
     </scm>
 
 </project>

@@ -15,17 +15,18 @@
  */
 package com.hpe.caf.autoscale.scaler.marathon;
 
-
 import com.hpe.caf.api.HealthResult;
 import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ServiceHost;
 import com.hpe.caf.api.autoscale.ServiceScaler;
+
 import mesosphere.marathon.client.Marathon;
 import mesosphere.marathon.client.MarathonException;
 import mesosphere.marathon.client.model.v2.App;
 import mesosphere.marathon.client.model.v2.GetAppResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,11 +34,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
-
 
 /**
  * A MarathonServiceScaler uses a Marathon Java client library to make calls to a
@@ -49,32 +47,36 @@ public class MarathonServiceScaler implements ServiceScaler
     private Marathon marathon;
     private final int maximumInstances;
     private final URL url;
+    private final AppInstancePatcher appInstancePatcher;
+
     private static final Logger LOG = LoggerFactory.getLogger(MarathonServiceScaler.class);
 
 
-    public MarathonServiceScaler(final Marathon marathon, final int maxInstances, final URL url)
+    public MarathonServiceScaler(final Marathon marathon, final int maxInstances, final URL url,
+                                 final AppInstancePatcher appInstancePatcher)
     {
         this.marathon = Objects.requireNonNull(marathon);
         maximumInstances = Math.max(1, maxInstances);
         this.url = Objects.requireNonNull(url);
+        this.appInstancePatcher = appInstancePatcher;
     }
-
 
     @Override
     public void scaleUp(final String serviceReference, final int amount)
             throws ScalerException
     {
         try {
+
             GetAppResponse appGet = marathon.getApp(serviceReference);
             App app = appGet.getApp();
             int current = app.getTasksRunning() + app.getTasksStaged();
             int target = Math.min(maximumInstances, current + amount);
             if ( target > current ) {
-                app.setInstances(Math.min(maximumInstances, app.getTasksRunning() + app.getTasksStaged() + amount));
                 LOG.debug("Scaling service {} up by {} instances", serviceReference, amount);
-                marathon.updateApp(serviceReference, app, true);
+                appInstancePatcher.patchInstances(app.getId(),
+                        Math.min(maximumInstances, app.getTasksRunning() + app.getTasksStaged() + amount));
             }
-        } catch (MarathonException e) {
+        } catch (Exception e) {
             throw new ScalerException("Failed to scale up service " + serviceReference, e);
         }
     }
@@ -89,11 +91,10 @@ public class MarathonServiceScaler implements ServiceScaler
             App app = appGet.getApp();
             int current = app.getTasksRunning() + app.getTasksStaged();
             if ( current > 0 ) {
-                app.setInstances(Math.max(0, current - amount));
                 LOG.debug("Scaling service {} down by {} instances", serviceReference, amount);
-                marathon.updateApp(serviceReference, app, true);
+                appInstancePatcher.patchInstances(app.getId(), Math.max(0, current - amount));
             }
-        } catch (MarathonException e) {
+        } catch (Exception e) {
             throw new ScalerException("Failed to scale down service " + serviceReference, e);
         }
     }

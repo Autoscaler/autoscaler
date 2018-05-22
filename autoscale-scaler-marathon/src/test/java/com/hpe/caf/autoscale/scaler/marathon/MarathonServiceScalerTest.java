@@ -44,6 +44,7 @@ public class MarathonServiceScalerTest
         throws MarathonException, ScalerException, MalformedURLException
     {
         VersionedApp app = Mockito.mock(VersionedApp.class);
+        Mockito.when(app.getId()).thenReturn(SERVICE);
         Mockito.when(app.getTasksRunning()).thenReturn(1);
         Mockito.when(app.getTasksStaged()).thenReturn(0);
         GetAppResponse appResponse = Mockito.mock(GetAppResponse.class);
@@ -51,10 +52,10 @@ public class MarathonServiceScalerTest
         Marathon marathon = Mockito.mock(Marathon.class);
         Mockito.when(marathon.getApp(SERVICE)).thenReturn(appResponse);
         URL url = new URL("http://localhost:8080");
-        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url);
+        AppInstancePatcher appInstancePatcher = Mockito.mock(AppInstancePatcher.class);
+        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url, appInstancePatcher);
         scaler.scaleUp(SERVICE, 1);
-        Mockito.verify(app, Mockito.times(1)).setInstances(2);
-        Mockito.verify(marathon, Mockito.times(1)).updateApp(Mockito.eq(SERVICE), Mockito.eq(app), Mockito.eq(true));
+        Mockito.verify(appInstancePatcher, Mockito.times(1)).patchInstances(Mockito.eq(SERVICE), Mockito.eq(2));
     }
 
 
@@ -65,7 +66,8 @@ public class MarathonServiceScalerTest
         Marathon marathon = Mockito.mock(Marathon.class);
         Mockito.when(marathon.getApp(SERVICE)).thenThrow(MarathonException.class);
         URL url = new URL("http://localhost:8080");
-        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url);
+        AppInstancePatcher appInstancePatcher = Mockito.mock(AppInstancePatcher.class);
+        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url, appInstancePatcher);
         scaler.scaleUp(SERVICE, 1);
     }
 
@@ -75,6 +77,7 @@ public class MarathonServiceScalerTest
         throws MarathonException, ScalerException, MalformedURLException
     {
         VersionedApp app = Mockito.mock(VersionedApp.class);
+        Mockito.when(app.getId()).thenReturn(SERVICE);
         Mockito.when(app.getTasksRunning()).thenReturn(1);
         Mockito.when(app.getTasksStaged()).thenReturn(0);
         GetAppResponse appResponse = Mockito.mock(GetAppResponse.class);
@@ -82,10 +85,10 @@ public class MarathonServiceScalerTest
         Marathon marathon = Mockito.mock(Marathon.class);
         Mockito.when(marathon.getApp(SERVICE)).thenReturn(appResponse);
         URL url = new URL("http://localhost:8080");
-        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url);
+        AppInstancePatcher appInstancePatcher = Mockito.mock(AppInstancePatcher.class);
+        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url, appInstancePatcher);
         scaler.scaleDown(SERVICE, 1);
-        Mockito.verify(app, Mockito.times(1)).setInstances(0);
-        Mockito.verify(marathon, Mockito.times(1)).updateApp(Mockito.eq(SERVICE), Mockito.eq(app), Mockito.eq(true));
+        Mockito.verify(appInstancePatcher, Mockito.times(1)).patchInstances(Mockito.eq(SERVICE), Mockito.eq(0));
     }
 
 
@@ -96,7 +99,8 @@ public class MarathonServiceScalerTest
         Marathon marathon = Mockito.mock(Marathon.class);
         Mockito.when(marathon.getApp(SERVICE)).thenThrow(MarathonException.class);
         URL url = new URL("http://localhost:8080");
-        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url);
+        AppInstancePatcher appInstancePatcher = Mockito.mock(AppInstancePatcher.class);
+        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url, appInstancePatcher);
         scaler.scaleDown(SERVICE, 1);
     }
 
@@ -106,6 +110,7 @@ public class MarathonServiceScalerTest
         throws MarathonException, ScalerException, MalformedURLException
     {
         VersionedApp app = Mockito.mock(VersionedApp.class);
+        Mockito.when(app.getId()).thenReturn(SERVICE);
         Mockito.when(app.getTasksRunning()).thenReturn(1);
         Mockito.when(app.getTasksStaged()).thenReturn(0);
         GetAppResponse appResponse = Mockito.mock(GetAppResponse.class);
@@ -113,10 +118,10 @@ public class MarathonServiceScalerTest
         Marathon marathon = Mockito.mock(Marathon.class);
         Mockito.when(marathon.getApp(SERVICE)).thenReturn(appResponse);
         URL url = new URL("http://localhost:8080");
-        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 1, url);
+        AppInstancePatcher appInstancePatcher = Mockito.mock(AppInstancePatcher.class);
+        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 1, url, appInstancePatcher);
         scaler.scaleUp(SERVICE, 1);
-        Mockito.verify(app, Mockito.times(0)).setInstances(Mockito.anyInt());
-        Mockito.verify(marathon, Mockito.times(0)).updateApp(Mockito.eq(SERVICE), Mockito.eq(app), Mockito.eq(true));
+        Mockito.verify(appInstancePatcher, Mockito.times(0)).patchInstances(Mockito.eq(SERVICE), Mockito.eq(2));
     }
 
 
@@ -125,6 +130,7 @@ public class MarathonServiceScalerTest
         throws MarathonException, ScalerException, MalformedURLException
     {
         VersionedApp app = Mockito.mock(VersionedApp.class);
+        Mockito.when(app.getId()).thenReturn(SERVICE);
         Mockito.when(app.getTasksRunning()).thenReturn(0);
         Mockito.when(app.getTasksStaged()).thenReturn(0);
         GetAppResponse appResponse = Mockito.mock(GetAppResponse.class);
@@ -132,10 +138,10 @@ public class MarathonServiceScalerTest
         Marathon marathon = Mockito.mock(Marathon.class);
         Mockito.when(marathon.getApp(SERVICE)).thenReturn(appResponse);
         URL url = new URL("http://localhost:8080");
-        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url);
+        AppInstancePatcher appInstancePatcher = Mockito.mock(AppInstancePatcher.class);
+        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url, appInstancePatcher);
         scaler.scaleDown(SERVICE, 1);
-        Mockito.verify(app, Mockito.times(0)).setInstances(Mockito.anyInt());
-        Mockito.verify(marathon, Mockito.times(0)).updateApp(Mockito.eq(SERVICE), Mockito.eq(app), Mockito.eq(true));
+        Mockito.verify(appInstancePatcher, Mockito.times(0)).patchInstances(Mockito.eq(SERVICE), Mockito.eq(0));
     }
 
 
@@ -150,6 +156,7 @@ public class MarathonServiceScalerTest
         Mockito.when(task1.getPorts()).thenReturn(ports1);
 
         VersionedApp app = Mockito.mock(VersionedApp.class);
+        Mockito.when(app.getId()).thenReturn(SERVICE);
         Mockito.when(app.getTasks()).thenReturn(Collections.singletonList(task1));
         Mockito.when(app.getTasksRunning()).thenReturn(1);
         Mockito.when(app.getTasksStaged()).thenReturn(0);
@@ -159,7 +166,8 @@ public class MarathonServiceScalerTest
         Mockito.when(marathon.getApp(SERVICE)).thenReturn(appResponse);
 
         URL url = new URL("http://localhost:8080");
-        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url);
+        AppInstancePatcher appInstancePatcher = Mockito.mock(AppInstancePatcher.class);
+        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url, appInstancePatcher);
         InstanceInfo info = scaler.getInstanceInfo(SERVICE);
         Assert.assertEquals(1, info.getInstancesRunning());
         Assert.assertEquals(0, info.getInstancesStaging());
@@ -176,7 +184,8 @@ public class MarathonServiceScalerTest
         Marathon marathon = Mockito.mock(Marathon.class);
         Mockito.when(marathon.getApp(SERVICE)).thenThrow(MarathonException.class);
         URL url = new URL("http://localhost:8080");
-        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url);
+        AppInstancePatcher appInstancePatcher = Mockito.mock(AppInstancePatcher.class);
+        MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url, appInstancePatcher);
         scaler.getInstanceInfo(SERVICE);
     }
 }

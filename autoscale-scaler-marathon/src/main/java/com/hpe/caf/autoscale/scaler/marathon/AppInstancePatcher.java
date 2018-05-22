@@ -35,6 +35,7 @@ public class AppInstancePatcher {
             final HttpResponse response = client.execute(patch);
             if(!force && response.getStatusLine().getStatusCode()==409){
                 patchInstances(appId, instances, true);
+                return;
             }
             if(response.getStatusLine().getStatusCode()!=200){
                 throw new ScalerException(response.getStatusLine().getReasonPhrase());

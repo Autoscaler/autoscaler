@@ -66,7 +66,6 @@ public class MarathonServiceScaler implements ServiceScaler
             throws ScalerException
     {
         try {
-
             GetAppResponse appGet = marathon.getApp(serviceReference);
             App app = appGet.getApp();
             int current = app.getTasksRunning() + app.getTasksStaged();

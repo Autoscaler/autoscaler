@@ -13,7 +13,7 @@ import java.net.URI;
 
 public class AppInstancePatcher {
 
-    private URI marathonUri;
+    private final URI marathonUri;
 
     public AppInstancePatcher(final URI marathonUri){
         this.marathonUri = marathonUri;

@@ -41,7 +41,7 @@ public class MarathonServiceScalerProvider implements ServiceScalerProvider
             URL url = new URL(config.getEndpoint());
             Marathon marathon = MarathonClient.getInstance(url.toString());
             return new MarathonServiceScaler(marathon, config.getMaximumInstances(), url, new AppInstancePatcher(url.toURI()));
-        } catch (ConfigurationException | MalformedURLException |URISyntaxException e) {
+        } catch (ConfigurationException | MalformedURLException | URISyntaxException e) {
             throw new ScalerException("Failed to create service scaler", e);
         }
     }

@@ -25,7 +25,7 @@ import org.apache.http.impl.client.HttpClients;
 
 import org.junit.Test;
 
-public class AutoscalerIT
+public final class AutoscalerIT
 {    
     @Test
     public void testSwarmHealthCheck() throws IOException {
@@ -39,7 +39,7 @@ public class AutoscalerIT
         assertTrue(healthCheck(marathonRequestUrl).getStatusLine().getStatusCode() == 200);
     }
     
-    public HttpResponse healthCheck(String requestUrl) throws IOException {
+    public HttpResponse healthCheck(final String requestUrl) throws IOException {
         final HttpGet request = new HttpGet(requestUrl);
         final HttpClient httpClient = HttpClients.createDefault();
         final HttpResponse response = httpClient.execute(request);

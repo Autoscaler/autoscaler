@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015-2017 EntIT Software LLC, a Micro Focus company.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>com.github.autoscaler</groupId>
+    <artifactId>autoscale-acceptance-tests</artifactId>
+    
+    <parent>
+        <groupId>com.github.autoscaler</groupId>
+        <artifactId>autoscale-aggregator</artifactId>
+        <version>1.3.0-SNAPSHOT</version>
+    </parent>
+    
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven.failsafe.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <skip>false</skip>
+                            <systemPropertyVariables>
+                                <docker.host.address>${docker.host.address}</docker.host.address>
+                                <autoscale.admin.port>${autoscale.admin.port}</autoscale.admin.port>    
+                            </systemPropertyVariables>
+                            <environmentVariables>
+                                <AUTOSCALE_SWARM_HEALTHCHECK_URL>http://${docker.host.address}:${swarm.scaler.port}/healthcheck</AUTOSCALE_SWARM_HEALTHCHECK_URL>
+                                <AUTOSCALE_MARATHON_HEALTHCHECK_URL>http://${docker.host.address}:${marathon.scaler.port}/healthcheck</AUTOSCALE_MARATHON_HEALTHCHECK_URL>
+                            </environmentVariables>
+                            <!--<debugForkedProcess>true</debugForkedProcess>-->
+                            <!--<summaryFile>target/failsafe-reports/failsafe-summary.xml</summaryFile>-->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${fabric8.docker.maven.version}</version>
+                <executions>
+                    <execution>
+                        <id>start</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <verbose>true</verbose>
+                    <watchInterval>500</watchInterval>
+                    <logDate>default</logDate>
+                    <autoPull>on</autoPull>
+                    <images>
+                        
+                        <image>
+                            <alias>zookeeper</alias>
+                            <name>zookeeper:3.5</name>
+                            <run>
+                                <ports>
+                                    <port>2181:2181</port>
+                                </ports>
+                                <wait>
+                                    <tcp>
+                                        <ports>
+                                            <port>2181</port>
+                                        </ports>
+                                    </tcp>
+                                    <time>10000</time>
+                                </wait>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                            </run>
+                        </image>
+                        
+                        <image>
+                            <alias>mesos-master</alias>
+                            <name>mesosphere/mesos-master:1.5.0</name>
+                            <run>
+                                <ports>
+                                    <port>5050:5050</port>
+                                </ports>
+                                <privileged>true</privileged>
+                                <env>
+                                    <MESOS_ZK>zk://zookeeper:2181/mesos</MESOS_ZK>
+                                    <MESOS_LOG_DIR>/var/log/mesos</MESOS_LOG_DIR>
+                                    <MESOS_WORK_DIR>/var/tmp/mesos</MESOS_WORK_DIR>
+                                </env>
+                                <links>
+                                    <link>zookeeper</link>
+                                </links>
+                                <wait>
+                                    <tcp>
+                                        <ports>
+                                            <port>5050</port>
+                                        </ports>
+                                    </tcp>
+                                    <time>15000</time>
+                                </wait>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                            </run>
+                        </image>
+                        
+                        <image>
+                            <alias>mesos-slave</alias>
+                            <name>mesosphere/mesos-slave:1.5.0</name>
+                            <run>
+                                <ports>
+                                    <port>5051:5051</port>
+                                </ports>
+                                <privileged>true</privileged>
+                                <env>
+                                    <MESOS_MASTER>zk://zookeeper:2181/mesos</MESOS_MASTER>
+                                    <MESOS_SYSTEMD_ENABLE_SUPPORT>false</MESOS_SYSTEMD_ENABLE_SUPPORT>
+                                    <MESOS_LOG_DIR>/var/log/mesos</MESOS_LOG_DIR>
+                                    <MESOS_WORK_DIR>/var/tmp/mesos</MESOS_WORK_DIR>
+                                </env>
+                                <volumes>
+                                    <bind>
+                                        <volume>/var/run/docker.sock:/run/docker.sock</volume>
+                                        <volume>/usr/bin/docker:/usr/bin/docker</volume>
+                                        <volume>/cgroup:/cgroup</volume>
+                                        <volume>/sys:/sys:ro</volume>
+                                    </bind>
+                                </volumes>
+                                <links>
+                                    <link>zookeeper</link>
+                                    <link>mesos-master</link>
+                                </links>
+                                <wait>
+                                    <tcp>
+                                        <ports>
+                                            <port>5051</port>
+                                        </ports>
+                                    </tcp>
+                                    <time>15000</time>
+                                </wait>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                            </run>
+                        </image>
+                        
+                        <image>
+                            <alias>marathon</alias>
+                            <name>mesosphere/marathon:v1.6.352</name>
+                            <run>
+                                <ports>
+                                    <port>3210:3210</port>
+                                    <port>8088:8080</port>
+                                </ports>
+                                <privileged>true</privileged>
+                                <env>
+                                    <MARATHON_MASTER>local</MARATHON_MASTER>
+                                    <MARATHON_ZK>zk://zookeeper:2181/marathon</MARATHON_ZK>
+                                </env>
+                                <links>
+                                    <link>zookeeper</link>
+                                </links>
+                                <wait>
+                                    <http>
+                                        <url>http://${docker.host.address}:8088</url>
+                                    </http>
+                                    <time>30000</time>
+                                </wait>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                            </run>
+                        </image>
+                        
+                        <image>
+                            <alias>rabbitmq</alias>
+                            <name>rabbitmq:3.7.5</name>
+                            <run>
+                                <ports>
+                                    <port>${rabbitmq.port}:5672</port>
+                                </ports>
+                                <wait>
+                                    <healthy>true></healthy>
+                                    <time>30000</time>
+                                    <shutdown>500</shutdown>
+                                </wait>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                            </run>
+                        </image>
+                        
+                        <image>
+                            <alias>swarm-autoscale-container</alias>
+                            <name>${dockerAutoscalerOrg}autoscale-dockerswarm-rabbit${dockerProjectVersion}</name>
+                            <run>
+                                <ports>
+                                    <port>${swarm.scaler.port}:8081</port>
+                                </ports>
+                                <env>
+                                    <DOCKER_HOST>http://${docker.host.address}:2375</DOCKER_HOST>
+                                    <CAF_AUTOSCALER_DOCKER_SWARM_STACK>autoscalerdemo</CAF_AUTOSCALER_DOCKER_SWARM_STACK>
+                                    <CAF_RABBITMQ_MGMT_URL>http://${docker.host.address}:${rabbitmq.port}</CAF_RABBITMQ_MGMT_URL>
+<!--                                    <CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>
+                                    <CAF_RABBITMQ_MGMT_PASSWORD>guest</CAF_RABBITMQ_MGMT_PASSWORD>-->
+                                </env>
+                                <links>
+                                    <link>marathon</link>
+                                    <link>rabbitmq</link>
+                                </links>
+                                <wait>
+                                    <healthy>true></healthy>
+                                    <time>30000</time>
+                                    <shutdown>500</shutdown>
+                                </wait>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                            </run>
+                        </image>
+                        
+                        <image>
+                            <alias>marathon-autoscale-container</alias>
+                            <name>${dockerAutoscalerOrg}autoscale-marathon-rabbit${dockerProjectVersion}</name>
+                            <run>
+                                <ports>
+                                    <port>${marathon.scaler.port}:8081</port>
+                                </ports>
+                                <env>
+                                    <DOCKER_HOST>http://${docker.host.address}:2375</DOCKER_HOST>
+                                    <CAF_MARATHON_URL>http://${docker.host.address}:2375</CAF_MARATHON_URL>
+                                    <CAF_AUTOSCALER_BACKLOG_GOAL>300</CAF_AUTOSCALER_BACKLOG_GOAL>
+                                    <CAF_AUTOSCALER_MARATHON_GROUP>/</CAF_AUTOSCALER_MARATHON_GROUP>
+                                    <CAF_AUTOSCALER_MAXIMUM_INSTANCES>4</CAF_AUTOSCALER_MAXIMUM_INSTANCES>=4
+                                    <CAF_AUTOSCALER_SCALING_DELAY>10</CAF_AUTOSCALER_SCALING_DELAY>
+                                    <CAF_LOG_LEVEL>INFO</CAF_LOG_LEVEL>
+                                    <CAF_RABBITMQ_MGMT_URL>http://${docker.host.address}:${rabbitmq.port}</CAF_RABBITMQ_MGMT_URL>
+<!--                                    <CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>
+                                    <CAF_RABBITMQ_MGMT_PASSWORD>guest</CAF_RABBITMQ_MGMT_PASSWORD>-->
+                                </env>
+                                <links>
+                                    <link>marathon</link>
+                                    <link>rabbitmq</link>
+                                </links>
+                                <wait>
+                                    <healthy>true></healthy>
+                                    <time>30000</time>
+                                    <shutdown>500</shutdown>
+                                </wait>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                            </run>
+                        </image>
+                        
+                    </images>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+</project>

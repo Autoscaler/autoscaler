@@ -16,6 +16,7 @@
 package com.hpe.caf.autoscale.scaler.marathon;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 import com.hpe.caf.api.autoscale.ScalerException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPatch;
@@ -44,9 +45,12 @@ public class AppInstancePatcher {
         details.addProperty("id", appId);
         details.addProperty("instances", instances);
 
+        final JsonArray appArray = new JsonArray();
+        appArray.add(details);
+                
         try(final CloseableHttpClient client = HttpClientBuilder.create().build()){
-            final HttpPatch patch = new HttpPatch(marathonUri);
-            patch.setEntity(new StringEntity(details.toString(), ContentType.APPLICATION_JSON));
+            final HttpPatch patch = new HttpPatch(new Url(marathonUri, "/v2/apps"));
+            patch.setEntity(new StringEntity(appArray.toString(), ContentType.APPLICATION_JSON));
             final HttpResponse response = client.execute(patch);
             if(!force && response.getStatusLine().getStatusCode()==409){
                 patchInstances(appId, instances, true);

@@ -26,6 +26,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.net.URI;
+import java.net.URL;
 
 public class AppInstancePatcher {
 
@@ -49,7 +50,7 @@ public class AppInstancePatcher {
         appArray.add(details);
                 
         try(final CloseableHttpClient client = HttpClientBuilder.create().build()){
-            final HttpPatch patch = new HttpPatch(new Url(marathonUri, "/v2/apps"));
+            final HttpPatch patch = new HttpPatch(new URL(marathonUri.toURL(), "/v2/apps").toURI());
             patch.setEntity(new StringEntity(appArray.toString(), ContentType.APPLICATION_JSON));
             final HttpResponse response = client.execute(patch);
             if(!force && response.getStatusLine().getStatusCode()==409){

@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  */
 public class MarathonServiceScaler implements ServiceScaler
 {
-    private Marathon marathon;
+    private final Marathon marathon;
     private final int maximumInstances;
     private final URL url;
     private final AppInstancePatcher appInstancePatcher;
@@ -72,8 +72,7 @@ public class MarathonServiceScaler implements ServiceScaler
             int target = Math.min(maximumInstances, current + amount);
             if ( target > current ) {
                 LOG.debug("Scaling service {} up by {} instances", serviceReference, amount);
-                appInstancePatcher.patchInstances(app.getId(),
-                        Math.min(maximumInstances, app.getTasksRunning() + app.getTasksStaged() + amount));
+                appInstancePatcher.patchInstances(app.getId(), target);
             }
         } catch (Exception e) {
             throw new ScalerException("Failed to scale up service " + serviceReference, e);

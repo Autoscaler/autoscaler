@@ -26,6 +26,7 @@ import mesosphere.marathon.client.Marathon;
 import mesosphere.marathon.client.MarathonClient;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 
@@ -39,8 +40,8 @@ public class MarathonServiceScalerProvider implements ServiceScalerProvider
             MarathonAutoscaleConfiguration config = configurationSource.getConfiguration(MarathonAutoscaleConfiguration.class);
             URL url = new URL(config.getEndpoint());
             Marathon marathon = MarathonClient.getInstance(url.toString());
-            return new MarathonServiceScaler(marathon, config.getMaximumInstances(), url);
-        } catch (ConfigurationException | MalformedURLException e) {
+            return new MarathonServiceScaler(marathon, config.getMaximumInstances(), url, new AppInstancePatcher(url.toURI()));
+        } catch (ConfigurationException | MalformedURLException | URISyntaxException e) {
             throw new ScalerException("Failed to create service scaler", e);
         }
     }

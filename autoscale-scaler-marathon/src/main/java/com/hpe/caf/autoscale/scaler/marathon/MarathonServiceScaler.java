@@ -76,7 +76,7 @@ public class MarathonServiceScaler implements ServiceScaler
                 LOG.debug("Scaling service {} up by {} instances", serviceReference, amount);
                 appInstancePatcher.patchInstances(app.getId(), target);
             }
-        } catch (MarathonException  e) {
+        } catch (MarathonException e) {
             throw new ScalerException("Failed to scale up service " + serviceReference, e);
         }
     }

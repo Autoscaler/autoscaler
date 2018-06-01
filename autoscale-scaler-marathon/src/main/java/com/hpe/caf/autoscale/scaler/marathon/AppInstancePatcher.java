@@ -18,6 +18,7 @@ package com.hpe.caf.autoscale.scaler.marathon;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.hpe.caf.api.autoscale.ScalerException;
+import java.io.IOException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.entity.ContentType;
@@ -26,12 +27,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.net.URI;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
-public class AppInstancePatcher {
+public final class AppInstancePatcher {
 
     private final URI marathonUri;
 
@@ -39,12 +40,11 @@ public class AppInstancePatcher {
         this.marathonUri = marathonUri;
     }
 
-    public void patchInstances(final String appId, int instances) throws ScalerException {
+    public void patchInstances(final String appId, final int instances) throws ScalerException {
         patchInstances(appId, instances, false);
     }
 
     private void patchInstances(final String appId, final int instances, final boolean force) throws ScalerException {
-
         final JsonObject details = new JsonObject();
         details.addProperty("id", appId);
         details.addProperty("instances", instances);
@@ -53,7 +53,7 @@ public class AppInstancePatcher {
         appArray.add(details);
         
         try(final CloseableHttpClient client = HttpClientBuilder.create().build()){
-            URIBuilder uriBuilder = new URIBuilder(new URL(marathonUri.toURL(), "/v2/apps").toURI());
+            final URIBuilder uriBuilder = new URIBuilder(marathonUri).setPath("/v2/apps");
             uriBuilder.setParameters(Arrays.asList(new BasicNameValuePair("force", Boolean.toString(force))));
             final HttpPatch patch = new HttpPatch(uriBuilder.build());
             patch.setEntity(new StringEntity(appArray.toString(), ContentType.APPLICATION_JSON));
@@ -65,8 +65,7 @@ public class AppInstancePatcher {
             if(response.getStatusLine().getStatusCode()!=200){
                 throw new ScalerException(response.getStatusLine().getReasonPhrase());
             }
-        }
-        catch (Exception ex){
+        } catch (URISyntaxException | IOException ex) {
             throw new ScalerException(String.format("Exception patching %s to %s instances.", appId, instances), ex);
         }
     }

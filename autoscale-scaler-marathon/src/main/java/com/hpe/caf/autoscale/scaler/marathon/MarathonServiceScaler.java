@@ -34,7 +34,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -74,7 +76,7 @@ public class MarathonServiceScaler implements ServiceScaler
                 LOG.debug("Scaling service {} up by {} instances", serviceReference, amount);
                 appInstancePatcher.patchInstances(app.getId(), target);
             }
-        } catch (Exception e) {
+        } catch (MarathonException  e) {
             throw new ScalerException("Failed to scale up service " + serviceReference, e);
         }
     }
@@ -92,7 +94,7 @@ public class MarathonServiceScaler implements ServiceScaler
                 LOG.debug("Scaling service {} down by {} instances", serviceReference, amount);
                 appInstancePatcher.patchInstances(app.getId(), Math.max(0, current - amount));
             }
-        } catch (Exception e) {
+        } catch (MarathonException e) {
             throw new ScalerException("Failed to scale down service " + serviceReference, e);
         }
     }

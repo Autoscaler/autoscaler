@@ -256,11 +256,8 @@
                                     <link>rabbitmq</link>
                                 </links>
                                 <wait>
-                                    <http>
-                                        <url>http://${docker.host.address}:${swarm.scaler.port}/healthcheck</url>
-                                        <status>200</status>
-                                    </http>
-                                    <time>45000</time>
+                                    <healthy>true</healthy>
+                                    <time>60000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
                                 <log>
@@ -293,11 +290,8 @@
                                     <link>rabbitmq</link>
                                 </links>
                                 <wait>
-                                    <http>
-                                        <url>http://${docker.host.address}:${marathon.scaler.port}/healthcheck</url>
-                                        <status>200</status>
-                                    </http>
-                                    <time>45000</time>
+                                    <healthy>true</healthy>
+                                    <time>60000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
                                 <log>

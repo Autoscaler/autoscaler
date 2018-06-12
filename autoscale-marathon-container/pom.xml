@@ -152,6 +152,9 @@
                                         <args>/maven/scaler.sh</args>
                                     </exec>
                                 </entryPoint>
+                                <healthCheck>
+                                    <cmd>curl --fail http://localhost:8081/healthcheck || exit 1</cmd>
+                                </healthCheck>
                                 <assembly>
                                     <mode>tar</mode>
                                     <inline>

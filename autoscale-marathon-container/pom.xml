@@ -154,7 +154,7 @@
                                 </entryPoint>
                                 <healthCheck>
                                     <cmd>curl --fail http://localhost:8081/healthcheck || exit 1</cmd>
-                                </healthCheck>                                
+                                </healthCheck>
                                 <assembly>
                                     <mode>tar</mode>
                                     <inline>

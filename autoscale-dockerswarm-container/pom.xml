@@ -157,23 +157,6 @@
                                     </inline>
                                 </assembly>
                             </build>
-                            <run>
-                                <extraHosts>
-                                    <host>vagrant-mesos:192.168.56.10</host>
-                                </extraHosts>
-                                <env>
-                                    <DOCKER_HOST>http://${docker.host.address}:2375</DOCKER_HOST>
-                                    <CAF_AUTOSCALER_DOCKER_SWARM_STACK>autoscalerdemo</CAF_AUTOSCALER_DOCKER_SWARM_STACK>
-                                </env>
-                                <wait>
-                                    <healthy>true></healthy>
-                                    <time>45000</time>
-                                    <shutdown>500</shutdown>
-                                </wait>
-                                <log>
-                                    <enabled>true</enabled>
-                                </log>
-                            </run>
                         </image>
                     </images>
                 </configuration>

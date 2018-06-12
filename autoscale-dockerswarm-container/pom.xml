@@ -125,9 +125,6 @@
                                         <args>/maven/scaler.sh</args>
                                     </exec>
                                 </entryPoint>
-                                <healthCheck>
-                                    <cmd>curl --fail http://localhost:8081/healthcheck || exit 1</cmd>
-                                </healthCheck>
                                 <assembly>
                                     <mode>tar</mode>
                                     <inline>
@@ -158,6 +155,9 @@
                                 </assembly>
                             </build>
                             <run>
+<!--                                <ports>
+                                    <port>${scaler.port}:8081</port>
+                                </ports>-->
                                 <extraHosts>
                                     <host>vagrant-mesos:192.168.56.10</host>
                                 </extraHosts>
@@ -165,11 +165,14 @@
                                     <DOCKER_HOST>http://${docker.host.address}:2375</DOCKER_HOST>
                                     <CAF_AUTOSCALER_DOCKER_SWARM_STACK>autoscalerdemo</CAF_AUTOSCALER_DOCKER_SWARM_STACK>
                                 </env>
-                                <wait>
-                                    <healthy>true></healthy>
+<!--                                <wait>
+                                    <http>
+                                        <url>http://${docker.host.address}:${scaler.port}/healthcheck</url>
+                                        <status>200</status>
+                                    </http>
                                     <time>45000</time>
                                     <shutdown>500</shutdown>
-                                </wait>
+                                </wait>-->
                                 <log>
                                     <enabled>true</enabled>
                                 </log>

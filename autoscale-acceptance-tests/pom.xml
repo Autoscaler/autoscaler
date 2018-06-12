@@ -66,10 +66,6 @@
                                 <docker.host.address>${docker.host.address}</docker.host.address>
                                 <autoscale.admin.port>${autoscale.admin.port}</autoscale.admin.port>    
                             </systemPropertyVariables>
-                            <environmentVariables>
-                                <AUTOSCALE_SWARM_HEALTHCHECK_URL>http://${docker.host.address}:${swarm.scaler.port}/healthcheck</AUTOSCALE_SWARM_HEALTHCHECK_URL>
-                                <AUTOSCALE_MARATHON_HEALTHCHECK_URL>http://${docker.host.address}:${marathon.scaler.port}/healthcheck</AUTOSCALE_MARATHON_HEALTHCHECK_URL>
-                            </environmentVariables>
                             <!--<debugForkedProcess>true</debugForkedProcess>-->
                             <!--<summaryFile>target/failsafe-reports/failsafe-summary.xml</summaryFile>-->
                         </configuration>
@@ -118,7 +114,7 @@
                                             <port>2181</port>
                                         </ports>
                                     </tcp>
-                                    <time>10000</time>
+                                    <time>20000</time>
                                 </wait>
                                 <log>
                                     <enabled>true</enabled>
@@ -148,7 +144,7 @@
                                             <port>5050</port>
                                         </ports>
                                     </tcp>
-                                    <time>15000</time>
+                                    <time>30000</time>
                                 </wait>
                                 <log>
                                     <enabled>true</enabled>
@@ -188,7 +184,7 @@
                                             <port>5051</port>
                                         </ports>
                                     </tcp>
-                                    <time>15000</time>
+                                    <time>30000</time>
                                 </wait>
                                 <log>
                                     <enabled>true</enabled>
@@ -201,8 +197,7 @@
                             <name>mesosphere/marathon:v1.6.352</name>
                             <run>
                                 <ports>
-                                    <port>3210:3210</port>
-                                    <port>8088:8080</port>
+                                    <port>${marathon.port}:8080</port>
                                 </ports>
                                 <privileged>true</privileged>
                                 <env>
@@ -214,9 +209,9 @@
                                 </links>
                                 <wait>
                                     <http>
-                                        <url>http://${docker.host.address}:8088</url>
+                                        <url>http://${docker.host.address}:${marathon.port}</url>
                                     </http>
-                                    <time>30000</time>
+                                    <time>120000</time>
                                 </wait>
                                 <log>
                                     <enabled>true</enabled>
@@ -232,8 +227,8 @@
                                     <port>${rabbitmq.port}:5672</port>
                                 </ports>
                                 <wait>
-                                    <healthy>true></healthy>
-                                    <time>30000</time>
+                                    <log>Server startup complete</log>
+                                    <time>120000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
                                 <log>
@@ -261,8 +256,11 @@
                                     <link>rabbitmq</link>
                                 </links>
                                 <wait>
-                                    <healthy>true></healthy>
-                                    <time>30000</time>
+                                    <http>
+                                        <url>http://${docker.host.address}:${swarm.scaler.port}/healthcheck</url>
+                                        <status>200</status>
+                                    </http>
+                                    <time>45000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
                                 <log>
@@ -295,8 +293,11 @@
                                     <link>rabbitmq</link>
                                 </links>
                                 <wait>
-                                    <healthy>true></healthy>
-                                    <time>30000</time>
+                                    <http>
+                                        <url>http://${docker.host.address}:${marathon.scaler.port}/healthcheck</url>
+                                        <status>200</status>
+                                    </http>
+                                    <time>45000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
                                 <log>

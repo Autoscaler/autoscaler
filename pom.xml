@@ -37,11 +37,6 @@
         <relativePath />
     </parent>
     
-    <organization>
-        <name>EntIT Software LLC, a Micro Focus company</name>
-        <url>https://www.microfocus.com</url>
-    </organization>
-    
     <properties>
         <dockerHubOrganization>autoscaler</dockerHubOrganization>
         <dockerAutoscalerOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerAutoscalerOrg>

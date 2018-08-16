@@ -29,16 +29,25 @@ public final class InstanceInfo
     private final int instancesRunning;
     private final int instancesStaging;
     private final Collection<ServiceHost> hosts;
+    private final String servicePriority;
 
 
-    public InstanceInfo(final int running, final int staging, final Collection<ServiceHost> hosts)
+    /**
+     * 
+     * @param running number of instances running
+     * @param staging number of instances in staging
+     * @param hosts hosts running or staging an instance of this application
+     * @param servicePriority the priority of the service, used when determining which service to scale down during emergency resource shortages
+     */
+    public InstanceInfo(final int running, final int staging, final Collection<ServiceHost> hosts, final String servicePriority)
     {
         this.instancesRunning = running;
         this.instancesStaging = staging;
         this.hosts = Collections.unmodifiableCollection(Objects.requireNonNull(hosts));
+        this.servicePriority = servicePriority;
     }
-
-
+    
+    
     /**
      * @return the number of instances of a service that are running and active
      */
@@ -72,5 +81,14 @@ public final class InstanceInfo
     public Collection<ServiceHost> getHosts()
     {
         return hosts;
+    }
+
+
+    /**
+     * @return the priority that these instances have, value may be null if no priority was set
+     */
+    public String getPriority()
+    {
+        return servicePriority;
     }
 }

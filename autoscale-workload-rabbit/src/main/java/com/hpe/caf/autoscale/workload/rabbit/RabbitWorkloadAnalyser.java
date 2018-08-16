@@ -22,6 +22,7 @@ import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
 import com.hpe.caf.api.autoscale.ScalingOperation;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
+import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,20 +36,35 @@ import java.util.Objects;
 public class RabbitWorkloadAnalyser implements WorkloadAnalyser
 {
     private long counter = 0;
+    private final double lowPriorityResouceLimit;
+    private final double mediumPriorityResouceLimit;
+    private final double highPriorityResouceLimit;
     private final RabbitWorkloadProfile profile;
     private final String scalingTarget;
     private final RabbitStatsReporter rabbitStats;
+    private final RabbitSystemResourceMonitor rabbitResourceMonitor;
     private final EvictingQueue<QueueStats> statsQueue;
     private static final int MAX_SCALE = 5;
     private static final Logger LOG = LoggerFactory.getLogger(RabbitWorkloadAnalyser.class);
 
 
-    public RabbitWorkloadAnalyser(final String scalingTarget, final RabbitStatsReporter reporter, final RabbitWorkloadProfile profile)
+    public RabbitWorkloadAnalyser(final String scalingTarget, final RabbitStatsReporter reporter, final RabbitWorkloadProfile profile,
+                                  final RabbitSystemResourceMonitor rabbitResourceMonitor)
     {
+        final String customLowPriorityResourceLimit = System.getenv("CAF_RABBITMQ_LOW_PRIORITY_LIMIT");
+        final String customMediumPriorityResourceLimit = System.getenv("CAF_RABBITMQ_MEDIUM_PRIORITY_LIMIT");
+        final String customHighPriorityResourceLimit = System.getenv("CAF_RABBITMQ_HIGH_PRIORITY_LIMIT");
         this.scalingTarget = Objects.requireNonNull(scalingTarget);
         this.rabbitStats = Objects.requireNonNull(reporter);
         this.profile = Objects.requireNonNull(profile);
         this.statsQueue = EvictingQueue.create(profile.getScalingDelay());
+        this.rabbitResourceMonitor = rabbitResourceMonitor;
+        this.lowPriorityResouceLimit =
+            customLowPriorityResourceLimit != null ? Double.parseDouble(customLowPriorityResourceLimit) : 20;
+        this.mediumPriorityResouceLimit =
+            customMediumPriorityResourceLimit != null ? Double.parseDouble(customMediumPriorityResourceLimit) : 30;
+        this.highPriorityResouceLimit =
+            customHighPriorityResourceLimit != null ? Double.parseDouble(customHighPriorityResourceLimit) : 40;
     }
 
 
@@ -56,7 +72,9 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
      * {@inheritDoc}
      *
      * The logic for the rabbit workload analysis is as follows.
-     * If there is any instances in staging, do nothing, because any statistics acquired
+     * Determine the percentage of overall memory utilization at present, if the percentage is over the limit for the priority of the 
+     * current application, scale the application to zero.
+     * Otherwise if there is any instances in staging, do nothing, because any statistics acquired
      * would be inaccurate. Firstly, if there are any messages in the queue and no instances,
      * scale up by 1. After that, wait until we have run a number of iterations dictated by
      * the scalingDelay in the profile, and then determine the average of the consumption
@@ -70,6 +88,35 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     public ScalingAction analyseWorkload(final InstanceInfo instanceInfo)
             throws ScalerException
     {
+        final double memoryConsumption = rabbitResourceMonitor.getCurrentMemoryComsumption();
+        LOG.debug("Current memory consumption {}% of total available memory.", memoryConsumption);
+        switch (instanceInfo.getPriority().toLowerCase(Locale.US)) {
+            case "low": {
+                if (memoryConsumption >= lowPriorityResouceLimit) {
+                    LOG.debug("Scaling down low priority application due to resource shortage.");
+                    return getScalingAction(ScalingOperation.SCALE_DOWN, instanceInfo.getTotalInstances());
+                }
+                break;
+            }
+            case "medium": {
+                if (memoryConsumption >= mediumPriorityResouceLimit) {
+                    LOG.debug("Scaling down low priority application due to resource shortage.");
+                    return getScalingAction(ScalingOperation.SCALE_DOWN, instanceInfo.getTotalInstances());
+                }
+                break;
+            }
+            case "high": {
+                if (memoryConsumption >= highPriorityResouceLimit) {
+                    LOG.debug("Scaling down low priority application due to resource shortage.");
+                    return getScalingAction(ScalingOperation.SCALE_DOWN, instanceInfo.getTotalInstances());
+                }
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
         if ( instanceInfo.getInstancesStaging() == 0 ) {
             QueueStats stats = rabbitStats.getQueueStats(scalingTarget);
             LOG.debug("Stats for target {}: {}", scalingTarget, stats);

@@ -80,7 +80,7 @@ public class DockerSwarmService
              * single instance for the given service. Either because it hasn't been scaled above 1 element yet, or it is in swarm deploy
              * mode = global
              */
-            return new InstanceInfo(1, 0, blankServiceHosts);
+            return new InstanceInfo(1, 0, blankServiceHosts, null);
         }
 
         if (replicasList.size() != 1) {
@@ -89,7 +89,7 @@ public class DockerSwarmService
                               serviceReference, replicasList.size()));
         }
 
-        return new InstanceInfo(replicasList.get(0), 0, blankServiceHosts);
+        return new InstanceInfo(replicasList.get(0), 0, blankServiceHosts, null);
     }
 
     /**

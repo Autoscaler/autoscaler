@@ -35,6 +35,7 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
 {
     private final RabbitWorkloadAnalyserConfiguration config;
     private final RabbitStatsReporter provider;
+    private final RabbitSystemResourceMonitor memoryMonitor;
     private final URL url;
     private final RabbitWorkloadProfile defaultProfile;
     private static final Logger LOG = LoggerFactory.getLogger(RabbitWorkloadAnalyserFactory.class);
@@ -47,6 +48,8 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
         this.url = new URL(config.getRabbitManagementEndpoint());
         this.provider = new RabbitStatsReporter(config.getRabbitManagementEndpoint(), config.getRabbitManagementUser(),
                                                         config.getRabbitManagementPassword(), config.getVhost());
+        this.memoryMonitor = new RabbitSystemResourceMonitor(config.getRabbitManagementEndpoint(), config.getRabbitManagementUser(),
+                                                        config.getRabbitManagementPassword());
         this.defaultProfile = config.getProfiles().get(RabbitWorkloadAnalyserConfiguration.DEFAULT_PROFILE_NAME);
     }
 
@@ -60,7 +63,7 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
         } else {
             profile = config.getProfiles().get(scalingProfile);
         }
-        return new RabbitWorkloadAnalyser(scalingTarget, provider, profile);
+        return new RabbitWorkloadAnalyser(scalingTarget, provider, profile, memoryMonitor);
     }
 
 

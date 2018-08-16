@@ -39,8 +39,10 @@ public class RabbitWorkloadAnalyserTest
         RabbitWorkloadProfile profile = new RabbitWorkloadProfile(3, BACKLOG_GOAL);
         RabbitStatsReporter stats = Mockito.mock(RabbitStatsReporter.class);
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(1, 0.0, 0.0));
-        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile);
-        InstanceInfo info = new InstanceInfo(0, 0, new LinkedList<>());
+        RabbitSystemResourceMonitor monitor = Mockito.mock(RabbitSystemResourceMonitor.class);
+        Mockito.when(monitor.getCurrentMemoryComsumption()).thenReturn(15.00);
+        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile, monitor);
+        InstanceInfo info = new InstanceInfo(0, 0, new LinkedList<>(), "low");
         Assert.assertEquals(ScalingOperation.SCALE_UP, analyser.analyseWorkload(info).getOperation());
     }
 
@@ -52,8 +54,10 @@ public class RabbitWorkloadAnalyserTest
         RabbitWorkloadProfile profile = new RabbitWorkloadProfile(3, BACKLOG_GOAL);
         RabbitStatsReporter stats = Mockito.mock(RabbitStatsReporter.class);
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(1, 4.0, 0.1));
-        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile);
-        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
+        RabbitSystemResourceMonitor monitor = Mockito.mock(RabbitSystemResourceMonitor.class);
+        Mockito.when(monitor.getCurrentMemoryComsumption()).thenReturn(15.00);
+        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile, monitor);
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), "low");
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
         Assert.assertEquals(ScalingOperation.SCALE_UP, analyser.analyseWorkload(info).getOperation());
@@ -67,8 +71,10 @@ public class RabbitWorkloadAnalyserTest
         RabbitWorkloadProfile profile = new RabbitWorkloadProfile(3, BACKLOG_GOAL);
         RabbitStatsReporter stats = Mockito.mock(RabbitStatsReporter.class);
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(1, 4.0, 1.0));
-        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile);
-        InstanceInfo info = new InstanceInfo(1, 1, new LinkedList<>());
+        RabbitSystemResourceMonitor monitor = Mockito.mock(RabbitSystemResourceMonitor.class);
+        Mockito.when(monitor.getCurrentMemoryComsumption()).thenReturn(15.00);
+        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile, monitor);
+        InstanceInfo info = new InstanceInfo(1, 1, new LinkedList<>(), "low");
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
@@ -82,8 +88,10 @@ public class RabbitWorkloadAnalyserTest
         RabbitWorkloadProfile profile = new RabbitWorkloadProfile(3, BACKLOG_GOAL);
         RabbitStatsReporter stats = Mockito.mock(RabbitStatsReporter.class);
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(1, 0.0, 4.0));
-        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile);
-        InstanceInfo info = new InstanceInfo(2, 0, new LinkedList<>());
+        RabbitSystemResourceMonitor monitor = Mockito.mock(RabbitSystemResourceMonitor.class);
+        Mockito.when(monitor.getCurrentMemoryComsumption()).thenReturn(15.00);
+        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile, monitor);
+        InstanceInfo info = new InstanceInfo(2, 0, new LinkedList<>(), "low");
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
         Assert.assertEquals(ScalingOperation.SCALE_DOWN, analyser.analyseWorkload(info).getOperation());
@@ -97,8 +105,10 @@ public class RabbitWorkloadAnalyserTest
         RabbitWorkloadProfile profile = new RabbitWorkloadProfile(3, BACKLOG_GOAL);
         RabbitStatsReporter stats = Mockito.mock(RabbitStatsReporter.class);
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(0, 0.0, 0.0));
-        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile);
-        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
+        RabbitSystemResourceMonitor monitor = Mockito.mock(RabbitSystemResourceMonitor.class);
+        Mockito.when(monitor.getCurrentMemoryComsumption()).thenReturn(15.00);
+        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile, monitor);
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), "low");
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
         Assert.assertEquals(ScalingOperation.SCALE_DOWN, analyser.analyseWorkload(info).getOperation());
@@ -111,8 +121,10 @@ public class RabbitWorkloadAnalyserTest
     {
         RabbitWorkloadProfile profile = new RabbitWorkloadProfile(3, BACKLOG_GOAL);
         RabbitStatsReporter stats = Mockito.mock(RabbitStatsReporter.class);
-        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile);
-        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
+        RabbitSystemResourceMonitor monitor = Mockito.mock(RabbitSystemResourceMonitor.class);
+        Mockito.when(monitor.getCurrentMemoryComsumption()).thenReturn(15.00);
+        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile, monitor);
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), "low");
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(100, 4.0, 1.0));
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(100, 1.0, 4.0));
@@ -128,8 +140,10 @@ public class RabbitWorkloadAnalyserTest
     {
         RabbitWorkloadProfile profile = new RabbitWorkloadProfile(3, BACKLOG_GOAL);
         RabbitStatsReporter stats = Mockito.mock(RabbitStatsReporter.class);
-        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile);
-        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
+        RabbitSystemResourceMonitor monitor = Mockito.mock(RabbitSystemResourceMonitor.class);
+        Mockito.when(monitor.getCurrentMemoryComsumption()).thenReturn(15.00);
+        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile, monitor);
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), "low");
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(100, 1.0, 4.0));
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(100, 4.0, 1.0));
@@ -145,8 +159,10 @@ public class RabbitWorkloadAnalyserTest
     {
         RabbitWorkloadProfile profile = new RabbitWorkloadProfile(3, BACKLOG_GOAL);
         RabbitStatsReporter stats = Mockito.mock(RabbitStatsReporter.class);
-        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile);
-        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
+        RabbitSystemResourceMonitor monitor = Mockito.mock(RabbitSystemResourceMonitor.class);
+        Mockito.when(monitor.getCurrentMemoryComsumption()).thenReturn(15.00);
+        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile, monitor);
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), "low");
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(1, 1.0, 1.0));
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(1, 1.0, 1.0));

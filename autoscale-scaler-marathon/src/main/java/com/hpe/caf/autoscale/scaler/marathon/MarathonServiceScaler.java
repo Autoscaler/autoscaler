@@ -111,7 +111,7 @@ public class MarathonServiceScaler implements ServiceScaler
                                                   .stream()
                                                   .map(t -> new ServiceHost(t.getHost(), t.getPorts()))
                                                   .collect(Collectors.toCollection(LinkedList::new));
-            return new InstanceInfo(appGet.getApp().getTasksRunning(), appGet.getApp().getTasksStaged(), hosts);
+            return new InstanceInfo(appGet.getApp().getTasksRunning(), appGet.getApp().getTasksStaged(), hosts, appGet.getApp().getLabels().get("autoscale.priority"));
         } catch (MarathonException e) {
             throw new ScalerException("Failed to get number of instances of " + serviceReference, e);
         }

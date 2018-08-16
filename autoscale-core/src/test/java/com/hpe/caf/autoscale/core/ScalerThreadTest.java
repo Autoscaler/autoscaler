@@ -42,7 +42,7 @@ public class ScalerThreadTest
     {
         WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
         ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
-        InstanceInfo info = new InstanceInfo(0, 0, new LinkedList<>());
+        InstanceInfo info = new InstanceInfo(0, 0, new LinkedList<>(), "low");
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
         Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
@@ -63,7 +63,7 @@ public class ScalerThreadTest
     {
         WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
         ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
-        InstanceInfo info = new InstanceInfo(0, 0, new LinkedList<>());
+        InstanceInfo info = new InstanceInfo(0, 0, new LinkedList<>(), "low");
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
         Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
@@ -84,7 +84,7 @@ public class ScalerThreadTest
     {
         WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
         ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
-        InstanceInfo info = new InstanceInfo(7, 0, new LinkedList<>());
+        InstanceInfo info = new InstanceInfo(7, 0, new LinkedList<>(), "low");
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
         Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
@@ -105,7 +105,7 @@ public class ScalerThreadTest
     {
         WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
         ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
-        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), "low");
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
         Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
@@ -126,7 +126,7 @@ public class ScalerThreadTest
     {
         WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
         ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
-        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), "low");
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
         Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
@@ -147,7 +147,7 @@ public class ScalerThreadTest
     {
         WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
         ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
-        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), "low");
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
         Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
@@ -169,7 +169,7 @@ public class ScalerThreadTest
     {
         WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
         ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
-        InstanceInfo info = new InstanceInfo(4, 0, new LinkedList<>());
+        InstanceInfo info = new InstanceInfo(4, 0, new LinkedList<>(), "low");
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
         Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
@@ -190,7 +190,7 @@ public class ScalerThreadTest
     {
         WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
         ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
-        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), "low");
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
         Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());

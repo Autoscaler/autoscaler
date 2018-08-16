@@ -64,9 +64,9 @@ public class RabbitSystemResourceMonitor
             rabbitHost = rabbitHost.substring(0, rabbitHost.indexOf(":"));
             final Response response = rabbitApi.getNodeStatus(rabbitHost);
             final JsonNode root = mapper.readTree(response.getBody().in());
-            final int memory_limit = (int) root.get("mem_limit").asInt();
-            final int memory_used = (int) root.get("mem_used").asInt();
-            return (memory_used / memory_limit) * 100;
+            final long memory_limit = root.get("mem_limit").asLong();
+            final long memory_used = root.get("mem_used").asLong();
+            return ((double)memory_used / memory_limit) * 100;
         } catch (final IOException ex) {
             throw new ScalerException("Unable to map response to status request.", ex);
         }

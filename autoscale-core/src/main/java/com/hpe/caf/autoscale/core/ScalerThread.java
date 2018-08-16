@@ -131,6 +131,9 @@ public class ScalerThread implements Runnable
                 case SCALE_DOWN:
                     scaleDown(instances, action.getAmount());
                     break;
+                case SCALE_DOWN_EMERGENCY:
+                    emergencyScaleDown(action.getAmount());
+                    break;
                 case NONE:
                 default:
                     break;
@@ -195,6 +198,18 @@ public class ScalerThread implements Runnable
             scaler.scaleDown(serviceRef, downTarget);
             backoff = true;
         }
+    }
+
+    /**
+     * Perform a scale down operation on the service bringing it to zero instances.
+     * @param instances information on the current number of instances of a service
+     * @throws ScalerException if the scaling operation fails
+     */
+    private void emergencyScaleDown(final int instances) throws ScalerException
+    {
+        LOG.debug("Triggering emergency scale down of service {} to 0 due to low system resources.", serviceRef);
+        scaler.scaleDown(serviceRef, instances);
+        backoff = true;
     }
 
 }

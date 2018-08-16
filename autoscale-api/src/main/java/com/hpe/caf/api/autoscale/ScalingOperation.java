@@ -32,5 +32,9 @@ public enum ScalingOperation
     /**
      * The algorithm indicates the scale should scale down the number of instances of the service.
      */
-    SCALE_DOWN;
+    SCALE_DOWN,
+    /**
+     * The algorithm indicates the scale should scale down the number of instances of the service due an emergency.
+     */
+    SCALE_DOWN_EMERGENCY;
 }

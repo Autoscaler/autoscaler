@@ -90,25 +90,26 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     {
         final double memoryConsumption = rabbitResourceMonitor.getCurrentMemoryComsumption();
         LOG.debug("Current memory consumption {}% of total available memory.", memoryConsumption);
-        switch (instanceInfo.getPriority().toLowerCase(Locale.US)) {
+        final String applicationPriority = instanceInfo.getPriority() != null ? instanceInfo.getPriority().toLowerCase(Locale.US) : "";
+        switch (applicationPriority) {
             case "low": {
                 if (memoryConsumption >= lowPriorityResouceLimit) {
                     LOG.debug("Scaling down low priority application due to resource shortage.");
-                    return getScalingAction(ScalingOperation.SCALE_DOWN, instanceInfo.getTotalInstances());
+                    return getScalingAction(ScalingOperation.SCALE_DOWN_EMERGENCY, instanceInfo.getTotalInstances());
                 }
                 break;
             }
             case "medium": {
                 if (memoryConsumption >= mediumPriorityResouceLimit) {
                     LOG.debug("Scaling down low priority application due to resource shortage.");
-                    return getScalingAction(ScalingOperation.SCALE_DOWN, instanceInfo.getTotalInstances());
+                    return getScalingAction(ScalingOperation.SCALE_DOWN_EMERGENCY, instanceInfo.getTotalInstances());
                 }
                 break;
             }
             case "high": {
                 if (memoryConsumption >= highPriorityResouceLimit) {
                     LOG.debug("Scaling down low priority application due to resource shortage.");
-                    return getScalingAction(ScalingOperation.SCALE_DOWN, instanceInfo.getTotalInstances());
+                    return getScalingAction(ScalingOperation.SCALE_DOWN_EMERGENCY, instanceInfo.getTotalInstances());
                 }
                 break;
             }

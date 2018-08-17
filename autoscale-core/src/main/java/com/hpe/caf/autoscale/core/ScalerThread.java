@@ -121,8 +121,12 @@ public class ScalerThread implements Runnable
             } else {
                 action = analyser.analyseWorkload(instances);
             }
+            LOG.debug(Thread.currentThread().getId() + ": Workload analyser decision based on messaging stats: " + action.getOperation());
+            LOG.debug(Thread.currentThread().getId() + ": Workload analyser decision amount based on messaging stats: " + action.getAmount());
 
             action = governor.govern(serviceRef, action);
+            LOG.debug(Thread.currentThread().getId() + ": Govener decision based on orchestration platform stats: " + action.getOperation());
+            LOG.debug(Thread.currentThread().getId() + ": Govener decision amount based on orchestration platform stats: " + action.getAmount());
 
             switch (action.getOperation()) {
                 case SCALE_UP:

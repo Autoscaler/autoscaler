@@ -22,11 +22,19 @@ import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
 import com.hpe.caf.api.autoscale.ScalingOperation;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
-import java.util.Locale;
+import com.hpe.caf.autoscale.core.EmailDispatcher;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.Set;
 
 
 /**
@@ -36,14 +44,18 @@ import java.util.Objects;
 public class RabbitWorkloadAnalyser implements WorkloadAnalyser
 {
     private long counter = 0;
-    private final double lowPriorityResouceLimit;
-    private final double mediumPriorityResouceLimit;
-    private final double highPriorityResouceLimit;
+    private final double stage1ResouceLimit;
+    private final double stage2ResouceLimit;
+    private final double stage3ResouceLimit;
     private final RabbitWorkloadProfile profile;
     private final String scalingTarget;
     private final RabbitStatsReporter rabbitStats;
     private final RabbitSystemResourceMonitor rabbitResourceMonitor;
     private final EvictingQueue<QueueStats> statsQueue;
+    private final int stage1PriorityThreashold;
+    private final int stage2PriorityThreashold;
+    private final int stage3PriorityThreashold;
+    private final EmailDispatcher emailDispatcher = new EmailDispatcher();
     private static final int MAX_SCALE = 5;
     private static final Logger LOG = LoggerFactory.getLogger(RabbitWorkloadAnalyser.class);
 
@@ -51,20 +63,29 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     public RabbitWorkloadAnalyser(final String scalingTarget, final RabbitStatsReporter reporter, final RabbitWorkloadProfile profile,
                                   final RabbitSystemResourceMonitor rabbitResourceMonitor)
     {
-        final String customLowPriorityResourceLimit = System.getenv("CAF_RABBITMQ_LOW_PRIORITY_LIMIT");
-        final String customMediumPriorityResourceLimit = System.getenv("CAF_RABBITMQ_MEDIUM_PRIORITY_LIMIT");
-        final String customHighPriorityResourceLimit = System.getenv("CAF_RABBITMQ_HIGH_PRIORITY_LIMIT");
+        final String customStage1ResourceLimit = System.getenv("CAF_RABBITMQ_RESOURCE_LIMIT_STAGE_1");
+        final String customStage2ResourceLimit = System.getenv("CAF_RABBITMQ_RESOURCE_LIMIT_STAGE_2");
+        final String customStage3ResourceLimit = System.getenv("CAF_RABBITMQ_RESOURCE_LIMIT_STAGE_3");
+        final String stage1PriorityThreashold = System.getenv("CAF_RABBITMQ_STAGE_1_SHUTDOWN_THRESHOLD");
+        final String stage2PriorityThreashold = System.getenv("CAF_RABBITMQ_STAGE_2_SHUTDOWN_THRESHOLD");
+        final String stage3PriorityThreashold = System.getenv("CAF_RABBITMQ_STAGE_3_SHUTDOWN_THRESHOLD");
+        this.stage1PriorityThreashold = stage1PriorityThreashold != null ? Integer.parseInt(stage1PriorityThreashold) : -1;
+        this.stage2PriorityThreashold = stage2PriorityThreashold != null ? Integer.parseInt(stage2PriorityThreashold) : -1;
+        this.stage3PriorityThreashold = stage3PriorityThreashold != null ? Integer.parseInt(stage3PriorityThreashold) : -1;
+        
+        
+
         this.scalingTarget = Objects.requireNonNull(scalingTarget);
         this.rabbitStats = Objects.requireNonNull(reporter);
         this.profile = Objects.requireNonNull(profile);
         this.statsQueue = EvictingQueue.create(profile.getScalingDelay());
         this.rabbitResourceMonitor = rabbitResourceMonitor;
-        this.lowPriorityResouceLimit =
-            customLowPriorityResourceLimit != null ? Double.parseDouble(customLowPriorityResourceLimit) : 20;
-        this.mediumPriorityResouceLimit =
-            customMediumPriorityResourceLimit != null ? Double.parseDouble(customMediumPriorityResourceLimit) : 30;
-        this.highPriorityResouceLimit =
-            customHighPriorityResourceLimit != null ? Double.parseDouble(customHighPriorityResourceLimit) : 40;
+        this.stage1ResouceLimit =
+            customStage1ResourceLimit != null ? Double.parseDouble(customStage1ResourceLimit) : 70;
+        this.stage2ResouceLimit =
+            customStage2ResourceLimit != null ? Double.parseDouble(customStage2ResourceLimit) : 80;
+        this.stage3ResouceLimit =
+            customStage3ResourceLimit != null ? Double.parseDouble(customStage3ResourceLimit) : 90;
     }
 
 
@@ -73,7 +94,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
      *
      * The logic for the rabbit workload analysis is as follows.
      * Determine the percentage of overall memory utilization at present, if the percentage is over the limit for the priority of the 
-     * current application, scale the application to zero.
+     * current application it will be scaled to zero.
      * Otherwise if there is any instances in staging, do nothing, because any statistics acquired
      * would be inaccurate. Firstly, if there are any messages in the queue and no instances,
      * scale up by 1. After that, wait until we have run a number of iterations dictated by
@@ -90,31 +111,21 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     {
         final double memoryConsumption = rabbitResourceMonitor.getCurrentMemoryComsumption();
         LOG.debug("Current memory consumption {}% of total available memory.", memoryConsumption);
-        final String applicationPriority = instanceInfo.getPriority() != null ? instanceInfo.getPriority().toLowerCase(Locale.US) : "";
-        switch (applicationPriority) {
-            case "low": {
-                if (memoryConsumption >= lowPriorityResouceLimit) {
-                    LOG.debug("Scaling down low priority application due to resource shortage.");
+        if (instanceInfo.getPriority() != null) {
+            final int applicationPriority = Integer.parseInt(instanceInfo.getPriority());
+            if (memoryConsumption > stage1ResouceLimit
+                && stage1PriorityThreashold != -1 && applicationPriority <= stage1PriorityThreashold) {
+                emailDispatcher.dispatchEmail(getEmailContent(stage1ResouceLimit));
+                return getScalingAction(ScalingOperation.SCALE_DOWN_EMERGENCY, instanceInfo.getTotalInstances());
+            } else if (memoryConsumption > stage2ResouceLimit
+                && stage2PriorityThreashold != -1 && applicationPriority <= stage2PriorityThreashold) {
+                emailDispatcher.dispatchEmail(getEmailContent(stage2ResouceLimit));
+                return getScalingAction(ScalingOperation.SCALE_DOWN_EMERGENCY, instanceInfo.getTotalInstances());
+            } else if (memoryConsumption > stage3ResouceLimit) {
+                emailDispatcher.dispatchEmail(getEmailContent(stage3ResouceLimit));
+                if (stage3PriorityThreashold != -1 && applicationPriority <= stage3PriorityThreashold) {
                     return getScalingAction(ScalingOperation.SCALE_DOWN_EMERGENCY, instanceInfo.getTotalInstances());
                 }
-                break;
-            }
-            case "medium": {
-                if (memoryConsumption >= mediumPriorityResouceLimit) {
-                    LOG.debug("Scaling down low priority application due to resource shortage.");
-                    return getScalingAction(ScalingOperation.SCALE_DOWN_EMERGENCY, instanceInfo.getTotalInstances());
-                }
-                break;
-            }
-            case "high": {
-                if (memoryConsumption >= highPriorityResouceLimit) {
-                    LOG.debug("Scaling down low priority application due to resource shortage.");
-                    return getScalingAction(ScalingOperation.SCALE_DOWN_EMERGENCY, instanceInfo.getTotalInstances());
-                }
-                break;
-            }
-            default: {
-                break;
             }
         }
 
@@ -172,5 +183,20 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
         } else {
             return ScalingAction.NO_ACTION;
         }
+    }
+
+    private String getEmailContent(final double percentage)
+    {
+                final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+        final Calendar cal = Calendar.getInstance();
+        final String emailContenet
+            = "To whom it may concern, \n"
+            + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
+            + "\n"
+            + "RabbitMQ has used " + percentage + "% of its high watermark memory allowance.\n" 
+            + "\n"
+            + "From: Autoscaler\n"
+            + "Date: " + dateFormat.format(cal);
+        return emailContenet;
     }
 }

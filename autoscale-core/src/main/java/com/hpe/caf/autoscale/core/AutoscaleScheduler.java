@@ -67,6 +67,7 @@ public class AutoscaleScheduler
     private static final int INITIAL_SCALING_DELAY = 30;
     private static final Logger LOG = LoggerFactory.getLogger(AutoscaleScheduler.class);
     private final Governor governor = new GovernorImpl();
+    private final EmailDispatcher emailDispatcher;
 
     public AutoscaleScheduler(final Map<String, WorkloadAnalyserFactory> analyserFactories, final ServiceScaler scaler,
             final ScheduledExecutorService scheduler, final ServiceValidator serviceValidator)
@@ -75,6 +76,7 @@ public class AutoscaleScheduler
         this.analyserFactories = Objects.requireNonNull(analyserFactories);
         this.scaler = Objects.requireNonNull(scaler);
         this.scheduler = Objects.requireNonNull(scheduler);
+        this.emailDispatcher = new EmailDispatcher();
     }
 
     /**
@@ -178,8 +180,9 @@ public class AutoscaleScheduler
             cancel(config.getId());
         }
         governor.register(config);
-        ScheduledFuture future = scheduler.scheduleWithFixedDelay(new ScalerThread(governor, analyser, scaler, config.getId(), config.getMinInstances(),
-                                                                                   config.getMaxInstances(), config.getBackoffAmount()),
+        ScheduledFuture future = scheduler.scheduleWithFixedDelay(new ScalerThread(governor, analyser, scaler, config.getId(),
+                                                                                   config.getMinInstances(), config.getMaxInstances(),
+                                                                                   config.getBackoffAmount(), emailDispatcher),
                                                                   initialDelay, config.getInterval(), TimeUnit.SECONDS);
         scheduledServices.put(config.getId(), new ScheduledScalingService(config, future));
     }

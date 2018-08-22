@@ -44,18 +44,11 @@ import java.util.Set;
 public class RabbitWorkloadAnalyser implements WorkloadAnalyser
 {
     private long counter = 0;
-    private final double stage1ResouceLimit;
-    private final double stage2ResouceLimit;
-    private final double stage3ResouceLimit;
     private final RabbitWorkloadProfile profile;
     private final String scalingTarget;
     private final RabbitStatsReporter rabbitStats;
     private final RabbitSystemResourceMonitor rabbitResourceMonitor;
     private final EvictingQueue<QueueStats> statsQueue;
-    private final int stage1PriorityThreashold;
-    private final int stage2PriorityThreashold;
-    private final int stage3PriorityThreashold;
-    private final EmailDispatcher emailDispatcher = new EmailDispatcher();
     private static final int MAX_SCALE = 5;
     private static final Logger LOG = LoggerFactory.getLogger(RabbitWorkloadAnalyser.class);
 
@@ -63,29 +56,24 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     public RabbitWorkloadAnalyser(final String scalingTarget, final RabbitStatsReporter reporter, final RabbitWorkloadProfile profile,
                                   final RabbitSystemResourceMonitor rabbitResourceMonitor)
     {
-        final String customStage1ResourceLimit = System.getenv("CAF_RABBITMQ_RESOURCE_LIMIT_STAGE_1");
-        final String customStage2ResourceLimit = System.getenv("CAF_RABBITMQ_RESOURCE_LIMIT_STAGE_2");
-        final String customStage3ResourceLimit = System.getenv("CAF_RABBITMQ_RESOURCE_LIMIT_STAGE_3");
-        final String stage1PriorityThreashold = System.getenv("CAF_RABBITMQ_STAGE_1_SHUTDOWN_THRESHOLD");
-        final String stage2PriorityThreashold = System.getenv("CAF_RABBITMQ_STAGE_2_SHUTDOWN_THRESHOLD");
-        final String stage3PriorityThreashold = System.getenv("CAF_RABBITMQ_STAGE_3_SHUTDOWN_THRESHOLD");
-        this.stage1PriorityThreashold = stage1PriorityThreashold != null ? Integer.parseInt(stage1PriorityThreashold) : -1;
-        this.stage2PriorityThreashold = stage2PriorityThreashold != null ? Integer.parseInt(stage2PriorityThreashold) : -1;
-        this.stage3PriorityThreashold = stage3PriorityThreashold != null ? Integer.parseInt(stage3PriorityThreashold) : -1;
-        
-        
-
         this.scalingTarget = Objects.requireNonNull(scalingTarget);
         this.rabbitStats = Objects.requireNonNull(reporter);
         this.profile = Objects.requireNonNull(profile);
         this.statsQueue = EvictingQueue.create(profile.getScalingDelay());
         this.rabbitResourceMonitor = rabbitResourceMonitor;
-        this.stage1ResouceLimit =
-            customStage1ResourceLimit != null ? Double.parseDouble(customStage1ResourceLimit) : 70;
-        this.stage2ResouceLimit =
-            customStage2ResourceLimit != null ? Double.parseDouble(customStage2ResourceLimit) : 80;
-        this.stage3ResouceLimit =
-            customStage3ResourceLimit != null ? Double.parseDouble(customStage3ResourceLimit) : 90;
+    }
+
+    /**
+     * This method will determine and return the percentage of the high watermark memory allowance being utilised at present by RabbitMQ
+     *
+     * @return The percentage being utilised
+     */
+    @Override
+    public double analyseCurrentMemoryLoad() throws ScalerException
+    {
+        final double memoryConsumption = rabbitResourceMonitor.getCurrentMemoryComsumption();
+        LOG.debug("Current memory consumption {}% of total available memory.", memoryConsumption);
+        return memoryConsumption;
     }
 
 
@@ -107,27 +95,8 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
      */
     @Override
     public ScalingAction analyseWorkload(final InstanceInfo instanceInfo)
-            throws ScalerException
+        throws ScalerException
     {
-        final double memoryConsumption = rabbitResourceMonitor.getCurrentMemoryComsumption();
-        LOG.debug("Current memory consumption {}% of total available memory.", memoryConsumption);
-        if (instanceInfo.getPriority() != null) {
-            final int applicationPriority = Integer.parseInt(instanceInfo.getPriority());
-            if (memoryConsumption > stage1ResouceLimit
-                && stage1PriorityThreashold != -1 && applicationPriority <= stage1PriorityThreashold) {
-                emailDispatcher.dispatchEmail(getEmailContent(stage1ResouceLimit));
-                return getScalingAction(ScalingOperation.SCALE_DOWN_EMERGENCY, instanceInfo.getTotalInstances());
-            } else if (memoryConsumption > stage2ResouceLimit
-                && stage2PriorityThreashold != -1 && applicationPriority <= stage2PriorityThreashold) {
-                emailDispatcher.dispatchEmail(getEmailContent(stage2ResouceLimit));
-                return getScalingAction(ScalingOperation.SCALE_DOWN_EMERGENCY, instanceInfo.getTotalInstances());
-            } else if (memoryConsumption > stage3ResouceLimit) {
-                emailDispatcher.dispatchEmail(getEmailContent(stage3ResouceLimit));
-                if (stage3PriorityThreashold != -1 && applicationPriority <= stage3PriorityThreashold) {
-                    return getScalingAction(ScalingOperation.SCALE_DOWN_EMERGENCY, instanceInfo.getTotalInstances());
-                }
-            }
-        }
 
         if ( instanceInfo.getInstancesStaging() == 0 ) {
             QueueStats stats = rabbitStats.getQueueStats(scalingTarget);
@@ -185,18 +154,17 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
         }
     }
 
-    private String getEmailContent(final double percentage)
+    @Override
+    public String retrieveEmailContent(final String percentageMem)
     {
-                final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
-        final Calendar cal = Calendar.getInstance();
         final String emailContenet
             = "To whom it may concern, \n"
             + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
             + "\n"
-            + "RabbitMQ has used " + percentage + "% of its high watermark memory allowance.\n" 
+            + "RabbitMQ has used " + percentageMem + "% of its high watermark memory allowance.\n" 
             + "\n"
-            + "From: Autoscaler\n"
-            + "Date: " + dateFormat.format(cal);
+            + "From: Autoscaler\n";
         return emailContenet;
     }
+
 }

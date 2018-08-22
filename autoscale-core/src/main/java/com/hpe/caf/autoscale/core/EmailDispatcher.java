@@ -15,10 +15,7 @@
  */
 package com.hpe.caf.autoscale.core;
 
-import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -31,6 +28,9 @@ import org.slf4j.LoggerFactory;
 
 public class EmailDispatcher
 {
+    private Date lastSent;
+    private int lastSentPriority;
+
     private final String host;
     private final String port;
     private final String username;
@@ -41,6 +41,7 @@ public class EmailDispatcher
     private static final String SUBJECT = "Autoscaler status alert.";
     private static final String FROMNAME = "Autoscaler";
     private static final Logger LOG = LoggerFactory.getLogger(EmailDispatcher.class);
+    private static final Object LOCK = new Object();
 
     public EmailDispatcher()
     {
@@ -52,47 +53,52 @@ public class EmailDispatcher
         this.emailAddressFrom = System.getenv("CAF_SMTP_EMAIL_ADDRESS_FROM");
     }
 
-    public void dispatchEmail(final String messageContent)
+    public void dispatchEmail(final String messageContent, final int priority)
     {
-        try {
-            // Create a Properties object to contain connection configuration information.
-            final Properties props = System.getProperties();
-            props.put("mail.transport.protocol", "smtp");
-            props.put("mail.smtp.port", port);
-            props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.auth", "true");
+        final Date date = new Date();
+        if (lastSent != null && (date.getTime() - lastSent.getTime() >= 20 * 60 * 1000 || priority != lastSentPriority)) {
+            synchronized (LOCK) {
+                try {
+                    // Create a Properties object to contain connection configuration information.
+                    final Properties props = System.getProperties();
+                    props.put("mail.transport.protocol", "smtp");
+                    props.put("mail.smtp.port", port);
+                    props.put("mail.smtp.starttls.enable", "true");
+                    props.put("mail.smtp.auth", "true");
 
-            // Create a Session object to represent a mail session with the specified properties. 
-            final Session session = Session.getDefaultInstance(props);
+                    // Create a Session object to represent a mail session with the specified properties. 
+                    final Session session = Session.getDefaultInstance(props);
 
-            // Create a message with the specified information. 
-            final MimeMessage msg = new MimeMessage(session);
-            msg.setFrom(new InternetAddress(emailAddressFrom, FROMNAME));
-            msg.setRecipient(Message.RecipientType.TO, new InternetAddress(emailAddressTo));
-            msg.setSubject(SUBJECT);
-            msg.setContent(messageContent, "text/html");
+                    // Create a message with the specified information. 
+                    final MimeMessage msg = new MimeMessage(session);
+                    msg.setFrom(new InternetAddress(emailAddressFrom, FROMNAME));
+                    msg.setRecipient(Message.RecipientType.TO, new InternetAddress(emailAddressTo));
+                    msg.setSubject(SUBJECT);
+                    msg.setContent(messageContent, "text/html");
 
-            // Create a transport.
-            final Transport transport = session.getTransport();
+                    // Create a transport.
+                    final Transport transport = session.getTransport();
 
-            // Send the message.
-            try {
-                LOG.debug("Sending email...");
+                    // Send the message.
+                    try {
+                        LOG.debug("Sending email...");
 
-                // Connect to the SMTP server using username and password specified above.
-                transport.connect(host, username, password);
+                        // Connect to the SMTP server using username and password specified above.
+                        transport.connect(host, username, password);
 
-                // Send the email.
-                transport.sendMessage(msg, msg.getAllRecipients());
-                LOG.debug("Email sent!");
-            } catch (final MessagingException ex) {
-                LOG.error("The email was not sent.", ex);
-            } finally {
-                // Close and terminate the connection.
-                transport.close();
+                        // Send the email.
+                        transport.sendMessage(msg, msg.getAllRecipients());
+                        LOG.debug("Email sent!");
+                    } catch (final MessagingException ex) {
+                        LOG.error("The email was not sent.", ex);
+                    } finally {
+                        // Close and terminate the connection.
+                        transport.close();
+                    }
+                } catch (final Exception ex) {
+                    LOG.error("The email was not sent.", ex);
+                }
             }
-        } catch (final Exception ex) {
-            LOG.error("The email was not sent.", ex);
         }
     }
 }

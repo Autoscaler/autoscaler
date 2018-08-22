@@ -22,6 +22,8 @@ import com.hpe.caf.api.autoscale.ScalingAction;
 import com.hpe.caf.api.autoscale.ScalingOperation;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,18 +39,27 @@ import java.util.Objects;
 public class ScalerThread implements Runnable
 {
 
+    private final EmailDispatcher emailDispatcher;
     private final WorkloadAnalyser analyser;
     private final ServiceScaler scaler;
     private final int minInstances;
     private final int maxInstances;
     private final int backoffAmount;
     private final String serviceRef;
+    private final String disableEmailAlerts = System.getenv("CAF_DISABLE_EMAIL_DISPATCH");
     private int backoffCount = 0;
     private boolean firstRun = true;
     private boolean backoff = false;
     private static final Logger LOG = LoggerFactory.getLogger(ScalerThread.class);
 
     private Governor governor;
+    private final int stage1PriorityThreashold;
+    private final int stage2PriorityThreashold;
+    private final int stage3PriorityThreashold;
+    private final double stage1ResouceLimit;
+    private final double stage2ResouceLimit;
+    private final double stage3ResouceLimit;
+    private final String dispatchEmailAtStage;
 
 
     /**
@@ -60,10 +71,30 @@ public class ScalerThread implements Runnable
      * @param minInstances the minimum number of instances of the service that must be instantiated
      * @param maxInstances the maximum number of instances of the service that can be instantiated
      * @param backoffAmount the number of analysis runs to skip after a scaling is triggered
+     * @param emailDispatcher dispatcher to send alert emails if resources run low
      */
-    public ScalerThread(final Governor governor, final WorkloadAnalyser workloadAnalyser, final ServiceScaler serviceScaler, final String serviceReference, final int minInstances, final int maxInstances,
-            final int backoffAmount)
-    {
+    public ScalerThread(final Governor governor, final WorkloadAnalyser workloadAnalyser, final ServiceScaler serviceScaler,
+                        final String serviceReference, final int minInstances, final int maxInstances,
+                        final int backoffAmount, final EmailDispatcher emailDispatcher)
+    {   
+        final String customStage1ResourceLimit = System.getenv("CAF_RABBITMQ_RESOURCE_LIMIT_STAGE_1");
+        final String customStage2ResourceLimit = System.getenv("CAF_RABBITMQ_RESOURCE_LIMIT_STAGE_2");
+        final String customStage3ResourceLimit = System.getenv("CAF_RABBITMQ_RESOURCE_LIMIT_STAGE_3");
+        final String stage1PriorityThreashold = System.getenv("CAF_RABBITMQ_STAGE_1_SHUTDOWN_THRESHOLD");
+        final String stage2PriorityThreashold = System.getenv("CAF_RABBITMQ_STAGE_2_SHUTDOWN_THRESHOLD");
+        final String stage3PriorityThreashold = System.getenv("CAF_RABBITMQ_STAGE_3_SHUTDOWN_THRESHOLD");
+        this.stage1PriorityThreashold = stage1PriorityThreashold != null ? Integer.parseInt(stage1PriorityThreashold) : -1;
+        this.stage2PriorityThreashold = stage2PriorityThreashold != null ? Integer.parseInt(stage2PriorityThreashold) : -1;
+        this.stage3PriorityThreashold = stage3PriorityThreashold != null ? Integer.parseInt(stage3PriorityThreashold) : -1;
+        this.stage1ResouceLimit =
+            customStage1ResourceLimit != null ? Double.parseDouble(customStage1ResourceLimit) : 70;
+        this.stage2ResouceLimit =
+            customStage2ResourceLimit != null ? Double.parseDouble(customStage2ResourceLimit) : 80;
+        this.stage3ResouceLimit =
+            customStage3ResourceLimit != null ? Double.parseDouble(customStage3ResourceLimit) : 90;
+        this.dispatchEmailAtStage = System.getenv("CAF_EMAIL_DISPATCH_STAGE");
+
+        this.emailDispatcher = emailDispatcher;
         this.governor = governor;
         this.analyser = Objects.requireNonNull(workloadAnalyser);
         this.scaler = Objects.requireNonNull(serviceScaler);
@@ -112,6 +143,9 @@ public class ScalerThread implements Runnable
     {
         try {
             InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
+            if(analyseMemoryUse(instances)){
+                return;
+            }
             governor.recordInstances(serviceRef, instances);
             ScalingAction action;
             if ( firstRun ) {
@@ -130,9 +164,6 @@ public class ScalerThread implements Runnable
                     break;
                 case SCALE_DOWN:
                     scaleDown(instances, action.getAmount());
-                    break;
-                case SCALE_DOWN_EMERGENCY:
-                    emergencyScaleDown(action.getAmount());
                     break;
                 case NONE:
                 default:
@@ -210,6 +241,60 @@ public class ScalerThread implements Runnable
         LOG.debug("Triggering emergency scale down of service {} to 0 due to low system resources.", serviceRef);
         scaler.scaleDown(serviceRef, instances);
         backoff = true;
+    }
+
+    private boolean analyseMemoryUse(final InstanceInfo instances) throws ScalerException
+    {
+        final double currentMemoryLoad = analyser.analyseCurrentMemoryLoad();
+        final int priority = Integer.parseInt(instances.getPriority());
+
+        if (currentMemoryLoad >= stage1ResouceLimit && Integer.parseInt(instances.getPriority()) <= stage1PriorityThreashold) {
+            emergencyScaleDown(instances.getTotalInstances());
+            sendEmail(currentMemoryLoad, priority);
+            return true;
+        } else if (currentMemoryLoad >= stage2ResouceLimit && Integer.parseInt(instances.getPriority()) <= stage2PriorityThreashold) {
+            emergencyScaleDown(instances.getTotalInstances());
+            sendEmail(currentMemoryLoad, priority);
+            return true;
+        } else if (currentMemoryLoad >= stage3ResouceLimit && Integer.parseInt(instances.getPriority()) <= stage3PriorityThreashold) {
+            emergencyScaleDown(instances.getTotalInstances());
+            sendEmail(currentMemoryLoad, priority);
+            return true;
+        }
+        return false;
+    }
+    
+    private void sendEmail(final double memLoad, final int priority)
+    {
+        if (disableEmailAlerts == null || !disableEmailAlerts.toLowerCase(Locale.US).equals("false")) {
+            return;
+        }
+        final String sendEmailStage = dispatchEmailAtStage != null ? dispatchEmailAtStage.toLowerCase(Locale.US) : "";
+        final String emailBody = analyser.retrieveEmailContent(String.valueOf(memLoad));
+        switch (sendEmailStage) {
+            case "stage1": {
+                if (memLoad >= stage1ResouceLimit) {
+                    emailDispatcher.dispatchEmail(emailBody, priority);
+                }
+                break;
+            }
+            case "stage2": {
+                if (memLoad >= stage2ResouceLimit) {
+                    emailDispatcher.dispatchEmail(emailBody, priority);
+                }
+                break;
+            }
+            case "stage3": {
+                if (memLoad >= stage3ResouceLimit) {
+                    emailDispatcher.dispatchEmail(emailBody, priority);
+                }
+                break;
+            }
+            default: {
+                emailDispatcher.dispatchEmail(emailBody, priority);
+                break;
+            }
+        }
     }
 
 }

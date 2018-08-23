@@ -77,12 +77,12 @@ public class ScalerThread implements Runnable
                         final String serviceReference, final int minInstances, final int maxInstances,
                         final int backoffAmount, final EmailDispatcher emailDispatcher)
     {   
-        final String customStage1ResourceLimit = System.getenv("CAF_RABBITMQ_RESOURCE_LIMIT_STAGE_1");
-        final String customStage2ResourceLimit = System.getenv("CAF_RABBITMQ_RESOURCE_LIMIT_STAGE_2");
-        final String customStage3ResourceLimit = System.getenv("CAF_RABBITMQ_RESOURCE_LIMIT_STAGE_3");
-        final String stage1PriorityThreashold = System.getenv("CAF_RABBITMQ_STAGE_1_SHUTDOWN_THRESHOLD");
-        final String stage2PriorityThreashold = System.getenv("CAF_RABBITMQ_STAGE_2_SHUTDOWN_THRESHOLD");
-        final String stage3PriorityThreashold = System.getenv("CAF_RABBITMQ_STAGE_3_SHUTDOWN_THRESHOLD");
+        final String customStage1ResourceLimit = System.getenv("CAF_MESSAGING_RESOURCE_LIMIT_STAGE_1");
+        final String customStage2ResourceLimit = System.getenv("CAF_MESSAGING_RESOURCE_LIMIT_STAGE_2");
+        final String customStage3ResourceLimit = System.getenv("CAF_MESSAGING_RESOURCE_LIMIT_STAGE_3");
+        final String stage1PriorityThreashold = System.getenv("CAF_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD");
+        final String stage2PriorityThreashold = System.getenv("CAF_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD");
+        final String stage3PriorityThreashold = System.getenv("CAF_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD");
         this.stage1PriorityThreashold = stage1PriorityThreashold != null ? Integer.parseInt(stage1PriorityThreashold) : -1;
         this.stage2PriorityThreashold = stage2PriorityThreashold != null ? Integer.parseInt(stage2PriorityThreashold) : -1;
         this.stage3PriorityThreashold = stage3PriorityThreashold != null ? Integer.parseInt(stage3PriorityThreashold) : -1;

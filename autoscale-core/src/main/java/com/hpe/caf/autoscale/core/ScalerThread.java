@@ -22,7 +22,7 @@ import com.hpe.caf.api.autoscale.ScalingAction;
 import com.hpe.caf.api.autoscale.ScalingOperation;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
-import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +39,7 @@ import java.util.Objects;
 public class ScalerThread implements Runnable
 {
 
+    private final DecimalFormat df = new DecimalFormat("##.00");
     private final EmailDispatcher emailDispatcher;
     private final WorkloadAnalyser analyser;
     private final ServiceScaler scaler;
@@ -182,15 +183,21 @@ public class ScalerThread implements Runnable
      * @param instances information on the current number of instances of a service
      * @return the recommended action to take
      */
-    private ScalingAction handleFirstRun(final InstanceInfo instances)
+    private ScalingAction handleFirstRun(final InstanceInfo instances) throws ScalerException
     {
-        ScalingAction action;
-        if ( instances.getTotalInstances() < minInstances ) {
-            action = new ScalingAction(ScalingOperation.SCALE_UP, minInstances - instances.getTotalInstances());
-        } else if ( instances.getTotalInstances() > maxInstances ) {
-            action = new ScalingAction(ScalingOperation.SCALE_DOWN, instances.getTotalInstances() - maxInstances);
-        } else {
+        final ScalingAction action;
+        if (analyseMemoryUse(instances) && instances.getTotalInstances() > 0) {
+            action = new ScalingAction(ScalingOperation.SCALE_DOWN, instances.getTotalInstances());
+        } else if (analyseMemoryUse(instances) && instances.getTotalInstances() == 0) {
             action = ScalingAction.NO_ACTION;
+        } else {
+            if (instances.getTotalInstances() < minInstances) {
+                action = new ScalingAction(ScalingOperation.SCALE_UP, minInstances - instances.getTotalInstances());
+            } else if (instances.getTotalInstances() > maxInstances) {
+                action = new ScalingAction(ScalingOperation.SCALE_DOWN, instances.getTotalInstances() - maxInstances);
+            } else {
+                action = ScalingAction.NO_ACTION;
+            }
         }
         return action;
     }
@@ -246,55 +253,58 @@ public class ScalerThread implements Runnable
     private boolean analyseMemoryUse(final InstanceInfo instances) throws ScalerException
     {
         final double currentMemoryLoad = analyser.analyseCurrentMemoryLoad();
-        final int priority = Integer.parseInt(instances.getPriority());
+        final String servicePriority = instances.getPriority();
+        final int shutdownPriority = servicePriority != null ? Integer.parseInt(servicePriority) : -1;
 
-        if (currentMemoryLoad >= stage1ResouceLimit && Integer.parseInt(instances.getPriority()) <= stage1PriorityThreashold) {
+        if (shutdownPriority == -1) {
+            return false;
+        }
+
+        if (currentMemoryLoad >= stage1ResouceLimit && shutdownPriority <= stage1PriorityThreashold) {
             emergencyScaleDown(instances.getTotalInstances());
-            sendEmail(currentMemoryLoad, priority);
+            sendEmail(currentMemoryLoad);
             return true;
-        } else if (currentMemoryLoad >= stage2ResouceLimit && Integer.parseInt(instances.getPriority()) <= stage2PriorityThreashold) {
+        } else if (currentMemoryLoad >= stage2ResouceLimit && shutdownPriority <= stage2PriorityThreashold) {
             emergencyScaleDown(instances.getTotalInstances());
-            sendEmail(currentMemoryLoad, priority);
+            sendEmail(currentMemoryLoad);
             return true;
-        } else if (currentMemoryLoad >= stage3ResouceLimit && Integer.parseInt(instances.getPriority()) <= stage3PriorityThreashold) {
+        } else if (currentMemoryLoad >= stage3ResouceLimit && shutdownPriority <= stage3PriorityThreashold) {
             emergencyScaleDown(instances.getTotalInstances());
-            sendEmail(currentMemoryLoad, priority);
+            sendEmail(currentMemoryLoad);
             return true;
         }
         return false;
     }
     
-    private void sendEmail(final double memLoad, final int priority)
+    private void sendEmail(final double memLoad)
     {
-        if (disableEmailAlerts == null || !disableEmailAlerts.toLowerCase(Locale.US).equals("false")) {
-            return;
-        }
-        final String sendEmailStage = dispatchEmailAtStage != null ? dispatchEmailAtStage.toLowerCase(Locale.US) : "";
-        final String emailBody = analyser.retrieveEmailContent(String.valueOf(memLoad));
-        switch (sendEmailStage) {
-            case "stage1": {
-                if (memLoad >= stage1ResouceLimit) {
-                    emailDispatcher.dispatchEmail(emailBody, priority);
+        if (disableEmailAlerts == null || disableEmailAlerts.toLowerCase(Locale.US).equals("false")) {
+            final String sendEmailStage = dispatchEmailAtStage != null ? dispatchEmailAtStage.toLowerCase(Locale.US) : "";
+            final String emailBody = analyser.retrieveEmailContent(df.format(memLoad));
+            switch (sendEmailStage) {
+                case "stage1": {
+                    if (memLoad >= stage1ResouceLimit) {
+                        emailDispatcher.dispatchEmail(emailBody, stage1PriorityThreashold);
+                    }
+                    break;
                 }
-                break;
-            }
-            case "stage2": {
-                if (memLoad >= stage2ResouceLimit) {
-                    emailDispatcher.dispatchEmail(emailBody, priority);
+                case "stage2": {
+                    if (memLoad >= stage2ResouceLimit) {
+                        emailDispatcher.dispatchEmail(emailBody, stage2PriorityThreashold);
+                    }
+                    break;
                 }
-                break;
-            }
-            case "stage3": {
-                if (memLoad >= stage3ResouceLimit) {
-                    emailDispatcher.dispatchEmail(emailBody, priority);
+                case "stage3": {
+                    if (memLoad >= stage3ResouceLimit) {
+                        emailDispatcher.dispatchEmail(emailBody, stage3PriorityThreashold);
+                    }
+                    break;
                 }
-                break;
-            }
-            default: {
-                emailDispatcher.dispatchEmail(emailBody, priority);
-                break;
+                default: {
+                    emailDispatcher.dispatchEmail(emailBody, 0);
+                    break;
+                }
             }
         }
     }
-
 }

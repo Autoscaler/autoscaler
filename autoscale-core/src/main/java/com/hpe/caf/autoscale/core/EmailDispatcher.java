@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class EmailDispatcher
 {
     private Date lastSent;
-    private int lastSentPriority;
+    private int lastPriorityThreshold;
 
     private final String host;
     private final String port;
@@ -45,19 +45,25 @@ public class EmailDispatcher
 
     public EmailDispatcher()
     {
+        final String usernameEnv = System.getenv("CAF_SMTP_USERNAME");
+        final String passwordEnv = System.getenv("CAF_SMTP_PASSWORD");
+        this.username = usernameEnv != null ? usernameEnv : "";
+        this.password = passwordEnv != null ? passwordEnv : "";
         this.host = System.getenv("CAF_SMTP_HOST");
         this.port = System.getenv("CAF_SMTP_PORT");
-        this.username = System.getenv("CAF_SMTP_USERNAME");
-        this.password = System.getenv("CAF_SMTP_PASSWORD");
         this.emailAddressTo = System.getenv("CAF_SMTP_EMAIL_ADDRESS_TO");
         this.emailAddressFrom = System.getenv("CAF_SMTP_EMAIL_ADDRESS_FROM");
     }
 
-    public void dispatchEmail(final String messageContent, final int priority)
+    public void dispatchEmail(final String messageContent, final int priorityThreshold)
     {
+        if (emailAddressTo == null || emailAddressTo.length() == 0) {
+            LOG.debug("No email address supplied to send an alert email to. Unable to send warning message.");
+            return;
+        }
         final Date date = new Date();
-        if (lastSent != null && (date.getTime() - lastSent.getTime() >= 20 * 60 * 1000 || priority != lastSentPriority)) {
-            synchronized (LOCK) {
+        synchronized (LOCK) {
+            if (lastSent == null || ((date.getTime() - lastSent.getTime() >= 20 * 60 * 1000 || !(priorityThreshold == lastPriorityThreshold)))) {
                 try {
                     // Create a Properties object to contain connection configuration information.
                     final Properties props = System.getProperties();
@@ -88,6 +94,8 @@ public class EmailDispatcher
 
                         // Send the email.
                         transport.sendMessage(msg, msg.getAllRecipients());
+                        lastSent = date;
+                        lastPriorityThreshold = priorityThreshold;
                         LOG.debug("Email sent!");
                     } catch (final MessagingException ex) {
                         LOG.error("The email was not sent.", ex);

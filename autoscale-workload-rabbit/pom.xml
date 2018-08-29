@@ -75,7 +75,6 @@
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-core</artifactId>
             <version>1.4.0-SNAPSHOT</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 

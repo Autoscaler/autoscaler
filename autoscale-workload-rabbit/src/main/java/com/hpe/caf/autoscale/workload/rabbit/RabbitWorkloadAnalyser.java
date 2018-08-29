@@ -22,19 +22,10 @@ import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
 import com.hpe.caf.api.autoscale.ScalingOperation;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
-import com.hpe.caf.autoscale.core.EmailDispatcher;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
-import java.util.Set;
 
 
 /**
@@ -95,7 +86,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
      */
     @Override
     public ScalingAction analyseWorkload(final InstanceInfo instanceInfo)
-        throws ScalerException
+            throws ScalerException
     {
 
         if ( instanceInfo.getInstancesStaging() == 0 ) {

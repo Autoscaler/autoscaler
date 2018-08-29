@@ -43,7 +43,7 @@ public class GovernorImplTest {
 
         governor.register(scalingConfiguration);
 
-        InstanceInfo instanceInfo = new InstanceInfo(100, 50, Collections.emptyList(), "low");
+        InstanceInfo instanceInfo = new InstanceInfo(100, 50, Collections.emptyList(), "1");
         governor.recordInstances(scalingConfiguration.getId(), instanceInfo);
 
         ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 100);
@@ -75,7 +75,7 @@ public class GovernorImplTest {
             scalingConfiguration.setScalingProfile("scalingprofile");
             scalingConfiguration.setScalingTarget("scalingtarget");
             governor.register(scalingConfiguration);
-            InstanceInfo instanceInfo = new InstanceInfo(service1StartingInstances, 0, Collections.emptyList(), "low");
+            InstanceInfo instanceInfo = new InstanceInfo(service1StartingInstances, 0, Collections.emptyList(), "1");
             governor.recordInstances(scalingConfiguration.getId(), instanceInfo);
         }
 
@@ -90,7 +90,7 @@ public class GovernorImplTest {
             scalingConfiguration.setScalingTarget("scalingtarget");
 
             governor.register(scalingConfiguration);
-            InstanceInfo instanceInfo = new InstanceInfo(0, 0, Collections.emptyList(), "low");
+            InstanceInfo instanceInfo = new InstanceInfo(0, 0, Collections.emptyList(), "1");
             governor.recordInstances(scalingConfiguration.getId(), instanceInfo);
         }
 
@@ -101,7 +101,7 @@ public class GovernorImplTest {
         service1CurrentInstances = service1CurrentInstances - governedAction.getAmount();
 
         while(governedAction.getOperation()==ScalingOperation.SCALE_DOWN){
-            InstanceInfo instanceInfo = new InstanceInfo(service1CurrentInstances, 0, Collections.emptyList(), "low");
+            InstanceInfo instanceInfo = new InstanceInfo(service1CurrentInstances, 0, Collections.emptyList(), "1");
             governor.recordInstances("service1", instanceInfo);
 
             //The service still wishes to scale up

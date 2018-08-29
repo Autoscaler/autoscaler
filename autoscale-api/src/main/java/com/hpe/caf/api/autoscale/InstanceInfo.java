@@ -46,8 +46,8 @@ public final class InstanceInfo
         this.hosts = Collections.unmodifiableCollection(Objects.requireNonNull(hosts));
         this.servicePriority = servicePriority;
     }
-    
-    
+
+
     /**
      * @return the number of instances of a service that are running and active
      */

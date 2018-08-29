@@ -184,25 +184,6 @@
                                     </inline>
                                 </assembly>
                             </build>
-                            <run>
-                                <ports>
-                                    <port>${autoscaler.adminport}:8081</port>
-                                    <port>5005:5005</port>
-                                </ports>
-                                <env>
-                                    <CAF_AUTOSCALER_BACKLOG_GOAL>1</CAF_AUTOSCALER_BACKLOG_GOAL>
-                                    <CAF_AUTOSCALER_MARATHON_GROUP>managed-queue-workers</CAF_AUTOSCALER_MARATHON_GROUP>
-                                    <CAF_AUTOSCALER_MAXIMUM_INSTANCES>10</CAF_AUTOSCALER_MAXIMUM_INSTANCES>
-                                    <CAF_AUTOSCALER_SCALING_DELAY>1</CAF_AUTOSCALER_SCALING_DELAY>
-                                    <CAF_LOG_LEVEL>DEBUG</CAF_LOG_LEVEL>
-                                    <CAF_MARATHON_URL>http://larry-mst01.hpeswlab.net:8080</CAF_MARATHON_URL>
-                                    <CAF_RABBITMQ_MGMT_PASSWORD>nextgen</CAF_RABBITMQ_MGMT_PASSWORD>
-                                    <CAF_RABBITMQ_MGMT_URL>http://larry-mst01.hpeswlab.net:15672</CAF_RABBITMQ_MGMT_URL>
-                                    <CAF_RABBITMQ_MGMT_USERNAME>poc_user</CAF_RABBITMQ_MGMT_USERNAME>
-                                    <CAF_RABBITMQ_LOW_PRIORITY_LIMIT>10</CAF_RABBITMQ_LOW_PRIORITY_LIMIT>
-                                    <_JAVA_OPTIONS>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005</_JAVA_OPTIONS>
-                                </env>
-                            </run>
                         </image>
                     </images>
                 </configuration>

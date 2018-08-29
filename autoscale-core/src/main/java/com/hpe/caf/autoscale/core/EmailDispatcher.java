@@ -57,11 +57,12 @@ public class EmailDispatcher
 
     public void dispatchEmail(final String messageContent, final int priorityThreshold)
     {
-        if (emailAddressTo == null || emailAddressTo.length() == 0) {
-            LOG.debug("No email address supplied to send an alert email to. Unable to send warning message.");
+        final Date date = new Date();
+        if ((emailAddressTo == null || emailAddressTo.length() == 0)
+            || (lastSent == null || ((date.getTime() - lastSent.getTime() <= 20 * 60 * 1000) && priorityThreshold == lastPriorityThreshold))) {
             return;
         }
-        final Date date = new Date();
+
         synchronized (LOCK) {
             if (lastSent == null || ((date.getTime() - lastSent.getTime() >= 20 * 60 * 1000 || !(priorityThreshold == lastPriorityThreshold)))) {
                 try {

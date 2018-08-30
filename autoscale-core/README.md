@@ -225,7 +225,7 @@ Configuration supported through the following environment variables:
 
 - `CAF_AUTOSCALER_EMAIL_DISPATCH_STAGE`  
 Default: `ALL`  
-Description: This setting indicates the stage at which to send out emails when the messaging platform is beginning to run out of resources. Possible values are stage1, stage2, stage3 or all.  
+Description: This setting indicates the stage at which to send out emails when the messaging platform is beginning to run out of resources. Possible values are `stage1`, `stage2`, `stage3` or `all`.  
 
 - `CAF_AUTOSCALER_DISABLE_EMAIL_DISPATCH`  
 Default: n/a  

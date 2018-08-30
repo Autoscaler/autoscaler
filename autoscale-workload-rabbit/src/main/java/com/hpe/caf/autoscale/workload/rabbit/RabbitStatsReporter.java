@@ -119,7 +119,7 @@ public class RabbitStatsReporter
         public Throwable handleError(final RetrofitError retrofitError)
         {
             return new ScalerException("Failed to contact RabbitMQ management API using url " + retrofitError.getUrl() 
-                + ". Queue may not yet have been created or RabbitMQ could be unavailable, will retry.");
+                + ". Queue may not yet have been created or RabbitMQ could be unavailable, will retry.", retrofitError);
         }
     }
 }

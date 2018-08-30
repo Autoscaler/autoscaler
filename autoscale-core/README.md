@@ -194,17 +194,17 @@
 
 | Checked Environment Variables | Default        | Description            |
 |-------------------------------|----------------|------------------------|
-| CAF_SMTP_HOST | NONE | SMTP server host address |
-| CAF_SMTP_PORT | NONE | SMTP server port |
-| CAF_SMTP_USERNAME | EMPTY STRING | SMTP server username |
-| CAF_SMTP_PASSWORD | EMPTY STRING | SMTP server password |
-| CAF_SMTP_EMAIL_ADDRESS_TO | NONE | The monitored email address to send alert emails to|
-| CAF_SMTP_EMAIL_ADDRESS_FROM | apollo-autoscaler@microfocus.com | The email address to send alert emails from |
-| CAF_MESSAGING_RESOURCE_LIMIT_STAGE_1 | 70 | The percentage of available resources the messaging platform can use before the Autoscaler should take stage 1 action. Stage 1 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD" or 1 if the environment variable is not set |
-| CAF_MESSAGING_RESOURCE_LIMIT_STAGE_2 | 80 | The percentage of available resources the messaging platform can use before the Autoscaler should take stage 2 action. Stage 2 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD" or 3 if the environment variable is not set |
-| CAF_MESSAGING_RESOURCE_LIMIT_STAGE_3 | 90 | The percentage of available resources the messaging platform can use before the Autoscaler should take stage 3 action. Stage 3 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD" or 5 if the environment variable is not set |
-| CAF_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD | 1 | The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 1 resource limit. Any service with a shutdown priority of or less than this value will be shutdown |
-| CAF_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD | 3 | The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 2 resource limit. Any service with a shutdown priority of or less than this value will be shutdown |
-| CAF_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD | 5 | The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 3 resource limit. Any service with a shutdown priority of or less than this value will be shutdown |
+| CAF_SMTP_HOST | NONE | SMTP server host address. |
+| CAF_SMTP_PORT | NONE | SMTP server port. |
+| CAF_SMTP_USERNAME | EMPTY STRING | SMTP server username. |
+| CAF_SMTP_PASSWORD | EMPTY STRING | SMTP server password. |
+| CAF_SMTP_EMAIL_ADDRESS_TO | NONE | The monitored email address to send alert emails to. If this property is not set the autoscaler will not attempt to use the email alert functionality. |
+| CAF_SMTP_EMAIL_ADDRESS_FROM | apollo-autoscaler@microfocus.com | The email address to send alert emails from. |
+| CAF_MESSAGING_RESOURCE_LIMIT_STAGE_1 | 70 | The percentage of available resources the messaging platform can use before the Autoscaler should take stage 1 action. Stage 1 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD" or 1 if the environment variable is not set. |
+| CAF_MESSAGING_RESOURCE_LIMIT_STAGE_2 | 80 | The percentage of available resources the messaging platform can use before the Autoscaler should take stage 2 action. Stage 2 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD" or 3 if the environment variable is not set. |
+| CAF_MESSAGING_RESOURCE_LIMIT_STAGE_3 | 90 | The percentage of available resources the messaging platform can use before the Autoscaler should take stage 3 action. Stage 3 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD" or 5 if the environment variable is not set. |
+| CAF_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD | 1 | The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 1 resource limit. Any service with a shutdown priority of or less than this value will be shutdown. |
+| CAF_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD | 3 | The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 2 resource limit. Any service with a shutdown priority of or less than this value will be shutdown. |
+| CAF_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD | 5 | The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 3 resource limit. Any service with a shutdown priority of or less than this value will be shutdown. |
 
     

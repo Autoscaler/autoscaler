@@ -47,7 +47,7 @@ public class ScalerThread implements Runnable
     private final int maxInstances;
     private final int backoffAmount;
     private final String serviceRef;
-    private final String disableEmailAlerts = System.getenv("CAF_DISABLE_EMAIL_DISPATCH");
+    private final String disableEmailAlerts = System.getenv("CAF_AUTOSCALER_DISABLE_EMAIL_DISPATCH");
     private int backoffCount = 0;
     private boolean firstRun = true;
     private boolean backoff = false;
@@ -78,12 +78,12 @@ public class ScalerThread implements Runnable
                         final String serviceReference, final int minInstances, final int maxInstances,
                         final int backoffAmount, final EmailDispatcher emailDispatcher)
     {   
-        final String customStage1ResourceLimit = System.getenv("CAF_MESSAGING_RESOURCE_LIMIT_STAGE_1");
-        final String customStage2ResourceLimit = System.getenv("CAF_MESSAGING_RESOURCE_LIMIT_STAGE_2");
-        final String customStage3ResourceLimit = System.getenv("CAF_MESSAGING_RESOURCE_LIMIT_STAGE_3");
-        final String stage1PriorityThreashold = System.getenv("CAF_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD");
-        final String stage2PriorityThreashold = System.getenv("CAF_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD");
-        final String stage3PriorityThreashold = System.getenv("CAF_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD");
+        final String customStage1ResourceLimit = System.getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1");
+        final String customStage2ResourceLimit = System.getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_2");
+        final String customStage3ResourceLimit = System.getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_3");
+        final String stage1PriorityThreashold = System.getenv("CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD");
+        final String stage2PriorityThreashold = System.getenv("CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD");
+        final String stage3PriorityThreashold = System.getenv("CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD");
         this.stage1PriorityThreashold = stage1PriorityThreashold != null ? Integer.parseInt(stage1PriorityThreashold) : -1;
         this.stage2PriorityThreashold = stage2PriorityThreashold != null ? Integer.parseInt(stage2PriorityThreashold) : -1;
         this.stage3PriorityThreashold = stage3PriorityThreashold != null ? Integer.parseInt(stage3PriorityThreashold) : -1;
@@ -93,7 +93,7 @@ public class ScalerThread implements Runnable
             customStage2ResourceLimit != null ? Double.parseDouble(customStage2ResourceLimit) : 80;
         this.stage3ResouceLimit =
             customStage3ResourceLimit != null ? Double.parseDouble(customStage3ResourceLimit) : 90;
-        this.dispatchEmailAtStage = System.getenv("CAF_EMAIL_DISPATCH_STAGE");
+        this.dispatchEmailAtStage = System.getenv("CAF_AUTOSCALER_EMAIL_DISPATCH_STAGE");
 
         this.emailDispatcher = emailDispatcher;
         this.governor = governor;
@@ -253,8 +253,7 @@ public class ScalerThread implements Runnable
     private boolean analyseMemoryUse(final InstanceInfo instances) throws ScalerException
     {
         final double currentMemoryLoad = analyser.analyseCurrentMemoryLoad();
-        final String servicePriority = instances.getPriority();
-        final int shutdownPriority = servicePriority != null ? Integer.parseInt(servicePriority) : -1;
+        final int shutdownPriority = instances.getPriority();
 
         if (shutdownPriority == -1) {
             return false;
@@ -279,7 +278,7 @@ public class ScalerThread implements Runnable
     private void sendEmail(final double memLoad)
     {
         if (disableEmailAlerts == null || disableEmailAlerts.toLowerCase(Locale.US).equals("false")) {
-            final String sendEmailStage = dispatchEmailAtStage != null ? dispatchEmailAtStage.toLowerCase(Locale.US) : "";
+            final String sendEmailStage = dispatchEmailAtStage != null ? dispatchEmailAtStage.toLowerCase(Locale.US) : "all";
             final String emailBody = analyser.retrieveEmailContent(df.format(memLoad));
             switch (sendEmailStage) {
                 case "stage1": {

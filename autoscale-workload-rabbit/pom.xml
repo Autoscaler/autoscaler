@@ -71,11 +71,6 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.github.autoscaler</groupId>
-            <artifactId>autoscale-core</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
 </project>

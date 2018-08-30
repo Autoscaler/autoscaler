@@ -47,12 +47,13 @@ public class EmailDispatcher
     {
         final String usernameEnv = System.getenv("CAF_SMTP_USERNAME");
         final String passwordEnv = System.getenv("CAF_SMTP_PASSWORD");
+        final String addressFromEnv = System.getenv("CAF_SMTP_EMAIL_ADDRESS_FROM");
         this.username = usernameEnv != null ? usernameEnv : "";
         this.password = passwordEnv != null ? passwordEnv : "";
         this.host = System.getenv("CAF_SMTP_HOST");
         this.port = System.getenv("CAF_SMTP_PORT");
         this.emailAddressTo = System.getenv("CAF_SMTP_EMAIL_ADDRESS_TO");
-        this.emailAddressFrom = System.getenv("CAF_SMTP_EMAIL_ADDRESS_FROM");
+        this.emailAddressFrom = addressFromEnv != null ? addressFromEnv : "apollo-autoscaler@microfocus.com";
     }
 
     public void dispatchEmail(final String messageContent, final int priorityThreshold)

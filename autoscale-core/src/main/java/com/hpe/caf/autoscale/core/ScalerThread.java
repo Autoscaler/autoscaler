@@ -60,7 +60,7 @@ public class ScalerThread implements Runnable
     private final double stage1ResouceLimit;
     private final double stage2ResouceLimit;
     private final double stage3ResouceLimit;
-    private final String dispatchEmailAtStage;
+    private final int dispatchEmailAtStage;
 
 
     /**
@@ -81,19 +81,20 @@ public class ScalerThread implements Runnable
         final String customStage1ResourceLimit = System.getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1");
         final String customStage2ResourceLimit = System.getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_2");
         final String customStage3ResourceLimit = System.getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_3");
-        final String stage1PriorityThreashold = System.getenv("CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD");
-        final String stage2PriorityThreashold = System.getenv("CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD");
-        final String stage3PriorityThreashold = System.getenv("CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD");
-        this.stage1PriorityThreashold = stage1PriorityThreashold != null ? Integer.parseInt(stage1PriorityThreashold) : -1;
-        this.stage2PriorityThreashold = stage2PriorityThreashold != null ? Integer.parseInt(stage2PriorityThreashold) : -1;
-        this.stage3PriorityThreashold = stage3PriorityThreashold != null ? Integer.parseInt(stage3PriorityThreashold) : -1;
+        final String stage1PriorityThreasholdEnv = System.getenv("CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD");
+        final String stage2PriorityThreasholdEnv = System.getenv("CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD");
+        final String stage3PriorityThreasholdEnv = System.getenv("CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD");
+        final String dispatchEmailAtStageEnv = System.getenv("CAF_AUTOSCALER_EMAIL_DISPATCH_STAGE");
+        this.stage1PriorityThreashold = stage1PriorityThreasholdEnv != null ? Integer.parseInt(stage1PriorityThreasholdEnv) : -1;
+        this.stage2PriorityThreashold = stage2PriorityThreasholdEnv != null ? Integer.parseInt(stage2PriorityThreasholdEnv) : -1;
+        this.stage3PriorityThreashold = stage3PriorityThreasholdEnv != null ? Integer.parseInt(stage3PriorityThreasholdEnv) : -1;
         this.stage1ResouceLimit =
             customStage1ResourceLimit != null ? Double.parseDouble(customStage1ResourceLimit) : 70;
         this.stage2ResouceLimit =
             customStage2ResourceLimit != null ? Double.parseDouble(customStage2ResourceLimit) : 80;
         this.stage3ResouceLimit =
             customStage3ResourceLimit != null ? Double.parseDouble(customStage3ResourceLimit) : 90;
-        this.dispatchEmailAtStage = System.getenv("CAF_AUTOSCALER_EMAIL_DISPATCH_STAGE");
+        this.dispatchEmailAtStage = dispatchEmailAtStageEnv != null ? Integer.parseInt(dispatchEmailAtStageEnv) : 0;
 
         this.emailDispatcher = emailDispatcher;
         this.governor = governor;
@@ -278,22 +279,21 @@ public class ScalerThread implements Runnable
     private void sendEmail(final double memLoad)
     {
         if (disableEmailAlerts == null || disableEmailAlerts.toLowerCase(Locale.US).equals("false")) {
-            final String sendEmailStage = dispatchEmailAtStage != null ? dispatchEmailAtStage.toLowerCase(Locale.US) : "all";
             final String emailBody = analyser.retrieveEmailContent(df.format(memLoad));
-            switch (sendEmailStage) {
-                case "stage1": {
+            switch (dispatchEmailAtStage) {
+                case 1: {
                     if (memLoad >= stage1ResouceLimit) {
                         emailDispatcher.dispatchEmail(emailBody, stage1PriorityThreashold);
                     }
                     break;
                 }
-                case "stage2": {
+                case 2: {
                     if (memLoad >= stage2ResouceLimit) {
                         emailDispatcher.dispatchEmail(emailBody, stage2PriorityThreashold);
                     }
                     break;
                 }
-                case "stage3": {
+                case 3: {
                     if (memLoad >= stage3ResouceLimit) {
                         emailDispatcher.dispatchEmail(emailBody, stage3PriorityThreashold);
                     }

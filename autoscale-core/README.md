@@ -167,69 +167,69 @@
 
 ## Messaging platform based back off configuration
 
-This functionality will only work on services that have the label "autoscale.shutdownPriority" set in their app definitions. These labels are then used to determine which application should be shutdown when the messaging platform begins to run low on resources.
+This functionality will only work on services that have the label `autoscale.shutdownPriority` set in their app definitions. These labels are then used to determine which application should be shutdown when the messaging platform begins to run low on resources.
 
 Configuration supported through the following environment variables:
 
-- `CAF_AUTOSCALER_SMTP_HOST`
-Default: n/a
-Description: SMTP server host address.
+- `CAF_AUTOSCALER_SMTP_HOST`  
+Default: n/a  
+Description: SMTP server host address.  
 
-- `CAF_AUTOSCALER_SMTP_PORT`
-Default: n/a
-Description: SMTP server port.
+- `CAF_AUTOSCALER_SMTP_PORT`  
+Default: n/a  
+Description: SMTP server port.  
 
-- `CAF_AUTOSCALER_SMTP_USERNAME`
-Default: "" (Empty String)
-Description: SMTP server username.
+- `CAF_AUTOSCALER_SMTP_USERNAME`  
+Default: "" (Empty String)  
+Description: SMTP server username.  
 
-- `CAF_AUTOSCALER_SMTP_PASSWORD`
-Default: "" (Empty String)
-Description: SMTP server password.
+- `CAF_AUTOSCALER_SMTP_PASSWORD`  
+Default: "" (Empty String)  
+Description: SMTP server password.  
 
-- `CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO`
-Default: n/a
-Description: The monitored email address to send alert emails to. If this property is not set the autoscaler will not attempt to use the email alert functionality.
+- `CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO`  
+Default: n/a  
+Description: The monitored email address to send alert emails to. If this property is not set the autoscaler will not attempt to use the email alert functionality.  
+  
+- `CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_FROM`  
+Default: `apollo-autoscaler@microfocus.com`  
+Description: The email address to send alert emails from.  
 
-- `CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_FROM`
-Default: `apollo-autoscaler@microfocus.com`
-Description: The email address to send alert emails from.
+- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1`  
+Default: `70`  
+Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 1 action. Stage 1 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD" or 1 if the environment variable is not set.  
 
-- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1`
-Default: `70`
-Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 1 action. Stage 1 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD" or 1 if the environment variable is not set.
+- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_2`  
+Default: `80`  
+Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 2 action. Stage 2 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD" or 3 if the environment variable is not set.  
 
-- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_2`
-Default: `80`
-Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 2 action. Stage 2 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD" or 3 if the environment variable is not set.
+- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_2`  
+Default: `90`  
+Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 3 action. Stage 3 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD" or 5 if the environment variable is not set.  
 
-- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_2`
-Default: `90`
-Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 3 action. Stage 3 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD" or 5 if the environment variable is not set.
+- `CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD`  
+Default: `1`  
+Description: The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 1 resource limit. Any service with a shutdown priority of or less than this value will be shutdown.  
 
-- `CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD`
-Default: `1`
-Description: The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 1 resource limit. Any service with a shutdown priority of or less than this value will be shutdown.
+- `CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD`  
+Default: `3`  
+Description: The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 2 resource limit. Any service with a shutdown priority of or less than this value will be shutdown.  
 
-- `CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD`
-Default: `3`
-Description: The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 2 resource limit. Any service with a shutdown priority of or less than this value will be shutdown.
-
-- `CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD`
-Default: `5`
-Description: The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 3 resource limit. Any service with a shutdown priority of or less than this value will be shutdown.
+- `CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD`  
+Default: `5`  
+Description: The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 3 resource limit. Any service with a shutdown priority of or less than this value will be shutdown.  
 
 ### Email Alert Configuration
 
 Configuration supported through the following environment variables:
 
-- `CAF_AUTOSCALER_EMAIL_DISPATCH_STAGE`
-Default: `ALL`
-Description: This setting indicates the stage at which to send out emails when the messaging platform is beginning to run out of resources. Possible values are stage1, stage2, stage3 or all.
+- `CAF_AUTOSCALER_EMAIL_DISPATCH_STAGE`  
+Default: `ALL`  
+Description: This setting indicates the stage at which to send out emails when the messaging platform is beginning to run out of resources. Possible values are stage1, stage2, stage3 or all.  
 
-- `CAF_AUTOSCALER_DISABLE_EMAIL_DISPATCH`
-Default: n/a
-Description: This switch can be used to disable email alerts. If it is not set then emails will be sent to the monitored email address.
+- `CAF_AUTOSCALER_DISABLE_EMAIL_DISPATCH`  
+Default: n/a  
+Description: This switch can be used to disable email alerts. If it is not set then emails will be sent to the monitored email address.  
 
 
 

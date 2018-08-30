@@ -206,5 +206,7 @@
 | CAF_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD | 1 | The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 1 resource limit. Any service with a shutdown priority of or less than this value will be shutdown. |
 | CAF_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD | 3 | The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 2 resource limit. Any service with a shutdown priority of or less than this value will be shutdown. |
 | CAF_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD | 5 | The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 3 resource limit. Any service with a shutdown priority of or less than this value will be shutdown. |
+| CAF_EMAIL_DISPATCH_STAGE | ALL | This setting indicates the stage at which to send out emails when the messaging platform is begining to run out of resources. Possible values are stage1, stage2, stage3 or all. |
+| CAF_DISABLE_EMAIL_DISPATCH | NONE | This switch can be used to disable email alerts. If it is not set then emails will be sent to the monitored email address. |
 
     

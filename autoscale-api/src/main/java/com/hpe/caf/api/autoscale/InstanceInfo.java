@@ -87,7 +87,7 @@ public final class InstanceInfo
     /**
      * @return the priority that these instances have, value may be null if no priority was set
      */
-    public int getPriority()
+    public int getServicePriority()
     {
         return servicePriority;
     }

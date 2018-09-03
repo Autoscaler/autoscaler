@@ -21,16 +21,19 @@ public class ResourceMonitoringConfiguration
 {
     /**
      * Percentage of max memory available to use allowed before triggering resource limit one behaviour.
+     * Defaults to 70.
      */
     @NotNull
     private double resourceLimitOne;
     /**
      * Percentage of max memory available to use allowed before triggering resource limit two behaviour.
+     * Defaults to 80.
      */
     @NotNull
     private double resourceLimitTwo;
     /**
      * Percentage of max memory available to use allowed before triggering resource limit three behaviour.
+     * Defaults to 90.
      */
     @NotNull
     private double resourceLimitThree;

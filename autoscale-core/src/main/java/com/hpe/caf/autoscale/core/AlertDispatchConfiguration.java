@@ -31,6 +31,12 @@ class AlertDispatchConfiguration
      */
     @NotNull
     private int alertDispatchStage;
+    /**
+     * How long the dispatcher should wait before dispatching another alert.
+     * Defaults to 20 minutes.
+     */
+    @NotNull
+    private int alertDispatchFrequency;
 
     /**
      * @return the disableAlertDispatch
@@ -46,5 +52,13 @@ class AlertDispatchConfiguration
     public int getAlertDispatchStage()
     {
         return alertDispatchStage;
+    }
+
+    /**
+     * @return the alertDispatchFrequency
+     */
+    public int getAlertDispatchFrequency()
+    {
+        return alertDispatchFrequency;
     }
 }

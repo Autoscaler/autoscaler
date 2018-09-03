@@ -33,6 +33,18 @@ public final class InstanceInfo
 
 
     /**
+     * Creates a new InstanceInfo with a service shutdown priority of -1.
+     * 
+     * @param running number of instances running
+     * @param staging number of instances in staging
+     * @param hosts hosts running or staging an instance of this application
+     */
+    public InstanceInfo(final int running, final int staging, final Collection<ServiceHost> hosts)
+    {
+        this(running, staging, hosts, -1);
+    }
+
+    /**
      * 
      * @param running number of instances running
      * @param staging number of instances in staging

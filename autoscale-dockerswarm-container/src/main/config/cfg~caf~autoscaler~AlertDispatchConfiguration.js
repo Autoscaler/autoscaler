@@ -15,5 +15,6 @@
  */
 ({
     disableAlertDispatch: getenv("CAF_AUTOSCALER_SMTP_HOST") || "false",
+    alertDispatchFrequency: getenv("CAF_AUTOSCALER_ALERT_FREQUENCY") || "20",
     alertDispatchStage: getenv("CAF_AUTOSCALER_SMTP_HOST") || "0"
 });

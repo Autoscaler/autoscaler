@@ -25,12 +25,16 @@ public final class Alerter
 {
     private long lastTime = 0;
     private final Map<String, AlertDispatcher> dispatchers;
+    private final int dispatchFrequency;
+    private final boolean alertDispatchDisabled;
     private static final Object MESSAGE_DISPATCH_LOCK = new Object();
     private static final Logger LOG = LoggerFactory.getLogger(Alerter.class);
 
-    public Alerter(final Map<String, AlertDispatcher> dispatchers)
+    public Alerter(final Map<String, AlertDispatcher> dispatchers, final AlertDispatchConfiguration alertConfig)
     {
         this.dispatchers = dispatchers;
+        this.dispatchFrequency = alertConfig.getAlertDispatchFrequency();
+        this.alertDispatchDisabled = alertConfig.isDisableAlertDispatch();
     }
 
     /**
@@ -41,16 +45,11 @@ public final class Alerter
      */
     public void dispatchAlert(final String messageBody) throws ScalerException
     {
-        final boolean alertDispatchDisabled = System.getenv("CAF_AUTOSCALER_ALERT_DISABLED") != null
-            ? Boolean.parseBoolean(System.getenv("CAF_AUTOSCALER_ALERT_DISABLED"))
-            : false;
         if (alertDispatchDisabled) {
             return;
         }
-        final int alertFrequency = System.getenv("CAF_AUTOSCALER_ALERT_FREQUENCY") != null
-            ? Integer.parseInt(System.getenv("CAF_AUTOSCALER_ALERT_FREQUENCY"))
-            : 20;
-        if (lastTime == 0 || (lastTime - System.currentTimeMillis()) == (alertFrequency * 60 * 1000)) {
+
+        if (lastTime == 0 || (lastTime - System.currentTimeMillis()) == (dispatchFrequency * 60 * 1000)) {
             synchronized (MESSAGE_DISPATCH_LOCK) {
                 for (final Map.Entry<String, AlertDispatcher> dispatcherEntry : dispatchers.entrySet()) {
                     final AlertDispatcher dispatcher = dispatcherEntry.getValue();

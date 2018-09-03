@@ -50,7 +50,6 @@ public class ScalerThread implements Runnable
     private final int maxInstances;
     private final int backoffAmount;
     private final String serviceRef;
-    private final String disableEmailAlerts = System.getenv("CAF_AUTOSCALER_DISABLE_EMAIL_DISPATCH");
     private int backoffCount = 0;
     private boolean firstRun = true;
     private boolean backoff = false;
@@ -139,7 +138,7 @@ public class ScalerThread implements Runnable
     {
         try {
             InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
-            if(analyseMemoryUse(instances)){
+            if(analyseMemoryLoadAndAlert(instances)){
                 return;
             }
             governor.recordInstances(serviceRef, instances);
@@ -181,18 +180,12 @@ public class ScalerThread implements Runnable
     private ScalingAction handleFirstRun(final InstanceInfo instances) throws ScalerException
     {
         final ScalingAction action;
-        if (analyseMemoryUse(instances) && instances.getTotalInstances() > 0) {
-            action = new ScalingAction(ScalingOperation.SCALE_DOWN, instances.getTotalInstances());
-        } else if (analyseMemoryUse(instances) && instances.getTotalInstances() == 0) {
-            action = ScalingAction.NO_ACTION;
+        if (instances.getTotalInstances() < minInstances) {
+            action = new ScalingAction(ScalingOperation.SCALE_UP, minInstances - instances.getTotalInstances());
+        } else if (instances.getTotalInstances() > maxInstances) {
+            action = new ScalingAction(ScalingOperation.SCALE_DOWN, instances.getTotalInstances() - maxInstances);
         } else {
-            if (instances.getTotalInstances() < minInstances) {
-                action = new ScalingAction(ScalingOperation.SCALE_UP, minInstances - instances.getTotalInstances());
-            } else if (instances.getTotalInstances() > maxInstances) {
-                action = new ScalingAction(ScalingOperation.SCALE_DOWN, instances.getTotalInstances() - maxInstances);
-            } else {
-                action = ScalingAction.NO_ACTION;
-            }
+            action = ScalingAction.NO_ACTION;
         }
         return action;
     }
@@ -245,7 +238,7 @@ public class ScalerThread implements Runnable
         backoff = true;
     }
 
-    private boolean analyseMemoryUse(final InstanceInfo instances) throws ScalerException
+    private boolean analyseMemoryLoadAndAlert(final InstanceInfo instances) throws ScalerException
     {
         final double currentMemoryLoad = analyser.analyseCurrentMemoryLoad();
         final int shutdownPriority = instances.getServicePriority();
@@ -272,31 +265,29 @@ public class ScalerThread implements Runnable
     
     private void sendEmail(final double memLoad) throws ScalerException
     {
-        if (disableEmailAlerts == null || disableEmailAlerts.toLowerCase(Locale.US).equals("false")) {
-            final String emailBody = analyser.retrieveEmailContent(df.format(memLoad));
-            switch (dispatchAlertAtStage) {
-                case 1: {
-                    if (memLoad >= stage1ResouceLimit) {
-                        alertDispatcher.dispatchAlert(emailBody);
-                    }
-                    break;
-                }
-                case 2: {
-                    if (memLoad >= stage2ResouceLimit) {
-                        alertDispatcher.dispatchAlert(emailBody);
-                    }
-                    break;
-                }
-                case 3: {
-                    if (memLoad >= stage3ResouceLimit) {
-                        alertDispatcher.dispatchAlert(emailBody);
-                    }
-                    break;
-                }
-                default: {
+        final String emailBody = analyser.retrieveEmailContent(df.format(memLoad));
+        switch (dispatchAlertAtStage) {
+            case 1: {
+                if (memLoad >= stage1ResouceLimit) {
                     alertDispatcher.dispatchAlert(emailBody);
-                    break;
                 }
+                break;
+            }
+            case 2: {
+                if (memLoad >= stage2ResouceLimit) {
+                    alertDispatcher.dispatchAlert(emailBody);
+                }
+                break;
+            }
+            case 3: {
+                if (memLoad >= stage3ResouceLimit) {
+                    alertDispatcher.dispatchAlert(emailBody);
+                }
+                break;
+            }
+            default: {
+                alertDispatcher.dispatchAlert(emailBody);
+                break;
             }
         }
     }

@@ -209,6 +209,10 @@ Description: This setting indicates the stage at which to send out alerts when t
 Default: n/a  
 Description: This switch can be used to disable alerts. If it is not set then alerts will be sent.  
 
+- `CAF_AUTOSCALER_ALERT_FREQUENCY`  
+Default: n/a  
+Description: This will determine how long in minutes the autoscaler will wait between dispatching alerts.  
+
 
 
 ## Creating a docker container

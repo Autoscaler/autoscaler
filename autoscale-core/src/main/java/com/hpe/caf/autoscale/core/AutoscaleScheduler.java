@@ -16,6 +16,7 @@
 package com.hpe.caf.autoscale.core;
 
 
+import com.hpe.caf.api.autoscale.AlertDispatcher;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import com.hpe.caf.api.autoscale.ServiceScaler;
@@ -67,16 +68,22 @@ public class AutoscaleScheduler
     private static final int INITIAL_SCALING_DELAY = 30;
     private static final Logger LOG = LoggerFactory.getLogger(AutoscaleScheduler.class);
     private final Governor governor = new GovernorImpl();
-    private final EmailDispatcher emailDispatcher;
+    private final Map<String, AlertDispatcher> alertDispatchers;
+    private final ResourceMonitoringConfiguration resourceConfig;
+    private final AlertDispatchConfiguration alertConfig;
 
     public AutoscaleScheduler(final Map<String, WorkloadAnalyserFactory> analyserFactories, final ServiceScaler scaler,
-            final ScheduledExecutorService scheduler, final ServiceValidator serviceValidator)
+                              final ScheduledExecutorService scheduler, final ServiceValidator serviceValidator,
+                              final Map<String, AlertDispatcher> alertDispatchers, final ResourceMonitoringConfiguration resourceConfig,
+                              final AlertDispatchConfiguration alertConfig)
     {
         this.validator = Objects.requireNonNull(serviceValidator);
         this.analyserFactories = Objects.requireNonNull(analyserFactories);
         this.scaler = Objects.requireNonNull(scaler);
         this.scheduler = Objects.requireNonNull(scheduler);
-        this.emailDispatcher = new EmailDispatcher();
+        this.alertDispatchers = alertDispatchers;
+        this.resourceConfig = resourceConfig;
+        this.alertConfig = alertConfig;
     }
 
     /**
@@ -182,7 +189,8 @@ public class AutoscaleScheduler
         governor.register(config);
         ScheduledFuture future = scheduler.scheduleWithFixedDelay(new ScalerThread(governor, analyser, scaler, config.getId(),
                                                                                    config.getMinInstances(), config.getMaxInstances(),
-                                                                                   config.getBackoffAmount(), emailDispatcher),
+                                                                                   config.getBackoffAmount(), new Alerter(alertDispatchers),
+                                                                                   resourceConfig, alertConfig),
                                                                   initialDelay, config.getInterval(), TimeUnit.SECONDS);
         scheduledServices.put(config.getId(), new ScheduledScalingService(config, future));
     }

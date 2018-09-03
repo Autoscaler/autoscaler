@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.squareup.okhttp.OkHttpClient;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +32,7 @@ import retrofit.client.Response;
 import retrofit.http.GET;
 import retrofit.http.Path;
 
-public class RabbitSystemResourceMonitor
+public final class RabbitSystemResourceMonitor
 {
     private final RabbitManagementApi rabbitApi;
     private final String rabbitEnpoint;
@@ -60,9 +61,8 @@ public class RabbitSystemResourceMonitor
     public double getCurrentMemoryComsumption() throws ScalerException{
         
         try {
-            String rabbitHost = rabbitEnpoint.replace("http://", "");
-            rabbitHost = rabbitHost.substring(0, rabbitHost.indexOf(":"));
-            final Response response = rabbitApi.getNodeStatus(rabbitHost);
+            final URI rabbitInstance = URI.create(rabbitEnpoint);
+            final Response response = rabbitApi.getNodeStatus(rabbitInstance.getHost());
             final JsonNode root = mapper.readTree(response.getBody().in());
             final long memory_limit = root.get("mem_limit").asLong();
             final long memory_used = root.get("mem_used").asLong();

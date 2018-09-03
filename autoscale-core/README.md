@@ -169,31 +169,9 @@
 
 This functionality will only work on services that have the label `autoscale.shutdownPriority` set in their app definitions. These labels are then used to determine which application should be shutdown when the messaging platform begins to run low on resources.
 
+`autoscale.shutdownPriority` should be set to positive integer values.
+
 Configuration supported through the following environment variables:
-
-- `CAF_AUTOSCALER_SMTP_HOST`  
-Default: n/a  
-Description: SMTP server host address.  
-
-- `CAF_AUTOSCALER_SMTP_PORT`  
-Default: n/a  
-Description: SMTP server port.  
-
-- `CAF_AUTOSCALER_SMTP_USERNAME`  
-Default: "" (Empty String)  
-Description: SMTP server username.  
-
-- `CAF_AUTOSCALER_SMTP_PASSWORD`  
-Default: "" (Empty String)  
-Description: SMTP server password.  
-
-- `CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO`  
-Default: n/a  
-Description: The monitored email address to send alert emails to. If this property is not set the autoscaler will not attempt to use the email alert functionality.  
-  
-- `CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_FROM`  
-Default: `apollo-autoscaler@microfocus.com`  
-Description: The email address to send alert emails from.  
 
 - `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1`  
 Default: `70`  
@@ -219,17 +197,17 @@ Description: The priority threshold of services to shutdown in the event the mes
 Default: `5`  
 Description: The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 3 resource limit. Any service with a shutdown priority of or less than this value will be shutdown.  
 
-### Email Alert Configuration
+### Alert Configuration
 
 Configuration supported through the following environment variables:
 
-- `CAF_AUTOSCALER_EMAIL_DISPATCH_STAGE`  
+- `CAF_AUTOSCALER_ALERT_DISPATCH_STAGE`  
 Default: `ALL`  
-Description: This setting indicates the stage at which to send out emails when the messaging platform is beginning to run out of resources. Possible values are `1`, `2` or `3`. If this is not set an email will be dispatched at all stages. 
+Description: This setting indicates the stage at which to send out alerts when the messaging platform is beginning to run out of resources. Possible values are `1`, `2` or `3`. If this is not set an alert will be dispatched at all stages. 
 
-- `CAF_AUTOSCALER_DISABLE_EMAIL_DISPATCH`  
+- `CAF_AUTOSCALER_ALERT_DISABLED`  
 Default: n/a  
-Description: This switch can be used to disable email alerts. If it is not set then emails will be sent to the monitored email address.  
+Description: This switch can be used to disable alerts. If it is not set then alerts will be sent.  
 
 
 
@@ -252,10 +230,4 @@ Description: This switch can be used to disable email alerts. If it is not set t
  - An implementation of WorkloadAnalyser (i.e. [autoscale-workload-rabbit](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-workload-rabbit))
  - An implementation of Codec (i.e. [codec-json](https://github.com/CAFapi/caf-common/tree/develop/codec-json))
  - An implementation of Cipher (optional) (i.e. [cipher-null](https://github.com/CAFapi/caf-common/tree/develop/cipher-null))
- - An implementation of Election (optional) (i.e. [election-null](https://github.com/CAFapi/caf-common/tree/develop/election-null))
-
-## Configuration
-
- The to run the container some configuration is required to use functionality such as the email alert when resources begin to run low on the messaging platform.
- All required configuration for this functionality and their defaults are listed below.
-    
+ - An implementation of Election (optional) (i.e. [election-null](https://github.com/CAFapi/caf-common/tree/develop/election-null))    

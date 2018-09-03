@@ -30,6 +30,7 @@ import com.hpe.caf.api.ElectionException;
 import com.hpe.caf.api.ElectionFactory;
 import com.hpe.caf.api.ElectionFactoryProvider;
 import com.hpe.caf.api.ManagedConfigurationSource;
+import com.hpe.caf.api.autoscale.AlertDispatcherFactory;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.api.autoscale.ServiceScalerProvider;
@@ -105,8 +106,10 @@ public class AutoscaleApplication extends Application<AutoscaleConfiguration>
         ServiceScaler scaler = ModuleLoader.getService(ServiceScalerProvider.class).getServiceScaler(config);
         ElectionFactory electionFactory = ModuleLoader.getService(ElectionFactoryProvider.class, NullElectionFactoryProvider.class).getElectionManager( config);
         Collection<WorkloadAnalyserFactoryProvider> workloadProviders = ModuleLoader.getServices(WorkloadAnalyserFactoryProvider.class);
+        Collection<AlertDispatcherFactory> alertDispatcherFactories = ModuleLoader.getServices(AlertDispatcherFactory.class);
         ScheduledExecutorService scheduler = getDefaultScheduledExecutorService(autoscaleConfiguration.getExecutorThreads());
-        AutoscaleCore core = new AutoscaleCore(config, source, scaler, workloadProviders, electionFactory, scheduler, servicePath);
+        AutoscaleCore core = new AutoscaleCore(config, source, scaler, workloadProviders, electionFactory, scheduler, servicePath,
+                                               alertDispatcherFactories);
 
         registerHealthChecks(environment, source, scaler, core);
         core.start(autoscaleConfiguration.getSourceRefreshPeriod());

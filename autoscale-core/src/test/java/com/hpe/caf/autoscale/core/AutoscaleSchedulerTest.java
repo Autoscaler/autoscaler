@@ -16,6 +16,7 @@
 package com.hpe.caf.autoscale.core;
 
 
+import com.hpe.caf.api.autoscale.AlertDispatcher;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
@@ -37,6 +38,7 @@ public class AutoscaleSchedulerTest
     private static final String FACTORY_A = "A";
     private static final String APP_ID_A = "A";
     private static final String APP_ID_B = "B";
+    private final Map<String, AlertDispatcher> dispatchers = new HashMap<>();
 
 
     /**
@@ -54,7 +56,8 @@ public class AutoscaleSchedulerTest
         out.add(getConfigB());
         ServiceValidator validator = Mockito.mock(ServiceValidator.class);
         Mockito.when(validator.getValidatedServices(Mockito.any())).thenReturn(out);
-        AutoscaleScheduler autoscale = new AutoscaleScheduler(factories, scaler, scheduler, validator);
+        AutoscaleScheduler autoscale = new AutoscaleScheduler(factories, scaler, scheduler, validator, dispatchers,
+                                          new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
         autoscale.updateServices(out);
         Map<String, ScheduledScalingService> ret = autoscale.getScheduledServices();
         Assert.assertTrue(ret.containsKey(APP_ID_A));
@@ -77,7 +80,8 @@ public class AutoscaleSchedulerTest
         out.add(getConfigB());
         ServiceValidator validator = Mockito.mock(ServiceValidator.class);
         Mockito.when(validator.getValidatedServices(Mockito.any())).thenReturn(out);
-        AutoscaleScheduler autoscale = new AutoscaleScheduler(factories, scaler, scheduler, validator);
+        AutoscaleScheduler autoscale = new AutoscaleScheduler(factories, scaler, scheduler, validator, dispatchers,
+                                          new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
         autoscale.updateServices(out);
         Map<String, ScheduledScalingService> ret = autoscale.getScheduledServices();
         Assert.assertTrue(ret.containsKey(APP_ID_A));
@@ -106,7 +110,8 @@ public class AutoscaleSchedulerTest
         out.add(getConfigB());
         ServiceValidator validator = Mockito.mock(ServiceValidator.class);
         Mockito.when(validator.getValidatedServices(Mockito.any())).thenReturn(out);
-        AutoscaleScheduler autoscale = new AutoscaleScheduler(factories, scaler, scheduler, validator);
+        AutoscaleScheduler autoscale = new AutoscaleScheduler(factories, scaler, scheduler, validator, dispatchers,
+                                          new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
         autoscale.updateServices(out);
         Map<String, ScheduledScalingService> ret = autoscale.getScheduledServices();
         Assert.assertTrue(ret.containsKey(APP_ID_A));

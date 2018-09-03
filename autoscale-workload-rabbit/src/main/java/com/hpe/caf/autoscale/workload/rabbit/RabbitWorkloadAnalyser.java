@@ -148,14 +148,9 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     @Override
     public String retrieveEmailContent(final String percentageMem)
     {
-        final String emailContenet
-            = "To whom it may concern, \n"
+        return "To whom it may concern, \n"
             + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
-            + "\n"
-            + "RabbitMQ has used " + percentageMem + "% of its high watermark memory allowance.\n" 
-            + "\n"
-            + "From: Autoscaler\n";
-        return emailContenet;
+            + "RabbitMQ has used " + percentageMem + "% of its high watermark memory allowance.\n";
     }
 
 }

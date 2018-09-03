@@ -16,6 +16,7 @@
 package com.hpe.caf.autoscale.core;
 
 
+import com.hpe.caf.api.autoscale.AlertDispatcher;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
@@ -23,7 +24,9 @@ import com.hpe.caf.api.autoscale.ScalingOperation;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
 import java.text.DecimalFormat;
+import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +43,7 @@ public class ScalerThread implements Runnable
 {
 
     private final DecimalFormat df = new DecimalFormat("##.00");
-    private final EmailDispatcher emailDispatcher;
+    private final Alerter  alertDispatcher;
     private final WorkloadAnalyser analyser;
     private final ServiceScaler scaler;
     private final int minInstances;
@@ -60,7 +63,7 @@ public class ScalerThread implements Runnable
     private final double stage1ResouceLimit;
     private final double stage2ResouceLimit;
     private final double stage3ResouceLimit;
-    private final int dispatchEmailAtStage;
+    private final int dispatchAlertAtStage;
 
 
     /**
@@ -72,31 +75,22 @@ public class ScalerThread implements Runnable
      * @param minInstances the minimum number of instances of the service that must be instantiated
      * @param maxInstances the maximum number of instances of the service that can be instantiated
      * @param backoffAmount the number of analysis runs to skip after a scaling is triggered
-     * @param emailDispatcher dispatcher to send alert emails if resources run low
+     * @param alertDispatcher dispatcher to send alerts if required
      */
     public ScalerThread(final Governor governor, final WorkloadAnalyser workloadAnalyser, final ServiceScaler serviceScaler,
                         final String serviceReference, final int minInstances, final int maxInstances,
-                        final int backoffAmount, final EmailDispatcher emailDispatcher)
+                        final int backoffAmount, final Alerter alertDispatcher, final ResourceMonitoringConfiguration resourceConfig,
+                        final AlertDispatchConfiguration alertConfig)
     {   
-        final String customStage1ResourceLimit = System.getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1");
-        final String customStage2ResourceLimit = System.getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_2");
-        final String customStage3ResourceLimit = System.getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_3");
-        final String stage1PriorityThreasholdEnv = System.getenv("CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD");
-        final String stage2PriorityThreasholdEnv = System.getenv("CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD");
-        final String stage3PriorityThreasholdEnv = System.getenv("CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD");
-        final String dispatchEmailAtStageEnv = System.getenv("CAF_AUTOSCALER_EMAIL_DISPATCH_STAGE");
-        this.stage1PriorityThreashold = stage1PriorityThreasholdEnv != null ? Integer.parseInt(stage1PriorityThreasholdEnv) : -1;
-        this.stage2PriorityThreashold = stage2PriorityThreasholdEnv != null ? Integer.parseInt(stage2PriorityThreasholdEnv) : -1;
-        this.stage3PriorityThreashold = stage3PriorityThreasholdEnv != null ? Integer.parseInt(stage3PriorityThreasholdEnv) : -1;
-        this.stage1ResouceLimit =
-            customStage1ResourceLimit != null ? Double.parseDouble(customStage1ResourceLimit) : 70;
-        this.stage2ResouceLimit =
-            customStage2ResourceLimit != null ? Double.parseDouble(customStage2ResourceLimit) : 80;
-        this.stage3ResouceLimit =
-            customStage3ResourceLimit != null ? Double.parseDouble(customStage3ResourceLimit) : 90;
-        this.dispatchEmailAtStage = dispatchEmailAtStageEnv != null ? Integer.parseInt(dispatchEmailAtStageEnv) : 0;
+        this.stage1PriorityThreashold = resourceConfig.getResourceLimitOneShutdownThreshold();
+        this.stage2PriorityThreashold = resourceConfig.getResourceLimitTwoShutdownThreshold();
+        this.stage3PriorityThreashold = resourceConfig.getResourceLimitThreeShutdownThreshold();
+        this.stage1ResouceLimit = resourceConfig.getResourceLimitOne();
+        this.stage2ResouceLimit = resourceConfig.getResourceLimitTwo();
+        this.stage3ResouceLimit = resourceConfig.getResourceLimitThree();
+        this.dispatchAlertAtStage = alertConfig.getAlertDispatchStage();
 
-        this.emailDispatcher = emailDispatcher;
+        this.alertDispatcher = alertDispatcher;
         this.governor = governor;
         this.analyser = Objects.requireNonNull(workloadAnalyser);
         this.scaler = Objects.requireNonNull(serviceScaler);
@@ -276,31 +270,31 @@ public class ScalerThread implements Runnable
         return false;
     }
     
-    private void sendEmail(final double memLoad)
+    private void sendEmail(final double memLoad) throws ScalerException
     {
         if (disableEmailAlerts == null || disableEmailAlerts.toLowerCase(Locale.US).equals("false")) {
             final String emailBody = analyser.retrieveEmailContent(df.format(memLoad));
-            switch (dispatchEmailAtStage) {
+            switch (dispatchAlertAtStage) {
                 case 1: {
                     if (memLoad >= stage1ResouceLimit) {
-                        emailDispatcher.dispatchEmail(emailBody, stage1PriorityThreashold);
+                        alertDispatcher.dispatchAlert(emailBody);
                     }
                     break;
                 }
                 case 2: {
                     if (memLoad >= stage2ResouceLimit) {
-                        emailDispatcher.dispatchEmail(emailBody, stage2PriorityThreashold);
+                        alertDispatcher.dispatchAlert(emailBody);
                     }
                     break;
                 }
                 case 3: {
                     if (memLoad >= stage3ResouceLimit) {
-                        emailDispatcher.dispatchEmail(emailBody, stage3PriorityThreashold);
+                        alertDispatcher.dispatchAlert(emailBody);
                     }
                     break;
                 }
                 default: {
-                    emailDispatcher.dispatchEmail(emailBody, 0);
+                    alertDispatcher.dispatchAlert(emailBody);
                     break;
                 }
             }

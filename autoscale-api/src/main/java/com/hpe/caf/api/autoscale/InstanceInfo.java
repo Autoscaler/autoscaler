@@ -45,11 +45,12 @@ public final class InstanceInfo
     }
 
     /**
-     * 
+     * Creates a new InstanceInfo.
+     *
      * @param running number of instances running
      * @param staging number of instances in staging
      * @param hosts hosts running or staging an instance of this application
-     * @param servicePriority the priority of the service, used when determining which service to scale down during emergency resource shortages
+     * @param servicePriority the priority of the service, used when making scaling decisions during resource shortages
      */
     public InstanceInfo(final int running, final int staging, final Collection<ServiceHost> hosts, final int servicePriority)
     {

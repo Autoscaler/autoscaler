@@ -23,18 +23,20 @@ import org.slf4j.LoggerFactory;
 
 public final class Alerter
 {
-    private long lastTime = 0;
+    private long lastTime;
     private final Map<String, AlertDispatcher> dispatchers;
     private final int dispatchFrequency;
     private final boolean alertDispatchDisabled;
-    private static final Object MESSAGE_DISPATCH_LOCK = new Object();
+    private final Object messageDispatchLock;
     private static final Logger LOG = LoggerFactory.getLogger(Alerter.class);
 
     public Alerter(final Map<String, AlertDispatcher> dispatchers, final AlertDispatchConfiguration alertConfig)
     {
+        this.lastTime = 0;
         this.dispatchers = dispatchers;
         this.dispatchFrequency = alertConfig.getAlertDispatchFrequency();
         this.alertDispatchDisabled = alertConfig.isDisableAlertDispatch();
+        this.messageDispatchLock = new Object();
     }
 
     /**
@@ -50,7 +52,7 @@ public final class Alerter
         }
 
         if (lastTime == 0 || (lastTime - System.currentTimeMillis()) == (dispatchFrequency * 60 * 1000)) {
-            synchronized (MESSAGE_DISPATCH_LOCK) {
+            synchronized (messageDispatchLock) {
                 for (final Map.Entry<String, AlertDispatcher> dispatcherEntry : dispatchers.entrySet()) {
                     final AlertDispatcher dispatcher = dispatcherEntry.getValue();
                     LOG.debug("Dispatching Alert using {}", dispatcher.getClass().getSimpleName());

@@ -66,7 +66,7 @@ Configuration supported through the following environment variables:
   Default: `80`  
   Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 2 action. Stage 2 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD" or 3 if the environment variable is not set.  
 
-- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_2`  
+- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_3`  
   Default: `90`  
   Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 3 action. Stage 3 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD" or 5 if the environment variable is not set.  
 
@@ -87,15 +87,15 @@ Configuration supported through the following environment variables:
 Configuration supported through the following environment variables:
 
 - `CAF_AUTOSCALER_ALERT_DISPATCH_STAGE`  
-  Default: `ALL`  
+  Default: `1`  
   Description: This setting indicates the stage at which to send out alerts when the messaging platform is beginning to run out of resources. Possible values are `1`, `2` or `3`. If this is not set an alert will be dispatched at all stages. 
 
 - `CAF_AUTOSCALER_ALERT_DISABLED`  
-  Default: n/a  
+  Default: `false`  
   Description: This switch can be used to disable alerts. If it is not set then alerts will be sent.  
 
 - `CAF_AUTOSCALER_ALERT_FREQUENCY`  
-  Default: n/a  
+  Default: `20`  
   Description: This will determine how long in minutes the autoscaler will wait between dispatching alerts.  
 
 

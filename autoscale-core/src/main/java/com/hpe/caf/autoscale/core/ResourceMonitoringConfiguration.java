@@ -15,9 +15,11 @@
  */
 package com.hpe.caf.autoscale.core;
 
+import com.hpe.caf.api.Configuration;
 import javax.validation.constraints.NotNull;
 
-public class ResourceMonitoringConfiguration
+@Configuration
+public final class ResourceMonitoringConfiguration
 {
     /**
      * Percentage of max memory available to use allowed before triggering resource limit one behaviour.
@@ -25,30 +27,35 @@ public class ResourceMonitoringConfiguration
      */
     @NotNull
     private double resourceLimitOne;
+
     /**
      * Percentage of max memory available to use allowed before triggering resource limit two behaviour.
      * Defaults to 80.
      */
     @NotNull
     private double resourceLimitTwo;
+
     /**
      * Percentage of max memory available to use allowed before triggering resource limit three behaviour.
      * Defaults to 90.
      */
     @NotNull
     private double resourceLimitThree;
+
     /**
      * Shutdown Priority threshold for resource limit one.
      * Defaults to 1.
      */
     @NotNull
     private int resourceLimitOneShutdownThreshold;
+
     /**
      * Shutdown Priority threshold for resource limit two.
      * Defaults to 3.
      */
     @NotNull
     private int resourceLimitTwoShutdownThreshold;
+
     /**
      * Shutdown Priority threshold for resource limit three.
      * Defaults to 5.
@@ -103,5 +110,4 @@ public class ResourceMonitoringConfiguration
     {
         return resourceLimitThreeShutdownThreshold;
     }
-
 }

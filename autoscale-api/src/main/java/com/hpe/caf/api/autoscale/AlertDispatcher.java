@@ -23,5 +23,5 @@ public interface AlertDispatcher
      * @param alertBody body of the alert to send
      * @throws ScalerException if an alert is not able to be sent.
      */
-    void dispatch(final String alertBody) throws ScalerException;
+    void dispatch(String alertBody) throws ScalerException;
 }

@@ -15,9 +15,11 @@
  */
 package com.hpe.caf.autoscale.core;
 
+import com.hpe.caf.api.Configuration;
 import javax.validation.constraints.NotNull;
 
-class AlertDispatchConfiguration
+@Configuration
+public final class AlertDispatchConfiguration
 {
     /**
      * A boolean that represent if the alert dispatching functionality should be used or not.
@@ -25,12 +27,14 @@ class AlertDispatchConfiguration
      */
     @NotNull
     private boolean disableAlertDispatch;
+
     /**
      * What stage of resource limit an alert should be sent.
      * Defaults to 0.
      */
     @NotNull
     private int alertDispatchStage;
+
     /**
      * How long the dispatcher should wait before dispatching another alert.
      * Defaults to 20 minutes.

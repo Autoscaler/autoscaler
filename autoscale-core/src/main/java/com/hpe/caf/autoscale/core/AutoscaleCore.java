@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 
 /**
@@ -79,33 +80,28 @@ public class AutoscaleCore
                          final Collection<AlertDispatcherFactory> alertDispatcherFactories)
         throws ScalerException
     {
-        try {
-            if (workloadProviders.isEmpty()) {
-                throw new ScalerException("No instances of WorkloadAnalyserFactory found");
-            }
-            for (WorkloadAnalyserFactoryProvider provider : workloadProviders) {
-                LOG.debug("Registering workload analyser: {}", provider.getWorkloadAnalyserName());
-                analyserFactoryMap.put(provider.getWorkloadAnalyserName(), provider.getWorkloadAnalyserFactory(configSource));
-            }
-            for (final AlertDispatcherFactory factory : alertDispatcherFactories) {
-                LOG.debug("Registering workload analyser: {}", factory.getAlertDispatcherName());
-                alertDispatcherMap.put(factory.getAlertDispatcherName(), factory.getAlertDispatcher(configSource));
-            }
-            this.scaler = new ScalerDecorator(serviceScaler, false);
-            this.scheduler = scheduler;
-            this.source = serviceSource;
-            ServiceValidator validator = new ServiceValidator(Collections.unmodifiableCollection(analyserFactoryMap.keySet()));
-            this.autoscaleScheduler = new AutoscaleScheduler(Collections.unmodifiableMap(analyserFactoryMap), scaler, scheduler, validator,
-                                                             alertDispatcherMap,
-                                                             configSource.getConfiguration(ResourceMonitoringConfiguration.class),
-                                                             configSource.getConfiguration(AlertDispatchConfiguration.class));
-            this.election = electionFactory.getElection(servicePath.getGroup() + "-" + AUTOSCALE_SERVICE_NAME,
-                                                        new AutoscaleElectionCallback());
-        } catch (final ConfigurationException ex) {
-             throw new ScalerException("Unable to get configuration.", ex);
+        if (workloadProviders.isEmpty()) {
+            throw new ScalerException("No instances of WorkloadAnalyserFactory found");
         }
+        for (WorkloadAnalyserFactoryProvider provider : workloadProviders) {
+            LOG.debug("Registering workload analyser: {}", provider.getWorkloadAnalyserName());
+            analyserFactoryMap.put(provider.getWorkloadAnalyserName(), provider.getWorkloadAnalyserFactory(configSource));
+        }
+        for (final AlertDispatcherFactory factory : alertDispatcherFactories) {
+            LOG.debug("Registering workload analyser: {}", factory.getAlertDispatcherName());
+            alertDispatcherMap.put(factory.getAlertDispatcherName(), factory.getAlertDispatcher(configSource));
+        }
+        this.scaler = new ScalerDecorator(serviceScaler, false);
+        this.scheduler = scheduler;
+        this.source = serviceSource;
+        ServiceValidator validator = new ServiceValidator(Collections.unmodifiableCollection(analyserFactoryMap.keySet()));
+        this.autoscaleScheduler = new AutoscaleScheduler(Collections.unmodifiableMap(analyserFactoryMap), scaler, scheduler, validator,
+                                                         alertDispatcherMap,
+                                                         getConfiguration(configSource, ResourceMonitoringConfiguration.class),
+                                                         getConfiguration(configSource, AlertDispatchConfiguration.class));
+        this.election = electionFactory.getElection(servicePath.getGroup() + "-" + AUTOSCALE_SERVICE_NAME,
+                                                    new AutoscaleElectionCallback());
     }
-
 
     /**
      * Enter the election, update the current list of services, and schedule a periodic refresh of available services to scale.
@@ -186,6 +182,16 @@ public class AutoscaleCore
             } catch (ScalerException e) {
                 LOG.warn("Failed to retrieve services this run", e);
             }
+        }
+    }
+
+    private static <T extends Object> T getConfiguration(final ConfigurationSource configSource, final Class<T> type)
+        throws ScalerException
+    {
+        try {
+            return configSource.getConfiguration(type);
+        } catch (final ConfigurationException ex) {
+            throw new ScalerException("Unable to get configuration.", ex);
         }
     }
 }

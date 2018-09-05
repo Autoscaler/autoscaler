@@ -16,7 +16,6 @@
 package com.hpe.caf.autoscale.core;
 
 
-import com.hpe.caf.api.autoscale.AlertDispatcher;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
@@ -24,9 +23,6 @@ import com.hpe.caf.api.autoscale.ScalingOperation;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
 import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,8 +1,8 @@
 ## Email Alert Dispatcher
 
-This module is designed to me the requirements of the autoscalers AlertDispatcher interface. This allows this module to work with the autoscaler to dispatch messages that will alert an admin of a potential issues with the services being managed.
+This module is designed to meet the requirements of the autoscaler's AlertDispatcher interface. This allows this module to work with the autoscaler to dispatch messages that will alert an administrator of potential issues with the services being managed.
 
-To use this module the following configuration will need to be provided via environment variable.
+To use this module the following configuration will need to be provided via environment variables.
 
 ### Email Alert Configuration
 

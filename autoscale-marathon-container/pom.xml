@@ -135,7 +135,6 @@
                             <alias>autoscale-container</alias>
                             <name>${dockerAutoscalerOrg}autoscale-marathon-rabbit${dockerProjectVersion}</name>
                             <build>
-                                <maintainer>andrew.reid@microfocus.com</maintainer>
                                 <from>cafapi/opensuse-jre8:1</from>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>

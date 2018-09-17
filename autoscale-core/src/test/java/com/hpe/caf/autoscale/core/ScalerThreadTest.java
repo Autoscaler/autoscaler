@@ -49,9 +49,8 @@ public class ScalerThreadTest
 
         int min = 0;
         int max = 5;
-        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, new Alerter(new HashMap<>(),
-                                                                                                            new AlertDispatchConfiguration()),
-                                          new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
+        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0,
+            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
         Mockito.verify(analyser, Mockito.times(0)).analyseWorkload(Mockito.any());
         Mockito.verify(scaler, Mockito.times(0)).scaleUp(Mockito.any(), Mockito.anyInt());
@@ -72,9 +71,8 @@ public class ScalerThreadTest
 
         int min = 1;
         int max = 5;
-        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, new Alerter(new HashMap<>(),
-                                                                                                            new AlertDispatchConfiguration()),
-                                          new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
+        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0,
+            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
         Mockito.verify(analyser, Mockito.times(0)).analyseWorkload(Mockito.any());
         Mockito.verify(scaler, Mockito.times(1)).scaleUp(SERVICE_REF, 1);
@@ -95,9 +93,8 @@ public class ScalerThreadTest
 
         int min = 1;
         int max = 5;
-        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, new Alerter(new HashMap<>(),
-                                                                                                            new AlertDispatchConfiguration()),
-                                          new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
+        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, 
+            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
         Mockito.verify(analyser, Mockito.times(0)).analyseWorkload(Mockito.any());
         Mockito.verify(scaler, Mockito.times(0)).scaleUp(Mockito.any(), Mockito.anyInt());
@@ -118,9 +115,8 @@ public class ScalerThreadTest
 
         int min = 0;
         int max = 5;
-        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, new Alerter(new HashMap<>(),
-                                                                                                            new AlertDispatchConfiguration()),
-                                          new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
+        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0,
+            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_UP);
         t.run();
@@ -141,9 +137,8 @@ public class ScalerThreadTest
 
         int min = 0;
         int max = 5;
-        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, new Alerter(new HashMap<>(),
-                                                                                                            new AlertDispatchConfiguration()),
-                                          new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
+        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, 
+            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_DOWN);
         t.run();
@@ -164,9 +159,8 @@ public class ScalerThreadTest
 
         int min = 0;
         int max = 5;
-        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, new Alerter(new HashMap<>(),
-                                                                                                            new AlertDispatchConfiguration()),
-                                          new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
+        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, 
+            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.NO_ACTION);
         t.run();
@@ -188,9 +182,8 @@ public class ScalerThreadTest
 
         int min = 0;
         int max = 5;
-        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, new Alerter(new HashMap<>(),
-                                                                                                            new AlertDispatchConfiguration()),
-                                          new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
+        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, 
+            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(new ScalingAction(ScalingOperation.SCALE_UP, 2));
         t.run();
@@ -211,9 +204,8 @@ public class ScalerThreadTest
 
         int min = 0;
         int max = 5;
-        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, new Alerter(new HashMap<>(),
-                                                                                                            new AlertDispatchConfiguration()),
-                                          new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
+        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, 
+            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(new ScalingAction(ScalingOperation.SCALE_DOWN, 2));
         t.run();

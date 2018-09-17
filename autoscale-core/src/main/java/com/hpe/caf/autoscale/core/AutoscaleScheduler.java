@@ -191,7 +191,7 @@ public class AutoscaleScheduler
                                                                                    config.getMinInstances(), config.getMaxInstances(),
                                                                                    config.getBackoffAmount(),
                                                                                    new Alerter(alertDispatchers, alertConfig),
-                                                                                   resourceConfig, alertConfig),
+                                                                                   resourceConfig),
                                                                   initialDelay, config.getInterval(), TimeUnit.SECONDS);
         scheduledServices.put(config.getId(), new ScheduledScalingService(config, future));
     }

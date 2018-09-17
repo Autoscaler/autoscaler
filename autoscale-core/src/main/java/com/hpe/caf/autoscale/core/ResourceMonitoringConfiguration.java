@@ -21,6 +21,14 @@ import javax.validation.constraints.NotNull;
 @Configuration
 public final class ResourceMonitoringConfiguration
 {
+    
+     /**
+     * What percentage of resource limit can be used before an alert should be sent.
+     * Defaults to value of stage one threshold.
+     */
+    @NotNull
+    private int alertDispatchThreshold;
+
     /**
      * Percentage of max memory available to use allowed before triggering resource limit one behaviour.
      * Defaults to 70.
@@ -109,5 +117,13 @@ public final class ResourceMonitoringConfiguration
     public int getResourceLimitThreeShutdownThreshold()
     {
         return resourceLimitThreeShutdownThreshold;
+    }
+
+    /**
+     * @return the alertDispatchThreshold
+     */
+    public int getAlertDispatchThreshold()
+    {
+        return alertDispatchThreshold;
     }
 }

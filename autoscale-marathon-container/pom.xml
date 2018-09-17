@@ -43,6 +43,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.autoscaler</groupId>
+            <artifactId>autoscale-email-alert-dispatcher</artifactId>
+            <version>1.4.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.cafapi</groupId>
             <artifactId>caf-api</artifactId>
         </dependency>

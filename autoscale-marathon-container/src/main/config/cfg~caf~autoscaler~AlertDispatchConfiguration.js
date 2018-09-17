@@ -15,6 +15,5 @@
  */
 ({
     disableAlertDispatch: getenv("CAF_AUTOSCALER_ALERT_DISABLED") || false,
-    alertDispatchFrequency: getenv("CAF_AUTOSCALER_ALERT_FREQUENCY") || 20,
-    alertDispatchStage: getenv("CAF_AUTOSCALER_ALERT_DISPATCH_STAGE") || 1
+    alertDispatchFrequency: getenv("CAF_AUTOSCALER_ALERT_FREQUENCY") || 20
 });

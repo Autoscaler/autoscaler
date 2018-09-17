@@ -29,13 +29,6 @@ public final class AlertDispatchConfiguration
     private boolean disableAlertDispatch;
 
     /**
-     * What stage of resource limit an alert should be sent.
-     * Defaults to 0.
-     */
-    @NotNull
-    private int alertDispatchStage;
-
-    /**
      * How long the dispatcher should wait before dispatching another alert.
      * Defaults to 20 minutes.
      */
@@ -48,14 +41,6 @@ public final class AlertDispatchConfiguration
     public boolean isDisableAlertDispatch()
     {
         return disableAlertDispatch;
-    }
-
-    /**
-     * @return the alertDispatchStage
-     */
-    public int getAlertDispatchStage()
-    {
-        return alertDispatchStage;
     }
 
     /**

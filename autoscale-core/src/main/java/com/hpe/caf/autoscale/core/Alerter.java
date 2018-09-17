@@ -51,15 +51,21 @@ public final class Alerter
             return;
         }
 
-        if (lastTime == 0 || (lastTime - System.currentTimeMillis()) == (dispatchFrequency * 60 * 1000)) {
+        if (lastTime == 0 || lastTimeDispatchedWithinLimit()) {
             synchronized (messageDispatchLock) {
-                for (final Map.Entry<String, AlertDispatcher> dispatcherEntry : dispatchers.entrySet()) {
-                    final AlertDispatcher dispatcher = dispatcherEntry.getValue();
-                    LOG.debug("Dispatching Alert using {}", dispatcher.getClass().getSimpleName());
-                    dispatcher.dispatch(messageBody);
-                    lastTime = System.currentTimeMillis();
+                if (lastTime == 0 || lastTimeDispatchedWithinLimit()) {
+                    for (final Map.Entry<String, AlertDispatcher> dispatcherEntry : dispatchers.entrySet()) {
+                        final AlertDispatcher dispatcher = dispatcherEntry.getValue();
+                        LOG.debug("Dispatching Alert using {}", dispatcher.getClass().getSimpleName());
+                        dispatcher.dispatch(messageBody);
+                        lastTime = System.currentTimeMillis();
+                    }
                 }
             }
         }
+    }
+    
+    private boolean lastTimeDispatchedWithinLimit(){
+        return (lastTime - System.currentTimeMillis()) >= (dispatchFrequency * 60 * 1000);
     }
 }

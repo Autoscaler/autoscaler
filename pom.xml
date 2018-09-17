@@ -102,7 +102,6 @@
         <module>autoscale-workload-rabbit</module>
         <module>autoscale-acceptance-tests</module>
         <module>autoscale-email-alert-dispatcher</module>
-        <module>autoscale-marathon-rabbit-container-email-alert</module>
     </modules>
 
     <dependencyManagement>

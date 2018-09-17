@@ -59,9 +59,8 @@ This functionality will only work on services that have the label `autoscale.shu
 Configuration supported through the following environment variables:
 
 - `CAF_AUTOSCALER_ALERT_DISPATCH_THRESHOLD`  
-  Default: `1`  
-  Description: This setting indicates the threshold that can be reached before starting to send out alerts when the messaging platform is beginning to run out of resources.  This value can be set to between 0 - 100 (0%-100%). If this configuration is not set then a message will be dispatched from the stage one alert threshold.
-
+  Default: `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1`  
+  Description: This setting indicates the threshold that can be reached before starting to send out alerts when the messaging platform is beginning to run out of resources.  This value can be set to between 0 - 100 (0%-100%). If this configuration is not set then a message will be dispatched from the stage one alert threshold.  
 
 - `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1`  
   Default: `70`  

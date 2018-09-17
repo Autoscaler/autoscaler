@@ -171,7 +171,11 @@ This functionality will only work on services that have the label `autoscale.shu
 
 `autoscale.shutdownPriority` should be set to positive integer values.
 
-Configuration supported through the following environment variables:
+Configuration supported through the following environment variables:  
+
+- `CAF_AUTOSCALER_ALERT_DISPATCH_THRESHOLD`  
+  Default: `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1`  
+  Description: This setting indicates the threshold that can be reached before starting to send out alerts when the messaging platform is beginning to run out of resources.  This value can be set to between 0 - 100 (0%-100%). If this configuration is not set then a message will be dispatched from the stage one alert threshold.
 
 - `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1`  
 Default: `70`  
@@ -200,10 +204,6 @@ Description: The priority threshold of services to shutdown in the event the mes
 ### Alert Configuration
 
 Configuration supported through the following environment variables:
-
-- `CAF_AUTOSCALER_ALERT_DISPATCH_STAGE`  
-Default: `1`  
-Description: This setting indicates the stage at which to send out alerts when the messaging platform is beginning to run out of resources. Possible values are `1`, `2` or `3`. If this is not set an alert will be dispatched at all stages. 
 
 - `CAF_AUTOSCALER_ALERT_DISABLED`  
 Default: `false`  

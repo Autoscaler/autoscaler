@@ -228,7 +228,7 @@ public class ScalerThread implements Runnable
 
     private boolean analyseMemoryLoadAndAlert(final InstanceInfo instances) throws ScalerException
     {
-        final double currentMemoryLoad = analyser.analyseCurrentMemoryLoad();
+        final double currentMemoryLoad = analyser.getCurrentMemoryLoad();
         final int shutdownPriority = instances.getShutdownPriority();
 
         if (shutdownPriority == -1) {
@@ -253,7 +253,7 @@ public class ScalerThread implements Runnable
 
     private void sendEmail(final double memLoad) throws ScalerException
     {
-        final String emailBody = analyser.retrieveEmailContent(df.format(memLoad));
+        final String emailBody = analyser.getMemoryOverloadWarning(df.format(memLoad));
         if (memLoad > dispatchAlertAtThreshold) {
             alertDispatcher.dispatchAlert(emailBody);
         }

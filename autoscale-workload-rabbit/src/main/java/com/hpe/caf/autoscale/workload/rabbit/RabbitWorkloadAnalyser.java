@@ -60,7 +60,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
      * @return The percentage being utilised
      */
     @Override
-    public double analyseCurrentMemoryLoad() throws ScalerException
+    public double getCurrentMemoryLoad() throws ScalerException
     {
         final double memoryConsumption = rabbitResourceMonitor.getCurrentMemoryComsumption();
         LOG.debug("Current memory consumption {}% of total available memory.", memoryConsumption);
@@ -146,7 +146,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     }
 
     @Override
-    public String retrieveEmailContent(final String percentageMem)
+    public String getMemoryOverloadWarning(final String percentageMem)
     {
         return "To whom it may concern, \n"
             + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"

@@ -229,7 +229,7 @@ public class ScalerThread implements Runnable
     private boolean analyseMemoryLoadAndAlert(final InstanceInfo instances) throws ScalerException
     {
         final double currentMemoryLoad = analyser.analyseCurrentMemoryLoad();
-        final int shutdownPriority = instances.getServicePriority();
+        final int shutdownPriority = instances.getShutdownPriority();
 
         if (shutdownPriority == -1) {
             return false;

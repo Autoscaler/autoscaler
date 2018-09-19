@@ -26,7 +26,7 @@ public interface AlertDispatcherFactory
      * @return a new AlertDispatcher instance for the given AlertDispatcher implementation
      * @throws ScalerException if the dispatcher cannot be created
      */
-    AlertDispatcher getAlertDispatcher(final ConfigurationSource configs) throws ScalerException;
+    AlertDispatcher getAlertDispatcher(ConfigurationSource configs) throws ScalerException;
 
     /**
      * @return a unique key name for this sort of AlertDispatcher the factory produces

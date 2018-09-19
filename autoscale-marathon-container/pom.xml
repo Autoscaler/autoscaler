@@ -45,7 +45,7 @@
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-email-alert-dispatcher</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi</groupId>

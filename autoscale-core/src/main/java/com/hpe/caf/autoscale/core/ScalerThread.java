@@ -126,7 +126,7 @@ public class ScalerThread implements Runnable
     {
         try {
             InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
-            if (analyseMemoryLoadAndAlert(instances)) {
+            if (handleMemoryLoadIssues(instances)) {
                 return;
             }
             governor.recordInstances(serviceRef, instances);
@@ -226,7 +226,7 @@ public class ScalerThread implements Runnable
         backoff = true;
     }
 
-    private boolean analyseMemoryLoadAndAlert(final InstanceInfo instances) throws ScalerException
+    private boolean handleMemoryLoadIssues(final InstanceInfo instances) throws ScalerException
     {
         final double currentMemoryLoad = analyser.getCurrentMemoryLoad();
         final int shutdownPriority = instances.getShutdownPriority();
@@ -235,26 +235,25 @@ public class ScalerThread implements Runnable
             return false;
         }
 
+        handleAlerterDispatch(currentMemoryLoad);
+
         if (currentMemoryLoad >= stage1ResouceLimit && shutdownPriority <= stage1PriorityThreshold) {
             emergencyScaleDown(instances.getTotalInstances());
-            sendEmail(currentMemoryLoad);
             return true;
         } else if (currentMemoryLoad >= stage2ResouceLimit && shutdownPriority <= stage2PriorityThreshold) {
             emergencyScaleDown(instances.getTotalInstances());
-            sendEmail(currentMemoryLoad);
             return true;
         } else if (currentMemoryLoad >= stage3ResouceLimit && shutdownPriority <= stage3PriorityThreshold) {
             emergencyScaleDown(instances.getTotalInstances());
-            sendEmail(currentMemoryLoad);
             return true;
         }
         return false;
     }
 
-    private void sendEmail(final double memLoad) throws ScalerException
+    private void handleAlerterDispatch(final double memLoad) throws ScalerException
     {
-        final String emailBody = analyser.getMemoryOverloadWarning(df.format(memLoad));
         if (memLoad > dispatchAlertAtThreshold) {
+            final String emailBody = analyser.getMemoryOverloadWarning(df.format(memLoad));
             alertDispatcher.dispatchAlert(emailBody);
         }
     }

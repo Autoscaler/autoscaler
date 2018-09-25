@@ -24,31 +24,33 @@ public final class EmailDispatcherConfigurations
      */
     @NotNull
     private String host;
+
     /**
      * SMTP Server Port
      */
     @NotNull
     private String port;
+
     /**
-     * SMTP Server Username
-     * defaults to empty string
+     * SMTP Server Username defaults to empty string
      */
     @NotNull
     private String username;
+
     /**
-     *  SMTP Server Password
-     *  defaults to empty string
+     * SMTP Server Password defaults to empty string
      */
     @NotNull
     private String password;
+
     /**
-     *  Email address to send alert messages to.
+     * Email address to send alert messages to.
      */
     @NotNull
     private String emailAddressTo;
+
     /**
-     * Email address to send alert messages from.
-     * defaults to apollo-autoscaler@microfocus.com
+     * Email address to send alert messages from. defaults to apollo-autoscaler@microfocus.com
      */
     @NotNull
     private String emailAddressFrom;
@@ -100,5 +102,4 @@ public final class EmailDispatcherConfigurations
     {
         return emailAddressFrom;
     }
-
 }

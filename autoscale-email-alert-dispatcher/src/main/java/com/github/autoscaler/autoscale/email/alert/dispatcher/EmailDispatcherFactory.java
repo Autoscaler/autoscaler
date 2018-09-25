@@ -23,7 +23,6 @@ import com.hpe.caf.api.autoscale.ScalerException;
 
 public class EmailDispatcherFactory implements AlertDispatcherFactory
 {
-
     @Override
     public String getAlertDispatcherName()
     {
@@ -39,5 +38,4 @@ public class EmailDispatcherFactory implements AlertDispatcherFactory
             throw new ScalerException("Unable to create email dispatcher, cannot find email dispatcher configuration.", ex);
         }
     }
-
 }

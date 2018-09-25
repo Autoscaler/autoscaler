@@ -57,16 +57,16 @@ public final class RabbitSystemResourceMonitor
         final RestAdapter adapter = builder.build();
         rabbitApi = adapter.create(RabbitManagementApi.class);
     }
-    
-    public double getCurrentMemoryComsumption() throws ScalerException{
-        
+
+    public double getCurrentMemoryComsumption() throws ScalerException
+    {
         try {
             final URI rabbitInstance = URI.create(rabbitEnpoint);
             final Response response = rabbitApi.getNodeStatus(rabbitInstance.getHost());
             final JsonNode root = mapper.readTree(response.getBody().in());
             final long memory_limit = root.get("mem_limit").asLong();
             final long memory_used = root.get("mem_used").asLong();
-            return ((double)memory_used / memory_limit) * 100;
+            return ((double) memory_used / memory_limit) * 100;
         } catch (final IOException ex) {
             throw new ScalerException("Unable to map response to status request.", ex);
         }

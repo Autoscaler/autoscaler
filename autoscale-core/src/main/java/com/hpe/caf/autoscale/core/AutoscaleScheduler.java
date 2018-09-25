@@ -187,10 +187,11 @@ public class AutoscaleScheduler
             cancel(config.getId());
         }
         governor.register(config);
+        final Alerter alerter = new Alerter(alertDispatchers, alertConfig);
         ScheduledFuture future = scheduler.scheduleWithFixedDelay(new ScalerThread(governor, analyser, scaler, config.getId(),
                                                                                    config.getMinInstances(), config.getMaxInstances(),
                                                                                    config.getBackoffAmount(),
-                                                                                   new Alerter(alertDispatchers, alertConfig),
+                                                                                   alerter,
                                                                                    resourceConfig),
                                                                   initialDelay, config.getInterval(), TimeUnit.SECONDS);
         scheduledServices.put(config.getId(), new ScheduledScalingService(config, future));

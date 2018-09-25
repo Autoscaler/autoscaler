@@ -49,9 +49,9 @@ public class ScalerThread implements Runnable
     private static final Logger LOG = LoggerFactory.getLogger(ScalerThread.class);
 
     private Governor governor;
-    private final int stage1PriorityThreashold;
-    private final int stage2PriorityThreashold;
-    private final int stage3PriorityThreashold;
+    private final int stage1PriorityThreshold;
+    private final int stage2PriorityThreshold;
+    private final int stage3PriorityThreshold;
     private final double stage1ResouceLimit;
     private final double stage2ResouceLimit;
     private final double stage3ResouceLimit;
@@ -73,9 +73,9 @@ public class ScalerThread implements Runnable
                         final String serviceReference, final int minInstances, final int maxInstances,
                         final int backoffAmount, final Alerter alertDispatcher, final ResourceMonitoringConfiguration resourceConfig)
     {
-        this.stage1PriorityThreashold = resourceConfig.getResourceLimitOneShutdownThreshold();
-        this.stage2PriorityThreashold = resourceConfig.getResourceLimitTwoShutdownThreshold();
-        this.stage3PriorityThreashold = resourceConfig.getResourceLimitThreeShutdownThreshold();
+        this.stage1PriorityThreshold = resourceConfig.getResourceLimitOneShutdownThreshold();
+        this.stage2PriorityThreshold = resourceConfig.getResourceLimitTwoShutdownThreshold();
+        this.stage3PriorityThreshold = resourceConfig.getResourceLimitThreeShutdownThreshold();
         this.stage1ResouceLimit = resourceConfig.getResourceLimitOne();
         this.stage2ResouceLimit = resourceConfig.getResourceLimitTwo();
         this.stage3ResouceLimit = resourceConfig.getResourceLimitThree();
@@ -235,15 +235,15 @@ public class ScalerThread implements Runnable
             return false;
         }
 
-        if (currentMemoryLoad >= stage1ResouceLimit && shutdownPriority <= stage1PriorityThreashold) {
+        if (currentMemoryLoad >= stage1ResouceLimit && shutdownPriority <= stage1PriorityThreshold) {
             emergencyScaleDown(instances.getTotalInstances());
             sendEmail(currentMemoryLoad);
             return true;
-        } else if (currentMemoryLoad >= stage2ResouceLimit && shutdownPriority <= stage2PriorityThreashold) {
+        } else if (currentMemoryLoad >= stage2ResouceLimit && shutdownPriority <= stage2PriorityThreshold) {
             emergencyScaleDown(instances.getTotalInstances());
             sendEmail(currentMemoryLoad);
             return true;
-        } else if (currentMemoryLoad >= stage3ResouceLimit && shutdownPriority <= stage3PriorityThreashold) {
+        } else if (currentMemoryLoad >= stage3ResouceLimit && shutdownPriority <= stage3PriorityThreshold) {
             emergencyScaleDown(instances.getTotalInstances());
             sendEmail(currentMemoryLoad);
             return true;

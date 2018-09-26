@@ -66,6 +66,6 @@ public final class Alerter
     }
     
     private boolean lastTimeDispatchedWithinLimit(){
-        return (lastTime - System.currentTimeMillis()) >= (dispatchFrequency * 60 * 1000);
+        return (System.currentTimeMillis() - lastTime) >= (dispatchFrequency * 60 * 1000);
     }
 }

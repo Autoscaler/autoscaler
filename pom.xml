@@ -101,6 +101,7 @@
         <module>autoscale-source-marathon</module>        
         <module>autoscale-workload-rabbit</module>
         <module>autoscale-acceptance-tests</module>
+        <module>autoscale-email-alert-dispatcher</module>
     </modules>
 
     <dependencyManagement>

@@ -29,13 +29,35 @@ public final class InstanceInfo
     private final int instancesRunning;
     private final int instancesStaging;
     private final Collection<ServiceHost> hosts;
+    private final int shutdownPriority;
 
 
+    /**
+     * Creates a new InstanceInfo with a service shutdown priority of -1.
+     * 
+     * @param running number of instances running
+     * @param staging number of instances in staging
+     * @param hosts hosts running or staging an instance of this application
+     */
     public InstanceInfo(final int running, final int staging, final Collection<ServiceHost> hosts)
+    {
+        this(running, staging, hosts, -1);
+    }
+
+    /**
+     * Creates a new InstanceInfo.
+     *
+     * @param running number of instances running
+     * @param staging number of instances in staging
+     * @param hosts hosts running or staging an instance of this application
+     * @param shutdownPriority the priority of the service, used when making scaling decisions during resource shortages
+     */
+    public InstanceInfo(final int running, final int staging, final Collection<ServiceHost> hosts, final int shutdownPriority)
     {
         this.instancesRunning = running;
         this.instancesStaging = staging;
         this.hosts = Collections.unmodifiableCollection(Objects.requireNonNull(hosts));
+        this.shutdownPriority = shutdownPriority;
     }
 
 
@@ -72,5 +94,14 @@ public final class InstanceInfo
     public Collection<ServiceHost> getHosts()
     {
         return hosts;
+    }
+
+
+    /**
+     * @return the priority that these instances have, value may be null if no priority was set
+     */
+    public int getShutdownPriority()
+    {
+        return shutdownPriority;
     }
 }

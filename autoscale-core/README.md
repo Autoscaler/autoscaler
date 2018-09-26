@@ -164,8 +164,57 @@
  match the appOwner specified in the `ScalingConfiguration`, and the case where
  the workload metric specified is not available to that instance of
  `autoscale-core`.
- 
- 
+
+## Messaging platform based back off configuration
+
+This functionality will only work on services that have the label `autoscale.shutdownPriority` set in their app definitions. These labels are then used to determine which application should be shutdown when the messaging platform begins to run low on resources.
+
+`autoscale.shutdownPriority` should be set to positive integer values.
+
+Configuration supported through the following environment variables:  
+
+- `CAF_AUTOSCALER_ALERT_DISPATCH_THRESHOLD`  
+  Default: `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1`  
+  Description: This setting indicates the threshold that can be reached before starting to send out alerts when the messaging platform is beginning to run out of resources.  This value can be set to between 0 - 100 (0%-100%). If this configuration is not set then a message will be dispatched from the stage one alert threshold.
+
+- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1`  
+Default: `70`  
+Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 1 action. Stage 1 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD" or 1 if the environment variable is not set.  
+
+- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_2`  
+Default: `80`  
+Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 2 action. Stage 2 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD" or 3 if the environment variable is not set.  
+
+- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_3`  
+Default: `90`  
+Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 3 action. Stage 3 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD" or 5 if the environment variable is not set.  
+
+- `CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD`  
+Default: `1`  
+Description: The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 1 resource limit. Any service with a shutdown priority of or less than this value will be shutdown.  
+
+- `CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD`  
+Default: `3`  
+Description: The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 2 resource limit. Any service with a shutdown priority of or less than this value will be shutdown.  
+
+- `CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD`  
+Default: `5`  
+Description: The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 3 resource limit. Any service with a shutdown priority of or less than this value will be shutdown.  
+
+### Alert Configuration
+
+Configuration supported through the following environment variables:
+
+- `CAF_AUTOSCALER_ALERT_DISABLED`  
+Default: `false`  
+Description: This switch can be used to disable alerts. If it is not set then alerts will be sent.  
+
+- `CAF_AUTOSCALER_ALERT_FREQUENCY`  
+Default: `20`  
+Description: This will determine how long in minutes the autoscaler will wait between dispatching alerts.  
+
+
+
 ## Creating a docker container
 
  A container for a worker is generally made as a new subproject in Maven (or
@@ -185,5 +234,4 @@
  - An implementation of WorkloadAnalyser (i.e. [autoscale-workload-rabbit](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-workload-rabbit))
  - An implementation of Codec (i.e. [codec-json](https://github.com/CAFapi/caf-common/tree/develop/codec-json))
  - An implementation of Cipher (optional) (i.e. [cipher-null](https://github.com/CAFapi/caf-common/tree/develop/cipher-null))
- - An implementation of Election (optional) (i.e. [election-null](https://github.com/CAFapi/caf-common/tree/develop/election-null))
-    
+ - An implementation of Election (optional) (i.e. [election-null](https://github.com/CAFapi/caf-common/tree/develop/election-null))    

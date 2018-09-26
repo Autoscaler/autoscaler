@@ -31,4 +31,20 @@ public interface WorkloadAnalyser
      */
     ScalingAction analyseWorkload(InstanceInfo instanceInfo)
         throws ScalerException;
+
+    /**
+     * This method will determine and return the percentage of the memory allowance being utilised at present.
+     *
+     * @return The percentage being utilised
+     * @throws ScalerException if it fails to determine memory utilisation due to not being able to connect to messaging platform's api.
+     */
+    double getCurrentMemoryLoad() throws ScalerException;
+
+    /**
+     * This method will return the content to send in an email when reporting an issue with the messaging platform.
+     * @param percentageMem The percentage of the messaging platforms memory allows that has been used. This is passed as a string so 
+     * that it can be added to the email body.
+     * @return The email body
+     */
+    String getMemoryOverloadWarning(String percentageMem);
 }

@@ -38,17 +38,33 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     private final RabbitWorkloadProfile profile;
     private final String scalingTarget;
     private final RabbitStatsReporter rabbitStats;
+    private final RabbitSystemResourceMonitor rabbitResourceMonitor;
     private final EvictingQueue<QueueStats> statsQueue;
     private static final int MAX_SCALE = 5;
     private static final Logger LOG = LoggerFactory.getLogger(RabbitWorkloadAnalyser.class);
 
 
-    public RabbitWorkloadAnalyser(final String scalingTarget, final RabbitStatsReporter reporter, final RabbitWorkloadProfile profile)
+    public RabbitWorkloadAnalyser(final String scalingTarget, final RabbitStatsReporter reporter, final RabbitWorkloadProfile profile,
+                                  final RabbitSystemResourceMonitor rabbitResourceMonitor)
     {
         this.scalingTarget = Objects.requireNonNull(scalingTarget);
         this.rabbitStats = Objects.requireNonNull(reporter);
         this.profile = Objects.requireNonNull(profile);
         this.statsQueue = EvictingQueue.create(profile.getScalingDelay());
+        this.rabbitResourceMonitor = rabbitResourceMonitor;
+    }
+
+    /**
+     * This method will determine and return the percentage of the high watermark memory allowance being utilised at present by RabbitMQ
+     *
+     * @return The percentage being utilised
+     */
+    @Override
+    public double getCurrentMemoryLoad() throws ScalerException
+    {
+        final double memoryConsumption = rabbitResourceMonitor.getCurrentMemoryComsumption();
+        LOG.debug("Current memory consumption {}% of total available memory.", memoryConsumption);
+        return memoryConsumption;
     }
 
 
@@ -56,7 +72,9 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
      * {@inheritDoc}
      *
      * The logic for the rabbit workload analysis is as follows.
-     * If there is any instances in staging, do nothing, because any statistics acquired
+     * Determine the percentage of overall memory utilization at present, if the percentage is over the limit for the priority of the 
+     * current application it will be scaled to zero.
+     * Otherwise if there is any instances in staging, do nothing, because any statistics acquired
      * would be inaccurate. Firstly, if there are any messages in the queue and no instances,
      * scale up by 1. After that, wait until we have run a number of iterations dictated by
      * the scalingDelay in the profile, and then determine the average of the consumption
@@ -70,6 +88,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     public ScalingAction analyseWorkload(final InstanceInfo instanceInfo)
             throws ScalerException
     {
+
         if ( instanceInfo.getInstancesStaging() == 0 ) {
             QueueStats stats = rabbitStats.getQueueStats(scalingTarget);
             LOG.debug("Stats for target {}: {}", scalingTarget, stats);
@@ -125,4 +144,13 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
             return ScalingAction.NO_ACTION;
         }
     }
+
+    @Override
+    public String getMemoryOverloadWarning(final String percentageMem)
+    {
+        return "To whom it may concern, \n"
+            + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
+            + "RabbitMQ has used " + percentageMem + "% of its high watermark memory allowance.\n";
+    }
+
 }

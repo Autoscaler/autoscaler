@@ -106,12 +106,14 @@ public class MarathonServiceScaler implements ServiceScaler
     {
         try {
             GetAppResponse appGet = marathon.getApp(serviceReference);
+            final String appShutdownPriorityLabel = appGet.getApp().getLabels().get("autoscale.shutdownPriority");
+            final int appShutdownPriority = appShutdownPriorityLabel != null ? Integer.parseInt(appShutdownPriorityLabel) : -1;
             Collection<ServiceHost> hosts = appGet.getApp()
                                                   .getTasks()
                                                   .stream()
                                                   .map(t -> new ServiceHost(t.getHost(), t.getPorts()))
                                                   .collect(Collectors.toCollection(LinkedList::new));
-            return new InstanceInfo(appGet.getApp().getTasksRunning(), appGet.getApp().getTasksStaged(), hosts);
+            return new InstanceInfo(appGet.getApp().getTasksRunning(), appGet.getApp().getTasksStaged(), hosts, appShutdownPriority);
         } catch (MarathonException e) {
             throw new ScalerException("Failed to get number of instances of " + serviceReference, e);
         }

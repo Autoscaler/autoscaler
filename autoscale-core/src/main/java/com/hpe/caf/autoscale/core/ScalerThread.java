@@ -48,14 +48,8 @@ public class ScalerThread implements Runnable
     private boolean backoff = false;
     private static final Logger LOG = LoggerFactory.getLogger(ScalerThread.class);
 
-    private Governor governor;
-    private final int stage1PriorityThreshold;
-    private final int stage2PriorityThreshold;
-    private final int stage3PriorityThreshold;
-    private final double stage1ResouceLimit;
-    private final double stage2ResouceLimit;
-    private final double stage3ResouceLimit;
-    private final int dispatchAlertAtThreshold;
+    private final Governor governor;
+    private final ResourceMonitoringConfiguration resourceConfig;
 
     /**
      * Create a new ScalerThread.
@@ -70,17 +64,10 @@ public class ScalerThread implements Runnable
      * @param alertDispatcher dispatcher to send alerts if required
      */
     public ScalerThread(final Governor governor, final WorkloadAnalyser workloadAnalyser, final ServiceScaler serviceScaler,
-                        final String serviceReference, final int minInstances, final int maxInstances,
-                        final int backoffAmount, final Alerter alertDispatcher, final ResourceMonitoringConfiguration resourceConfig)
+                        final String serviceReference, final int minInstances, final int maxInstances, final int backoffAmount,
+                        final Alerter alertDispatcher, final ResourceMonitoringConfiguration resourceConfig)
     {
-        this.stage1PriorityThreshold = resourceConfig.getResourceLimitOneShutdownThreshold();
-        this.stage2PriorityThreshold = resourceConfig.getResourceLimitTwoShutdownThreshold();
-        this.stage3PriorityThreshold = resourceConfig.getResourceLimitThreeShutdownThreshold();
-        this.stage1ResouceLimit = resourceConfig.getResourceLimitOne();
-        this.stage2ResouceLimit = resourceConfig.getResourceLimitTwo();
-        this.stage3ResouceLimit = resourceConfig.getResourceLimitThree();
-        this.dispatchAlertAtThreshold = resourceConfig.getAlertDispatchThreshold();
-
+        this.resourceConfig = resourceConfig;
         this.alertDispatcher = alertDispatcher;
         this.governor = governor;
         this.analyser = Objects.requireNonNull(workloadAnalyser);
@@ -237,13 +224,16 @@ public class ScalerThread implements Runnable
 
         handleAlerterDispatch(currentMemoryLoad);
 
-        if (currentMemoryLoad >= stage1ResouceLimit && shutdownPriority <= stage1PriorityThreshold) {
+        if (currentMemoryLoad >= resourceConfig.getResourceLimitOne()
+            && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
             emergencyScaleDown(instances.getTotalInstances());
             return true;
-        } else if (currentMemoryLoad >= stage2ResouceLimit && shutdownPriority <= stage2PriorityThreshold) {
+        } else if (currentMemoryLoad >= resourceConfig.getResourceLimitTwo()
+            && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
             emergencyScaleDown(instances.getTotalInstances());
             return true;
-        } else if (currentMemoryLoad >= stage3ResouceLimit && shutdownPriority <= stage3PriorityThreshold) {
+        } else if (currentMemoryLoad >= resourceConfig.getResourceLimitThree()
+            && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
             emergencyScaleDown(instances.getTotalInstances());
             return true;
         }
@@ -252,7 +242,7 @@ public class ScalerThread implements Runnable
 
     private void handleAlerterDispatch(final double memLoad) throws ScalerException
     {
-        if (memLoad > dispatchAlertAtThreshold) {
+        if (memLoad > resourceConfig.getAlertDispatchThreshold()) {
             final String emailBody = analyser.getMemoryOverloadWarning(df.format(memLoad));
             alertDispatcher.dispatchAlert(emailBody);
         }

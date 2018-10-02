@@ -33,7 +33,7 @@ public class EmailDispatcherFactory implements AlertDispatcherFactory
     public AlertDispatcher getAlertDispatcher(final ConfigurationSource configs) throws ScalerException
     {
         try {
-            return new EmailDispatcher(configs.getConfiguration(EmailDispatcherConfigurations.class));
+            return new EmailDispatcher(configs.getConfiguration(EmailDispatcherConfiguration.class));
         } catch (final ConfigurationException ex) {
             throw new ScalerException("Unable to create email dispatcher, cannot find email dispatcher configuration.", ex);
         }

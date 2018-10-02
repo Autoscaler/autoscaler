@@ -48,7 +48,7 @@ public class EmailDispatcher implements AlertDispatcher
      * @param configurations Configurations to use when dispatching emails
      * @throws ScalerException When it is unable to send alert emails
      */
-    public EmailDispatcher(final EmailDispatcherConfigurations configurations) throws ScalerException
+    public EmailDispatcher(final EmailDispatcherConfiguration configurations) throws ScalerException
     {
         Objects.requireNonNull(configurations);
         this.username = configurations.getUsername();

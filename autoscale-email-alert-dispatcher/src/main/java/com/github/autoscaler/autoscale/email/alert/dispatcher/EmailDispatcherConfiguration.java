@@ -17,7 +17,7 @@ package com.github.autoscaler.autoscale.email.alert.dispatcher;
 
 import javax.validation.constraints.NotNull;
 
-public final class EmailDispatcherConfigurations
+public final class EmailDispatcherConfiguration
 {
     /**
      * SMTP Server host address

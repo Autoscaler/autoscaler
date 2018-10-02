@@ -282,6 +282,10 @@
                                     <CAF_AUTOSCALER_SCALING_DELAY>10</CAF_AUTOSCALER_SCALING_DELAY>
                                     <CAF_LOG_LEVEL>INFO</CAF_LOG_LEVEL>
                                     <CAF_RABBITMQ_MGMT_URL>http://${docker.host.address}:${rabbitmq.port}</CAF_RABBITMQ_MGMT_URL>
+                                    <CAF_AUTOSCALER_SMTP_HOST>testhost</CAF_AUTOSCALER_SMTP_HOST>
+                                    <CAF_AUTOSCALER_SMTP_PORT>testPort</CAF_AUTOSCALER_SMTP_PORT>
+                                    <CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO>noone@nothing.com</CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO>
+                                    <CAF_AUTOSCALER_ALERT_DISABLED>true</CAF_AUTOSCALER_ALERT_DISABLED>
 <!--                                    <CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>
                                     <CAF_RABBITMQ_MGMT_PASSWORD>guest</CAF_RABBITMQ_MGMT_PASSWORD>-->
                                 </env>

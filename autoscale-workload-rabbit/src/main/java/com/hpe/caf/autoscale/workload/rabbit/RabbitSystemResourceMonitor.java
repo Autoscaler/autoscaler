@@ -20,9 +20,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.squareup.okhttp.OkHttpClient;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
@@ -30,7 +30,6 @@ import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.client.Response;
 import retrofit.http.GET;
-import retrofit.http.Path;
 
 public final class RabbitSystemResourceMonitor
 {
@@ -61,12 +60,18 @@ public final class RabbitSystemResourceMonitor
     public double getCurrentMemoryComsumption() throws ScalerException
     {
         try {
-            final URI rabbitInstance = URI.create(rabbitEnpoint);
-            final Response response = rabbitApi.getNodeStatus(rabbitInstance.getHost());
-            final JsonNode root = mapper.readTree(response.getBody().in());
-            final long memory_limit = root.get("mem_limit").asLong();
-            final long memory_used = root.get("mem_used").asLong();
-            return ((double) memory_used / memory_limit) * 100;
+            final Response response = rabbitApi.getNodeStatus();
+            final JsonNode nodeArray = mapper.readTree(response.getBody().in());
+            final Iterator<JsonNode> iterator = nodeArray.elements();
+            double highestMemUsedInCluster = 0;
+            while (iterator.hasNext()) {
+                final JsonNode node = iterator.next();
+                final long memory_limit = node.get("mem_limit").asLong();
+                final long memory_used = node.get("mem_used").asLong();
+                final double memPercentage = ((double) memory_used / memory_limit) * 100;
+                highestMemUsedInCluster = memPercentage > highestMemUsedInCluster ? memPercentage : highestMemUsedInCluster;
+            }
+            return highestMemUsedInCluster;
         } catch (final IOException ex) {
             throw new ScalerException("Unable to map response to status request.", ex);
         }
@@ -83,8 +88,8 @@ public final class RabbitSystemResourceMonitor
 
     public interface RabbitManagementApi
     {
-        @GET("/api/nodes/rabbit@{node}/")
-        Response getNodeStatus(@Path("node") final String node)
+        @GET("/api/nodes/")
+        Response getNodeStatus()
             throws ScalerException;
     }
 }

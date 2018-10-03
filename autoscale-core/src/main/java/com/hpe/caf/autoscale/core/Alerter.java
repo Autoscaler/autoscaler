@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 public final class Alerter
 {
-    private long lastTime;
+    private volatile long lastTime;
     private final Map<String, AlertDispatcher> dispatchers;
     private final int dispatchFrequency;
     private final boolean alertDispatchDisabled;
@@ -50,14 +50,15 @@ public final class Alerter
         if (alertDispatchDisabled) {
             return;
         }
-
-        if (lastTime == 0 || lastTimeDispatchedWithinLimit()) {
+        LOG.debug("Attempting to dispatch alert....");
+        if (dispatchApproved()) {
             synchronized (messageDispatchLock) {
-                if (lastTime == 0 || lastTimeDispatchedWithinLimit()) {
+                if (dispatchApproved()) {
                     for (final Map.Entry<String, AlertDispatcher> dispatcherEntry : dispatchers.entrySet()) {
                         final AlertDispatcher dispatcher = dispatcherEntry.getValue();
                         LOG.debug("Dispatching Alert using {}", dispatcher.getClass().getSimpleName());
                         dispatcher.dispatch(messageBody);
+                        LOG.debug("Alert dispatched....");
                         lastTime = System.currentTimeMillis();
                     }
                 }
@@ -65,7 +66,12 @@ public final class Alerter
         }
     }
     
-    private boolean lastTimeDispatchedWithinLimit(){
+    private boolean dispatchApproved()
+    {
+        if (lastTime == 0) {
+            LOG.debug("lastTime still zero. Returning true to send first alert.");
+            return true;
+        }
         return (System.currentTimeMillis() - lastTime) >= (dispatchFrequency * 60 * 1000);
     }
 }

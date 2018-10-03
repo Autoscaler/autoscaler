@@ -102,9 +102,10 @@ public class AutoscaleScheduler
             Map<String, ScalingConfiguration> acquiredMap = acquired.stream().collect(toMap(ScalingConfiguration::getId, c -> c));
             getServicesToCancel(scheduledServices.keySet(), acquiredMap).forEach(this::cancel);
             int delay = 0;
+            final Alerter alerter = new Alerter(alertDispatchers, alertConfig);
             for ( ScalingConfiguration s : getServicesToSchedule(scheduledServices, acquiredMap) ) {
                 try {
-                    scheduleOrReschedule(s, getAnalyser(s), INITIAL_SCALING_DELAY + delay++);
+                    scheduleOrReschedule(s, getAnalyser(s), INITIAL_SCALING_DELAY + delay++, alerter);
                 } catch (ScalerException e) {
                     LOG.error("Failed to schedule service {}", s.getId(), e);
                     cancel(s.getId());
@@ -179,7 +180,8 @@ public class AutoscaleScheduler
      * @param analyser the WorkloadAnalyser that will be used to monitor and scale the service
      * @param initialDelay the initial delay before the scheduled thread kicks off
      */
-    private void scheduleOrReschedule(final ScalingConfiguration config, final WorkloadAnalyser analyser, final int initialDelay)
+    private void scheduleOrReschedule(final ScalingConfiguration config, final WorkloadAnalyser analyser, final int initialDelay,
+                                      final Alerter alerter)
     {
         LOG.debug("Scheduling service {}", config.getId());
         // if we're already monitoring this service (ie. we're updating it), cancel the current ScalerThread
@@ -187,7 +189,6 @@ public class AutoscaleScheduler
             cancel(config.getId());
         }
         governor.register(config);
-        final Alerter alerter = new Alerter(alertDispatchers, alertConfig);
         ScheduledFuture future = scheduler.scheduleWithFixedDelay(new ScalerThread(governor, analyser, scaler, config.getId(),
                                                                                    config.getMinInstances(), config.getMaxInstances(),
                                                                                    config.getBackoffAmount(),

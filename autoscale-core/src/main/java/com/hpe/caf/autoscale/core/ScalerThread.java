@@ -118,12 +118,10 @@ public class ScalerThread implements Runnable
             }
             governor.recordInstances(serviceRef, instances);
             ScalingAction action;
-            if (firstRun) {
-                LOG.debug("Performing initial scaling checks for service {}", serviceRef);
-                action = handleFirstRun(instances);
-                firstRun = false;
-            } else {
-                action = analyser.analyseWorkload(instances);
+            LOG.debug("Performing scaling checks for service {}", serviceRef);
+            action = analyser.analyseWorkload(instances);
+            if(action.getOperation() == ScalingOperation.NONE){
+                action = handleServiceInstanceLimits(instances);
             }
 
             action = governor.govern(serviceRef, action);
@@ -151,7 +149,7 @@ public class ScalerThread implements Runnable
      * @param instances information on the current number of instances of a service
      * @return the recommended action to take
      */
-    private ScalingAction handleFirstRun(final InstanceInfo instances) throws ScalerException
+    private ScalingAction handleServiceInstanceLimits(final InstanceInfo instances) throws ScalerException
     {
         final ScalingAction action;
         if (instances.getTotalInstances() < minInstances) {

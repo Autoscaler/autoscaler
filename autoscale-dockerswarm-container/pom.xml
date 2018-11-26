@@ -116,14 +116,12 @@
                                     <Git.Branch>${git.branch}</Git.Branch>
                                     <Git.Commit>${git.revision}</Git.Commit>
                                 </labels>
-                                <entryPoint>
+                                <!-- The entry point will be the worker.sh executable. -->
+                                <cmd>
                                     <exec>
-                                        <args>/tini</args>
-                                        <args>-v</args>
-                                        <args>--</args>
                                         <args>/maven/scaler.sh</args>
                                     </exec>
-                                </entryPoint>
+                                </cmd>
                                 <healthCheck>
                                     <cmd>curl --fail http://localhost:8081/healthcheck || exit 1</cmd>
                                 </healthCheck>

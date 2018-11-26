@@ -93,7 +93,7 @@ public class EmailDispatcher implements AlertDispatcher
 
                 // Send the email.
                 transport.sendMessage(msg, msg.getAllRecipients());
-                LOG.debug("Email sent!");
+                LOG.info("Email sent!");
             } catch (final MessagingException ex) {
                 LOG.error("The email was not sent.", ex);
             } finally {

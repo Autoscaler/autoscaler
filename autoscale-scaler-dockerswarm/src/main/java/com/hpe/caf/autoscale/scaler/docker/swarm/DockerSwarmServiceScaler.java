@@ -72,7 +72,7 @@ public class DockerSwarmServiceScaler implements ServiceScaler
             int current = instanceInfo.getTotalInstances();
             int target = Math.min(maximumInstances, current + amount);
             if (target > current) {
-                LOG.debug("Scaling service {} up by {} instances to {} total replicas", serviceReference, amount, target);
+                LOG.info("Scaling service {} up by {} instances to {} total replicas", serviceReference, amount, target);
                 scaleServiceInformation(serviceReference, target, serviceItem);
             }
 
@@ -157,7 +157,7 @@ public class DockerSwarmServiceScaler implements ServiceScaler
                 return;
             }
 
-            LOG.debug("Scaling service {} down by {} instances to {} total replicas", serviceReference, amount, target);
+            LOG.info("Scaling service {} down by {} instances to {} total replicas", serviceReference, amount, target);
             scaleServiceInformation(serviceReference, target, serviceItem);
 
         } catch (HttpClientException ex) {

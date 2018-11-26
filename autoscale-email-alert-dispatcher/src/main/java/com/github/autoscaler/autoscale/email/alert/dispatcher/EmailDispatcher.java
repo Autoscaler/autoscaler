@@ -86,14 +86,14 @@ public class EmailDispatcher implements AlertDispatcher
 
             // Send the message.
             try {
-                LOG.debug("Sending email...");
+                LOG.info("Sending email...");
 
                 // Connect to the SMTP server using username and password specified above.
                 transport.connect(host, username, password);
 
                 // Send the email.
                 transport.sendMessage(msg, msg.getAllRecipients());
-                LOG.debug("Email sent!");
+                LOG.info("Email sent!");
             } catch (final MessagingException ex) {
                 LOG.error("The email was not sent.", ex);
             } finally {

@@ -86,7 +86,7 @@ public class EmailDispatcher implements AlertDispatcher
 
             // Send the message.
             try {
-                LOG.info("Sending email...");
+                LOG.debug("Sending email...");
 
                 // Connect to the SMTP server using username and password specified above.
                 transport.connect(host, username, password);

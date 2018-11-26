@@ -206,7 +206,7 @@ public class AutoscaleScheduler
     private void cancel(final String id)
     {
         if ( scheduledServices.containsKey(id) ) {
-            LOG.debug("Cancelling service {}", id);
+            LOG.info("Cancelling service {}", id);
             scheduledServices.get(id).getSchedule().cancel(true);
             scheduledServices.remove(id);
             governor.remove(id);

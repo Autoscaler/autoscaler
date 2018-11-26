@@ -138,7 +138,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     private ScalingAction getScalingAction(final ScalingOperation op, final int amount)
     {
         if ( amount > 0 ) {
-            LOG.debug("Scale with operation {} by {} instances", op, amount);
+            LOG.info("Scale with operation {} by {} instances", op, amount);
             return new ScalingAction(op, amount);
         } else {
             return ScalingAction.NO_ACTION;

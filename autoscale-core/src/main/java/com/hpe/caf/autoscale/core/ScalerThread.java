@@ -119,10 +119,11 @@ public class ScalerThread implements Runnable
             governor.recordInstances(serviceRef, instances);
             ScalingAction action;
             if (firstRun) {
-                LOG.debug("Performing initial scaling checks for service {}", serviceRef);
+                LOG.info("Performing initial scaling checks for service {}", serviceRef);
                 action = handleFirstRun(instances);
                 firstRun = false;
             } else {
+                LOG.debug("Scaling checks for service {}", serviceRef);
                 action = analyser.analyseWorkload(instances);
             }
 
@@ -176,7 +177,7 @@ public class ScalerThread implements Runnable
     {
         int upTarget = Math.min(maxInstances - instances.getTotalInstances(), Math.max(0, amount));
         if (instances.getInstancesStaging() == 0 && upTarget > 0) {
-            LOG.debug("Triggering scale up of service {} by amount {}", serviceRef, amount);
+            LOG.info("Triggering scale up of service {} by amount {}", serviceRef, amount);
             scaler.scaleUp(serviceRef, upTarget);
             backoff = true;
         }
@@ -194,7 +195,7 @@ public class ScalerThread implements Runnable
     {
         int downTarget = Math.max(0, Math.min(instances.getTotalInstances() - minInstances, Math.max(0, amount)));
         if (downTarget > 0) {
-            LOG.debug("Triggering scale down of service {} by amount {}", serviceRef, downTarget);
+            LOG.info("Triggering scale down of service {} by amount {}", serviceRef, downTarget);
             scaler.scaleDown(serviceRef, downTarget);
             backoff = true;
         }
@@ -208,7 +209,7 @@ public class ScalerThread implements Runnable
      */
     private void emergencyScaleDown(final int instances) throws ScalerException
     {
-        LOG.debug("Triggering emergency scale down of service {} to 0 due to low system resources.", serviceRef);
+        LOG.info("Triggering emergency scale down of service {} to 0 due to low system resources.", serviceRef);
         scaler.scaleDown(serviceRef, instances);
         backoff = true;
     }

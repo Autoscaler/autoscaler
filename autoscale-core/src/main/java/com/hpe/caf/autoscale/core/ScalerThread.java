@@ -177,7 +177,7 @@ public class ScalerThread implements Runnable
     {
         int upTarget = Math.min(maxInstances - instances.getTotalInstances(), Math.max(0, amount));
         if (instances.getInstancesStaging() == 0 && upTarget > 0) {
-            LOG.info("Triggering scale up of service {} by amount {}", serviceRef, amount);
+            LOG.debug("Triggering scale up of service {} by amount {}", serviceRef, amount);
             scaler.scaleUp(serviceRef, upTarget);
             backoff = true;
         }
@@ -195,7 +195,7 @@ public class ScalerThread implements Runnable
     {
         int downTarget = Math.max(0, Math.min(instances.getTotalInstances() - minInstances, Math.max(0, amount)));
         if (downTarget > 0) {
-            LOG.info("Triggering scale down of service {} by amount {}", serviceRef, downTarget);
+            LOG.debug("Triggering scale down of service {} by amount {}", serviceRef, downTarget);
             scaler.scaleDown(serviceRef, downTarget);
             backoff = true;
         }

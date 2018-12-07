@@ -14,7 +14,7 @@ Note: As the Autoscaler has two orchestrator variants currently, the manifest is
 
 
 ### Marthan Variants
-* autoscale-marathan-container
+* autoscale-marathon-container
 * autoscale-marathon-shared
 * autoscale-scaler-marathon
 * autoscale-source-marathon

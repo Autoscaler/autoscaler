@@ -4,14 +4,29 @@ The [Autoscaler](https://github.com/Autoscaler/autoscaler) service provides on-d
 
 The Autoscaler is an extensible framework, which allows you to provide your own modules to retrieve services to scale, metrics to make scaling decisions and instigate a scaling action. 
 
-The Autoscaler service provides a source for Marathon that identifies services to scale using Marathon labels. A RabbitMQ workload analyzer retrieves details of RabbitMQ queues to make scaling decisions. A Marathon application scaler issues commands to the Marathon REST API to scale up and down a service.
+The Autoscaler service provides a source for Marathon and Docker Swarm that identifies services to scale using labels. A RabbitMQ workload analyzer retrieves details of RabbitMQ queues to make scaling decisions. A application scaler issues commands to the orchestrator REST API to scale up and down a service.
 
 Manifest of the components which make up the AutoScaler:
 
-* autoscale-container
+Note: As the Autoscaler has two orchestrator variants currently, the manifest is split into 
+- Marathan or Docker Swarm Assets
+- Common Assets.
+
+
+### Marthan Variants
+* autoscale-marathan-container
 * autoscale-marathon-shared
-* autoscale-workload-rabbit
 * autoscale-scaler-marathon
 * autoscale-source-marathon
+
+### Docker Swarm Variants
+* autoscale-dockerswarm-container
+* autoscale-dockerswarm-shared
+* autoscale-scaler-dockerswarm
+* autoscale-source-dockerswarm
+
+### Common Assets
+* autoscale-workload-rabbit
+* autosacle-email-alert-dispatcher
 * autoscale-core
 * autoscale-api

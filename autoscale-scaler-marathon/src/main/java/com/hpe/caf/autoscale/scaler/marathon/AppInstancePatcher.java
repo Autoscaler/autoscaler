@@ -31,9 +31,12 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class AppInstancePatcher {
 
+    private final static Logger LOG = LoggerFactory.getLogger(AppInstancePatcher.class);
     private final URI marathonUri;
 
     public AppInstancePatcher(final URI marathonUri){
@@ -51,22 +54,50 @@ public final class AppInstancePatcher {
 
         final JsonArray appArray = new JsonArray();
         appArray.add(details);
-        
-        try(final CloseableHttpClient client = HttpClientBuilder.create().build()){
-            final URIBuilder uriBuilder = new URIBuilder(marathonUri).setPath("/v2/apps");
-            uriBuilder.setParameters(Arrays.asList(new BasicNameValuePair("force", Boolean.toString(force))));
-            final HttpPatch patch = new HttpPatch(uriBuilder.build());
-            patch.setEntity(new StringEntity(appArray.toString(), ContentType.APPLICATION_JSON));
-            final HttpResponse response = client.execute(patch);
-            if(!force && response.getStatusLine().getStatusCode()==409){
-                patchInstances(appId, instances, true);
-                return;
+        patchInstance(appArray, appId, instances, force);
+    }
+    
+    private void patchInstance(final JsonArray appArray, final String appId, final int instances, final boolean force)
+        throws ScalerException
+    {
+        int count = 0;
+        boolean patched = false;
+        while (!patched) {
+            try (final CloseableHttpClient client = HttpClientBuilder.create().build()) {
+                final URIBuilder uriBuilder = new URIBuilder(marathonUri).setPath("/v2/apps");
+                uriBuilder.setParameters(Arrays.asList(new BasicNameValuePair("force", Boolean.toString(force))));
+                final HttpPatch patch = new HttpPatch(uriBuilder.build());
+                patch.setEntity(new StringEntity(appArray.toString(), ContentType.APPLICATION_JSON));
+                final HttpResponse response = client.execute(patch);
+                if (!force && response.getStatusLine().getStatusCode() == 409) {
+                    patchInstances(appId, instances, true);
+                    return;
+                }
+                if (response.getStatusLine().getStatusCode() != 200) {
+                    if (response.getStatusLine().getStatusCode() == 503) {
+                        LOG.error(String.format("A temporary error occured while attempting to patch service %s. "
+                            + "Patch request returned a 503 status, patching will be reattempted.", appId));
+                        count++;
+                        final int sleepTime = count * 1000;
+                        final int timeToSleep = sleepTime < 10000 ? sleepTime : 10000;
+                        Thread.sleep(timeToSleep);
+                    } else {
+                        LOG.error("Response code: " + response.getStatusLine().getStatusCode());
+                        LOG.error("Response Phrase: " + response.getStatusLine().getReasonPhrase());
+                        throw new ScalerException(response.getStatusLine().getReasonPhrase());
+                    }
+                }
+            } catch (final URISyntaxException | IOException ex) {
+                throw new ScalerException(String.format("Exception patching %s to %s instances.", appId, instances), ex);
+            } catch (final InterruptedException ex) {
+                // Set interupted flag
+                Thread.currentThread().interrupt();
+                // Throw exception to suppress further calls from current scaler thread until after scaler thread refresh
+                throw new ScalerException("An error occured during an attempt to have the main thread sleep beofre retrying patch command",
+                                          ex);
             }
-            if(response.getStatusLine().getStatusCode()!=200){
-                throw new ScalerException(response.getStatusLine().getReasonPhrase());
-            }
-        } catch (URISyntaxException | IOException ex) {
-            throw new ScalerException(String.format("Exception patching %s to %s instances.", appId, instances), ex);
+            LOG.debug(String.format("Service %s patched successfully.", appId));
+            patched = true;
         }
     }
 }

@@ -90,8 +90,8 @@ public final class AppInstancePatcher {
             } catch (final URISyntaxException | IOException ex) {
                 throw new ScalerException(String.format("Exception patching %s to %s instances.", appId, instances), ex);
             } catch (final InterruptedException ex) {
-                // Clear interupted flag
-                Thread.interrupted();
+                // Set interupted flag
+                Thread.currentThread().interrupt();
                 // Throw exception to suppress further calls from current scaler thread until after scaler thread refresh
                 throw new ScalerException("An error occured during an attempt to have the main thread sleep beofre retrying patch command",
                                           ex);

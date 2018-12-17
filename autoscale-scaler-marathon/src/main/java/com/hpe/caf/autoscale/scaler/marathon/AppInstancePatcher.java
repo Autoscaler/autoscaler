@@ -29,7 +29,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.logging.Level;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
@@ -91,7 +90,11 @@ public final class AppInstancePatcher {
             } catch (final URISyntaxException | IOException ex) {
                 throw new ScalerException(String.format("Exception patching %s to %s instances.", appId, instances), ex);
             } catch (final InterruptedException ex) {
-                throw new RuntimeException(ex);
+                // Clear interupted flag
+                Thread.interrupted();
+                // Throw exception to suppress further calls from current scaler thread until after scaler thread refresh
+                throw new ScalerException("An error occured during an attempt to have the main thread sleep beofre retrying patch command",
+                                          ex);
             }
             LOG.debug(String.format("Service %s patched successfully.", appId));
             patched = true;

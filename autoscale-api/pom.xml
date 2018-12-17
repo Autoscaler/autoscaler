@@ -40,6 +40,10 @@
             <artifactId>validation-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.cafapi.util</groupId>
+            <artifactId>util-naming</artifactId>
+        </dependency>
     </dependencies>
-
+    
 </project>

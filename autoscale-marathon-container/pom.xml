@@ -63,6 +63,7 @@
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-core</artifactId>
             <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>

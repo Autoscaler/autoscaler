@@ -230,8 +230,8 @@
                                 <env>
                                     <DOCKER_HOST>http://${docker.host.address}:2375</DOCKER_HOST>
                                     <CAF_AUTOSCALER_DOCKER_SWARM_STACK>autoscalerdemo</CAF_AUTOSCALER_DOCKER_SWARM_STACK>
-                                    <CAF_RABBITMQ_MGMT_URL>http://${docker.host.address}:${rabbitmq.port}</CAF_RABBITMQ_MGMT_URL>
-<!--                                    <CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>
+                                    <CAF_RABBITMQ_MGMT_URL>http://rabbitmq:5672</CAF_RABBITMQ_MGMT_URL>
+                                    <!--<CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>
                                     <CAF_RABBITMQ_MGMT_PASSWORD>guest</CAF_RABBITMQ_MGMT_PASSWORD>-->
                                 </env>
                                 <links>
@@ -257,14 +257,13 @@
                                     <port>${marathon.scaler.port}:8081</port>
                                 </ports>
                                 <env>
-                                    <DOCKER_HOST>http://${docker.host.address}:2375</DOCKER_HOST>
-                                    <CAF_MARATHON_URL>http://${docker.host.address}:${marathon.port}</CAF_MARATHON_URL>
+                                    <CAF_MARATHON_URL>http://marathon:8080</CAF_MARATHON_URL>
                                     <CAF_AUTOSCALER_BACKLOG_GOAL>300</CAF_AUTOSCALER_BACKLOG_GOAL>
                                     <CAF_AUTOSCALER_MARATHON_GROUP>/</CAF_AUTOSCALER_MARATHON_GROUP>
                                     <CAF_AUTOSCALER_MAXIMUM_INSTANCES>4</CAF_AUTOSCALER_MAXIMUM_INSTANCES>=4
                                     <CAF_AUTOSCALER_SCALING_DELAY>10</CAF_AUTOSCALER_SCALING_DELAY>
                                     <CAF_LOG_LEVEL>INFO</CAF_LOG_LEVEL>
-                                    <CAF_RABBITMQ_MGMT_URL>http://${docker.host.address}:${rabbitmq.port}</CAF_RABBITMQ_MGMT_URL>
+                                    <CAF_RABBITMQ_MGMT_URL>http://rabbitmq:5672</CAF_RABBITMQ_MGMT_URL>
                                     <CAF_AUTOSCALER_SMTP_HOST>testhost</CAF_AUTOSCALER_SMTP_HOST>
                                     <CAF_AUTOSCALER_SMTP_PORT>testPort</CAF_AUTOSCALER_SMTP_PORT>
                                     <CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO>noone@nothing.com</CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO>

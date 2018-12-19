@@ -24,7 +24,7 @@
         <version>1.5.0-SNAPSHOT</version>
     </parent>
     <artifactId>autoscale-dockerswarm-container</artifactId>
-    <packaging>docker</packaging>
+    <packaging>pom</packaging>
     
     <properties>
         <caf.autoscale-scaler.impl>autoscale-scaler-dockerswarm</caf.autoscale-scaler.impl>
@@ -35,6 +35,60 @@
         <caf.worker-store.impl>worker-store-cs</caf.worker-store.impl>
         <caf.worker-queue.impl>worker-queue-rabbit</caf.worker-queue.impl>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.cafapi</groupId>
+            <artifactId>caf-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafapi.config</groupId>
+            <artifactId>${caf.config.impl}</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafapi.decoder</groupId>
+            <artifactId>decoder-js</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.autoscaler</groupId>
+            <artifactId>autoscale-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.autoscaler</groupId>
+            <artifactId>autoscale-dockerswarm-shared</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.autoscaler</groupId>
+            <artifactId>${caf.autoscale-source.impl}</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.autoscaler</groupId>
+            <artifactId>${caf.autoscale-scaler.impl}</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.autoscaler</groupId>
+            <artifactId>${caf.autoscale-workload.impl}</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafapi.codec</groupId>
+            <artifactId>${caf.codec.impl}</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

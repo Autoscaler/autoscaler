@@ -274,7 +274,6 @@
                                     <port>${marathon.scaler.port}:8081</port>
                                 </ports>
                                 <env>
-                                    <DOCKER_HOST>http://${docker.host.address}:2375</DOCKER_HOST>
                                     <CAF_MARATHON_URL>http://marathon:8080</CAF_MARATHON_URL>
                                     <CAF_AUTOSCALER_BACKLOG_GOAL>300</CAF_AUTOSCALER_BACKLOG_GOAL>
                                     <CAF_AUTOSCALER_MARATHON_GROUP>/</CAF_AUTOSCALER_MARATHON_GROUP>

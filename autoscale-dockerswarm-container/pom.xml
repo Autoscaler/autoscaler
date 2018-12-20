@@ -24,7 +24,7 @@
         <version>1.5.0-SNAPSHOT</version>
     </parent>
     <artifactId>autoscale-dockerswarm-container</artifactId>
-    <packaging>pom</packaging>
+    <packaging>docker</packaging>
     
     <properties>
         <caf.autoscale-scaler.impl>autoscale-scaler-dockerswarm</caf.autoscale-scaler.impl>

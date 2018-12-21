@@ -38,11 +38,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.cafapi</groupId>
-            <artifactId>caf-api</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>com.github.cafapi.config</groupId>
             <artifactId>${caf.config.impl}</artifactId>
             <scope>runtime</scope>

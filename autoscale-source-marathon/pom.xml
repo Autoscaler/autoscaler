@@ -44,7 +44,7 @@
         <dependency>
             <groupId>com.mesosphere</groupId>
             <artifactId>marathon-client</artifactId>
-            <version>0.6.0</version>
+            <version>0.6.2</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

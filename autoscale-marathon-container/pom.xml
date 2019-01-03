@@ -45,7 +45,6 @@
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-email-alert-dispatcher</artifactId>
-            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -66,31 +65,26 @@
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-core</artifactId>
-            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-marathon-shared</artifactId>
-            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>${caf.autoscale-source.impl}</artifactId>
-            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>${caf.autoscale-scaler.impl}</artifactId>
-            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>${caf.autoscale-workload.impl}</artifactId>
-            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

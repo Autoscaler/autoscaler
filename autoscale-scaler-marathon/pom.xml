@@ -39,12 +39,10 @@
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-marathon-shared</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

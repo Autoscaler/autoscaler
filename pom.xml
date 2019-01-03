@@ -122,14 +122,54 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-all</artifactId>
-                <version>1.3</version>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-api</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpcore</artifactId>
-                <version>4.4.9</version>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-core</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-dockerswarm-shared</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-email-alert-dispatcher</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+             <dependency>
+            <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-marathon-shared</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-scaler-dockerswarm</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-scaler-marathon</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-source-dockerswarm</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-source-marathon</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-workload-rabbit</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.jayway.jsonpath</groupId>
@@ -137,14 +177,24 @@
                 <version>2.2.0</version>
             </dependency>
             <dependency>
+                <groupId>com.mesosphere</groupId>
+                <artifactId>marathon-client</artifactId>
+                <version>0.6.2</version>
+            </dependency>
+            <dependency>
                 <groupId>javax.mail</groupId>
                 <artifactId>mail</artifactId>
                 <version>1.5.0-b01</version>
             </dependency>
             <dependency>
-                <groupId>com.mesosphere</groupId>
-                <artifactId>marathon-client</artifactId>
-                <version>0.6.2</version>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>4.4.9</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-all</artifactId>
+                <version>1.3</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

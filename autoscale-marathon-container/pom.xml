@@ -45,48 +45,52 @@
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-email-alert-dispatcher</artifactId>
-            <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi</groupId>
             <artifactId>caf-api</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.config</groupId>
             <artifactId>${caf.config.impl}</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.decoder</groupId>
             <artifactId>decoder-js</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-core</artifactId>
-            <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-marathon-shared</artifactId>
-            <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>${caf.autoscale-source.impl}</artifactId>
-            <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>${caf.autoscale-scaler.impl}</artifactId>
-            <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>${caf.autoscale-workload.impl}</artifactId>
-            <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.codec</groupId>
             <artifactId>${caf.codec.impl}</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

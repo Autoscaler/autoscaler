@@ -204,10 +204,11 @@
                         
                         <image>
                             <alias>rabbitmq</alias>
-                            <name>rabbitmq:3.7.5</name>
+                            <name>rabbitmq:3.7.5-management</name>
                             <run>
                                 <ports>
-                                    <port>${rabbitmq.port}:5672</port>
+                                    <port>${rabbitmq.nodePort}:5672</port>
+                                    <port>${rabbitmq.managementPort}:15672</port>
                                 </ports>
                                 <wait>
                                     <log>Server startup complete</log>
@@ -260,10 +261,10 @@
                                     <CAF_MARATHON_URL>http://marathon:8080</CAF_MARATHON_URL>
                                     <CAF_AUTOSCALER_BACKLOG_GOAL>300</CAF_AUTOSCALER_BACKLOG_GOAL>
                                     <CAF_AUTOSCALER_MARATHON_GROUP>/</CAF_AUTOSCALER_MARATHON_GROUP>
-                                    <CAF_AUTOSCALER_MAXIMUM_INSTANCES>4</CAF_AUTOSCALER_MAXIMUM_INSTANCES>=4
+                                    <CAF_AUTOSCALER_MAXIMUM_INSTANCES>4</CAF_AUTOSCALER_MAXIMUM_INSTANCES>
                                     <CAF_AUTOSCALER_SCALING_DELAY>10</CAF_AUTOSCALER_SCALING_DELAY>
                                     <CAF_LOG_LEVEL>INFO</CAF_LOG_LEVEL>
-                                    <CAF_RABBITMQ_MGMT_URL>http://rabbitmq:5672</CAF_RABBITMQ_MGMT_URL>
+                                    <CAF_RABBITMQ_MGMT_URL>http://rabbitmq:15672</CAF_RABBITMQ_MGMT_URL>
                                     <CAF_AUTOSCALER_SMTP_HOST>testhost</CAF_AUTOSCALER_SMTP_HOST>
                                     <CAF_AUTOSCALER_SMTP_PORT>testPort</CAF_AUTOSCALER_SMTP_PORT>
                                     <CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO>noone@nothing.com</CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO>
@@ -297,4 +298,15 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>use-default-fixed-ports</id>
+            <properties>
+                <marathon.port>31080</marathon.port>
+                <rabbitmq.nodePort>5672</rabbitmq.nodePort>
+                <rabbitmq.managementPort>15672</rabbitmq.managementPort>
+            </properties>
+        </profile>
+    </profiles>
 </project>

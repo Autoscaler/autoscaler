@@ -211,4 +211,25 @@ public class ScalerThreadTest
         t.run();
         Mockito.verify(scaler, Mockito.times(1)).scaleDown(SERVICE_REF, 1);
     }
+
+
+    @Test
+    public void testWithRuntimeException() throws ScalerException {
+        WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
+        ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
+        Mockito.when(scaler.getInstanceInfo(SERVICE_REF))
+            .thenThrow(new RuntimeException("network error"));
+        Governor governor = Mockito.mock(Governor.class);
+        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
+
+        int min = 0;
+        int max = 5;
+        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0,
+            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
+        // should not throw
+        t.run();
+        Mockito.verify(scaler, Mockito.times(0)).scaleUp(Mockito.any(), Mockito.anyInt());
+        Mockito.verify(scaler, Mockito.times(0)).scaleDown(Mockito.any(), Mockito.anyInt());
+    }
 }

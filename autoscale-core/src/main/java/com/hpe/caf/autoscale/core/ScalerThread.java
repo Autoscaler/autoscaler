@@ -147,6 +147,10 @@ public class ScalerThread implements Runnable
             // error - but if we throw, we won't be scheduled to run again, so we must catch and
             // ignore
             LOG.error("Unexpected error in analysis run for service {}", serviceRef, e);
+        } catch (final Throwable e) {
+            // if the thread throws, the error isn't logged
+            LOG.error("Unexpected error in analysis run for service {}.  The scheduler will now stop; the service must be restarted to continue scaling.", serviceRef, e);
+            throw e;
         }
     }
 

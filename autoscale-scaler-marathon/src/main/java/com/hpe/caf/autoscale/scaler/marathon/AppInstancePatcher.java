@@ -19,7 +19,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.hpe.caf.api.autoscale.ScalerException;
 import java.io.IOException;
-import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -68,23 +68,24 @@ public final class AppInstancePatcher {
                 uriBuilder.setParameters(Arrays.asList(new BasicNameValuePair("force", Boolean.toString(force))));
                 final HttpPatch patch = new HttpPatch(uriBuilder.build());
                 patch.setEntity(new StringEntity(appArray.toString(), ContentType.APPLICATION_JSON));
-                final HttpResponse response = client.execute(patch);
-                if (!force && response.getStatusLine().getStatusCode() == 409) {
-                    patchInstances(appId, instances, true);
-                    return;
-                }
-                if (response.getStatusLine().getStatusCode() != 200) {
-                    if (response.getStatusLine().getStatusCode() == 503) {
-                        LOG.error(String.format("A temporary error occured while attempting to patch service %s. "
-                            + "Patch request returned a 503 status, patching will be reattempted.", appId));
-                        count++;
-                        final int sleepTime = count * 1000;
-                        final int timeToSleep = sleepTime < 10000 ? sleepTime : 10000;
-                        Thread.sleep(timeToSleep);
-                    } else {
-                        LOG.error("Response code: " + response.getStatusLine().getStatusCode());
-                        LOG.error("Response Phrase: " + response.getStatusLine().getReasonPhrase());
-                        throw new ScalerException(response.getStatusLine().getReasonPhrase());
+                try(final CloseableHttpResponse response = client.execute(patch)) {
+                    if (!force && response.getStatusLine().getStatusCode() == 409) {
+                        patchInstances(appId, instances, true);
+                        return;
+                    }
+                    if (response.getStatusLine().getStatusCode() != 200) {
+                        if (response.getStatusLine().getStatusCode() == 503) {
+                            LOG.error(String.format("A temporary error occured while attempting to patch service %s. "
+                                    + "Patch request returned a 503 status, patching will be reattempted.", appId));
+                            count++;
+                            final int sleepTime = count * 1000;
+                            final int timeToSleep = sleepTime < 10000 ? sleepTime : 10000;
+                            Thread.sleep(timeToSleep);
+                        } else {
+                            LOG.error("Response code: " + response.getStatusLine().getStatusCode());
+                            LOG.error("Response Phrase: " + response.getStatusLine().getReasonPhrase());
+                            throw new ScalerException(response.getStatusLine().getReasonPhrase());
+                        }
                     }
                 }
             } catch (final URISyntaxException | IOException ex) {

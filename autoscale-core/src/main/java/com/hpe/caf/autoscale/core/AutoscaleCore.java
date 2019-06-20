@@ -145,6 +145,13 @@ public class AutoscaleCore
         return Collections.unmodifiableMap(this.analyserFactoryMap);
     }
 
+    /**
+     * @return The scheduler, which has a health check.
+     */
+    public AutoscaleScheduler getAutoScaleScheduler() {
+        return autoscaleScheduler;
+    }
+
 
     /**
      * Set or unset master status based upon a callback from an election.

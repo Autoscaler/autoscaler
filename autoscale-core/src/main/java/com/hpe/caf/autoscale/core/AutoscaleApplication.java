@@ -151,5 +151,7 @@ public class AutoscaleApplication extends Application<AutoscaleConfiguration>
         for ( Map.Entry<String, WorkloadAnalyserFactory> entry : core.getAnalyserFactoryMap().entrySet() ) {
             environment.healthChecks().register("workload." + entry.getKey(), new ScalerHealthCheck(entry.getValue()));
         }
+        environment.healthChecks().register("scheduler",
+            new ScalerHealthCheck(core.getAutoScaleScheduler()));
     }
 }

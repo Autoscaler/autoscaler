@@ -83,6 +83,15 @@ public final class AppInstancePatcher {
                             Thread.sleep(timeToSleep);
                         } else {
                             LOG.error("Response code: " + response.getStatusLine().getStatusCode());
+                            /*
+                            SCMOD-6524 - FALSE POSITIVE on FORTIFY SCAN for Log forging. The StatusLine object has
+                            already some constraints on what it accepts, and it consists of the protocol version
+                            followed by a numeric status code and its associated textual phrase, with each element
+                            separated by SP characters. No CR or LF is allowed except in the final CRLF sequence.
+                            <pre>
+                                Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+                            </pre>
+                             */
                             LOG.error("Response Phrase: " + response.getStatusLine().getReasonPhrase());
                             throw new ScalerException(response.getStatusLine().getReasonPhrase());
                         }

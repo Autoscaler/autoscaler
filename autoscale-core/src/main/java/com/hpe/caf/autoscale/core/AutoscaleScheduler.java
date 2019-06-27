@@ -16,6 +16,9 @@
 package com.hpe.caf.autoscale.core;
 
 
+import com.hpe.caf.api.HealthReporter;
+import com.hpe.caf.api.HealthResult;
+import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.AlertDispatcher;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
@@ -25,18 +28,13 @@ import com.hpe.caf.api.autoscale.WorkloadAnalyserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
@@ -51,7 +49,7 @@ import static java.util.stream.Collectors.toSet;
  * will have their ScalerThread cancelled and a new one created with the new configuration to
  * replace it.
  */
-public class AutoscaleScheduler
+public class AutoscaleScheduler implements HealthReporter
 {
     private final ScheduledExecutorService scheduler;
     private final ServiceValidator validator;
@@ -230,6 +228,28 @@ public class AutoscaleScheduler
             return analyserFactories.get(s.getWorkloadMetric()).getAnalyser(s.getScalingTarget(), s.getScalingProfile());
         } else {
             throw new ScalerException("Invalid workload metric " + s.getWorkloadMetric());
+        }
+    }
+
+    @Override
+    public HealthResult healthCheck()
+    {
+        final List<ScheduledScalingService> failedServices =
+            scheduledServices.values().stream()
+                .filter(svc -> svc.getSchedule().isDone())
+                .collect(Collectors.toList());
+
+        if (failedServices.isEmpty()) {
+            return HealthResult.RESULT_HEALTHY;
+
+        } else {
+            return new HealthResult(HealthStatus.UNHEALTHY,
+                "Scaling threads have stopped running.  " +
+                "The service must be restarted to continue scaling.  " +
+                "Affected services: " +
+                failedServices.stream()
+                    .map(s -> s.getConfig().getId())
+                    .collect(Collectors.joining(", ")));
         }
     }
 

@@ -16,6 +16,8 @@
 package com.hpe.caf.autoscale.core;
 
 
+import com.hpe.caf.api.HealthResult;
+import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.AlertDispatcher;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import com.hpe.caf.api.autoscale.ServiceScaler;
@@ -128,6 +130,75 @@ public class AutoscaleSchedulerTest
         Assert.assertEquals(getConfigA(), ret.get(APP_ID_A).getConfig());
         Assert.assertEquals(getConfigC(), ret.get(APP_ID_B).getConfig());
         Mockito.verify(scheduler, Mockito.times(3)).scheduleWithFixedDelay(Mockito.any(), Mockito.anyLong(), Mockito.anyLong(), Mockito.any());
+    }
+
+
+    @Test
+    public void testHealthCheckWithNoServices() {
+        final AutoscaleScheduler autoscaleScheduler = new AutoscaleScheduler(
+            getTestFactories(),
+            Mockito.mock(ServiceScaler.class),
+            getTestScheduler(),
+            Mockito.mock(ServiceValidator.class),
+            dispatchers,
+            new ResourceMonitoringConfiguration(),
+            new AlertDispatchConfiguration());
+
+        final HealthResult res = autoscaleScheduler.healthCheck();
+        Assert.assertEquals("should be healthy", HealthStatus.HEALTHY, res.getStatus());
+    }
+
+
+    @Test
+    public void testHealthCheckWithRunningSchedulers() {
+        final Set<ScalingConfiguration> services = new HashSet<>();
+        services.add(getConfigA());
+        services.add(getConfigB());
+        final ServiceValidator validator = Mockito.mock(ServiceValidator.class);
+        Mockito.when(validator.getValidatedServices(Mockito.any())).thenReturn(services);
+
+        final AutoscaleScheduler autoscaleScheduler = new AutoscaleScheduler(
+            getTestFactories(),
+            Mockito.mock(ServiceScaler.class),
+            getTestScheduler(),
+            validator,
+            dispatchers,
+            new ResourceMonitoringConfiguration(),
+            new AlertDispatchConfiguration());
+        autoscaleScheduler.updateServices(services);
+
+        final HealthResult res = autoscaleScheduler.healthCheck();
+        Assert.assertEquals("should be healthy", HealthStatus.HEALTHY, res.getStatus());
+    }
+
+
+    @Test
+    public void testHealthCheckWithAbortedSchedulers() {
+        final Set<ScalingConfiguration> services = new HashSet<>();
+        services.add(getConfigA());
+        services.add(getConfigB());
+        final ServiceValidator validator = Mockito.mock(ServiceValidator.class);
+        Mockito.when(validator.getValidatedServices(Mockito.any())).thenReturn(services);
+
+        final ScheduledExecutorService scheduler = Mockito.mock(ScheduledExecutorService.class);
+        final ScheduledFuture schedulerFuture = Mockito.mock(ScheduledFuture.class);
+        Mockito.when(schedulerFuture.isDone()).thenReturn(true);
+        Mockito.when(scheduler.scheduleWithFixedDelay(
+            Mockito.any(), Mockito.anyLong(), Mockito.anyLong(), Mockito.any()
+        )).thenReturn(schedulerFuture);
+
+        final AutoscaleScheduler autoscaleScheduler = new AutoscaleScheduler(
+            getTestFactories(),
+            Mockito.mock(ServiceScaler.class),
+            scheduler,
+            validator,
+            dispatchers,
+            new ResourceMonitoringConfiguration(),
+            new AlertDispatchConfiguration());
+        autoscaleScheduler.updateServices(services);
+
+        final HealthResult res = autoscaleScheduler.healthCheck();
+        Assert.assertEquals("should be unhealthy", HealthStatus.UNHEALTHY, res.getStatus());
     }
 
 

@@ -33,7 +33,7 @@
     <parent>
         <groupId>com.github.cafapi</groupId>
         <artifactId>caf-common-parent</artifactId>
-        <version>1.1.0-11</version>
+        <version>1.2.0-3</version>
         <relativePath />
     </parent>
 
@@ -45,6 +45,7 @@
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
         <gitRepo>https://github.com/Autoscaler/autoscaler</gitRepo>
         <enforceCorrectDependencies>true</enforceCorrectDependencies>
+        <enforceBannedDependencies>true</enforceBannedDependencies>
     </properties>
 
     <licenses>
@@ -182,6 +183,11 @@
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-workload-rabbit</artifactId>
                 <version>1.7.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafapi.logging</groupId>
+                <artifactId>caf-logging-logback</artifactId>
+                <version>1.1.0-39</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>

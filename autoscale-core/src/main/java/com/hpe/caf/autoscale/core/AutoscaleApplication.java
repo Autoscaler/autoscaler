@@ -47,6 +47,7 @@ import com.hpe.caf.util.ModuleLoaderException;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
+import io.dropwizard.logging.LoggingUtil;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.slf4j.Logger;
@@ -153,5 +154,11 @@ public class AutoscaleApplication extends Application<AutoscaleConfiguration>
         }
         environment.healthChecks().register("scheduler",
             new ScalerHealthCheck(core.getAutoScaleScheduler()));
+    }
+    
+    @Override
+    protected void bootstrapLogging()
+    {
+        LoggingUtil.hijackJDKLogging();
     }
 }

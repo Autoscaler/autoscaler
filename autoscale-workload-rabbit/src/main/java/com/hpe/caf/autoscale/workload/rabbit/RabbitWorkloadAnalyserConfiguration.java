@@ -71,7 +71,6 @@ public class RabbitWorkloadAnalyserConfiguration
     private Map<String, RabbitWorkloadProfile> profiles;
 
     @NotNull
-    @Size(min = 1)
     private int memoryQueryRequestFrequency;
 
 

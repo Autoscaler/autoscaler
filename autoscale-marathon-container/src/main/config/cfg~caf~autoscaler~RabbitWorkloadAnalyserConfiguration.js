@@ -18,11 +18,11 @@
             || ("http://" + (getenv("CAF_RABBITMQ_HOST") || "rabbitmq") + ":" + (getenv("CAF_RABBITMQ_MGMT_PORT") || "15672")),
     rabbitManagementUser: getenv("CAF_RABBITMQ_MGMT_USERNAME") || getenv("CAF_RABBITMQ_USERNAME") || "guest",
     rabbitManagementPassword: getenv("CAF_RABBITMQ_MGMT_PASSWORD") || getenv("CAF_RABBITMQ_PASSWORD") || "guest",
+    memoryQueryRequestFrequency: getenv("CAF_AUTOSCALER_RABBITMQ_MEMORY_QUERY_FREQ") || 5,
     profiles: {
         default: {
             scalingDelay: getenv("CAF_AUTOSCALER_SCALING_DELAY") || 10,
             backlogGoal: getenv("CAF_AUTOSCALER_BACKLOG_GOAL") || 300
         }
-    },
-    memoryQueryRequestFrequency: getenv("CAF_AUTOSCALER_RABBITMQ_MEMORY_QUERY_FREQ") || 5
+    }
 });

@@ -136,12 +136,12 @@ public class RabbitWorkloadAnalyserConfiguration
         this.profiles = profiles;
     }
 
-    public void setDefaultMemoryQueryTimeout(final int memoryQueryRequestFrequency)
+    public void setMemoryQueryRequestFrequency(final int memoryQueryRequestFrequency)
     {
         this.memoryQueryRequestFrequency = memoryQueryRequestFrequency;
     }
 
-    public int getDefaultMemoryQueryTimeout()
+    public int getMemoryQueryRequestFrequency()
     {
         return memoryQueryRequestFrequency;
     }

@@ -49,7 +49,7 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
         this.provider = new RabbitStatsReporter(config.getRabbitManagementEndpoint(), config.getRabbitManagementUser(),
                                                         config.getRabbitManagementPassword(), config.getVhost());
         this.memoryMonitor = new RabbitSystemResourceMonitor(config.getRabbitManagementEndpoint(), config.getRabbitManagementUser(),
-                                                        config.getRabbitManagementPassword(), config.getDefaultMemoryQueryTimeout());
+                                                        config.getRabbitManagementPassword(), config.getMemoryQueryRequestFrequency());
         this.defaultProfile = config.getProfiles().get(RabbitWorkloadAnalyserConfiguration.DEFAULT_PROFILE_NAME);
     }
 

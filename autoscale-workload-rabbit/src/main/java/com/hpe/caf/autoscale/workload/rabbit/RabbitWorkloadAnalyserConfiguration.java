@@ -129,7 +129,7 @@ public class RabbitWorkloadAnalyserConfiguration
     {
         return Collections.unmodifiableMap(profiles);
     }
-    
+
 
     public void setProfiles(final Map<String, RabbitWorkloadProfile> profiles)
     {

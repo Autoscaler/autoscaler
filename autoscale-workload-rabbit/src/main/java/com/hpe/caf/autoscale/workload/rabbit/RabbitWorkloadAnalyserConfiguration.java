@@ -70,6 +70,10 @@ public class RabbitWorkloadAnalyserConfiguration
     @Valid
     private Map<String, RabbitWorkloadProfile> profiles;
 
+    @NotNull
+    @Size(min = 1)
+    private int memoryQueryRequestFrequency;
+
 
     public RabbitWorkloadAnalyserConfiguration() { }
 
@@ -126,10 +130,20 @@ public class RabbitWorkloadAnalyserConfiguration
     {
         return Collections.unmodifiableMap(profiles);
     }
-
+    
 
     public void setProfiles(final Map<String, RabbitWorkloadProfile> profiles)
     {
         this.profiles = profiles;
+    }
+
+    public void setDefaultMemoryQueryTimeout(final int memoryQueryRequestFrequency)
+    {
+        this.memoryQueryRequestFrequency = memoryQueryRequestFrequency;
+    }
+
+    public int getDefaultMemoryQueryTimeout()
+    {
+        return memoryQueryRequestFrequency;
     }
 }

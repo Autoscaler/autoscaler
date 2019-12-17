@@ -23,5 +23,6 @@
             scalingDelay: getenv("CAF_AUTOSCALER_SCALING_DELAY") || 10,
             backlogGoal: getenv("CAF_AUTOSCALER_BACKLOG_GOAL") || 300
         }
-    }
+    },
+    memoryQueryRequestFrequency: getenv("CAF_AUTOSCALER_RABBITMQ_MEMORY_QUERY_FREQ") || 5
 });

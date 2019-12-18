@@ -59,13 +59,29 @@ public class GovernorImpl implements Governor {
             throw new RuntimeException(String.format("Scaling configuration not found for {%s}", serviceRef));
         }
 
-        boolean otherServicesMinimumInstancesMet = otherServicesMinimumInstancesMet(serviceRef);
+        final boolean otherServicesMinimumInstancesMet = otherServicesMinimumInstancesMet(serviceRef);
 
         switch(action.getOperation()){
-            case NONE:
+            case NONE: {
+                if (lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()) {
+                    return new ScalingAction(ScalingOperation.SCALE_UP,
+                                             scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalInstances());
+                } else if (lastInstanceInfo.getTotalInstances() > scalingConfiguration.getMaxInstances()) {
+                    return new ScalingAction(ScalingOperation.SCALE_DOWN,
+                                             lastInstanceInfo.getTotalInstances() - scalingConfiguration.getMaxInstances());
+                }
+                break;
+            }
             case SCALE_UP:
             {
-                if(!otherServicesMinimumInstancesMet && lastInstanceInfo!=null){
+                if(lastInstanceInfo == null){
+                    break;
+                }
+                if (lastInstanceInfo.getTotalInstances() > scalingConfiguration.getMaxInstances()) {
+                    return new ScalingAction(ScalingOperation.SCALE_DOWN,
+                                             lastInstanceInfo.getTotalInstances() - scalingConfiguration.getMaxInstances());
+                }
+                if(!otherServicesMinimumInstancesMet){
                     if(lastInstanceInfo.getTotalInstances()==scalingConfiguration.getMinInstances()){
                         return new ScalingAction(ScalingOperation.NONE, 0);
                     }
@@ -79,6 +95,24 @@ public class GovernorImpl implements Governor {
 
                         return new ScalingAction(ScalingOperation.SCALE_DOWN, amount);
                     }
+                } else {
+                    final int target = Math.min(scalingConfiguration.getMaxInstances() - lastInstanceInfo.getTotalInstances(),
+                                                Math.max(0, action.getAmount()));
+                    return new ScalingAction(action.getOperation(), target);
+                }
+                break;
+            }
+            case SCALE_DOWN: {
+                if(lastInstanceInfo.getTotalInstances() == scalingConfiguration.getMinInstances()){
+                    return new ScalingAction(ScalingOperation.NONE, 0);
+                } else if(lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()){
+                    return new ScalingAction(ScalingOperation.SCALE_UP,
+                        scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalInstances());
+                }
+                final int requestedInstances = lastInstanceInfo.getTotalInstances() - action.getAmount();
+                if (requestedInstances < scalingConfiguration.getMinInstances()) {
+                    return new ScalingAction(ScalingOperation.SCALE_UP,
+                                             scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalInstances());
                 }
                 break;
             }

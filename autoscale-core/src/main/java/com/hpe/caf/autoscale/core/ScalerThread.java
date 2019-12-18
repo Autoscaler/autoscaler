@@ -112,10 +112,10 @@ public class ScalerThread implements Runnable
     private void handleAnalysis()
     {
         try {
-            final double currentMemoryLoad = analyser.getCurrentMemoryLoad();
+            final int currentMemoryLoadLimit = establishMemLimitReached(analyser.getCurrentMemoryLoad());
             InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
             final int shutdownPriority = instances.getShutdownPriority();
-            if (handleMemoryLoadIssues(instances, currentMemoryLoad, shutdownPriority)) {
+            if (handleMemoryLoadIssues(instances, currentMemoryLoadLimit, shutdownPriority)) {
                 return;
             }
             governor.recordInstances(serviceRef, instances);
@@ -128,7 +128,7 @@ public class ScalerThread implements Runnable
                 LOG.debug("Scaling checks for service {}", serviceRef);
                 action = analyser.analyseWorkload(instances);
             }
-            if(shutdownPriority == -1 || shouldNotGoven(currentMemoryLoad, shutdownPriority)){
+            if(shouldGoven(currentMemoryLoadLimit, shutdownPriority)){
                 action = governor.govern(serviceRef, action);
             }
             switch (action.getOperation()) {
@@ -225,23 +225,22 @@ public class ScalerThread implements Runnable
         backoff = true;
     }
 
-    private boolean handleMemoryLoadIssues(final InstanceInfo instances, final double currentMemoryLoad, final int shutdownPriority)
+    private boolean handleMemoryLoadIssues(final InstanceInfo instances, final double currentMemoryLoadLimit, final int shutdownPriority)
         throws ScalerException
     {
         if (shutdownPriority == -1) {
             return false;
         }
 
-        handleAlerterDispatch(currentMemoryLoad);
+        handleAlerterDispatch(currentMemoryLoadLimit);
 
-        final int memLimit = establishMemLimitReached(currentMemoryLoad);
-        if (memLimit == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
+        if (currentMemoryLoadLimit == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
           emergencyScaleDown(instances.getTotalInstances());
             return true;
-        } else if (memLimit == 2 && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
+        } else if (currentMemoryLoadLimit == 2 && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
             emergencyScaleDown(instances.getTotalInstances());
             return true;
-        } else if (memLimit == 3 && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
+        } else if (currentMemoryLoadLimit == 3 && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
             emergencyScaleDown(instances.getTotalInstances());
             return true;
         }
@@ -258,9 +257,10 @@ public class ScalerThread implements Runnable
     
     private int establishMemLimitReached(final double currentMemoryLoad)
     {
-        if (currentMemoryLoad >= resourceConfig.getResourceLimitOne()) {
+        if (currentMemoryLoad >= resourceConfig.getResourceLimitOne() && currentMemoryLoad < resourceConfig.getResourceLimitTwo()) {
             return 1;
-        } else if (currentMemoryLoad >= resourceConfig.getResourceLimitTwo()) {
+        } else if (currentMemoryLoad >= resourceConfig.getResourceLimitTwo()
+            && currentMemoryLoad < resourceConfig.getResourceLimitThree()) {
             return 2;
         } else if (currentMemoryLoad >= resourceConfig.getResourceLimitThree()) {
             return 3;
@@ -268,16 +268,24 @@ public class ScalerThread implements Runnable
         return 0;
     }
     
-    private boolean shouldNotGoven(final double currentMemoryLoad, final int shutdownPriority)
+    private boolean shouldGoven(final int currentMemoryLoadLimit, final int shutdownPriority)
     {
-        final int memLimit = establishMemLimitReached(currentMemoryLoad);
-        if (memLimit == 1 && shutdownPriority >= resourceConfig.getResourceLimitOneShutdownThreshold()) {
-            return true;
-        } else if (memLimit == 2 && shutdownPriority >= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
-            return true;
-        } else if (memLimit == 3 && shutdownPriority >= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
+        if (shutdownPriority == -1) {
             return true;
         }
-        return false;
+        switch(currentMemoryLoadLimit){
+            case 1: {
+                return shutdownPriority >= resourceConfig.getResourceLimitOneShutdownThreshold();
+            }
+            case 2: {
+                return shutdownPriority >= resourceConfig.getResourceLimitOneShutdownThreshold();
+            }
+            case 3: {
+                return shutdownPriority >= resourceConfig.getResourceLimitOneShutdownThreshold();
+            }
+            default: {
+                return true;
+            }
+        }
     }
 }

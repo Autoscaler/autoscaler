@@ -26,7 +26,7 @@
  - profiles: map of profile name to `RabbitWorkloadProfile` objects, which
   represent different scaling profiles for this implementation (see below).
   Note there *must* be a profile named "default"  
- - memoryQueryRequestFrequency: The number of whole minutes that the service should wait between issuing requests to check rabbitmq's
+ - memoryQueryRequestFrequency: The number of seconds that the service should wait between issuing requests to check rabbitmq's
   current memory consumption. 
 
 

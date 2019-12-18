@@ -24,8 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -102,7 +100,7 @@ public final class RabbitSystemResourceMonitor
         if (lastTime == 0) {
             return true;
         }
-        return (System.currentTimeMillis() - lastTime) >= (memoryQueryRequestFrequency * 60 * 1000);
+        return (System.currentTimeMillis() - lastTime) >= (memoryQueryRequestFrequency * 1000);
     }
 
     public interface RabbitManagementApi

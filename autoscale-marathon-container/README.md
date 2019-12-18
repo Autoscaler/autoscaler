@@ -27,7 +27,11 @@ Configuration of the AutoScaler is supported through the following environment v
 
  - `CAF_RABBITMQ_MGMT_PASSWORD`  
     Default: `guest`  
-    Used to specify the password used to connect to RabbitMQ.  If `CAF_RABBITMQ_MGMT_PASSWORD` is not specified then `CAF_RABBITMQ_PASSWORD` will also be checked before falling back to the default.
+    Used to specify the password used to connect to RabbitMQ.  If `CAF_RABBITMQ_MGMT_PASSWORD` is not specified then `CAF_RABBITMQ_PASSWORD` will also be checked before falling back to the default.  
+
+ - `CAF_AUTOSCALER_RABBITMQ_MEMORY_QUERY_FREQ`  
+    Default: `10`  
+    Number of whole seconds that the service should wait between sending RabbitMQ memory status requests.
 
  - `CAF_AUTOSCALER_MARATHON_GROUP`  
     Defaults to the group where the autoscaler itself is deployed  

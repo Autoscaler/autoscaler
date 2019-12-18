@@ -44,7 +44,6 @@ public class ScalerThread implements Runnable
     private final int backoffAmount;
     private final String serviceRef;
     private int backoffCount = 0;
-    private boolean firstRun = true;
     private boolean backoff = false;
     private static final Logger LOG = LoggerFactory.getLogger(ScalerThread.class);
 

@@ -80,8 +80,11 @@ public class GovernorImpl implements Governor {
                     return new ScalingAction(ScalingOperation.SCALE_DOWN,
                                              lastInstanceInfo.getTotalInstances() - scalingConfiguration.getMaxInstances());
                 }
-                if(!otherServicesMinimumInstancesMet){
-                    if(lastInstanceInfo.getTotalInstances()==scalingConfiguration.getMinInstances()){
+                if(!otherServicesMinimumInstancesMet){ 
+                    if (lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()) {
+                        return new ScalingAction(ScalingOperation.SCALE_UP,
+                                                 scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalInstances());
+                    } else if (lastInstanceInfo.getTotalInstances() == scalingConfiguration.getMinInstances()) {
                         return new ScalingAction(ScalingOperation.NONE, 0);
                     }
                     else if(lastInstanceInfo.getTotalInstances()>scalingConfiguration.getMinInstances()){

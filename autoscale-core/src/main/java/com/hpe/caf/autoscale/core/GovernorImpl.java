@@ -58,7 +58,9 @@ public class GovernorImpl implements Governor {
         if(scalingConfiguration==null){
             throw new RuntimeException(String.format("Scaling configuration not found for {%s}", serviceRef));
         }
-
+        if (lastInstanceInfo == null) {
+            return action;
+        }
         final boolean otherServicesMinimumInstancesMet = otherServicesMinimumInstancesMet(serviceRef);
 
         switch(action.getOperation()){
@@ -74,9 +76,6 @@ public class GovernorImpl implements Governor {
             }
             case SCALE_UP:
             {
-                if(lastInstanceInfo == null){
-                    break;
-                }
                 if (lastInstanceInfo.getTotalInstances() > scalingConfiguration.getMaxInstances()) {
                     return new ScalingAction(ScalingOperation.SCALE_DOWN,
                                              lastInstanceInfo.getTotalInstances() - scalingConfiguration.getMaxInstances());

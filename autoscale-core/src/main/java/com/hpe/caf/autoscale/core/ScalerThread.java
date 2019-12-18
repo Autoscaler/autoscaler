@@ -18,7 +18,6 @@ package com.hpe.caf.autoscale.core;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
-import com.hpe.caf.api.autoscale.ScalingOperation;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
 import java.text.DecimalFormat;
@@ -39,12 +38,9 @@ public class ScalerThread implements Runnable
     private final Alerter alertDispatcher;
     private final WorkloadAnalyser analyser;
     private final ServiceScaler scaler;
-    private final int minInstances;
-    private final int maxInstances;
     private final int backoffAmount;
     private final String serviceRef;
     private int backoffCount = 0;
-    private boolean firstRun = true;
     private boolean backoff = false;
     private static final Logger LOG = LoggerFactory.getLogger(ScalerThread.class);
 
@@ -76,8 +72,6 @@ public class ScalerThread implements Runnable
         if (minInstances < 0 || maxInstances < 1) {
             throw new IllegalArgumentException("Instance count limits invalid");
         }
-        this.minInstances = minInstances;
-        this.maxInstances = maxInstances;
         this.backoffAmount = backoffAmount;
     }
 
@@ -118,23 +112,20 @@ public class ScalerThread implements Runnable
             }
             governor.recordInstances(serviceRef, instances);
             ScalingAction action;
-            if (firstRun) {
-                LOG.info("Performing initial scaling checks for service {}", serviceRef);
-                action = handleFirstRun(instances);
-                firstRun = false;
-            } else {
-                LOG.debug("Scaling checks for service {}", serviceRef);
-                action = analyser.analyseWorkload(instances);
-            }
-
+            LOG.debug("Performing scaling checks for service {}", serviceRef);
+            action = analyser.analyseWorkload(instances);
+            LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
+                     action.getOperation(), serviceRef, action.getAmount());
             action = governor.govern(serviceRef, action);
+            LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
+                     action.getOperation(), serviceRef, action.getAmount());
 
             switch (action.getOperation()) {
                 case SCALE_UP:
-                    scaleUp(instances, action.getAmount());
+                    scaleUp(action.getAmount());
                     break;
                 case SCALE_DOWN:
-                    scaleDown(instances, action.getAmount());
+                    scaleDown(action.getAmount());
                     break;
                 case NONE:
                 default:
@@ -155,71 +146,32 @@ public class ScalerThread implements Runnable
     }
 
     /**
-     * Called the first time a ScalerThread is run. It will ensure the current number of instances does not exceed the max, and that the
-     * minimum is also satisfied. If either of these cases are not true, it will trigger a scaling operation.
-     *
-     * @param instances information on the current number of instances of a service
-     * @return the recommended action to take
-     */
-    private ScalingAction handleFirstRun(final InstanceInfo instances) throws ScalerException
-    {
-        final ScalingAction action;
-        if (instances.getTotalInstances() < minInstances) {
-            action = new ScalingAction(ScalingOperation.SCALE_UP, minInstances - instances.getTotalInstances());
-        } else if (instances.getTotalInstances() > maxInstances) {
-            action = new ScalingAction(ScalingOperation.SCALE_DOWN, instances.getTotalInstances() - maxInstances);
-        } else {
-            action = ScalingAction.NO_ACTION;
-        }
-        return action;
-    }
-
-    /**
-     * Perform a scale up, taking into account the maximum number of instances limitation.
+     * Perform a scale up
      *
      * @param instances information on the current number of instances of a service
      * @param amount the requested number of instances to scale up by
      * @throws ScalerException if the scaling operation fails
      */
-    private void scaleUp(final InstanceInfo instances, final int amount)
+    private void scaleUp(final int amount)
         throws ScalerException
     {
-        int upTarget = Math.min(maxInstances - instances.getTotalInstances(), Math.max(0, amount));
-        if (instances.getInstancesStaging() == 0 && upTarget > 0) {
-            LOG.debug("Triggering scale up of service {} by amount {}", serviceRef, amount);
-            scaler.scaleUp(serviceRef, upTarget);
-            backoff = true;
-        }
+        LOG.info("Triggering scale up of service {} by amount {}", serviceRef, amount);
+        scaler.scaleUp(serviceRef, amount);
+        backoff = true;
     }
 
     /**
-     * Perform a scale down, taking into account the minimum number of instances limitation.
+     * Perform a scale down
      *
      * @param instances information on the current number of instances of a service
      * @param amount the requested number of instances to scale down by
      * @throws ScalerException if the scaling operation fails
      */
-    private void scaleDown(final InstanceInfo instances, final int amount)
+    private void scaleDown(final int amount)
         throws ScalerException
     {
-        int downTarget = Math.max(0, Math.min(instances.getTotalInstances() - minInstances, Math.max(0, amount)));
-        if (downTarget > 0) {
-            LOG.debug("Triggering scale down of service {} by amount {}", serviceRef, downTarget);
-            scaler.scaleDown(serviceRef, downTarget);
-            backoff = true;
-        }
-    }
-
-    /**
-     * Perform a scale down operation on the service bringing it to zero instances.
-     *
-     * @param instances information on the current number of instances of a service
-     * @throws ScalerException if the scaling operation fails
-     */
-    private void emergencyScaleDown(final int instances) throws ScalerException
-    {
-        LOG.info("Triggering emergency scale down of service {} to 0 due to low system resources.", serviceRef);
-        scaler.scaleDown(serviceRef, instances);
+        LOG.info("Triggering scale down of service {} by amount {}", serviceRef, amount);
+        scaler.scaleDown(serviceRef, amount);
         backoff = true;
     }
 
@@ -236,15 +188,15 @@ public class ScalerThread implements Runnable
 
         if (currentMemoryLoad >= resourceConfig.getResourceLimitOne()
             && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
-            emergencyScaleDown(instances.getTotalInstances());
+            scaleDown(instances.getTotalInstances());
             return true;
         } else if (currentMemoryLoad >= resourceConfig.getResourceLimitTwo()
             && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
-            emergencyScaleDown(instances.getTotalInstances());
+            scaleDown(instances.getTotalInstances());
             return true;
         } else if (currentMemoryLoad >= resourceConfig.getResourceLimitThree()
             && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
-            emergencyScaleDown(instances.getTotalInstances());
+            scaleDown(instances.getTotalInstances());
             return true;
         }
         return false;

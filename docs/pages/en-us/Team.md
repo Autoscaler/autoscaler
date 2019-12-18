@@ -15,17 +15,6 @@ team_members:
         - title: Email
           icon: hpe-social-email
           url: mailto:dermot.hardy@microfocus.com
-          
-    - name: Adam Rogan
-      email: adam.pau.rogan@microfocus.com
-      avatar: /assets/img/Team/adam.png
-      social:
-       - title: GitHub
-         icon: hpe-social-github
-         url: https://github.hpe.com/adam-pau-rogan
-       - title: Email
-         icon: hpe-social-email
-         url: mailto:adam.pau.rogan@microfocus.com
 
     - name: Christopher Comac
       email: christopher.jam.comac@microfocus.com
@@ -37,15 +26,4 @@ team_members:
        - title: Email
          icon: hpe-social-email
          url: mailto:christopher.jam.comac@microfocus.com
-
-    - name: Gregory Lucy
-      email: gregory.lucy@microfocus.com
-      avatar: /assets/img/Team/greg.png
-      social:
-       - title: GitHub
-         icon: hpe-social-github
-         url: https://github.hpe.com/gregory-lucy
-       - title: Email
-         icon: hpe-social-email
-         url: mailto:gregory.lucy@microfocus.com
 ---

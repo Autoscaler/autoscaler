@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Micro Focus or one of its affiliates.
+ * Copyright 2015-2020 Micro Focus or one of its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import com.hpe.caf.util.ModuleLoaderException;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
+import io.dropwizard.logging.LoggingUtil;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.slf4j.Logger;
@@ -151,5 +152,13 @@ public class AutoscaleApplication extends Application<AutoscaleConfiguration>
         for ( Map.Entry<String, WorkloadAnalyserFactory> entry : core.getAnalyserFactoryMap().entrySet() ) {
             environment.healthChecks().register("workload." + entry.getKey(), new ScalerHealthCheck(entry.getValue()));
         }
+        environment.healthChecks().register("scheduler",
+            new ScalerHealthCheck(core.getAutoScaleScheduler()));
+    }
+    
+    @Override
+    protected void bootstrapLogging()
+    {
+        LoggingUtil.hijackJDKLogging();
     }
 }

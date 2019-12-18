@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2015-2018 Micro Focus or one of its affiliates.
+    Copyright 2015-2020 Micro Focus or one of its affiliates.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-aggregator</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Autoscaler</name>
@@ -33,17 +33,20 @@
     <parent>
         <groupId>com.github.cafapi</groupId>
         <artifactId>caf-common-parent</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>1.2.0-3</version>
         <relativePath />
     </parent>
     
+    <inceptionYear>2015</inceptionYear>
+
     <properties>
-        <copyrightYear>2018</copyrightYear>
-        <copyrightNotice>Copyright ${project.inceptionYear}-${copyrightYear} Micro Focus or one of its affiliates.</copyrightNotice>
+        <copyrightYear>2020</copyrightYear>
         <dockerHubOrganization>autoscaler</dockerHubOrganization>
         <dockerAutoscalerOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerAutoscalerOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
         <gitRepo>https://github.com/Autoscaler/autoscaler</gitRepo>
+        <enforceCorrectDependencies>true</enforceCorrectDependencies>
+        <enforceBannedDependencies>true</enforceBannedDependencies>
     </properties>
 
     <licenses>
@@ -55,11 +58,6 @@
 
     <developers>
         <developer>
-            <id>arogan92</id>
-            <name>Adam Rogan</name>
-            <email>adam.pau.rogan@microfocus.com</email>
-        </developer>
-        <developer>
             <id>CJComac</id>
             <name>Christopher Comac</name>
             <email>christopher.jam.comac@microfocus.com</email>
@@ -70,19 +68,9 @@
             <email>dermot.hardy@microfocus.com</email>
         </developer>
         <developer>
-            <id>glucy</id>
-            <name>Gregory Lucy</name>
-            <email>gregory.lucy@microfocus.com</email>
-        </developer>
-        <developer>
             <id>mulhollandc</id>
             <name>Connor Mulholland</name>
             <email>connor.mulholland@microfocus.com</email>
-        </developer>
-        <developer>
-            <id>trevorgetty</id>
-            <name>Trevor Getty</name>
-            <email>trevor.getty@microfocus.com</email>
         </developer>
     </developers>
 
@@ -107,14 +95,16 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.jayway.jsonpath</groupId>
-                <artifactId>json-path</artifactId>
-                <version>2.2.0</version>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-bom</artifactId>
+                <version>9.4.20.v20190813</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-bom</artifactId>
-                <version>1.3.2</version>
+                <version>1.3.14</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -124,6 +114,131 @@
                 <version>1.15.0-1</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>2.9.6</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-api</artifactId>
+                <version>1.7.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-core</artifactId>
+                <version>1.7.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-dockerswarm-shared</artifactId>
+                <version>1.7.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-email-alert-dispatcher</artifactId>
+                <version>1.7.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-marathon-shared</artifactId>
+                <version>1.7.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-scaler-dockerswarm</artifactId>
+                <version>1.7.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-scaler-marathon</artifactId>
+                <version>1.7.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-source-dockerswarm</artifactId>
+                <version>1.7.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-source-marathon</artifactId>
+                <version>1.7.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-workload-rabbit</artifactId>
+                <version>1.7.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafapi.logging</groupId>
+                <artifactId>caf-logging-logback</artifactId>
+                <version>1.1.0-39</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.8.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>25.0-jre</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path</artifactId>
+                <version>2.2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mesosphere</groupId>
+                <artifactId>marathon-client</artifactId>
+                <version>0.6.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okio</groupId>
+                <artifactId>okio</artifactId>
+                <version>1.6.0</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.6</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>1.3.2</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>1.5.0-b01</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>2.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>4.4.9</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-all</artifactId>
+                <version>1.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging</artifactId>
+                <version>3.3.1.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>1.23</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Micro Focus or one of its affiliates.
+ * Copyright 2015-2020 Micro Focus or one of its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -143,6 +143,13 @@ public class AutoscaleCore
     public Map<String, WorkloadAnalyserFactory> getAnalyserFactoryMap()
     {
         return Collections.unmodifiableMap(this.analyserFactoryMap);
+    }
+
+    /**
+     * @return The scheduler, which has a health check.
+     */
+    public AutoscaleScheduler getAutoScaleScheduler() {
+        return autoscaleScheduler;
     }
 
 

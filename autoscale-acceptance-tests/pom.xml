@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2015-2018 Micro Focus or one of its affiliates.
+    Copyright 2015-2020 Micro Focus or one of its affiliates.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -27,25 +27,8 @@
     <parent>
         <groupId>com.github.autoscaler</groupId>
         <artifactId>autoscale-aggregator</artifactId>
-        <version>1.4.0-SNAPSHOT</version>
+        <version>1.7.0-SNAPSHOT</version>
     </parent>
-    
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.2</version>
-        </dependency>
-    </dependencies>
     
     <build>
         <plugins>
@@ -221,10 +204,11 @@
                         
                         <image>
                             <alias>rabbitmq</alias>
-                            <name>rabbitmq:3.7.5</name>
+                            <name>rabbitmq:3.7.5-management</name>
                             <run>
                                 <ports>
-                                    <port>${rabbitmq.port}:5672</port>
+                                    <port>${rabbitmq.nodePort}:5672</port>
+                                    <port>${rabbitmq.managementPort}:15672</port>
                                 </ports>
                                 <wait>
                                     <log>Server startup complete</log>
@@ -247,8 +231,8 @@
                                 <env>
                                     <DOCKER_HOST>http://${docker.host.address}:2375</DOCKER_HOST>
                                     <CAF_AUTOSCALER_DOCKER_SWARM_STACK>autoscalerdemo</CAF_AUTOSCALER_DOCKER_SWARM_STACK>
-                                    <CAF_RABBITMQ_MGMT_URL>http://${docker.host.address}:${rabbitmq.port}</CAF_RABBITMQ_MGMT_URL>
-<!--                                    <CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>
+                                    <CAF_RABBITMQ_MGMT_URL>http://rabbitmq:5672</CAF_RABBITMQ_MGMT_URL>
+                                    <!--<CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>
                                     <CAF_RABBITMQ_MGMT_PASSWORD>guest</CAF_RABBITMQ_MGMT_PASSWORD>-->
                                 </env>
                                 <links>
@@ -274,14 +258,13 @@
                                     <port>${marathon.scaler.port}:8081</port>
                                 </ports>
                                 <env>
-                                    <DOCKER_HOST>http://${docker.host.address}:2375</DOCKER_HOST>
-                                    <CAF_MARATHON_URL>http://${docker.host.address}:2375</CAF_MARATHON_URL>
+                                    <CAF_MARATHON_URL>http://marathon:8080</CAF_MARATHON_URL>
                                     <CAF_AUTOSCALER_BACKLOG_GOAL>300</CAF_AUTOSCALER_BACKLOG_GOAL>
                                     <CAF_AUTOSCALER_MARATHON_GROUP>/</CAF_AUTOSCALER_MARATHON_GROUP>
-                                    <CAF_AUTOSCALER_MAXIMUM_INSTANCES>4</CAF_AUTOSCALER_MAXIMUM_INSTANCES>=4
+                                    <CAF_AUTOSCALER_MAXIMUM_INSTANCES>4</CAF_AUTOSCALER_MAXIMUM_INSTANCES>
                                     <CAF_AUTOSCALER_SCALING_DELAY>10</CAF_AUTOSCALER_SCALING_DELAY>
                                     <CAF_LOG_LEVEL>INFO</CAF_LOG_LEVEL>
-                                    <CAF_RABBITMQ_MGMT_URL>http://${docker.host.address}:${rabbitmq.port}</CAF_RABBITMQ_MGMT_URL>
+                                    <CAF_RABBITMQ_MGMT_URL>http://rabbitmq:15672</CAF_RABBITMQ_MGMT_URL>
                                     <CAF_AUTOSCALER_SMTP_HOST>testhost</CAF_AUTOSCALER_SMTP_HOST>
                                     <CAF_AUTOSCALER_SMTP_PORT>testPort</CAF_AUTOSCALER_SMTP_PORT>
                                     <CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO>noone@nothing.com</CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO>
@@ -315,4 +298,15 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>use-default-fixed-ports</id>
+            <properties>
+                <marathon.port>31080</marathon.port>
+                <rabbitmq.nodePort>5672</rabbitmq.nodePort>
+                <rabbitmq.managementPort>15672</rabbitmq.managementPort>
+            </properties>
+        </profile>
+    </profiles>
 </project>

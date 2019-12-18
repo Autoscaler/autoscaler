@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Micro Focus or one of its affiliates.
+ * Copyright 2015-2020 Micro Focus or one of its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class EmailDispatcher implements AlertDispatcher
 
                 // Send the email.
                 transport.sendMessage(msg, msg.getAllRecipients());
-                LOG.debug("Email sent!");
+                LOG.info("Email sent!");
             } catch (final MessagingException ex) {
                 LOG.error("The email was not sent.", ex);
             } finally {

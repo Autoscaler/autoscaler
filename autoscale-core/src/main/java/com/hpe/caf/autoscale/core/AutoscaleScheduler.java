@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Micro Focus or one of its affiliates.
+ * Copyright 2015-2020 Micro Focus or one of its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 package com.hpe.caf.autoscale.core;
 
 
+import com.hpe.caf.api.HealthReporter;
+import com.hpe.caf.api.HealthResult;
+import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.AlertDispatcher;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
@@ -32,11 +35,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
@@ -51,7 +56,7 @@ import static java.util.stream.Collectors.toSet;
  * will have their ScalerThread cancelled and a new one created with the new configuration to
  * replace it.
  */
-public class AutoscaleScheduler
+public class AutoscaleScheduler implements HealthReporter
 {
     private final ScheduledExecutorService scheduler;
     private final ServiceValidator validator;
@@ -206,7 +211,7 @@ public class AutoscaleScheduler
     private void cancel(final String id)
     {
         if ( scheduledServices.containsKey(id) ) {
-            LOG.debug("Cancelling service {}", id);
+            LOG.info("Cancelling service {}", id);
             scheduledServices.get(id).getSchedule().cancel(true);
             scheduledServices.remove(id);
             governor.remove(id);
@@ -230,6 +235,28 @@ public class AutoscaleScheduler
             return analyserFactories.get(s.getWorkloadMetric()).getAnalyser(s.getScalingTarget(), s.getScalingProfile());
         } else {
             throw new ScalerException("Invalid workload metric " + s.getWorkloadMetric());
+        }
+    }
+
+    @Override
+    public HealthResult healthCheck()
+    {
+        final List<ScheduledScalingService> failedServices =
+            scheduledServices.values().stream()
+                .filter(svc -> svc.getSchedule().isDone())
+                .collect(Collectors.toList());
+
+        if (failedServices.isEmpty()) {
+            return HealthResult.RESULT_HEALTHY;
+
+        } else {
+            return new HealthResult(HealthStatus.UNHEALTHY,
+                "Scaling threads have stopped running.  " +
+                "The service must be restarted to continue scaling.  " +
+                "Affected services: " +
+                failedServices.stream()
+                    .map(s -> s.getConfig().getId())
+                    .collect(Collectors.joining(", ")));
         }
     }
 

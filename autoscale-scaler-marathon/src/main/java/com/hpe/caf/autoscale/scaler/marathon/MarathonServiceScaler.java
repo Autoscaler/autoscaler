@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Micro Focus or one of its affiliates.
+ * Copyright 2015-2020 Micro Focus or one of its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public class MarathonServiceScaler implements ServiceScaler
             int current = app.getTasksRunning() + app.getTasksStaged();
             int target = Math.min(maximumInstances, current + amount);
             if ( target > current ) {
-                LOG.debug("Scaling service {} up by {} instances", serviceReference, amount);
+                LOG.info("Scaling service {} up by {} instances", serviceReference, amount);
                 appInstancePatcher.patchInstances(app.getId(), target);
             }
         } catch (MarathonException e) {
@@ -91,7 +91,7 @@ public class MarathonServiceScaler implements ServiceScaler
             App app = appGet.getApp();
             int current = app.getTasksRunning() + app.getTasksStaged();
             if ( current > 0 ) {
-                LOG.debug("Scaling service {} down by {} instances", serviceReference, amount);
+                LOG.info("Scaling service {} down by {} instances", serviceReference, amount);
                 appInstancePatcher.patchInstances(app.getId(), Math.max(0, current - amount));
             }
         } catch (MarathonException e) {

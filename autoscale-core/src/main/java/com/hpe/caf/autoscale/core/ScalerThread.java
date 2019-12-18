@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Micro Focus or one of its affiliates.
+ * Copyright 2015-2020 Micro Focus or one of its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,6 +138,15 @@ public class ScalerThread implements Runnable
             }
         } catch (ScalerException e) {
             LOG.warn("Failed analysis run for service {}", serviceRef, e);
+        } catch (final RuntimeException e) {
+            // library methods have been known to throw RuntimeException when there's no programming
+            // error - but if we throw, we won't be scheduled to run again, so we must catch and
+            // ignore
+            LOG.error("Unexpected error in analysis run for service {}", serviceRef, e);
+        } catch (final Throwable e) {
+            // if the thread throws, the error isn't logged
+            LOG.error("Unexpected error in analysis run for service {}.  The scheduler will now stop; the service must be restarted to continue scaling.", serviceRef, e);
+            throw e;
         }
     }
 
@@ -205,7 +214,7 @@ public class ScalerThread implements Runnable
      */
     private void emergencyScaleDown(final int instances) throws ScalerException
     {
-        LOG.debug("Triggering emergency scale down of service {} to 0 due to low system resources.", serviceRef);
+        LOG.info("Triggering emergency scale down of service {} to 0 due to low system resources.", serviceRef);
         scaler.scaleDown(serviceRef, instances);
         backoff = true;
     }

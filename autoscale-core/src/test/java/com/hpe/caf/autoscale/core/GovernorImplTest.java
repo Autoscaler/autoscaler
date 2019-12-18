@@ -34,6 +34,45 @@ public class GovernorImplTest {
      * Test that a scale up is allowed when other services are at their minimum
      */
     @Test
+    public void testSingleServiceShouldNotOverrideScaleUpWhenMinimumNotReached() {
+        final Governor governor = new GovernorImpl();
+        final ScalingConfiguration scalingConfigurationForServiceOne = new ScalingConfiguration();
+        scalingConfigurationForServiceOne.setBackoffAmount(1000);
+        scalingConfigurationForServiceOne.setId("service1");
+        scalingConfigurationForServiceOne.setInterval(1000);
+        scalingConfigurationForServiceOne.setMaxInstances(10);
+        scalingConfigurationForServiceOne.setMinInstances(3);
+        scalingConfigurationForServiceOne.setScalingProfile("scalingprofile");
+        scalingConfigurationForServiceOne.setScalingTarget("scalingtarget");
+        final ScalingConfiguration scalingConfigurationForServiceTwo = new ScalingConfiguration();
+        scalingConfigurationForServiceTwo.setBackoffAmount(1000);
+        scalingConfigurationForServiceTwo.setId("service2");
+        scalingConfigurationForServiceTwo.setInterval(1000);
+        scalingConfigurationForServiceTwo.setMaxInstances(10);
+        scalingConfigurationForServiceTwo.setMinInstances(3);
+        scalingConfigurationForServiceTwo.setScalingProfile("scalingprofile");
+        scalingConfigurationForServiceTwo.setScalingTarget("scalingtarget");
+
+        governor.register(scalingConfigurationForServiceOne);
+        governor.register(scalingConfigurationForServiceTwo);
+
+        final InstanceInfo firstServiceInstanceInfo = new InstanceInfo(0, 0, Collections.emptyList());
+        governor.recordInstances(scalingConfigurationForServiceOne.getId(), firstServiceInstanceInfo);
+        final InstanceInfo secondServiceInstanceInfo = new InstanceInfo(0, 0, Collections.emptyList());
+        governor.recordInstances(scalingConfigurationForServiceTwo.getId(), secondServiceInstanceInfo);
+
+        final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 1);
+
+        final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceOne.getId(), scalingAction);
+
+        Assert.assertEquals(3, governedAction.getAmount());
+        Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
+    }
+
+    /**
+     * Test that a scale up is allowed when other services are at their minimum
+     */
+    @Test
     public void testSingleServiceShouldNotOverrideScaleUp() {
         final Governor governor = new GovernorImpl();
         final ScalingConfiguration scalingConfiguration = new ScalingConfiguration();

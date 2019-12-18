@@ -97,9 +97,9 @@ public class GovernorImpl implements Governor {
                         return new ScalingAction(ScalingOperation.SCALE_DOWN, amount);
                     }
                 } else {
-                    final int target = Math.min(scalingConfiguration.getMaxInstances() - lastInstanceInfo.getTotalInstances(),
+                    final int delta = Math.min(scalingConfiguration.getMaxInstances() - lastInstanceInfo.getTotalInstances(),
                                                 Math.max(0, action.getAmount()));
-                    return new ScalingAction(action.getOperation(), target);
+                    return new ScalingAction(ScalingOperation.SCALE_UP, delta);
                 }
                 break;
             }

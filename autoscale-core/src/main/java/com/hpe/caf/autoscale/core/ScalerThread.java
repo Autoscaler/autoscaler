@@ -114,10 +114,10 @@ public class ScalerThread implements Runnable
             ScalingAction action;
             LOG.debug("Performing scaling checks for service {}", serviceRef);
             action = analyser.analyseWorkload(instances);
-            LOG.info("Workload Analyser determined that the autoscaler should {} {} by {} instances",
+            LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
                      action.getOperation(), serviceRef, action.getAmount());
             action = governor.govern(serviceRef, action);
-            LOG.info("Governor determined that the autoscaler should {} {} by {} instances",
+            LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
                      action.getOperation(), serviceRef, action.getAmount());
 
             switch (action.getOperation()) {
@@ -155,7 +155,7 @@ public class ScalerThread implements Runnable
     private void scaleUp(final int amount)
         throws ScalerException
     {
-        LOG.debug("Triggering scale up of service {} by amount {}", serviceRef, amount);
+        LOG.info("Triggering scale up of service {} by amount {}", serviceRef, amount);
         scaler.scaleUp(serviceRef, amount);
         backoff = true;
     }
@@ -170,7 +170,7 @@ public class ScalerThread implements Runnable
     private void scaleDown(final int amount)
         throws ScalerException
     {
-        LOG.debug("Triggering scale down of service {} by amount {}", serviceRef, amount);
+        LOG.info("Triggering scale down of service {} by amount {}", serviceRef, amount);
         scaler.scaleDown(serviceRef, amount);
         backoff = true;
     }

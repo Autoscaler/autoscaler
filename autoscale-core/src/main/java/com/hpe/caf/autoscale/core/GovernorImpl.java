@@ -36,12 +36,13 @@ public class GovernorImpl implements Governor {
     private final int stageTwoShutdownPriorityLimit;
     private final int stageThreeShutdownPriorityLimit;
 
-    public GovernorImpl(final int stageOneLimit, final int stageTwoLimit, final int stageThreeLimit){
-    this.instanceInfoMap = new ConcurrentHashMap<>() ;
-    this.scalingConfigurationMap = new ConcurrentHashMap<>();
-    this.stageOneShutdownPriorityLimit = stageOneLimit;
-    this.stageTwoShutdownPriorityLimit = stageTwoLimit;
-    this.stageThreeShutdownPriorityLimit = stageThreeLimit;
+    public GovernorImpl(final int stageOneLimit, final int stageTwoLimit, final int stageThreeLimit)
+    {
+        this.instanceInfoMap = new ConcurrentHashMap<>();
+        this.scalingConfigurationMap = new ConcurrentHashMap<>();
+        this.stageOneShutdownPriorityLimit = stageOneLimit;
+        this.stageTwoShutdownPriorityLimit = stageTwoLimit;
+        this.stageThreeShutdownPriorityLimit = stageThreeLimit;
     }
 
     @Override

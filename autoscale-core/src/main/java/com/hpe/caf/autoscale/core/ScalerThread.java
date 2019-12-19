@@ -208,7 +208,8 @@ public class ScalerThread implements Runnable
     
     private int establishMemLimitReached(final double currentMemoryLoad)
     {
-        if (currentMemoryLoad >= resourceConfig.getResourceLimitOne() && currentMemoryLoad < resourceConfig.getResourceLimitTwo()) {
+        if (currentMemoryLoad >= resourceConfig.getResourceLimitOne()
+            && currentMemoryLoad < resourceConfig.getResourceLimitTwo()) {
             return 1;
         } else if (currentMemoryLoad >= resourceConfig.getResourceLimitTwo()
             && currentMemoryLoad < resourceConfig.getResourceLimitThree()) {

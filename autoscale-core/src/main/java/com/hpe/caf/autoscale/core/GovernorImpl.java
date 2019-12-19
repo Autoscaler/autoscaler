@@ -30,8 +30,27 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GovernorImpl implements Governor {
 
     private static final double reduceToPercentage = 0.90;
-    private final Map<String, InstanceInfo> instanceInfoMap = new ConcurrentHashMap<>() ;
-    private final Map<String, ScalingConfiguration> scalingConfigurationMap = new ConcurrentHashMap<>();
+    private final Map<String, InstanceInfo> instanceInfoMap;
+    private final Map<String, ScalingConfiguration> scalingConfigurationMap;
+    private final int stageOneShutdownPriorityLimit;
+    private final int stageTwoShutdownPriorityLimit;
+    private final int stageThreeShutdownPriorityLimit;
+    private boolean shouldGovernAlways;
+
+    public GovernorImpl()
+    {
+        this(0, 0, 0);
+        this.shouldGovernAlways = true;
+    }
+
+    public GovernorImpl(final int stageOneLimit, final int stageTwoLimit, final int stageThreeLimit){
+    this.instanceInfoMap = new ConcurrentHashMap<>() ;
+    this.scalingConfigurationMap = new ConcurrentHashMap<>();
+    this.stageOneShutdownPriorityLimit = stageOneLimit;
+    this.stageTwoShutdownPriorityLimit = stageTwoLimit;
+    this.stageThreeShutdownPriorityLimit = stageThreeLimit;
+    this.shouldGovernAlways = false;
+    }
 
     @Override
     public void register(ScalingConfiguration scalingConfiguration) {
@@ -50,7 +69,12 @@ public class GovernorImpl implements Governor {
     }
 
     @Override
-    public ScalingAction govern(String serviceRef, ScalingAction action) {
+    public ScalingAction govern(final String serviceRef, final ScalingAction action){
+        return govern(serviceRef, action, -1, 0);
+    }
+
+    @Override
+    public ScalingAction govern(String serviceRef, ScalingAction action, final int shutdownPriority, final int currentMemoryLimitStage) {
 
         ScalingConfiguration scalingConfiguration = scalingConfigurationMap.getOrDefault(serviceRef, null);
         InstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(serviceRef, null);
@@ -85,7 +109,8 @@ public class GovernorImpl implements Governor {
                                                  scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalInstances());
                     } else if (lastInstanceInfo.getTotalInstances() == scalingConfiguration.getMinInstances()) {
                         return new ScalingAction(ScalingOperation.NONE, 0);
-                    } else if (lastInstanceInfo.getTotalInstances() > scalingConfiguration.getMinInstances()) {
+                    } else if (lastInstanceInfo.getTotalInstances() > scalingConfiguration.getMinInstances()
+                        && shouldGovern(currentMemoryLimitStage, shutdownPriority)) {
                         //Gradually reduce the totalInstances by a percentage until Minimums are met.
                         //This should be configurable, however there should be a Governor specific configuration
                         //to allow different Governor implementations to be added without polluting the AutoscaleConfiguration
@@ -138,5 +163,29 @@ public class GovernorImpl implements Governor {
             }
         }
         return true;
+    }
+
+    private boolean shouldGovern(final int currentMemoryLoadLimit, final int shutdownPriority)
+    {
+        if(shouldGovernAlways){
+           return true; 
+        }
+        if (shutdownPriority == -1) {
+            return false;
+        }
+        switch (currentMemoryLoadLimit) {
+            case 1: {
+                return shutdownPriority <= stageOneShutdownPriorityLimit;
+            }
+            case 2: {
+                return shutdownPriority <= stageTwoShutdownPriorityLimit;
+            }
+            case 3: {
+                return shutdownPriority <= stageThreeShutdownPriorityLimit;
+            }
+            default: {
+                return true;
+            }
+        }
     }
 }

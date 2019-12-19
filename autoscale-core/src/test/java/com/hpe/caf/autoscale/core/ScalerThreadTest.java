@@ -72,8 +72,7 @@ public class ScalerThreadTest
         int max = 5;
         ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, 
             new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
-        t.run();
-        Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_DOWN);
+        Mockito.when(analyser.analyseWorkload(info)).thenReturn(new ScalingAction(ScalingOperation.SCALE_UP, 1));
         t.run();
         Mockito.verify(scaler, Mockito.times(1)).scaleDown(SERVICE_REF, 1);
     }

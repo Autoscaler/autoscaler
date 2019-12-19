@@ -106,10 +106,10 @@ public class ScalerThread implements Runnable
     private void handleAnalysis()
     {
         try {
-            final int currentMemoryLoadLimit = establishMemLimitReached(analyser.getCurrentMemoryLoad());
+            final int currentMemoryLimitStage = establishMemLimitReached(analyser.getCurrentMemoryLoad());
             InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
             final int shutdownPriority = instances.getShutdownPriority();
-            if (handleMemoryLoadIssues(instances, currentMemoryLoadLimit, shutdownPriority)) {
+            if (handleMemoryLoadIssues(instances, currentMemoryLimitStage, shutdownPriority)) {
                 return;
             }
             governor.recordInstances(serviceRef, instances);
@@ -118,13 +118,9 @@ public class ScalerThread implements Runnable
             action = analyser.analyseWorkload(instances);
             LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
                      action.getOperation(), serviceRef, action.getAmount());
-            action = governor.govern(serviceRef, action);
+            action = governor.govern(serviceRef, action, shutdownPriority, currentMemoryLimitStage);
             LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
                      action.getOperation(), serviceRef, action.getAmount());
-
-            if(shouldGoven(currentMemoryLoadLimit, shutdownPriority)){
-                action = governor.govern(serviceRef, action);
-            }
             switch (action.getOperation()) {
                 case SCALE_UP:
                     scaleUp(action.getAmount());
@@ -221,26 +217,5 @@ public class ScalerThread implements Runnable
             return 3;
         }
         return 0;
-    }
-    
-    private boolean shouldGoven(final int currentMemoryLoadLimit, final int shutdownPriority)
-    {
-        if (shutdownPriority == -1) {
-            return true;
-        }
-        switch(currentMemoryLoadLimit){
-            case 1: {
-                return shutdownPriority >= resourceConfig.getResourceLimitOneShutdownThreshold();
-            }
-            case 2: {
-                return shutdownPriority >= resourceConfig.getResourceLimitOneShutdownThreshold();
-            }
-            case 3: {
-                return shutdownPriority >= resourceConfig.getResourceLimitOneShutdownThreshold();
-            }
-            default: {
-                return true;
-            }
-        }
     }
 }

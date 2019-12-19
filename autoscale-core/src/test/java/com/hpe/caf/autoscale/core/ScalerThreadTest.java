@@ -19,7 +19,6 @@ package com.hpe.caf.autoscale.core;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
-import com.hpe.caf.api.autoscale.ScalingOperation;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
 import java.util.HashMap;
@@ -44,7 +43,7 @@ public class ScalerThreadTest
         InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
+        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;
@@ -66,13 +65,14 @@ public class ScalerThreadTest
         InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
+        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;
         ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, 
             new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
-        Mockito.when(analyser.analyseWorkload(info)).thenReturn(new ScalingAction(ScalingOperation.SCALE_UP, 1));
+        t.run();
+        Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_DOWN);
         t.run();
         Mockito.verify(scaler, Mockito.times(1)).scaleDown(SERVICE_REF, 1);
     }

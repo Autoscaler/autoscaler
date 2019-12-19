@@ -35,7 +35,7 @@ public class GovernorImplTest {
      */
     @Test
     public void testSingleServiceShouldNotOverrideScaleUpWhenMinimumNotReached() {
-        final Governor governor = new GovernorImpl();
+        final Governor governor = new GovernorImpl(1, 3, 5);
         final ScalingConfiguration scalingConfigurationForServiceOne = new ScalingConfiguration();
         scalingConfigurationForServiceOne.setBackoffAmount(1000);
         scalingConfigurationForServiceOne.setId("service1");
@@ -74,7 +74,7 @@ public class GovernorImplTest {
      */
     @Test
     public void testSingleServiceShouldNotOverrideScaleUp() {
-        final Governor governor = new GovernorImpl();
+        final Governor governor = new GovernorImpl(1, 3, 5);
         final ScalingConfiguration scalingConfiguration = new ScalingConfiguration();
         scalingConfiguration.setBackoffAmount(1000);
         scalingConfiguration.setId("service1");
@@ -102,7 +102,7 @@ public class GovernorImplTest {
      */
     @Test
     public void testSingleServiceShouldOverrideScaleUp() {
-        final Governor governor = new GovernorImpl();
+        final Governor governor = new GovernorImpl(1, 3, 5);
         final ScalingConfiguration scalingConfiguration = new ScalingConfiguration();
         scalingConfiguration.setBackoffAmount(1000);
         scalingConfiguration.setId("service1");
@@ -130,7 +130,7 @@ public class GovernorImplTest {
      */
     @Test
     public void testSingleServiceShouldNotOverrideScaleDown() {
-        final Governor governor = new GovernorImpl();
+        final Governor governor = new GovernorImpl(1, 3, 5);
         final ScalingConfiguration scalingConfiguration = new ScalingConfiguration();
         scalingConfiguration.setBackoffAmount(1000);
         scalingConfiguration.setId("service1");
@@ -158,7 +158,7 @@ public class GovernorImplTest {
      */
     @Test
     public void testSingleServiceShouldOverrideScaleDown() {
-        final Governor governor = new GovernorImpl();
+        final Governor governor = new GovernorImpl(1, 3, 5);
         final ScalingConfiguration scalingConfiguration = new ScalingConfiguration();
         scalingConfiguration.setBackoffAmount(1000);
         scalingConfiguration.setId("service1");
@@ -185,7 +185,7 @@ public class GovernorImplTest {
      */
     @Test
     public void testSingleServiceShouldNotOverrideScaleNone() {
-        final Governor governor = new GovernorImpl();
+        final Governor governor = new GovernorImpl(1, 3, 5);
         final ScalingConfiguration scalingConfiguration = new ScalingConfiguration();
         scalingConfiguration.setBackoffAmount(1000);
         scalingConfiguration.setId("service1");
@@ -213,7 +213,7 @@ public class GovernorImplTest {
      */
     @Test
     public void testSingleServiceShouldOverrideScaleNoneUnderLimit() {
-        final Governor governor = new GovernorImpl();
+        final Governor governor = new GovernorImpl(1, 3, 5);
         final ScalingConfiguration scalingConfiguration = new ScalingConfiguration();
         scalingConfiguration.setBackoffAmount(1000);
         scalingConfiguration.setId("service1");
@@ -242,7 +242,7 @@ public class GovernorImplTest {
      */
     @Test
     public void testSingleServiceShouldOverrideScaleNoneOverLimit() {
-        final Governor governor = new GovernorImpl();
+        final Governor governor = new GovernorImpl(1, 3, 5);
         final ScalingConfiguration scalingConfiguration = new ScalingConfiguration();
         scalingConfiguration.setBackoffAmount(1000);
         scalingConfiguration.setId("service1");
@@ -270,7 +270,7 @@ public class GovernorImplTest {
      */
     @Test
     public void testMultipleServicesPreventScaleUp() {
-        Governor governor = new GovernorImpl();
+        Governor governor = new GovernorImpl(1, 3, 5);
         int service1StartingInstances = 150;
         int service1CurrentInstances = service1StartingInstances;
 

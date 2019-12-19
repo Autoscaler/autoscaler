@@ -35,13 +35,6 @@ public class GovernorImpl implements Governor {
     private final int stageOneShutdownPriorityLimit;
     private final int stageTwoShutdownPriorityLimit;
     private final int stageThreeShutdownPriorityLimit;
-    private boolean shouldGovernAlways;
-
-    public GovernorImpl()
-    {
-        this(0, 0, 0);
-        this.shouldGovernAlways = true;
-    }
 
     public GovernorImpl(final int stageOneLimit, final int stageTwoLimit, final int stageThreeLimit){
     this.instanceInfoMap = new ConcurrentHashMap<>() ;
@@ -49,7 +42,6 @@ public class GovernorImpl implements Governor {
     this.stageOneShutdownPriorityLimit = stageOneLimit;
     this.stageTwoShutdownPriorityLimit = stageTwoLimit;
     this.stageThreeShutdownPriorityLimit = stageThreeLimit;
-    this.shouldGovernAlways = false;
     }
 
     @Override
@@ -167,9 +159,6 @@ public class GovernorImpl implements Governor {
 
     private boolean shouldGovern(final int currentMemoryLoadLimit, final int shutdownPriority)
     {
-        if(shouldGovernAlways){
-           return true; 
-        }
         if (shutdownPriority == -1) {
             return false;
         }

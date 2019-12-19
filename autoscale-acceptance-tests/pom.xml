@@ -89,7 +89,7 @@
                             <name>zookeeper:3.5</name>
                             <run>
                                 <ports>
-                                    <port>2181:2181</port>
+                                    <port>${zookeeper.port}:2181</port>
                                 </ports>
                                 <wait>
                                     <tcp>
@@ -110,7 +110,7 @@
                             <name>mesosphere/mesos-master:1.5.0</name>
                             <run>
                                 <ports>
-                                    <port>5050:5050</port>
+                                    <port>${mesos.port}:5050</port>
                                 </ports>
                                 <privileged>true</privileged>
                                 <env>
@@ -140,7 +140,7 @@
                             <name>mesosphere/mesos-slave:1.5.0</name>
                             <run>
                                 <ports>
-                                    <port>5051:5051</port>
+                                    <port>${mesos.slave.port}:5051</port>
                                 </ports>
                                 <privileged>true</privileged>
                                 <env>

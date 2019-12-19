@@ -61,11 +61,6 @@ public class GovernorImpl implements Governor {
     }
 
     @Override
-    public ScalingAction govern(final String serviceRef, final ScalingAction action){
-        return govern(serviceRef, action, -1, 0);
-    }
-
-    @Override
     public ScalingAction govern(String serviceRef, ScalingAction action, final int shutdownPriority, final int currentMemoryLimitStage) {
 
         ScalingConfiguration scalingConfiguration = scalingConfigurationMap.getOrDefault(serviceRef, null);

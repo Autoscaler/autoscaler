@@ -87,7 +87,7 @@ public class ScalerThreadTest
         InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
+        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;
@@ -108,7 +108,7 @@ public class ScalerThreadTest
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF))
             .thenThrow(new RuntimeException("network error"));
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
+        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;

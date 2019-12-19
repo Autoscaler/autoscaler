@@ -63,7 +63,7 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 1);
 
-        final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceOne.getId(), scalingAction);
+        final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceOne.getId(), scalingAction, -1, 0);
 
         Assert.assertEquals(3, governedAction.getAmount());
         Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
@@ -91,7 +91,7 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 1);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, -1, 0);
 
         Assert.assertEquals(1, governedAction.getAmount());
         Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
@@ -119,7 +119,7 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 10);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, -1, 0);
 
         Assert.assertEquals(140, governedAction.getAmount());
         Assert.assertEquals(SCALE_DOWN, governedAction.getOperation().toString());
@@ -147,7 +147,7 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_DOWN, 1);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, -1, 0);
 
         Assert.assertEquals(1, governedAction.getAmount());
         Assert.assertEquals(SCALE_DOWN, governedAction.getOperation().toString());
@@ -175,7 +175,7 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_DOWN, 1);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, -1, 0);
 
         Assert.assertEquals(0, governedAction.getAmount());
         Assert.assertEquals(NONE, governedAction.getOperation().toString());
@@ -202,7 +202,7 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.NONE, 0);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, -1, 0);
 
         Assert.assertEquals(0, governedAction.getAmount());
         Assert.assertEquals(NONE, governedAction.getOperation().toString());
@@ -230,7 +230,7 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.NONE, 0);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, -1, 0);
 
         Assert.assertEquals(1, governedAction.getAmount());
         Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
@@ -259,7 +259,7 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.NONE, 0);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, -1, 0);
 
         Assert.assertEquals(1, governedAction.getAmount());
         Assert.assertEquals(SCALE_DOWN, governedAction.getOperation().toString());
@@ -304,7 +304,7 @@ public class GovernorImplTest {
         }
 
         ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 100);
-        ScalingAction governedAction = governor.govern("service1", scalingAction);
+        ScalingAction governedAction = governor.govern("service1", scalingAction, -1, 0);
         Assert.assertEquals(ScalingOperation.SCALE_DOWN, governedAction.getOperation());
         Assert.assertTrue(governedAction.getAmount()>0);
         service1CurrentInstances = service1CurrentInstances - governedAction.getAmount();
@@ -315,7 +315,7 @@ public class GovernorImplTest {
 
             //The service still wishes to scale up
             scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 100);
-            governedAction = governor.govern("service1", scalingAction);
+            governedAction = governor.govern("service1", scalingAction, -1, 0);
             service1CurrentInstances = service1CurrentInstances - governedAction.getAmount();
 
             System.out.println(String.format("Current instances %d", service1CurrentInstances));

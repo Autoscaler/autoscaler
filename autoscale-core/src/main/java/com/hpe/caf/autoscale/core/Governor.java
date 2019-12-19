@@ -37,15 +37,6 @@ interface Governor {
     void recordInstances(String serviceRef, InstanceInfo instanceInfo);
 
     /**
-     * Uses a default of -1 for service shutdown priority and a default of 0 for current memory limit stage.
-     * 
-     * @param serviceRef the named reference to the service for which the scaling action will be governed
-     * @param action the scaling action to review
-     * @return a governed ScalingAction that respects the minimum requirements of all services
-     */
-    ScalingAction govern(String serviceRef, ScalingAction action);
-
-    /**
      *
      * @param serviceRef the named reference to the service for which the scaling action will be governed
      * @param action the scaling action to review

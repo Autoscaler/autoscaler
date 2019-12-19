@@ -189,16 +189,13 @@ public class ScalerThread implements Runnable
 
         handleAlerterDispatch(currentMemoryLoadLimit);
 
-        if (currentMemoryLoad >= resourceConfig.getResourceLimitOne()
-            && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
+        if (currentMemoryLoadLimit == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
             scaleDown(instances.getTotalInstances());
             return true;
-        } else if (currentMemoryLoad >= resourceConfig.getResourceLimitTwo()
-            && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
+        } else if (currentMemoryLoadLimit == 2 && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
             scaleDown(instances.getTotalInstances());
             return true;
-        } else if (currentMemoryLoad >= resourceConfig.getResourceLimitThree()
-            && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
+        } else if (currentMemoryLoadLimit == 3 && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
             scaleDown(instances.getTotalInstances());
             return true;
         }

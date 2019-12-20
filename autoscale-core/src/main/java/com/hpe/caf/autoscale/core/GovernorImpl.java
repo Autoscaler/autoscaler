@@ -144,9 +144,11 @@ public class GovernorImpl implements Governor {
             InstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(key, null);
 
             //If there are no instance info be cautious and assume minimum instances have not been met.
-            if(lastInstanceInfo==null || lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()){
-                if(lastInstanceInfo!= null 
-                   && isScaledDownForMemoryManagement(currentMemoryLimitStage, lastInstanceInfo.getShutdownPriority())){
+            if (lastInstanceInfo == null) {
+                return false;
+            }
+            if(lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()){
+                if(isScaledDownForMemoryManagement(currentMemoryLimitStage, lastInstanceInfo.getShutdownPriority())){
                    continue;
                 }
                 return false;

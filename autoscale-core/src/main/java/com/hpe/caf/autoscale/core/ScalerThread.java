@@ -118,7 +118,7 @@ public class ScalerThread implements Runnable
             action = analyser.analyseWorkload(instances);
             LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
                      action.getOperation(), serviceRef, action.getAmount());
-            action = governor.govern(serviceRef, action, shutdownPriority, currentMemoryLimitStage);
+            action = governor.govern(serviceRef, action, currentMemoryLimitStage);
             LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
                      action.getOperation(), serviceRef, action.getAmount());
             switch (action.getOperation()) {

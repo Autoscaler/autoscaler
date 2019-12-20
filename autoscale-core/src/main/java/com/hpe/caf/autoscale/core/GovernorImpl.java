@@ -62,7 +62,7 @@ public class GovernorImpl implements Governor {
     }
 
     @Override
-    public ScalingAction govern(String serviceRef, ScalingAction action, final int shutdownPriority, final int currentMemoryLimitStage) {
+    public ScalingAction govern(String serviceRef, ScalingAction action, final int currentMemoryLimitStage) {
 
         ScalingConfiguration scalingConfiguration = scalingConfigurationMap.getOrDefault(serviceRef, null);
         InstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(serviceRef, null);
@@ -73,7 +73,7 @@ public class GovernorImpl implements Governor {
         if (lastInstanceInfo == null) {
             return action;
         }
-        final boolean otherServicesMinimumInstancesMet = otherServicesMinimumInstancesMet(serviceRef);
+        final boolean otherServicesMinimumInstancesMet = otherServicesMinimumInstancesMet(serviceRef, currentMemoryLimitStage);
 
         switch(action.getOperation()){
             case NONE: {
@@ -95,17 +95,12 @@ public class GovernorImpl implements Governor {
                     if (lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()) {
                         return new ScalingAction(ScalingOperation.SCALE_UP,
                                                  scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalInstances());
-                    } else if (!shouldGovern(currentMemoryLimitStage, shutdownPriority)) {
-                        final int delta = Math.min(scalingConfiguration.getMaxInstances() - lastInstanceInfo.getTotalInstances(),
-                                                   Math.max(0, action.getAmount()));
-                        return new ScalingAction(ScalingOperation.SCALE_UP, delta);
                     } else if (lastInstanceInfo.getTotalInstances() == scalingConfiguration.getMinInstances()) {
                         return new ScalingAction(ScalingOperation.NONE, 0);
                     } else if (lastInstanceInfo.getTotalInstances() > scalingConfiguration.getMinInstances()) {
                         //Gradually reduce the totalInstances by a percentage until Minimums are met.
                         //This should be configurable, however there should be a Governor specific configuration
                         //to allow different Governor implementations to be added without polluting the AutoscaleConfiguration
-
                         int target = Math.max(scalingConfiguration.getMinInstances(),
                                               (int) Math.floor(lastInstanceInfo.getTotalInstances() * reduceToPercentage));
                         int amount = lastInstanceInfo.getTotalInstances() - target;
@@ -140,7 +135,7 @@ public class GovernorImpl implements Governor {
      * @param serviceRef the service identifier to exclude from the evaluation
      * @return True if other services have met their minimum instance requirement
      */
-    private boolean otherServicesMinimumInstancesMet(String serviceRef){
+    private boolean otherServicesMinimumInstancesMet(String serviceRef, final int currentMemoryLimitStage){
         for(String key:scalingConfigurationMap.keySet()){
             if(key.equals(serviceRef)){
                 continue;
@@ -150,13 +145,17 @@ public class GovernorImpl implements Governor {
 
             //If there are no instance info be cautious and assume minimum instances have not been met.
             if(lastInstanceInfo==null || lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()){
+                if(lastInstanceInfo!= null 
+                   && isScaledDownForMemoryManagement(currentMemoryLimitStage, lastInstanceInfo.getShutdownPriority())){
+                   continue;
+                }
                 return false;
             }
         }
         return true;
     }
 
-    private boolean shouldGovern(final int currentMemoryLoadLimit, final int shutdownPriority)
+    private boolean isScaledDownForMemoryManagement(final int currentMemoryLoadLimit, final int shutdownPriority)
     {
         if (shutdownPriority == -1) {
             return false;

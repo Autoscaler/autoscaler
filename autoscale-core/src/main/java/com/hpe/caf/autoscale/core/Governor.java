@@ -40,11 +40,10 @@ interface Governor {
      *
      * @param serviceRef the named reference to the service for which the scaling action will be governed
      * @param action the scaling action to review
-     * @param shutdownPriority the shutdown priority of the service to be governed
      * @param currentMemoryLimitStage the current memory limit stage that the message broker is currently at
      * @return a governed ScalingAction that respects the minimum requirements of all services
      */
-    ScalingAction govern(String serviceRef, ScalingAction action, int shutdownPriority, int currentMemoryLimitStage);
+    ScalingAction govern(String serviceRef, ScalingAction action, int currentMemoryLimitStage);
 
     /**
      *

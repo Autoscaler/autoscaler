@@ -101,6 +101,7 @@ public class GovernorImpl implements Governor {
                         //Gradually reduce the totalInstances by a percentage until Minimums are met.
                         //This should be configurable, however there should be a Governor specific configuration
                         //to allow different Governor implementations to be added without polluting the AutoscaleConfiguration
+
                         int target = Math.max(scalingConfiguration.getMinInstances(),
                                               (int) Math.floor(lastInstanceInfo.getTotalInstances() * reduceToPercentage));
                         int amount = lastInstanceInfo.getTotalInstances() - target;
@@ -148,7 +149,7 @@ public class GovernorImpl implements Governor {
                 return false;
             }
             if(lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()){
-                if(isScaledDownForMemoryManagement(currentMemoryLimitStage, lastInstanceInfo.getShutdownPriority())){
+                if(shouldBeScaledDown(currentMemoryLimitStage, lastInstanceInfo.getShutdownPriority())){
                    continue;
                 }
                 return false;
@@ -157,7 +158,7 @@ public class GovernorImpl implements Governor {
         return true;
     }
 
-    private boolean isScaledDownForMemoryManagement(final int currentMemoryLoadLimit, final int shutdownPriority)
+    private boolean shouldBeScaledDown(final int currentMemoryLoadLimit, final int shutdownPriority)
     {
         if (shutdownPriority == -1) {
             return false;
@@ -173,7 +174,7 @@ public class GovernorImpl implements Governor {
                 return shutdownPriority <= stageThreeShutdownPriorityLimit;
             }
             default: {
-                return true;
+                return false;
             }
         }
     }

@@ -19,7 +19,6 @@ package com.hpe.caf.autoscale.core;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
-import com.hpe.caf.api.autoscale.ScalingOperation;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
 import java.util.HashMap;
@@ -44,7 +43,7 @@ public class ScalerThreadTest
         InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
+        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.anyInt())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;
@@ -66,7 +65,7 @@ public class ScalerThreadTest
         InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
+        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.anyInt())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;
@@ -88,7 +87,7 @@ public class ScalerThreadTest
         InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
+        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.anyInt())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;
@@ -109,7 +108,7 @@ public class ScalerThreadTest
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF))
             .thenThrow(new RuntimeException("network error"));
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any())).then(returnsSecondArg());
+        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.anyInt())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;

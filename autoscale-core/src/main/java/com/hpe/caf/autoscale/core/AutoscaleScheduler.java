@@ -72,7 +72,7 @@ public class AutoscaleScheduler implements HealthReporter
     private final ServiceScaler scaler;
     private static final int INITIAL_SCALING_DELAY = 30;
     private static final Logger LOG = LoggerFactory.getLogger(AutoscaleScheduler.class);
-    private final Governor governor = new GovernorImpl();
+    private final Governor governor;
     private final Map<String, AlertDispatcher> alertDispatchers;
     private final ResourceMonitoringConfiguration resourceConfig;
     private final AlertDispatchConfiguration alertConfig;
@@ -89,6 +89,9 @@ public class AutoscaleScheduler implements HealthReporter
         this.alertDispatchers = alertDispatchers;
         this.resourceConfig = resourceConfig;
         this.alertConfig = alertConfig;
+        this.governor = new GovernorImpl(resourceConfig.getResourceLimitOneShutdownThreshold(),
+                                         resourceConfig.getResourceLimitTwoShutdownThreshold(),
+                                         resourceConfig.getResourceLimitThreeShutdownThreshold());
     }
 
     /**

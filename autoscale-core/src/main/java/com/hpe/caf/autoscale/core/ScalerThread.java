@@ -106,8 +106,10 @@ public class ScalerThread implements Runnable
     private void handleAnalysis()
     {
         try {
+            final int currentMemoryLimitStage = establishMemLimitReached(analyser.getCurrentMemoryLoad());
             InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
-            if (handleMemoryLoadIssues(instances)) {
+            final int shutdownPriority = instances.getShutdownPriority();
+            if (handleMemoryLoadIssues(instances, currentMemoryLimitStage, shutdownPriority)) {
                 return;
             }
             governor.recordInstances(serviceRef, instances);
@@ -116,10 +118,9 @@ public class ScalerThread implements Runnable
             action = analyser.analyseWorkload(instances);
             LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
                      action.getOperation(), serviceRef, action.getAmount());
-            action = governor.govern(serviceRef, action);
+            action = governor.govern(serviceRef, action, currentMemoryLimitStage);
             LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
                      action.getOperation(), serviceRef, action.getAmount());
-
             switch (action.getOperation()) {
                 case SCALE_UP:
                     scaleUp(action.getAmount());
@@ -175,27 +176,22 @@ public class ScalerThread implements Runnable
         backoff = true;
     }
 
-    private boolean handleMemoryLoadIssues(final InstanceInfo instances) throws ScalerException
+    private boolean handleMemoryLoadIssues(final InstanceInfo instances, final double currentMemoryLoadLimit, final int shutdownPriority)
+        throws ScalerException
     {
-        final double currentMemoryLoad = analyser.getCurrentMemoryLoad();
-        final int shutdownPriority = instances.getShutdownPriority();
-
         if (shutdownPriority == -1) {
             return false;
         }
 
-        handleAlerterDispatch(currentMemoryLoad);
+        handleAlerterDispatch(currentMemoryLoadLimit);
 
-        if (currentMemoryLoad >= resourceConfig.getResourceLimitOne()
-            && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
+        if (currentMemoryLoadLimit == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
             scaleDown(instances.getTotalInstances());
             return true;
-        } else if (currentMemoryLoad >= resourceConfig.getResourceLimitTwo()
-            && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
+        } else if (currentMemoryLoadLimit == 2 && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
             scaleDown(instances.getTotalInstances());
             return true;
-        } else if (currentMemoryLoad >= resourceConfig.getResourceLimitThree()
-            && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
+        } else if (currentMemoryLoadLimit == 3 && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
             scaleDown(instances.getTotalInstances());
             return true;
         }
@@ -208,5 +204,17 @@ public class ScalerThread implements Runnable
             final String emailBody = analyser.getMemoryOverloadWarning(df.format(memLoad));
             alertDispatcher.dispatchAlert(emailBody);
         }
+    }
+    
+    private int establishMemLimitReached(final double currentMemoryLoad)
+    {
+        if (currentMemoryLoad >= resourceConfig.getResourceLimitThree()) {
+            return 3;
+        } else if (currentMemoryLoad >= resourceConfig.getResourceLimitTwo()) {
+            return 2;
+        } else if (currentMemoryLoad >= resourceConfig.getResourceLimitOne()) {
+            return 1;
+        }
+        return 0;
     }
 }

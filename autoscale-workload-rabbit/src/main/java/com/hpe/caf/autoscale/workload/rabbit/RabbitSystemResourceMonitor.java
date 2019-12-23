@@ -33,12 +33,15 @@ import retrofit.http.GET;
 
 public final class RabbitSystemResourceMonitor
 {
+    private volatile double memoryAllocated;
     private final RabbitManagementApi rabbitApi;
     private final String rabbitEnpoint;
     private final ObjectMapper mapper = new ObjectMapper();
     private static final int RMQ_TIMEOUT = 10;
+    private volatile long lastTime;
+    private final int memoryQueryRequestFrequency;
 
-    public RabbitSystemResourceMonitor(final String endpoint, final String user, final String pass)
+    public RabbitSystemResourceMonitor(final String endpoint, final String user, final String pass, final int memoryQueryRequestFrequency)
     {
         this.rabbitEnpoint = endpoint;
         final String credentials = user + ":" + pass;
@@ -55,26 +58,32 @@ public final class RabbitSystemResourceMonitor
         builder.setErrorHandler(new RabbitApiErrorHandler());
         final RestAdapter adapter = builder.build();
         rabbitApi = adapter.create(RabbitManagementApi.class);
+        this.lastTime = 0;
+        this.memoryQueryRequestFrequency = memoryQueryRequestFrequency;
     }
 
     public double getCurrentMemoryComsumption() throws ScalerException
     {
-        try {
-            final Response response = rabbitApi.getNodeStatus();
-            final JsonNode nodeArray = mapper.readTree(response.getBody().in());
-            final Iterator<JsonNode> iterator = nodeArray.elements();
-            double highestMemUsedInCluster = 0;
-            while (iterator.hasNext()) {
-                final JsonNode node = iterator.next();
-                final long memory_limit = node.get("mem_limit").asLong();
-                final long memory_used = node.get("mem_used").asLong();
-                final double memPercentage = ((double) memory_used / memory_limit) * 100;
-                highestMemUsedInCluster = memPercentage > highestMemUsedInCluster ? memPercentage : highestMemUsedInCluster;
+        if (shouldIssueRequest()) {
+            try {
+                final Response response = rabbitApi.getNodeStatus();
+                final JsonNode nodeArray = mapper.readTree(response.getBody().in());
+                final Iterator<JsonNode> iterator = nodeArray.elements();
+                double highestMemUsedInCluster = 0;
+                while (iterator.hasNext()) {
+                    final JsonNode node = iterator.next();
+                    final long memory_limit = node.get("mem_limit").asLong();
+                    final long memory_used = node.get("mem_used").asLong();
+                    final double memPercentage = ((double) memory_used / memory_limit) * 100;
+                    highestMemUsedInCluster = memPercentage > highestMemUsedInCluster ? memPercentage : highestMemUsedInCluster;
+                }
+                memoryAllocated =  highestMemUsedInCluster;
+                lastTime = System.currentTimeMillis();
+            } catch (final IOException ex) {
+                throw new ScalerException("Unable to map response to status request.", ex);
             }
-            return highestMemUsedInCluster;
-        } catch (final IOException ex) {
-            throw new ScalerException("Unable to map response to status request.", ex);
         }
+        return memoryAllocated;
     }
 
     private static class RabbitApiErrorHandler implements ErrorHandler
@@ -84,6 +93,14 @@ public final class RabbitSystemResourceMonitor
         {
             return new ScalerException("Failed to contact RabbitMQ management API", retrofitError);
         }
+    }
+
+    private boolean shouldIssueRequest()
+    {
+        if (lastTime == 0) {
+            return true;
+        }
+        return (System.currentTimeMillis() - lastTime) >= (memoryQueryRequestFrequency * 1000);
     }
 
     public interface RabbitManagementApi

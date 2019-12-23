@@ -30,8 +30,20 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GovernorImpl implements Governor {
 
     private static final double reduceToPercentage = 0.90;
-    private final Map<String, InstanceInfo> instanceInfoMap = new ConcurrentHashMap<>() ;
-    private final Map<String, ScalingConfiguration> scalingConfigurationMap = new ConcurrentHashMap<>();
+    private final Map<String, InstanceInfo> instanceInfoMap;
+    private final Map<String, ScalingConfiguration> scalingConfigurationMap;
+    private final int stageOneShutdownPriorityLimit;
+    private final int stageTwoShutdownPriorityLimit;
+    private final int stageThreeShutdownPriorityLimit;
+
+    public GovernorImpl(final int stageOneLimit, final int stageTwoLimit, final int stageThreeLimit)
+    {
+        this.instanceInfoMap = new ConcurrentHashMap<>();
+        this.scalingConfigurationMap = new ConcurrentHashMap<>();
+        this.stageOneShutdownPriorityLimit = stageOneLimit;
+        this.stageTwoShutdownPriorityLimit = stageTwoLimit;
+        this.stageThreeShutdownPriorityLimit = stageThreeLimit;
+    }
 
     @Override
     public void register(ScalingConfiguration scalingConfiguration) {
@@ -50,7 +62,7 @@ public class GovernorImpl implements Governor {
     }
 
     @Override
-    public ScalingAction govern(String serviceRef, ScalingAction action) {
+    public ScalingAction govern(String serviceRef, ScalingAction action, final int currentMemoryLimitStage) {
 
         ScalingConfiguration scalingConfiguration = scalingConfigurationMap.getOrDefault(serviceRef, null);
         InstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(serviceRef, null);
@@ -61,7 +73,7 @@ public class GovernorImpl implements Governor {
         if (lastInstanceInfo == null) {
             return action;
         }
-        final boolean otherServicesMinimumInstancesMet = otherServicesMinimumInstancesMet(serviceRef);
+        final boolean otherServicesMinimumInstancesMet = otherServicesMinimumInstancesMet(serviceRef, currentMemoryLimitStage);
 
         switch(action.getOperation()){
             case NONE: {
@@ -124,7 +136,7 @@ public class GovernorImpl implements Governor {
      * @param serviceRef the service identifier to exclude from the evaluation
      * @return True if other services have met their minimum instance requirement
      */
-    private boolean otherServicesMinimumInstancesMet(String serviceRef){
+    private boolean otherServicesMinimumInstancesMet(String serviceRef, final int currentMemoryLimitStage){
         for(String key:scalingConfigurationMap.keySet()){
             if(key.equals(serviceRef)){
                 continue;
@@ -133,10 +145,37 @@ public class GovernorImpl implements Governor {
             InstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(key, null);
 
             //If there are no instance info be cautious and assume minimum instances have not been met.
-            if(lastInstanceInfo==null || lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()){
+            if (lastInstanceInfo == null) {
+                return false;
+            }
+            if(lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()){
+                if(shouldBeScaledDown(currentMemoryLimitStage, lastInstanceInfo.getShutdownPriority())){
+                   continue;
+                }
                 return false;
             }
         }
         return true;
+    }
+
+    private boolean shouldBeScaledDown(final int currentMemoryLoadLimit, final int shutdownPriority)
+    {
+        if (shutdownPriority == -1) {
+            return false;
+        }
+        switch (currentMemoryLoadLimit) {
+            case 1: {
+                return shutdownPriority <= stageOneShutdownPriorityLimit;
+            }
+            case 2: {
+                return shutdownPriority <= stageTwoShutdownPriorityLimit;
+            }
+            case 3: {
+                return shutdownPriority <= stageThreeShutdownPriorityLimit;
+            }
+            default: {
+                return false;
+            }
+        }
     }
 }

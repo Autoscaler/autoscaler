@@ -16,12 +16,16 @@
 package com.hpe.caf.autoscale.core;
 
 import com.hpe.caf.api.autoscale.InstanceInfo;
+import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import com.hpe.caf.api.autoscale.ScalingOperation;
+import com.hpe.caf.api.autoscale.ServiceHost;
+import java.util.Collection;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * This object implements a cautious approach to governing the scaling requests for a service.
@@ -30,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GovernorImpl implements Governor {
 
     private static final double reduceToPercentage = 0.90;
-    private final Map<String, InstanceInfo> instanceInfoMap;
+    private final Map<String, AdvancedInstanceInfo> instanceInfoMap;
     private final Map<String, ScalingConfiguration> scalingConfigurationMap;
     private final int stageOneShutdownPriorityLimit;
     private final int stageTwoShutdownPriorityLimit;
@@ -45,6 +49,38 @@ public class GovernorImpl implements Governor {
         this.stageThreeShutdownPriorityLimit = stageThreeLimit;
     }
 
+        @Override
+    public boolean makeRoom(final String serviceRef)
+    {
+        final AdvancedInstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(serviceRef, null);
+        if (lastInstanceInfo == null) {
+            return false;
+        }
+        final double percentageDifference = lastInstanceInfo.getPercentageDifference();
+        final Map<String, AdvancedInstanceInfo> possibleVictims = instanceInfoMap.entrySet().stream()
+            .filter(e -> e.getValue().getPercentageDifference() > 0)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        String selectedVictim = "";
+        for (final Map.Entry<String, AdvancedInstanceInfo> possibleVictim : possibleVictims.entrySet()) {
+            if (selectedVictim.equals("") || possibleVictim.getValue().getPercentageDifference()
+                < instanceInfoMap.getOrDefault(selectedVictim, null).getPercentageDifference()) {
+                if (percentageDifference != -1) {
+                    if (possibleVictim.getValue().getPercentageDifference() > percentageDifference) {
+                        continue;
+                    }
+                }
+                selectedVictim = possibleVictim.getKey();
+            }
+        }
+        try {
+            Broker.getInstance().sendMessage(serviceRef);
+            return true;
+        } catch (final ScalerException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
     @Override
     public void register(ScalingConfiguration scalingConfiguration) {
         scalingConfigurationMap.put(scalingConfiguration.getId(), scalingConfiguration);
@@ -52,7 +88,7 @@ public class GovernorImpl implements Governor {
 
     @Override
     public void recordInstances(String serviceRef, InstanceInfo instances) {
-        instanceInfoMap.put(serviceRef, instances);
+        instanceInfoMap.put(serviceRef, new AdvancedInstanceInfo(instances));
     }
 
     @Override
@@ -65,7 +101,7 @@ public class GovernorImpl implements Governor {
     public ScalingAction govern(String serviceRef, ScalingAction action, final int currentMemoryLimitStage) {
 
         ScalingConfiguration scalingConfiguration = scalingConfigurationMap.getOrDefault(serviceRef, null);
-        InstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(serviceRef, null);
+        final AdvancedInstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(serviceRef, null);
 
         if(scalingConfiguration==null){
             throw new RuntimeException(String.format("Scaling configuration not found for {%s}", serviceRef));
@@ -142,7 +178,7 @@ public class GovernorImpl implements Governor {
                 continue;
             }
             ScalingConfiguration scalingConfiguration = scalingConfigurationMap.getOrDefault(key, null);
-            InstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(key, null);
+            final AdvancedInstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(key, null);
 
             //If there are no instance info be cautious and assume minimum instances have not been met.
             if (lastInstanceInfo == null) {
@@ -176,6 +212,69 @@ public class GovernorImpl implements Governor {
             default: {
                 return false;
             }
+        }
+    }
+
+    private final class AdvancedInstanceInfo
+    {
+        private final InstanceInfo instanceInfo;
+        private int desiredInstances;
+        private double percentageDifference;
+
+        private AdvancedInstanceInfo(final InstanceInfo instanceInfo)
+        {
+            this.instanceInfo = instanceInfo;
+        }
+
+        private AdvancedInstanceInfo(final InstanceInfo instanceInfo, final int desiredInstances)
+        {
+            this.instanceInfo = instanceInfo;
+            this.desiredInstances = desiredInstances;
+        }
+
+        public Collection<ServiceHost> getHosts()
+        {
+            return instanceInfo.getHosts();
+        }
+
+        public int getInstancesRunning()
+        {
+            return instanceInfo.getInstancesRunning();
+        }
+
+        public int getInstancesStaging()
+        {
+            return instanceInfo.getInstancesStaging();
+        }
+
+        public int getTotalInstances()
+        {
+            return instanceInfo.getTotalInstances();
+        }
+
+        public int getShutdownPriority()
+        {
+            return instanceInfo.getShutdownPriority();
+        }
+
+        public int getDesiredInstances()
+        {
+            return desiredInstances;
+        }
+
+        public void setDesiredInstances(final int desiredInstances)
+        {
+            this.desiredInstances = desiredInstances;
+        }
+
+        public double getPercentageDifference()
+        {
+            return percentageDifference;
+        }
+
+        public void setPercentageDifference(final double percentageDifference)
+        {
+            this.percentageDifference = percentageDifference;
         }
     }
 }

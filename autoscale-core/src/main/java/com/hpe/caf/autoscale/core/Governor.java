@@ -47,6 +47,13 @@ interface Governor {
 
     /**
      *
+     * @param serviceRef the named reference to the service
+     * @return True or False based on if the governor was able to make room for the service
+     */
+    boolean makeRoom(String serviceRef);
+
+    /**
+     *
      * @param scalingConfiguration record the scalingConfiguration for a service
      */
     void register(ScalingConfiguration scalingConfiguration);

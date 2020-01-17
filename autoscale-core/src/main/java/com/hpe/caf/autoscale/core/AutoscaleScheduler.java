@@ -197,11 +197,13 @@ public class AutoscaleScheduler implements HealthReporter
             cancel(config.getId());
         }
         governor.register(config);
-        ScheduledFuture future = scheduler.scheduleWithFixedDelay(new ScalerThread(governor, analyser, scaler, config.getId(),
+        final ScalerThread scalerThread = new ScalerThread(governor, analyser, scaler, config.getId(),
                                                                                    config.getMinInstances(), config.getMaxInstances(),
                                                                                    config.getBackoffAmount(),
                                                                                    alerter,
-                                                                                   resourceConfig),
+                                                                                   resourceConfig);
+        Broker.getInstance().register(config.getId(), scalerThread);
+        ScheduledFuture future = scheduler.scheduleWithFixedDelay(scalerThread,
                                                                   initialDelay, config.getInterval(), TimeUnit.SECONDS);
         scheduledServices.put(config.getId(), new ScheduledScalingService(config, future));
     }

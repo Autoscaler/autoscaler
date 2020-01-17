@@ -156,8 +156,13 @@ public class ScalerThread implements Runnable
     private void scaleUp(final int amount)
         throws ScalerException
     {
-        LOG.info("Triggering scale up of service {} by amount {}", serviceRef, amount);
+        LOG.debug("Triggering scale up of service {} by amount {}", serviceRef, amount);
         scaler.scaleUp(serviceRef, amount);
+//        final InstanceInfo refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
+//        while (refreshedInsanceInfo.getInstancesStaging() > 0) {
+//            //Call Governor 
+//            Thread.sleep(refreshedInsanceInfo.getMaxLaunchDelaySeconds());
+//        }
         backoff = true;
     }
 
@@ -174,6 +179,11 @@ public class ScalerThread implements Runnable
         LOG.info("Triggering scale down of service {} by amount {}", serviceRef, amount);
         scaler.scaleDown(serviceRef, amount);
         backoff = true;
+    }
+
+    public void scaleDownNow() throws ScalerException
+    {
+        scaleDown(1);
     }
 
     private boolean handleMemoryLoadIssues(final InstanceInfo instances, final double currentMemoryLoadLimit, final int shutdownPriority)

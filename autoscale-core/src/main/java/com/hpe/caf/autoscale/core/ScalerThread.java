@@ -158,11 +158,20 @@ public class ScalerThread implements Runnable
     {
         LOG.debug("Triggering scale up of service {} by amount {}", serviceRef, amount);
         scaler.scaleUp(serviceRef, amount);
-//        final InstanceInfo refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
-//        while (refreshedInsanceInfo.getInstancesStaging() > 0) {
-//            //Call Governor 
-//            Thread.sleep(refreshedInsanceInfo.getMaxLaunchDelaySeconds());
-//        }
+        final InstanceInfo refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
+        try {
+            Thread.sleep(refreshedInsanceInfo.getMaxLaunchDelaySeconds());
+            while (refreshedInsanceInfo.getInstancesStaging() > 0) {
+                if (!governor.makeRoom(serviceRef)) {
+                    throw new ScalerException(
+                        "Unable to scale service " + serviceRef + " due to an inability to make room for it on the orchestrator.");
+                }
+                Thread.sleep(refreshedInsanceInfo.getMaxLaunchDelaySeconds());
+            }
+        } catch (final InterruptedException ex) {
+            Thread.interrupted();
+            throw new RuntimeException(ex);
+        }
         backoff = true;
     }
 

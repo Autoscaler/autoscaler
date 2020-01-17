@@ -15,6 +15,7 @@
  */
 package com.hpe.caf.autoscale.core;
 
+import com.google.common.base.Strings;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
@@ -49,8 +50,8 @@ public class GovernorImpl implements Governor {
         this.stageThreeShutdownPriorityLimit = stageThreeLimit;
     }
 
-        @Override
-    public boolean makeRoom(final String serviceRef)
+    @Override
+    public boolean makeRoom(final String serviceRef) throws ScalerException
     {
         final AdvancedInstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(serviceRef, null);
         if (lastInstanceInfo == null) {
@@ -62,7 +63,7 @@ public class GovernorImpl implements Governor {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String selectedVictim = "";
         for (final Map.Entry<String, AdvancedInstanceInfo> possibleVictim : possibleVictims.entrySet()) {
-            if (selectedVictim.equals("") || possibleVictim.getValue().getPercentageDifference()
+            if (Strings.isNullOrEmpty(selectedVictim) || possibleVictim.getValue().getPercentageDifference()
                 < instanceInfoMap.getOrDefault(selectedVictim, null).getPercentageDifference()) {
                 if (percentageDifference != -1) {
                     if (possibleVictim.getValue().getPercentageDifference() > percentageDifference) {
@@ -72,13 +73,11 @@ public class GovernorImpl implements Governor {
                 selectedVictim = possibleVictim.getKey();
             }
         }
-        try {
-            Broker.getInstance().sendMessage(serviceRef);
-            return true;
-        } catch (final ScalerException ex) {
-            ex.printStackTrace();
-            return false;
+        if (Strings.isNullOrEmpty(selectedVictim)) {
+            throw new ScalerException("Unable make room as no service was found that could be scaled down.");
         }
+        Broker.getInstance().sendMessage(serviceRef);
+        return true;
     }
 
     @Override

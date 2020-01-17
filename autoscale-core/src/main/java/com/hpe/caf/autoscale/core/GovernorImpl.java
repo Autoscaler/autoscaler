@@ -23,6 +23,7 @@ import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import com.hpe.caf.api.autoscale.ScalingOperation;
 import com.hpe.caf.api.autoscale.ServiceHost;
 import java.util.Collection;
+import java.util.HashMap;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 public class GovernorImpl implements Governor {
 
     private static final double reduceToPercentage = 0.90;
+    private final Map<String, ScalerThread> scalerThreads;
     private final Map<String, AdvancedInstanceInfo> instanceInfoMap;
     private final Map<String, ScalingConfiguration> scalingConfigurationMap;
     private final int stageOneShutdownPriorityLimit;
@@ -51,6 +53,7 @@ public class GovernorImpl implements Governor {
         this.stageOneShutdownPriorityLimit = stageOneLimit;
         this.stageTwoShutdownPriorityLimit = stageTwoLimit;
         this.stageThreeShutdownPriorityLimit = stageThreeLimit;
+        this.scalerThreads = new HashMap<>();
     }
 
     @Override
@@ -82,13 +85,19 @@ public class GovernorImpl implements Governor {
             throw new ScalerException("Unable make room as no service was found that could be scaled down.");
         }
         LOG.info("Scaling down service %s to make room for service %s", selectedVictim, serviceRef);
-        Broker.getInstance().sendMessage(selectedVictim);
+        scalerThreads.get(selectedVictim).scaleDownNow();
         return true;
     }
 
     @Override
     public void register(ScalingConfiguration scalingConfiguration) {
         scalingConfigurationMap.put(scalingConfiguration.getId(), scalingConfiguration);
+    }
+
+    @Override
+    public void registerListener(final String serviceRef, final ScalerThread thread)
+    {
+        scalerThreads.put(serviceRef, thread);
     }
 
     @Override

@@ -62,6 +62,13 @@ interface Governor {
     void register(ScalingConfiguration scalingConfiguration);
 
     /**
+     * 
+     * @param serviceRef the name of the service to register
+     * @param thread the scaler thread to register as a lister
+     */
+    void registerListener(String serviceRef, ScalerThread thread);
+
+    /**
      *
      * @param serviceRef the service name to remove and stop scaling operations for
      */

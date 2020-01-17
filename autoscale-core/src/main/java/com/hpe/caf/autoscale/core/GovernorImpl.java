@@ -67,7 +67,8 @@ public class GovernorImpl implements Governor {
                 < instanceInfoMap.getOrDefault(selectedVictim, null).getPercentageDifference()) {
                 if (percentageDifference != -1) {
                     if (possibleVictim.getValue().getPercentageDifference() > percentageDifference
-                        || scalingConfigurationMap.get(serviceRef).getMinInstances() == possibleVictim.getValue().getTotalInstances()) {
+                        || scalingConfigurationMap.get(possibleVictim.getKey()).getMinInstances()
+                        == possibleVictim.getValue().getTotalInstances()) {
                         continue;
                     }
                 }

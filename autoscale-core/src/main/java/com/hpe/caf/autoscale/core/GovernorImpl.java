@@ -27,6 +27,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This object implements a cautious approach to governing the scaling requests for a service.
@@ -40,6 +42,7 @@ public class GovernorImpl implements Governor {
     private final int stageOneShutdownPriorityLimit;
     private final int stageTwoShutdownPriorityLimit;
     private final int stageThreeShutdownPriorityLimit;
+    private static final Logger LOG = LoggerFactory.getLogger(GovernorImpl.class);
 
     public GovernorImpl(final int stageOneLimit, final int stageTwoLimit, final int stageThreeLimit)
     {
@@ -78,7 +81,8 @@ public class GovernorImpl implements Governor {
         if (Strings.isNullOrEmpty(selectedVictim)) {
             throw new ScalerException("Unable make room as no service was found that could be scaled down.");
         }
-        Broker.getInstance().sendMessage(serviceRef);
+        LOG.info("Scaling down service %s to make room for service %s", selectedVictim, serviceRef);
+        Broker.getInstance().sendMessage(selectedVictim);
         return true;
     }
 

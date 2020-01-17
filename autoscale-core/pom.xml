@@ -77,6 +77,10 @@
             <artifactId>util-naming</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-configuration</artifactId>
         </dependency>

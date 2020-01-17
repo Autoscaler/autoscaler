@@ -107,6 +107,9 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
                     int scale = Math.min(MAX_SCALE, workersNeeded - instanceInfo.getTotalInstances());
                     return getScalingAction(ScalingOperation.SCALE_UP, scale);
                 } else if ( workersNeeded < instanceInfo.getTotalInstances() ) {
+                    if(workersNeeded == 0){
+                       return getScalingAction(ScalingOperation.SCALE_DOWN, instanceInfo.getTotalInstances()); 
+                    }
                     return getScalingAction(ScalingOperation.SCALE_DOWN, instanceInfo.getTotalInstances() - workersNeeded);
                 }
             }

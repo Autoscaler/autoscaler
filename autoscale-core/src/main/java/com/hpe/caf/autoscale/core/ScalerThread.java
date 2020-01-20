@@ -46,6 +46,8 @@ public class ScalerThread implements Runnable
 
     private final Governor governor;
     private final ResourceMonitoringConfiguration resourceConfig;
+    
+    long firstAttempt;
 
     /**
      * Create a new ScalerThread.
@@ -160,9 +162,10 @@ public class ScalerThread implements Runnable
         scaler.scaleUp(serviceRef, amount);
         final InstanceInfo refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
         try {
+            this.firstAttempt = System.currentTimeMillis();
             Thread.sleep(refreshedInsanceInfo.getMaxLaunchDelaySeconds());
             while (refreshedInsanceInfo.getInstancesStaging() > 0) {
-                if (!governor.makeRoom(serviceRef)) {
+                if (!governor.makeRoom(serviceRef) || timelimitExceeded() ) {
                     throw new ScalerException(
                         "Unable to scale service " + serviceRef + " due to an inability to make room for it on the orchestrator.");
                 }
@@ -193,6 +196,7 @@ public class ScalerThread implements Runnable
     public void scaleDownNow() throws ScalerException
     {
         scaleDown(1);
+        backoff = true;
     }
 
     private boolean handleMemoryLoadIssues(final InstanceInfo instances, final double currentMemoryLoadLimit, final int shutdownPriority)
@@ -235,5 +239,10 @@ public class ScalerThread implements Runnable
             return 1;
         }
         return 0;
+    }
+
+    private boolean timelimitExceeded()
+    {
+        return (System.currentTimeMillis() - firstAttempt) >= (2 * 60 * 1000);
     }
 }

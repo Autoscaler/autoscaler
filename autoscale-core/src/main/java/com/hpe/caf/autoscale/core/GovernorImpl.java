@@ -65,7 +65,7 @@ public class GovernorImpl implements Governor {
         }
         final double percentageDifference = lastInstanceInfo.getPercentageDifference();
         final Map<String, AdvancedInstanceInfo> possibleVictims = instanceInfoMap.entrySet().stream()
-            .filter(e -> e.getValue().getPercentageDifference() > 0)
+            .filter(e -> e.getValue().getPercentageDifference() > -1)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String selectedVictim = "";
         for (final Map.Entry<String, AdvancedInstanceInfo> possibleVictim : possibleVictims.entrySet()) {
@@ -74,7 +74,7 @@ public class GovernorImpl implements Governor {
                 if (percentageDifference != -1) {
                     if (possibleVictim.getValue().getPercentageDifference() > percentageDifference
                         || scalingConfigurationMap.get(possibleVictim.getKey()).getMinInstances()
-                        == possibleVictim.getValue().getTotalInstances()) {
+                        == possibleVictim.getValue().getTotalRunningAndStageInstances()) {
                         continue;
                     }
                 }
@@ -127,53 +127,53 @@ public class GovernorImpl implements Governor {
 
         switch(action.getOperation()){
             case NONE: {
-                if (lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()) {
+                if (lastInstanceInfo.getTotalRunningAndStageInstances() < scalingConfiguration.getMinInstances()) {
                     return new ScalingAction(ScalingOperation.SCALE_UP,
-                                             scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalInstances());
-                } else if (lastInstanceInfo.getTotalInstances() > scalingConfiguration.getMaxInstances()) {
+                                             scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances());
+                } else if (lastInstanceInfo.getTotalRunningAndStageInstances() > scalingConfiguration.getMaxInstances()) {
                     return new ScalingAction(ScalingOperation.SCALE_DOWN,
-                                             lastInstanceInfo.getTotalInstances() - scalingConfiguration.getMaxInstances());
+                                             lastInstanceInfo.getTotalRunningAndStageInstances() - scalingConfiguration.getMaxInstances());
                 }
                 break;
             }
             case SCALE_UP:
             {
-                if (lastInstanceInfo.getTotalInstances() > scalingConfiguration.getMaxInstances()) {
+                if (lastInstanceInfo.getTotalRunningAndStageInstances() > scalingConfiguration.getMaxInstances()) {
                     return new ScalingAction(ScalingOperation.SCALE_DOWN,
-                                             lastInstanceInfo.getTotalInstances() - scalingConfiguration.getMaxInstances());
+                                             lastInstanceInfo.getTotalRunningAndStageInstances() - scalingConfiguration.getMaxInstances());
                 } else if (!otherServicesMinimumInstancesMet) {
-                    if (lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()) {
+                    if (lastInstanceInfo.getTotalRunningAndStageInstances() < scalingConfiguration.getMinInstances()) {
                         return new ScalingAction(ScalingOperation.SCALE_UP,
-                                                 scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalInstances());
-                    } else if (lastInstanceInfo.getTotalInstances() == scalingConfiguration.getMinInstances()) {
+                                                 scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances());
+                    } else if (lastInstanceInfo.getTotalRunningAndStageInstances() == scalingConfiguration.getMinInstances()) {
                         return new ScalingAction(ScalingOperation.NONE, 0);
-                    } else if (lastInstanceInfo.getTotalInstances() > scalingConfiguration.getMinInstances()) {
+                    } else if (lastInstanceInfo.getTotalRunningAndStageInstances() > scalingConfiguration.getMinInstances()) {
                         //Gradually reduce the totalInstances by a percentage until Minimums are met.
                         //This should be configurable, however there should be a Governor specific configuration
                         //to allow different Governor implementations to be added without polluting the AutoscaleConfiguration
 
                         int target = Math.max(scalingConfiguration.getMinInstances(),
-                                              (int) Math.floor(lastInstanceInfo.getTotalInstances() * reduceToPercentage));
-                        int amount = lastInstanceInfo.getTotalInstances() - target;
+                                              (int) Math.floor(lastInstanceInfo.getTotalRunningAndStageInstances() * reduceToPercentage));
+                        int amount = lastInstanceInfo.getTotalRunningAndStageInstances() - target;
 
                         return new ScalingAction(ScalingOperation.SCALE_DOWN, amount);
                     }
                 } else {
-                    final int delta = Math.min(scalingConfiguration.getMaxInstances() - lastInstanceInfo.getTotalInstances(),
+                    final int delta = Math.min(scalingConfiguration.getMaxInstances() - lastInstanceInfo.getTotalRunningAndStageInstances(),
                                                 Math.max(0, action.getAmount()));
                     return new ScalingAction(ScalingOperation.SCALE_UP, delta);
                 }
                 break;
             }
             case SCALE_DOWN: {
-                if (lastInstanceInfo.getTotalInstances() == scalingConfiguration.getMinInstances()) {
+                if (lastInstanceInfo.getTotalRunningAndStageInstances() == scalingConfiguration.getMinInstances()) {
                     return new ScalingAction(ScalingOperation.NONE, 0);
-                } else if (lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()) {
+                } else if (lastInstanceInfo.getTotalRunningAndStageInstances() < scalingConfiguration.getMinInstances()) {
                     return new ScalingAction(ScalingOperation.SCALE_UP,
-                                             scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalInstances());
-                } else if ((lastInstanceInfo.getTotalInstances() - action.getAmount()) < scalingConfiguration.getMinInstances()) {
+                                             scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances());
+                } else if ((lastInstanceInfo.getTotalRunningAndStageInstances() - action.getAmount()) < scalingConfiguration.getMinInstances()) {
                     return new ScalingAction(ScalingOperation.SCALE_DOWN,
-                                             lastInstanceInfo.getTotalInstances() - scalingConfiguration.getMinInstances());
+                                             lastInstanceInfo.getTotalRunningAndStageInstances() - scalingConfiguration.getMinInstances());
                 }
                 break;
             }
@@ -198,7 +198,7 @@ public class GovernorImpl implements Governor {
             if (lastInstanceInfo == null) {
                 return false;
             }
-            if(lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()){
+            if(lastInstanceInfo.getTotalRunningAndStageInstances() < scalingConfiguration.getMinInstances()){
                 if(shouldBeScaledDown(currentMemoryLimitStage, lastInstanceInfo.getShutdownPriority())){
                    continue;
                 }
@@ -261,9 +261,9 @@ public class GovernorImpl implements Governor {
             return instanceInfo.getInstancesStaging();
         }
 
-        public int getTotalInstances()
+        public int getTotalRunningAndStageInstances()
         {
-            return instanceInfo.getTotalInstances();
+            return instanceInfo.getTotalRunningAndStageInstances();
         }
 
         public int getShutdownPriority()

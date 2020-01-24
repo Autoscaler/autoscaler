@@ -93,7 +93,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
             QueueStats stats = rabbitStats.getQueueStats(scalingTarget);
             LOG.debug("Stats for target {}: {}", scalingTarget, stats);
             // if we have any messages and no instances, immediately trigger scale up
-            if ( stats.getMessages() > 0 && instanceInfo.getTotalInstances() == 0 ) {
+            if ( stats.getMessages() > 0 && instanceInfo.getTotalRunningAndStageInstances() == 0 ) {
                 return ScalingAction.SCALE_UP;
             }
             statsQueue.add(stats);
@@ -103,14 +103,14 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
                 counter = 0;
                 int workersNeeded = getWorkersNeeded(stats.getMessages(), profile.getBacklogGoal(), instanceInfo);
                 LOG.debug("Workers needed to meet backlog goal: {}", workersNeeded);
-                if ( workersNeeded > instanceInfo.getTotalInstances() ) {
-                    int scale = Math.min(MAX_SCALE, workersNeeded - instanceInfo.getTotalInstances());
+                if ( workersNeeded > instanceInfo.getTotalRunningAndStageInstances() ) {
+                    int scale = Math.min(MAX_SCALE, workersNeeded - instanceInfo.getTotalRunningAndStageInstances());
                     return getScalingAction(ScalingOperation.SCALE_UP, scale);
-                } else if ( workersNeeded < instanceInfo.getTotalInstances() ) {
+                } else if ( workersNeeded < instanceInfo.getTotalRunningAndStageInstances() ) {
                     if(workersNeeded == 0){
-                       return getScalingAction(ScalingOperation.SCALE_DOWN, instanceInfo.getTotalInstances()); 
+                       return getScalingAction(ScalingOperation.SCALE_DOWN, instanceInfo.getTotalRunningAndStageInstances()); 
                     }
-                    return getScalingAction(ScalingOperation.SCALE_DOWN, instanceInfo.getTotalInstances() - workersNeeded);
+                    return getScalingAction(ScalingOperation.SCALE_DOWN, instanceInfo.getTotalRunningAndStageInstances() - workersNeeded);
                 }
             }
         }
@@ -133,7 +133,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
             return 0;
         } else {
             // otherwise we have no consumption rate but stuff to do - since we have no idea about rate yet, just stay the same
-            return Math.max(1, instanceInfo.getTotalInstances());
+            return Math.max(1, instanceInfo.getTotalRunningAndStageInstances());
         }
     }
 

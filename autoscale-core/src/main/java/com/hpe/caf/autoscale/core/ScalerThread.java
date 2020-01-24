@@ -125,7 +125,7 @@ public class ScalerThread implements Runnable
                      action.getOperation(), serviceRef, action.getAmount());
             switch (action.getOperation()) {
                 case SCALE_UP:
-                    scaleUp(action.getAmount());
+                    scaleUp(action.getAmount(), instances);
                     break;
                 case SCALE_DOWN:
                     scaleDown(action.getAmount());
@@ -155,21 +155,27 @@ public class ScalerThread implements Runnable
      * @param amount the requested number of instances to scale up by
      * @throws ScalerException if the scaling operation fails
      */
-    private void scaleUp(final int amount)
+    private void scaleUp(final int amount, final InstanceInfo info)
         throws ScalerException
     {
         LOG.debug("Triggering scale up of service {} by amount {}", serviceRef, amount);
         scaler.scaleUp(serviceRef, amount);
-        final InstanceInfo refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
         try {
+            Thread.sleep(info.getMaxLaunchDelaySeconds());
+            InstanceInfo refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
             this.firstAttempt = System.currentTimeMillis();
             Thread.sleep(refreshedInsanceInfo.getMaxLaunchDelaySeconds());
-            while (refreshedInsanceInfo.getInstancesStaging() > 0) {
-                if (!governor.makeRoom(serviceRef) || timelimitExceeded() ) {
-                    throw new ScalerException(
-                        "Unable to scale service " + serviceRef + " due to an inability to make room for it on the orchestrator.");
+            int instanceDifferences = refreshedInsanceInfo.getInstances() - refreshedInsanceInfo.getTotalRunningAndStageInstances();
+            while (refreshedInsanceInfo.getInstances() > refreshedInsanceInfo.getTotalRunningAndStageInstances()) {
+                Thread.sleep(instanceDifferences * 10 * 1000);
+                refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
+                if (refreshedInsanceInfo.getInstances() > refreshedInsanceInfo.getTotalRunningAndStageInstances()) {
+                    if (!governor.makeRoom(serviceRef) || timelimitExceeded()) {
+                        throw new ScalerException(
+                            "Unable to scale service " + serviceRef + " due to an inability to make room for it on the orchestrator.");
+                    }
+                    instanceDifferences = refreshedInsanceInfo.getInstances() - refreshedInsanceInfo.getTotalRunningAndStageInstances();
                 }
-                Thread.sleep(refreshedInsanceInfo.getMaxLaunchDelaySeconds());
             }
         } catch (final InterruptedException ex) {
             Thread.interrupted();
@@ -196,6 +202,8 @@ public class ScalerThread implements Runnable
     public void scaleDownNow() throws ScalerException
     {
         scaleDown(1);
+        final InstanceInfo info = scaler.getInstanceInfo(serviceRef);
+        governor.recordInstances(serviceRef, info);
         backoff = true;
     }
 
@@ -209,13 +217,13 @@ public class ScalerThread implements Runnable
         handleAlerterDispatch(currentMemoryLoadLimit);
 
         if (currentMemoryLoadLimit == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
-            scaleDown(instances.getTotalInstances());
+            scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
         } else if (currentMemoryLoadLimit == 2 && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
-            scaleDown(instances.getTotalInstances());
+            scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
         } else if (currentMemoryLoadLimit == 3 && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
-            scaleDown(instances.getTotalInstances());
+            scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
         }
         return false;

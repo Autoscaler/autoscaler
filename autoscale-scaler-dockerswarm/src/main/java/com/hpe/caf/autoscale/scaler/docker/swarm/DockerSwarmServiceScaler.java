@@ -69,7 +69,7 @@ public class DockerSwarmServiceScaler implements ServiceScaler
             DockerSwarmService serviceItem = getServiceAsObject(serviceReference);
             InstanceInfo instanceInfo = serviceItem.getInstanceInformation();
 
-            int current = instanceInfo.getTotalInstances();
+            int current = instanceInfo.getTotalRunningAndStageInstances();
             int target = Math.min(maximumInstances, current + amount);
             if (target > current) {
                 LOG.info("Scaling service {} up by {} instances to {} total replicas", serviceReference, amount, target);
@@ -146,7 +146,7 @@ public class DockerSwarmServiceScaler implements ServiceScaler
             DockerSwarmService serviceItem = getServiceAsObject(serviceReference);
             InstanceInfo instanceInfo = serviceItem.getInstanceInformation();
 
-            int current = instanceInfo.getTotalInstances();
+            int current = instanceInfo.getTotalRunningAndStageInstances();
             if (current == 0) {
                 // already at 0 instances, just leave.
                 return;
@@ -180,7 +180,8 @@ public class DockerSwarmServiceScaler implements ServiceScaler
     {
         try {
             InstanceInfo instanceInfo = getServiceInstanceInfo(serviceReference);
-            LOG.trace("getInstanceInfo for serviceReference: {%s} returned \r\n getTotalInstances: ", instanceInfo.getTotalInstances());
+            LOG.trace("getInstanceInfo for serviceReference: {%s} returned \r\n getTotalInstances: ",
+                      instanceInfo.getTotalRunningAndStageInstances());
             return instanceInfo;
         } catch (HttpClientException e) {
             throw new ScalerException("Failed to get number of instances of " + serviceReference, e);

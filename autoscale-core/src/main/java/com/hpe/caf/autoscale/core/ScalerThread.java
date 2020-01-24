@@ -158,7 +158,7 @@ public class ScalerThread implements Runnable
     private void scaleUp(final int amount, final InstanceInfo info)
         throws ScalerException
     {
-        LOG.debug("Triggering scale up of service {} by amount {}", serviceRef, amount);
+        LOG.info("Attempting scale up of service {} by amount {}", serviceRef, amount);
         scaler.scaleUp(serviceRef, amount);
         try {
             Thread.sleep(info.getMaxLaunchDelaySeconds());
@@ -181,6 +181,7 @@ public class ScalerThread implements Runnable
             Thread.interrupted();
             throw new RuntimeException(ex);
         }
+        LOG.info("Scale up of service {} by amount {} successful", serviceRef, amount);
         backoff = true;
     }
 

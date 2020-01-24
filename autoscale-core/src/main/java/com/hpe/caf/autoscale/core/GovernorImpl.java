@@ -15,7 +15,6 @@
  */
 package com.hpe.caf.autoscale.core;
 
-import com.google.common.base.Strings;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
@@ -69,7 +68,7 @@ public class GovernorImpl implements Governor {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String selectedVictim = "";
         for (final Map.Entry<String, AdvancedInstanceInfo> possibleVictim : possibleVictims.entrySet()) {
-            if (Strings.isNullOrEmpty(selectedVictim) || possibleVictim.getValue().getPercentageDifference()
+            if (isStringNullOrEmpty(selectedVictim) || possibleVictim.getValue().getPercentageDifference()
                 < instanceInfoMap.getOrDefault(selectedVictim, null).getPercentageDifference()) {
                 if (percentageDifference != -1) {
                     if (possibleVictim.getValue().getPercentageDifference() > percentageDifference
@@ -81,7 +80,7 @@ public class GovernorImpl implements Governor {
                 selectedVictim = possibleVictim.getKey();
             }
         }
-        if (Strings.isNullOrEmpty(selectedVictim)) {
+        if (isStringNullOrEmpty(selectedVictim)) {
             throw new ScalerException("Unable make room as no service was found that could be scaled down.");
         }
         LOG.info("Scaling down service %s to make room for service %s", selectedVictim, serviceRef);
@@ -227,6 +226,11 @@ public class GovernorImpl implements Governor {
                 return false;
             }
         }
+    }
+
+    private static boolean isStringNullOrEmpty(final String string)
+    {
+        return string == null || string.isEmpty();
     }
 
     private final class AdvancedInstanceInfo

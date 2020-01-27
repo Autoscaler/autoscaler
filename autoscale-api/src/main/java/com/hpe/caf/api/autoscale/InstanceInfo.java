@@ -30,12 +30,11 @@ public class InstanceInfo
     private final int instancesStaging;
     private final Collection<ServiceHost> hosts;
     private final int shutdownPriority;
-    private final int maxLaunchDelaySeconds;
     private final int instances;
 
 
     /**
-     * Creates a new InstanceInfo with a service shutdown priority of -1 and a maxLaunchDelay of 0.
+     * Creates a new InstanceInfo with a service shutdown priority of -1.
      * 
      * @param running number of instances running
      * @param staging number of instances in staging
@@ -43,36 +42,7 @@ public class InstanceInfo
      */
     public InstanceInfo(final int running, final int staging, final Collection<ServiceHost> hosts)
     {
-        this(running, staging, running+staging, hosts, 0);
-    }
-
-    /**
-     * Creates a new InstanceInfo with a maxLaunchDelay of 0.
-     * 
-     * @param shutdownPriority the priority of the service, used when making scaling decisions during resource shortages
-     * @param running number of instances running
-     * @param staging number of instances in staging
-     * @param hosts hosts running or staging an instance of this application
-     */
-    public InstanceInfo(final int shutdownPriority, final int running, final int staging,
-                        final Collection<ServiceHost> hosts)
-    {
-        this(running, staging, running+staging, hosts, shutdownPriority, 0);
-    }
-
-    /**
-     * Creates a new InstanceInfo with a service shutdown priority of -1.
-     * 
-     * @param running number of instances running
-     * @param staging number of instances in staging
-     * @param instances The number of instances of the application running, staging or waiting
-     * @param hosts hosts running or staging an instance of this application
-     * @param maxLaunchDelaySeconds the maximum time in seconds this application has taken to launch
-     */
-    public InstanceInfo(final int running, final int staging,  final int instances, final Collection<ServiceHost> hosts,
-                        final int maxLaunchDelaySeconds)
-    {
-        this(running, staging, instances, hosts, -1, maxLaunchDelaySeconds);
+        this(running, staging, hosts, -1, running + staging);
     }
 
     /**
@@ -80,19 +50,17 @@ public class InstanceInfo
      *
      * @param running number of instances running
      * @param staging number of instances in staging
-     * @param instances The number of instances of the application running, staging or waiting
      * @param hosts hosts running or staging an instance of this application
      * @param shutdownPriority the priority of the service, used when making scaling decisions during resource shortages
-     * @param maxLaunchDelaySeconds Max time the app takes to launch in whole seconds
+     * @param instances
      */
-    public InstanceInfo(final int running, final int staging,  final int instances, final Collection<ServiceHost> hosts,
-                        final int shutdownPriority, final int maxLaunchDelaySeconds)
+    public InstanceInfo(final int running, final int staging, final Collection<ServiceHost> hosts, final int shutdownPriority,
+                        final int instances)
     {
         this.instancesRunning = running;
         this.instancesStaging = staging;
         this.hosts = Collections.unmodifiableCollection(Objects.requireNonNull(hosts));
         this.shutdownPriority = shutdownPriority;
-        this.maxLaunchDelaySeconds = maxLaunchDelaySeconds;
         this.instances = instances;
     }
 
@@ -139,14 +107,6 @@ public class InstanceInfo
     public int getShutdownPriority()
     {
         return shutdownPriority;
-    }
-
-    /**
-     * @return the max time in seconds that the app has previously taken to launch
-     */
-    public int getMaxLaunchDelaySeconds()
-    {
-        return maxLaunchDelaySeconds;
     }
     
     /**

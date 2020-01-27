@@ -229,8 +229,8 @@ public class GovernorImpl implements Governor {
 
         private AdvancedInstanceInfo(final InstanceInfo instanceInfo)
         {
-            super(instanceInfo.getInstancesRunning(), instanceInfo.getInstancesStaging(), instanceInfo.getInstances(),
-                  instanceInfo.getHosts(), instanceInfo.getShutdownPriority(), instanceInfo.getMaxLaunchDelaySeconds());
+            super(instanceInfo.getInstancesRunning(), instanceInfo.getInstancesStaging(), instanceInfo.getHosts(),
+                  instanceInfo.getShutdownPriority(), instanceInfo.getInstances());
             this.desiredInstances = 0;
             this.percentageDifference = 0;
         }

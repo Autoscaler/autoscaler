@@ -387,7 +387,7 @@ public class GovernorImplTest {
         governor.register(scalingConfigurationForServiceOne);
         governor.register(scalingConfigurationForServiceTwo);
 
-        final InstanceInfo firstServiceInstanceInfo = new InstanceInfo(1, 0, 0, Collections.emptyList());
+        final InstanceInfo firstServiceInstanceInfo = new InstanceInfo(0, 0, Collections.emptyList(), 1, 0);
         governor.recordInstances(scalingConfigurationForServiceOne.getId(), firstServiceInstanceInfo);
         final InstanceInfo secondServiceInstanceInfo = new InstanceInfo(1, 0, Collections.emptyList());
         governor.recordInstances(scalingConfigurationForServiceTwo.getId(), secondServiceInstanceInfo);

@@ -46,8 +46,6 @@ public class ScalerThread implements Runnable
 
     private final Governor governor;
     private final ResourceMonitoringConfiguration resourceConfig;
-    
-    private long firstAttemptTime;
 
     /**
      * Create a new ScalerThread.
@@ -161,20 +159,22 @@ public class ScalerThread implements Runnable
         LOG.info("Attempting scale up of service {} by amount {}", serviceRef, amount);
         scaler.scaleUp(serviceRef, amount);
         try {
-            Thread.sleep(info.getMaxLaunchDelaySeconds());
             InstanceInfo refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
-            this.firstAttemptTime = System.currentTimeMillis();
-            Thread.sleep(refreshedInsanceInfo.getMaxLaunchDelaySeconds());
-            int instanceDifferences = refreshedInsanceInfo.getInstances() - refreshedInsanceInfo.getTotalRunningAndStageInstances();
             while (refreshedInsanceInfo.getInstances() > refreshedInsanceInfo.getTotalRunningAndStageInstances()) {
-                Thread.sleep(instanceDifferences * 10 * 1000);
-                refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
-                if (refreshedInsanceInfo.getInstances() > refreshedInsanceInfo.getTotalRunningAndStageInstances()) {
-                    if (!governor.makeRoom(serviceRef) || timelimitExceeded()) {
+                boolean instanceMet = false;
+                for (int i = 0; i <= 6; i++) {
+                    Thread.sleep(i * 10 * 1000);
+                    refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
+                    if (refreshedInsanceInfo.getTotalRunningAndStageInstances() == refreshedInsanceInfo.getInstances()) {
+                        instanceMet = true;
+                        break;
+                    }
+                }
+                if (instanceMet) {
+                    if (!governor.makeRoom(serviceRef)) {
                         throw new ScalerException(
                             "Unable to scale service " + serviceRef + " due to an inability to make room for it on the orchestrator.");
                     }
-                    instanceDifferences = refreshedInsanceInfo.getInstances() - refreshedInsanceInfo.getTotalRunningAndStageInstances();
                 }
             }
         } catch (final InterruptedException ex) {
@@ -250,10 +250,5 @@ public class ScalerThread implements Runnable
             return 1;
         }
         return 0;
-    }
-
-    private boolean timelimitExceeded()
-    {
-        return (System.currentTimeMillis() - firstAttemptTime) >= (2 * 60 * 1000);
     }
 }

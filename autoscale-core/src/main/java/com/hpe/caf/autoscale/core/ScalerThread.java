@@ -164,7 +164,7 @@ public class ScalerThread implements Runnable
                 boolean instanceMet = false;
                 for (int i = 1; i <= 6; i++) {
                     final int sleep = i * 10 * 1000;
-                    LOG.info("Sleeping for {} to allow instances to come up.", sleep);
+                    LOG.debug("Sleeping for {} to allow instances to come up.", sleep);
                     Thread.sleep(sleep);
                     refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
                     if (refreshedInsanceInfo.getTotalRunningAndStageInstances() == refreshedInsanceInfo.getInstances()) {
@@ -180,8 +180,11 @@ public class ScalerThread implements Runnable
                 }
             }
         } catch (final InterruptedException ex) {
-            Thread.interrupted();
-            throw new RuntimeException(ex);
+            // Set interupted flag
+            Thread.currentThread().interrupt();
+            // Throw exception to suppress further calls from current scaler thread until after scaler thread refresh
+            throw new ScalerException("An error occured during an attempt to have the main thread sleep before rechecking the number"
+                + " of instance present for the application.", ex);
         }
         LOG.info("Scale up of service {} by amount {} successful", serviceRef, amount);
         backoff = true;

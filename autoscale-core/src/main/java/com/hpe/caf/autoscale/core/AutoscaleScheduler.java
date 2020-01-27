@@ -203,8 +203,8 @@ public class AutoscaleScheduler implements HealthReporter
                                                                                    alerter,
                                                                                    resourceConfig);
         governor.registerListener(config.getId(), scalerThread);
-        ScheduledFuture future = scheduler.scheduleWithFixedDelay(scalerThread,
-                                                                  initialDelay, config.getInterval(), TimeUnit.SECONDS);
+        final ScheduledFuture future = scheduler.scheduleWithFixedDelay(scalerThread, initialDelay, config.getInterval(),
+                                                                        TimeUnit.SECONDS);
         scheduledServices.put(config.getId(), new ScheduledScalingService(config, future));
     }
 

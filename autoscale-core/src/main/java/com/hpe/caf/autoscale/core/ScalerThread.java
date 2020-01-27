@@ -123,7 +123,7 @@ public class ScalerThread implements Runnable
                      action.getOperation(), serviceRef, action.getAmount());
             switch (action.getOperation()) {
                 case SCALE_UP:
-                    scaleUp(action.getAmount(), instances);
+                    scaleUp(action.getAmount());
                     break;
                 case SCALE_DOWN:
                     scaleDown(action.getAmount());
@@ -153,7 +153,7 @@ public class ScalerThread implements Runnable
      * @param amount the requested number of instances to scale up by
      * @throws ScalerException if the scaling operation fails
      */
-    private void scaleUp(final int amount, final InstanceInfo info)
+    private void scaleUp(final int amount)
         throws ScalerException
     {
         LOG.info("Attempting scale up of service {} by amount {}", serviceRef, amount);
@@ -162,15 +162,17 @@ public class ScalerThread implements Runnable
             InstanceInfo refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
             while (refreshedInsanceInfo.getInstances() > refreshedInsanceInfo.getTotalRunningAndStageInstances()) {
                 boolean instanceMet = false;
-                for (int i = 0; i <= 6; i++) {
-                    Thread.sleep(i * 10 * 1000);
+                for (int i = 1; i <= 6; i++) {
+                    final int sleep = i * 10 * 1000;
+                    LOG.info("Sleeping for {} to allow instances to come up.", sleep);
+                    Thread.sleep(sleep);
                     refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
                     if (refreshedInsanceInfo.getTotalRunningAndStageInstances() == refreshedInsanceInfo.getInstances()) {
                         instanceMet = true;
                         break;
                     }
                 }
-                if (instanceMet) {
+                if (!instanceMet) {
                     if (!governor.makeRoom(serviceRef)) {
                         throw new ScalerException(
                             "Unable to scale service " + serviceRef + " due to an inability to make room for it on the orchestrator.");

@@ -54,10 +54,8 @@ interface Governor {
      *
      * @param serviceRef the named reference to the service
      * @return True or False based on if the governor was able to make room for the service
-     * throws ScalerException when orchestrator is unable to scale down another service to make room or if there is no other service that
-     * can be scaled down to make room.
      */
-    boolean makeRoom(String serviceRef) throws ScalerException;
+    boolean makeRoom(String serviceRef);
 
     /**
      *

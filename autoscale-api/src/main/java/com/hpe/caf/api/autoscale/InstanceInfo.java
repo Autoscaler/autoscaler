@@ -155,5 +155,5 @@ public class InstanceInfo
     public int getInstances()
     {
         return this.instances;
-    }
+    }  
 }

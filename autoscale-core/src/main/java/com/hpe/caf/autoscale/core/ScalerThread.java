@@ -197,6 +197,8 @@ public class ScalerThread implements Runnable
     {
         LOG.info("Triggering scale down of service {} by amount {}", serviceRef, amount);
         scaler.scaleDown(serviceRef, amount);
+        final InstanceInfo info = scaler.getInstanceInfo(serviceRef);
+        governor.recordInstances(serviceRef, info);
         backoff = true;
     }
 

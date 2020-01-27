@@ -24,6 +24,7 @@ import java.util.HashMap;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ public class GovernorImpl implements Governor {
     }
 
     @Override
-    public boolean makeRoom(final String serviceRef) throws ScalerException
+    public boolean makeRoom(final String serviceRef)
     {
         final AdvancedInstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(serviceRef, null);
         if (lastInstanceInfo == null) {
@@ -62,17 +63,20 @@ public class GovernorImpl implements Governor {
         }
         final double percentageDifference = lastInstanceInfo.getPercentageDifference();
         final Map<String, AdvancedInstanceInfo> possibleVictims = instanceInfoMap.entrySet().stream()
-            .filter(e -> e.getValue().getPercentageDifference() >= 0)
-            .filter(e -> (percentageDifference < 0)
-            || (e.getValue().getPercentageDifference() > percentageDifference
-            || scalingConfigurationMap.get(e.getKey()).getMinInstances() == e.getValue().getTotalRunningAndStageInstances()))
+            .filter(e -> e.getValue().getPercentageDifference() > percentageDifference
+            || scalingConfigurationMap.get(e.getKey()).getMinInstances() == e.getValue().getTotalRunningAndStageInstances())
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         final Map.Entry<String, AdvancedInstanceInfo> victim = possibleVictims.entrySet().stream().findFirst().orElse(null);
         if (victim == null) {
-            throw new ScalerException("Unable make room as no service was found that could be scaled down.");
+            return false;
         }
-        LOG.info("Scaling down service %s to make room for service %s", victim.getKey(), serviceRef);
-        scalerThreads.get(victim.getKey()).scaleDownNow();
+        LOG.info("Attempting to scale down service {} to make room for service {}", victim.getKey(), serviceRef);
+        try {
+            scalerThreads.get(victim.getKey()).scaleDownNow();
+        } catch (final ScalerException ex) {
+            LOG.error("Unable to scale down {} to make room for {} due to exception.", victim.getKey(), serviceRef, ex);
+            return false;
+        }
         return true;
     }
 
@@ -110,7 +114,7 @@ public class GovernorImpl implements Governor {
         if (lastInstanceInfo == null) {
             return action;
         }
-        lastInstanceInfo.setDesiredInstances(action.getAmount());
+        lastInstanceInfo.setDesiredInstances(action);
         lastInstanceInfo.setPercentageDifference();
         final boolean otherServicesMinimumInstancesMet = otherServicesMinimumInstancesMet(serviceRef, currentMemoryLimitStage);
 
@@ -220,7 +224,6 @@ public class GovernorImpl implements Governor {
 
     private static final class AdvancedInstanceInfo extends InstanceInfo
     {
-        private final InstanceInfo instanceInfo;
         private int desiredInstances;
         private double percentageDifference;
 
@@ -228,7 +231,6 @@ public class GovernorImpl implements Governor {
         {
             super(instanceInfo.getInstancesRunning(), instanceInfo.getInstancesStaging(), instanceInfo.getInstances(),
                   instanceInfo.getHosts(), instanceInfo.getShutdownPriority(), instanceInfo.getMaxLaunchDelaySeconds());
-            this.instanceInfo = instanceInfo;
             this.desiredInstances = 0;
             this.percentageDifference = 0;
         }
@@ -238,9 +240,19 @@ public class GovernorImpl implements Governor {
             return desiredInstances;
         }
 
-        public void setDesiredInstances(final int desiredInstances)
+        public void setDesiredInstances(final ScalingAction action)
         {
-            this.desiredInstances = desiredInstances;
+            switch (action.getOperation()) {
+                case NONE:
+                    this.desiredInstances = getTotalRunningAndStageInstances();
+                    break;
+                case SCALE_UP:
+                    this.desiredInstances = getInstancesRunning() + action.getAmount();
+                    break;
+                case SCALE_DOWN:
+                    this.desiredInstances = getInstancesRunning() - action.getAmount();
+                    break;
+            }
         }
 
         public double getPercentageDifference()
@@ -249,15 +261,33 @@ public class GovernorImpl implements Governor {
         }
 
         /**
-         * Calculates the percentage difference between the current number of instances and the desired number of instances to fullfil the
-         * workload currently on the service in the next five minutes.
+         * Calculates the relative difference between the current number of instances running and the desired number of instances required 
+         * to fullfil the workload currently on the service within the next five minutes.
+         * 
+         * Example:
+         * 
+         * If a worker currently has 5 running instances and it desires to have 4 based on its workload at present then it will have a 
+         * relative difference of 0.8
+         * 
+         * Further examples can be found below.
+         * 
+         * |-------------------|-------------------|-----------------------------------------|
+         * | Current Instances | Desired Instances | Relative Difference (Desired / Current) |
+         * |-------------------|-------------------|-----------------------------------------|
+         * |        5          |        4          |                   0.8                   |
+         * |        5          |        5          |                   1                     |
+         * |        5          |        15         |                   3                     |
+         * |        5          |        0          |                   0                     |
+         * |        0          |        5          |           Positive Infinity             |
+         * |        0          |        0          |           Positive Infinity             |
+         * |-------------------|-------------------|-----------------------------------------|
+         * 
          */
         public void setPercentageDifference()
         {
-            this.percentageDifference = instanceInfo.getTotalRunningAndStageInstances() != 0 && this.desiredInstances != 0
-                ? (this.desiredInstances - instanceInfo.getTotalRunningAndStageInstances())
-                / instanceInfo.getTotalRunningAndStageInstances()
-                : -1;
+            this.percentageDifference = getInstancesRunning() == 0 && this.desiredInstances == 0
+                ? 1.0 / 0
+                : (double) this.desiredInstances / (double) getInstancesRunning();
         }
     }
 }

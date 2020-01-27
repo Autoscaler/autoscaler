@@ -20,8 +20,6 @@ import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import com.hpe.caf.api.autoscale.ScalingOperation;
-import com.hpe.caf.api.autoscale.ServiceHost;
-import java.util.Collection;
 import java.util.HashMap;
 
 import java.util.Map;
@@ -64,27 +62,17 @@ public class GovernorImpl implements Governor {
         }
         final double percentageDifference = lastInstanceInfo.getPercentageDifference();
         final Map<String, AdvancedInstanceInfo> possibleVictims = instanceInfoMap.entrySet().stream()
-            .filter(e -> e.getValue().getPercentageDifference() > -1)
+            .filter(e -> e.getValue().getPercentageDifference() >= 0)
+            .filter(e -> (percentageDifference < 0)
+            || (e.getValue().getPercentageDifference() > percentageDifference
+            || scalingConfigurationMap.get(e.getKey()).getMinInstances() == e.getValue().getTotalRunningAndStageInstances()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        String selectedVictim = "";
-        for (final Map.Entry<String, AdvancedInstanceInfo> possibleVictim : possibleVictims.entrySet()) {
-            if (isStringNullOrEmpty(selectedVictim) || possibleVictim.getValue().getPercentageDifference()
-                < instanceInfoMap.getOrDefault(selectedVictim, null).getPercentageDifference()) {
-                if (percentageDifference != -1) {
-                    if (possibleVictim.getValue().getPercentageDifference() > percentageDifference
-                        || scalingConfigurationMap.get(possibleVictim.getKey()).getMinInstances()
-                        == possibleVictim.getValue().getTotalRunningAndStageInstances()) {
-                        continue;
-                    }
-                }
-                selectedVictim = possibleVictim.getKey();
-            }
-        }
-        if (isStringNullOrEmpty(selectedVictim)) {
+        final Map.Entry<String, AdvancedInstanceInfo> victim = possibleVictims.entrySet().stream().findFirst().orElse(null);
+        if (victim == null) {
             throw new ScalerException("Unable make room as no service was found that could be scaled down.");
         }
-        LOG.info("Scaling down service %s to make room for service %s", selectedVictim, serviceRef);
-        scalerThreads.get(selectedVictim).scaleDownNow();
+        LOG.info("Scaling down service %s to make room for service %s", victim.getKey(), serviceRef);
+        scalerThreads.get(victim.getKey()).scaleDownNow();
         return true;
     }
 
@@ -122,6 +110,8 @@ public class GovernorImpl implements Governor {
         if (lastInstanceInfo == null) {
             return action;
         }
+        lastInstanceInfo.setDesiredInstances(action.getAmount());
+        lastInstanceInfo.setPercentageDifference();
         final boolean otherServicesMinimumInstancesMet = otherServicesMinimumInstancesMet(serviceRef, currentMemoryLimitStage);
 
         switch(action.getOperation()){
@@ -228,12 +218,7 @@ public class GovernorImpl implements Governor {
         }
     }
 
-    private static boolean isStringNullOrEmpty(final String string)
-    {
-        return string == null || string.isEmpty();
-    }
-
-    private final class AdvancedInstanceInfo
+    private static final class AdvancedInstanceInfo extends InstanceInfo
     {
         private final InstanceInfo instanceInfo;
         private int desiredInstances;
@@ -241,38 +226,11 @@ public class GovernorImpl implements Governor {
 
         private AdvancedInstanceInfo(final InstanceInfo instanceInfo)
         {
+            super(instanceInfo.getInstancesRunning(), instanceInfo.getInstancesStaging(), instanceInfo.getInstances(),
+                  instanceInfo.getHosts(), instanceInfo.getShutdownPriority(), instanceInfo.getMaxLaunchDelaySeconds());
             this.instanceInfo = instanceInfo;
-        }
-
-        private AdvancedInstanceInfo(final InstanceInfo instanceInfo, final int desiredInstances)
-        {
-            this.instanceInfo = instanceInfo;
-            this.desiredInstances = desiredInstances;
-        }
-
-        public Collection<ServiceHost> getHosts()
-        {
-            return instanceInfo.getHosts();
-        }
-
-        public int getInstancesRunning()
-        {
-            return instanceInfo.getInstancesRunning();
-        }
-
-        public int getInstancesStaging()
-        {
-            return instanceInfo.getInstancesStaging();
-        }
-
-        public int getTotalRunningAndStageInstances()
-        {
-            return instanceInfo.getTotalRunningAndStageInstances();
-        }
-
-        public int getShutdownPriority()
-        {
-            return instanceInfo.getShutdownPriority();
+            this.desiredInstances = 0;
+            this.percentageDifference = 0;
         }
 
         public int getDesiredInstances()
@@ -290,9 +248,16 @@ public class GovernorImpl implements Governor {
             return percentageDifference;
         }
 
-        public void setPercentageDifference(final double percentageDifference)
+        /**
+         * Calculates the percentage difference between the current number of instances and the desired number of instances to fullfil the
+         * workload currently on the service in the next five minutes.
+         */
+        public void setPercentageDifference()
         {
-            this.percentageDifference = percentageDifference;
+            this.percentageDifference = instanceInfo.getTotalRunningAndStageInstances() != 0 && this.desiredInstances != 0
+                ? (this.desiredInstances - instanceInfo.getTotalRunningAndStageInstances())
+                / instanceInfo.getTotalRunningAndStageInstances()
+                : -1;
         }
     }
 }

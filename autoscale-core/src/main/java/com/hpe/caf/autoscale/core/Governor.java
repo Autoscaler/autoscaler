@@ -28,6 +28,10 @@ import com.hpe.caf.api.autoscale.ScalingConfiguration;
  * As services are scheduled for scaling their scaling configuration is registered with the governor.
  * When information regarding the number of running instances is obtained it is recorded with with the governor.
  * A ScalingThread will determine the ScalingAction and then ask the Governor to review this scaling request.
+ * 
+ * If the ScalingTread is unable to scale up another instance of its service that was approved by the governor due to lack of resources
+ * the scaling thread can request that the governor make room for the new service by requesting that another service reduces its 
+ * instances.
  */
 interface Governor {
     /**

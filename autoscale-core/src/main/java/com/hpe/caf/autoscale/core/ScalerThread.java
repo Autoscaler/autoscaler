@@ -47,7 +47,7 @@ public class ScalerThread implements Runnable
     private final Governor governor;
     private final ResourceMonitoringConfiguration resourceConfig;
     
-    long firstAttempt;
+    private long firstAttemptTime;
 
     /**
      * Create a new ScalerThread.
@@ -163,7 +163,7 @@ public class ScalerThread implements Runnable
         try {
             Thread.sleep(info.getMaxLaunchDelaySeconds());
             InstanceInfo refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
-            this.firstAttempt = System.currentTimeMillis();
+            this.firstAttemptTime = System.currentTimeMillis();
             Thread.sleep(refreshedInsanceInfo.getMaxLaunchDelaySeconds());
             int instanceDifferences = refreshedInsanceInfo.getInstances() - refreshedInsanceInfo.getTotalRunningAndStageInstances();
             while (refreshedInsanceInfo.getInstances() > refreshedInsanceInfo.getTotalRunningAndStageInstances()) {
@@ -252,6 +252,6 @@ public class ScalerThread implements Runnable
 
     private boolean timelimitExceeded()
     {
-        return (System.currentTimeMillis() - firstAttempt) >= (2 * 60 * 1000);
+        return (System.currentTimeMillis() - firstAttemptTime) >= (2 * 60 * 1000);
     }
 }

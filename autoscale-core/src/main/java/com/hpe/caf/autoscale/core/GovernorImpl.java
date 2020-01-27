@@ -63,11 +63,13 @@ public class GovernorImpl implements Governor {
         }
         final double percentageDifference = lastInstanceInfo.getPercentageDifference();
         final Map<String, AdvancedInstanceInfo> possibleVictims = instanceInfoMap.entrySet().stream()
-            .filter(e -> e.getValue().getPercentageDifference() > percentageDifference
-            || scalingConfigurationMap.get(e.getKey()).getMinInstances() == e.getValue().getTotalRunningAndStageInstances())
+            .filter(e -> e.getValue().getPercentageDifference() < percentageDifference
+            && scalingConfigurationMap.get(e.getKey()).getMinInstances() < e.getValue().getTotalRunningAndStageInstances())
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         final Map.Entry<String, AdvancedInstanceInfo> victim = possibleVictims.entrySet().stream().findFirst().orElse(null);
         if (victim == null) {
+            LOG.info("Unable to make room for application {} as all other applications have a higher percentage difference of current "
+                + "instances to their desired instances", serviceRef);
             return false;
         }
         LOG.info("Attempting to scale down service {} to make room for service {}", victim.getKey(), serviceRef);

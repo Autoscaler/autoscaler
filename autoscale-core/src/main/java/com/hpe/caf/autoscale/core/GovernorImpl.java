@@ -55,28 +55,28 @@ public class GovernorImpl implements Governor {
     }
 
     @Override
-    public boolean makeRoom(final String serviceRef)
+    public boolean freeUpResourcesForService(final String serviceRef)
     {
         final AdvancedInstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(serviceRef, null);
         if (lastInstanceInfo == null) {
             return false;
         }
         final double percentageDifference = lastInstanceInfo.getPercentageDifference();
-        final Map<String, AdvancedInstanceInfo> possibleVictims = instanceInfoMap.entrySet().stream()
+        final Map<String, AdvancedInstanceInfo> candidates = instanceInfoMap.entrySet().stream()
             .filter(e -> e.getValue().getPercentageDifference() < percentageDifference
             && scalingConfigurationMap.get(e.getKey()).getMinInstances() < e.getValue().getTotalRunningAndStageInstances())
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        final Map.Entry<String, AdvancedInstanceInfo> victim = possibleVictims.entrySet().stream().findFirst().orElse(null);
-        if (victim == null) {
+        final Map.Entry<String, AdvancedInstanceInfo> candidate = candidates.entrySet().stream().findFirst().orElse(null);
+        if (candidate == null) {
             LOG.info("Unable to make room for application {} as all other applications have a higher percentage difference of current "
                 + "instances to their desired instances", serviceRef);
             return false;
         }
-        LOG.info("Attempting to scale down service {} to make room for service {}", victim.getKey(), serviceRef);
+        LOG.info("Attempting to scale down service {} to make room for service {}", candidate.getKey(), serviceRef);
         try {
-            scalerThreads.get(victim.getKey()).scaleDownNow();
+            scalerThreads.get(candidate.getKey()).scaleDownNow();
         } catch (final ScalerException ex) {
-            LOG.error("Unable to scale down {} to make room for {} due to exception.", victim.getKey(), serviceRef, ex);
+            LOG.error("Unable to scale down {} to make room for {} due to exception.", candidate.getKey(), serviceRef, ex);
             return false;
         }
         return true;
@@ -287,7 +287,7 @@ public class GovernorImpl implements Governor {
          */
         public void setPercentageDifference()
         {
-            this.percentageDifference = getInstancesRunning() == 0 && this.desiredInstances == 0
+            this.percentageDifference = getTotalRunningAndStageInstances() == 0 && this.desiredInstances == 0
                 ? 1.0 / 0
                 : (double) this.desiredInstances / (double) getInstancesRunning();
         }

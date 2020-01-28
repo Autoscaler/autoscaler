@@ -173,7 +173,7 @@ public class ScalerThread implements Runnable
                     }
                 }
                 if (!instanceMet) {
-                    if (!governor.makeRoom(serviceRef)) {
+                    if (!governor.freeUpResourcesForService(serviceRef)) {
                         throw new ScalerException(
                             "Unable to scale service " + serviceRef + " due to an inability to make room for it on the orchestrator.");
                     }

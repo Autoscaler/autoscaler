@@ -16,7 +16,6 @@
 package com.hpe.caf.autoscale.core;
 
 import com.hpe.caf.api.autoscale.InstanceInfo;
-import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
 
@@ -52,10 +51,15 @@ interface Governor {
 
     /**
      *
+     * When called the Governor will attempt to reduce the resources being consumed by other applications to free them up for the 
+     * increased number of the supplied service. The Governor will determine which applications have the lowest relative difference 
+     * between the number of instances the service would like to have based on workload and the current number of running instances. 
+     * The service with the lowest relative difference will be scaled down to make room for the new service to start.
+     * 
      * @param serviceRef the named reference to the service
      * @return True or False based on if the governor was able to make room for the service
      */
-    boolean makeRoom(String serviceRef);
+    boolean freeUpResourcesForService(String serviceRef);
 
     /**
      *

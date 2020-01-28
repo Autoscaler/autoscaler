@@ -94,7 +94,9 @@ public class GovernorImpl implements Governor {
 
     @Override
     public void recordInstances(String serviceRef, InstanceInfo instances) {
-        instanceInfoMap.put(serviceRef, new AdvancedInstanceInfo(instances));
+        final AdvancedInstanceInfo advancedInstanceInfo = new AdvancedInstanceInfo(instances);
+        advancedInstanceInfo.setPercentageDifference();
+        instanceInfoMap.put(serviceRef, advancedInstanceInfo);
     }
 
     @Override

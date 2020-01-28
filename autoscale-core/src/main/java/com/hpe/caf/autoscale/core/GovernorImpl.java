@@ -24,7 +24,6 @@ import java.util.HashMap;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -289,7 +288,7 @@ public class GovernorImpl implements Governor {
         {
             this.percentageDifference = getTotalRunningAndStageInstances() == 0 && this.desiredInstances == 0
                 ? 1.0 / 0
-                : (double) this.desiredInstances / (double) getInstancesRunning();
+                : (double) this.desiredInstances / (double) getTotalRunningAndStageInstances();
         }
     }
 }

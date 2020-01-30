@@ -116,7 +116,6 @@ public class GovernorImpl implements Governor {
             return action;
         }
         lastInstanceInfo.setDesiredInstances(action);
-        lastInstanceInfo.setPercentageDifference();
         final boolean otherServicesMinimumInstancesMet = otherServicesMinimumInstancesMet(serviceRef, currentMemoryLimitStage);
 
         switch(action.getOperation()){
@@ -226,14 +225,12 @@ public class GovernorImpl implements Governor {
     private static final class AdvancedInstanceInfo extends InstanceInfo
     {
         private int desiredInstances;
-        private double percentageDifference;
 
         private AdvancedInstanceInfo(final InstanceInfo instanceInfo)
         {
             super(instanceInfo.getInstancesRunning(), instanceInfo.getInstancesStaging(), instanceInfo.getHosts(),
                   instanceInfo.getShutdownPriority(), instanceInfo.getInstances());
             this.desiredInstances = 0;
-            this.percentageDifference = 0;
         }
 
         public int getDesiredInstances()
@@ -254,11 +251,6 @@ public class GovernorImpl implements Governor {
                     this.desiredInstances = getInstancesRunning() - action.getAmount();
                     break;
             }
-        }
-
-        public double getPercentageDifference()
-        {
-            return percentageDifference;
         }
 
         /**
@@ -284,11 +276,11 @@ public class GovernorImpl implements Governor {
          * |-------------------|-------------------|-----------------------------------------|
          * 
          */
-        public void setPercentageDifference()
+        public double getPercentageDifference()
         {
-            this.percentageDifference = getTotalRunningAndStageInstances() == 0 && this.desiredInstances == 0
+            return getTotalRunningAndStageInstances() == 0 && this.desiredInstances == 0
                 ? 1.0 / 0
-                : (double) this.desiredInstances / (double) getTotalRunningAndStageInstances();
+                : (double) this.desiredInstances / getTotalRunningAndStageInstances();
         }
     }
 }

@@ -202,6 +202,15 @@ public class ScalerThread implements Runnable
     {
         LOG.info("Triggering scale down of service {} by amount {}", serviceRef, amount);
         scaler.scaleDown(serviceRef, amount);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            // Set interupted flag
+            Thread.currentThread().interrupt();
+            // Throw exception to suppress further calls from current scaler thread until after scaler thread refresh
+            throw new ScalerException("An error occured during an attempt to have the main thread sleep before rechecking the number"
+                + " of instance present for the application.", ex);
+        }
         final InstanceInfo info = scaler.getInstanceInfo(serviceRef);
         governor.recordInstances(serviceRef, info);
         backoff = true;
@@ -210,9 +219,6 @@ public class ScalerThread implements Runnable
     public void scaleDownNow() throws ScalerException
     {
         scaleDown(1);
-        final InstanceInfo info = scaler.getInstanceInfo(serviceRef);
-        governor.recordInstances(serviceRef, info);
-        backoff = true;
     }
 
     private boolean handleMemoryLoadIssues(final InstanceInfo instances, final double currentMemoryLoadLimit, final int shutdownPriority)

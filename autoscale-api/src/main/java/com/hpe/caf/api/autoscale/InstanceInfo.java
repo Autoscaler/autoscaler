@@ -52,7 +52,7 @@ public class InstanceInfo
      * @param staging number of instances in staging
      * @param hosts hosts running or staging an instance of this application
      * @param shutdownPriority the priority of the service, used when making scaling decisions during resource shortages
-     * @param instances
+     * @param instances The total number of instances registered against the app including all running, staging and waiting
      */
     public InstanceInfo(final int running, final int staging, final Collection<ServiceHost> hosts, final int shutdownPriority,
                         final int instances)
@@ -110,7 +110,8 @@ public class InstanceInfo
     }
     
     /**
-     * @return the number of instances of this application running
+     * @return the number of instances of this application that are registered against this app in marathon, this will include all 
+     * instances running, staging and waiting.
      */
     public int getInstances()
     {

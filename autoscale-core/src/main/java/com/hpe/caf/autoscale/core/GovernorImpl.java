@@ -20,11 +20,11 @@ import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import com.hpe.caf.api.autoscale.ScalingOperation;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,26 +56,29 @@ public class GovernorImpl implements Governor {
     @Override
     public boolean freeUpResourcesForService(final String serviceRef)
     {
-        final AdvancedInstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(serviceRef, null);
+        final AdvancedInstanceInfo lastInstanceInfo = instanceInfoMap.get(serviceRef);
         if (lastInstanceInfo == null) {
+            LOG.error("Failed to retrieve service information for {} from internal map", serviceRef);
             return false;
         }
-        final double percentageDifference = lastInstanceInfo.getPercentageDifference();
-        final Map<String, AdvancedInstanceInfo> candidates = instanceInfoMap.entrySet().stream()
-            .filter(e -> e.getValue().getPercentageDifference() < percentageDifference
-            && scalingConfigurationMap.get(e.getKey()).getMinInstances() < e.getValue().getTotalRunningAndStageInstances())
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        final Map.Entry<String, AdvancedInstanceInfo> candidate = candidates.entrySet().stream().findFirst().orElse(null);
+        final double relativeDifference = lastInstanceInfo.getRelativeDifference();
+        final String candidate = instanceInfoMap.entrySet().stream()
+            .filter(e -> e.getValue().getRelativeDifference() < relativeDifference
+                && scalingConfigurationMap.get(e.getKey()).getMinInstances() < e.getValue().getTotalRunningAndStageInstances())
+            .sorted(Comparator.comparingDouble(e -> e.getValue().getRelativeDifference()))
+            .map(e -> e.getKey())
+            .findFirst()
+            .orElse(null);
         if (candidate == null) {
             LOG.info("Unable to make room for application {} as all other applications have a higher percentage difference of current "
                 + "instances to their desired instances", serviceRef);
             return false;
         }
-        LOG.info("Attempting to scale down service {} to make room for service {}", candidate.getKey(), serviceRef);
+        LOG.info("Attempting to scale down service {} to make room for service {}...", candidate, serviceRef);
         try {
-            scalerThreads.get(candidate.getKey()).scaleDownNow();
+            scalerThreads.get(candidate).scaleDownNow();
         } catch (final ScalerException ex) {
-            LOG.error("Unable to scale down {} to make room for {} due to exception.", candidate.getKey(), serviceRef, ex);
+            LOG.error("Unable to scale down {} to make room for {} due to exception.", candidate, serviceRef, ex);
             return false;
         }
         return true;
@@ -256,9 +259,9 @@ public class GovernorImpl implements Governor {
         /**
          * Calculates the relative difference between the current number of instances running and the desired number of instances required 
          * to fullfil the workload currently on the service within the next five minutes.
-         * 
+         * <p>
          * Example:
-         * 
+         * <pre>
          * If a worker currently has 5 running instances and it desires to have 4 based on its workload at present then it will have a 
          * relative difference of 0.8
          * 
@@ -267,16 +270,16 @@ public class GovernorImpl implements Governor {
          * |-------------------|-------------------|-----------------------------------------|
          * | Current Instances | Desired Instances | Relative Difference (Desired / Current) |
          * |-------------------|-------------------|-----------------------------------------|
-         * |        5          |        4          |                   0.8                   |
+         * |        5          |        4          |                  0.8                    |
          * |        5          |        5          |                   1                     |
          * |        5          |        15         |                   3                     |
          * |        5          |        0          |                   0                     |
          * |        0          |        5          |           Positive Infinity             |
          * |        0          |        0          |           Positive Infinity             |
          * |-------------------|-------------------|-----------------------------------------|
-         * 
+         * </pre>
          */
-        public double getPercentageDifference()
+        public double getRelativeDifference()
         {
             return getTotalRunningAndStageInstances() == 0 && this.desiredInstances == 0
                 ? 1.0 / 0

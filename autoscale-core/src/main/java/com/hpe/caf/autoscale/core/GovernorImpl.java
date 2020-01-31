@@ -16,12 +16,17 @@
 package com.hpe.caf.autoscale.core;
 
 import com.hpe.caf.api.autoscale.InstanceInfo;
+import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import com.hpe.caf.api.autoscale.ScalingOperation;
+import java.util.Comparator;
+import java.util.HashMap;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This object implements a cautious approach to governing the scaling requests for a service.
@@ -30,11 +35,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GovernorImpl implements Governor {
 
     private static final double reduceToPercentage = 0.90;
-    private final Map<String, InstanceInfo> instanceInfoMap;
+    private final Map<String, ScalerThread> scalerThreads;
+    private final Map<String, AdvancedInstanceInfo> instanceInfoMap;
     private final Map<String, ScalingConfiguration> scalingConfigurationMap;
     private final int stageOneShutdownPriorityLimit;
     private final int stageTwoShutdownPriorityLimit;
     private final int stageThreeShutdownPriorityLimit;
+    private static final Logger LOG = LoggerFactory.getLogger(GovernorImpl.class);
 
     public GovernorImpl(final int stageOneLimit, final int stageTwoLimit, final int stageThreeLimit)
     {
@@ -43,6 +50,38 @@ public class GovernorImpl implements Governor {
         this.stageOneShutdownPriorityLimit = stageOneLimit;
         this.stageTwoShutdownPriorityLimit = stageTwoLimit;
         this.stageThreeShutdownPriorityLimit = stageThreeLimit;
+        this.scalerThreads = new HashMap<>();
+    }
+
+    @Override
+    public boolean freeUpResourcesForService(final String serviceRef)
+    {
+        final AdvancedInstanceInfo lastInstanceInfo = instanceInfoMap.get(serviceRef);
+        if (lastInstanceInfo == null) {
+            LOG.error("Failed to retrieve service information for {} from internal map", serviceRef);
+            return false;
+        }
+        final double relativeDifference = lastInstanceInfo.getRelativeDifference();
+        final String candidate = instanceInfoMap.entrySet().stream()
+            .filter(e -> e.getValue().getRelativeDifference() < relativeDifference
+                && scalingConfigurationMap.get(e.getKey()).getMinInstances() < e.getValue().getTotalRunningAndStageInstances())
+            .sorted(Comparator.comparingDouble(e -> e.getValue().getRelativeDifference()))
+            .map(e -> e.getKey())
+            .findFirst()
+            .orElse(null);
+        if (candidate == null) {
+            LOG.info("Unable to make room for application {} as all other applications have a higher percentage difference of current "
+                + "instances to their desired instances", serviceRef);
+            return false;
+        }
+        LOG.info("Attempting to scale down service {} to make room for service {}...", candidate, serviceRef);
+        try {
+            scalerThreads.get(candidate).scaleDownNow();
+        } catch (final ScalerException ex) {
+            LOG.error("Unable to scale down {} to make room for {} due to exception.", candidate, serviceRef, ex);
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -51,8 +90,14 @@ public class GovernorImpl implements Governor {
     }
 
     @Override
+    public void registerListener(final String serviceRef, final ScalerThread thread)
+    {
+        scalerThreads.put(serviceRef, thread);
+    }
+
+    @Override
     public void recordInstances(String serviceRef, InstanceInfo instances) {
-        instanceInfoMap.put(serviceRef, instances);
+        instanceInfoMap.put(serviceRef, new AdvancedInstanceInfo(instances));
     }
 
     @Override
@@ -65,7 +110,7 @@ public class GovernorImpl implements Governor {
     public ScalingAction govern(String serviceRef, ScalingAction action, final int currentMemoryLimitStage) {
 
         ScalingConfiguration scalingConfiguration = scalingConfigurationMap.getOrDefault(serviceRef, null);
-        InstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(serviceRef, null);
+        final AdvancedInstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(serviceRef, null);
 
         if(scalingConfiguration==null){
             throw new RuntimeException(String.format("Scaling configuration not found for {%s}", serviceRef));
@@ -73,57 +118,58 @@ public class GovernorImpl implements Governor {
         if (lastInstanceInfo == null) {
             return action;
         }
+        lastInstanceInfo.setDesiredInstances(action);
         final boolean otherServicesMinimumInstancesMet = otherServicesMinimumInstancesMet(serviceRef, currentMemoryLimitStage);
 
         switch(action.getOperation()){
             case NONE: {
-                if (lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()) {
+                if (lastInstanceInfo.getTotalRunningAndStageInstances() < scalingConfiguration.getMinInstances()) {
                     return new ScalingAction(ScalingOperation.SCALE_UP,
-                                             scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalInstances());
-                } else if (lastInstanceInfo.getTotalInstances() > scalingConfiguration.getMaxInstances()) {
+                                             scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances());
+                } else if (lastInstanceInfo.getTotalRunningAndStageInstances() > scalingConfiguration.getMaxInstances()) {
                     return new ScalingAction(ScalingOperation.SCALE_DOWN,
-                                             lastInstanceInfo.getTotalInstances() - scalingConfiguration.getMaxInstances());
+                                             lastInstanceInfo.getTotalRunningAndStageInstances() - scalingConfiguration.getMaxInstances());
                 }
                 break;
             }
             case SCALE_UP:
             {
-                if (lastInstanceInfo.getTotalInstances() > scalingConfiguration.getMaxInstances()) {
+                if (lastInstanceInfo.getTotalRunningAndStageInstances() > scalingConfiguration.getMaxInstances()) {
                     return new ScalingAction(ScalingOperation.SCALE_DOWN,
-                                             lastInstanceInfo.getTotalInstances() - scalingConfiguration.getMaxInstances());
+                                             lastInstanceInfo.getTotalRunningAndStageInstances() - scalingConfiguration.getMaxInstances());
                 } else if (!otherServicesMinimumInstancesMet) {
-                    if (lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()) {
+                    if (lastInstanceInfo.getTotalRunningAndStageInstances() < scalingConfiguration.getMinInstances()) {
                         return new ScalingAction(ScalingOperation.SCALE_UP,
-                                                 scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalInstances());
-                    } else if (lastInstanceInfo.getTotalInstances() == scalingConfiguration.getMinInstances()) {
+                                                 scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances());
+                    } else if (lastInstanceInfo.getTotalRunningAndStageInstances() == scalingConfiguration.getMinInstances()) {
                         return new ScalingAction(ScalingOperation.NONE, 0);
-                    } else if (lastInstanceInfo.getTotalInstances() > scalingConfiguration.getMinInstances()) {
+                    } else if (lastInstanceInfo.getTotalRunningAndStageInstances() > scalingConfiguration.getMinInstances()) {
                         //Gradually reduce the totalInstances by a percentage until Minimums are met.
                         //This should be configurable, however there should be a Governor specific configuration
                         //to allow different Governor implementations to be added without polluting the AutoscaleConfiguration
 
                         int target = Math.max(scalingConfiguration.getMinInstances(),
-                                              (int) Math.floor(lastInstanceInfo.getTotalInstances() * reduceToPercentage));
-                        int amount = lastInstanceInfo.getTotalInstances() - target;
+                                              (int) Math.floor(lastInstanceInfo.getTotalRunningAndStageInstances() * reduceToPercentage));
+                        int amount = lastInstanceInfo.getTotalRunningAndStageInstances() - target;
 
                         return new ScalingAction(ScalingOperation.SCALE_DOWN, amount);
                     }
                 } else {
-                    final int delta = Math.min(scalingConfiguration.getMaxInstances() - lastInstanceInfo.getTotalInstances(),
+                    final int delta = Math.min(scalingConfiguration.getMaxInstances() - lastInstanceInfo.getTotalRunningAndStageInstances(),
                                                 Math.max(0, action.getAmount()));
                     return new ScalingAction(ScalingOperation.SCALE_UP, delta);
                 }
                 break;
             }
             case SCALE_DOWN: {
-                if (lastInstanceInfo.getTotalInstances() == scalingConfiguration.getMinInstances()) {
+                if (lastInstanceInfo.getTotalRunningAndStageInstances() == scalingConfiguration.getMinInstances()) {
                     return new ScalingAction(ScalingOperation.NONE, 0);
-                } else if (lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()) {
+                } else if (lastInstanceInfo.getTotalRunningAndStageInstances() < scalingConfiguration.getMinInstances()) {
                     return new ScalingAction(ScalingOperation.SCALE_UP,
-                                             scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalInstances());
-                } else if ((lastInstanceInfo.getTotalInstances() - action.getAmount()) < scalingConfiguration.getMinInstances()) {
+                                             scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances());
+                } else if ((lastInstanceInfo.getTotalRunningAndStageInstances() - action.getAmount()) < scalingConfiguration.getMinInstances()) {
                     return new ScalingAction(ScalingOperation.SCALE_DOWN,
-                                             lastInstanceInfo.getTotalInstances() - scalingConfiguration.getMinInstances());
+                                             lastInstanceInfo.getTotalRunningAndStageInstances() - scalingConfiguration.getMinInstances());
                 }
                 break;
             }
@@ -142,13 +188,13 @@ public class GovernorImpl implements Governor {
                 continue;
             }
             ScalingConfiguration scalingConfiguration = scalingConfigurationMap.getOrDefault(key, null);
-            InstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(key, null);
+            final AdvancedInstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(key, null);
 
             //If there are no instance info be cautious and assume minimum instances have not been met.
             if (lastInstanceInfo == null) {
                 return false;
             }
-            if(lastInstanceInfo.getTotalInstances() < scalingConfiguration.getMinInstances()){
+            if(lastInstanceInfo.getTotalRunningAndStageInstances() < scalingConfiguration.getMinInstances()){
                 if(shouldBeScaledDown(currentMemoryLimitStage, lastInstanceInfo.getShutdownPriority())){
                    continue;
                 }
@@ -176,6 +222,68 @@ public class GovernorImpl implements Governor {
             default: {
                 return false;
             }
+        }
+    }
+
+    private static final class AdvancedInstanceInfo extends InstanceInfo
+    {
+        private int desiredInstances;
+
+        private AdvancedInstanceInfo(final InstanceInfo instanceInfo)
+        {
+            super(instanceInfo.getInstancesRunning(), instanceInfo.getInstancesStaging(), instanceInfo.getHosts(),
+                  instanceInfo.getShutdownPriority(), instanceInfo.getInstances());
+            this.desiredInstances = 0;
+        }
+
+        public int getDesiredInstances()
+        {
+            return desiredInstances;
+        }
+
+        public void setDesiredInstances(final ScalingAction action)
+        {
+            switch (action.getOperation()) {
+                case NONE:
+                    this.desiredInstances = getTotalRunningAndStageInstances();
+                    break;
+                case SCALE_UP:
+                    this.desiredInstances = getInstancesRunning() + action.getAmount();
+                    break;
+                case SCALE_DOWN:
+                    this.desiredInstances = getInstancesRunning() - action.getAmount();
+                    break;
+            }
+        }
+
+        /**
+         * Calculates the relative difference between the current number of instances running and the desired number of instances required 
+         * to fullfil the workload currently on the service within the next five minutes.
+         * <p>
+         * Example:
+         * <pre>
+         * If a worker currently has 5 running instances and it desires to have 4 based on its workload at present then it will have a 
+         * relative difference of 0.8
+         * 
+         * Further examples can be found below.
+         * 
+         * |-------------------|-------------------|-----------------------------------------|
+         * | Current Instances | Desired Instances | Relative Difference (Desired / Current) |
+         * |-------------------|-------------------|-----------------------------------------|
+         * |        5          |        4          |                  0.8                    |
+         * |        5          |        5          |                   1                     |
+         * |        5          |        15         |                   3                     |
+         * |        5          |        0          |                   0                     |
+         * |        0          |        5          |           Positive Infinity             |
+         * |        0          |        0          |           Positive Infinity             |
+         * |-------------------|-------------------|-----------------------------------------|
+         * </pre>
+         */
+        public double getRelativeDifference()
+        {
+            return getTotalRunningAndStageInstances() == 0 && this.desiredInstances == 0
+                ? 1.0 / 0
+                : (double) this.desiredInstances / getTotalRunningAndStageInstances();
         }
     }
 }

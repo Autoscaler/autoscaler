@@ -88,9 +88,9 @@ public class DockerSwarmServiceScalerIT
         InstanceInfo serviceInformation = scaler.getInstanceInfo(serviceReference);
 
         // check instance info for a runnin element.
-        Assert.assertTrue("Total instances > 0", serviceInformation.getTotalInstances() > 0);
+        Assert.assertTrue("Total instances > 0", serviceInformation.getTotalRunningAndStageInstances() > 0);
         Assert.assertEquals("Staged instances == 0", 0, serviceInformation.getInstancesStaging());
-        Assert.assertEquals("Instances Running == total for docker all the time.", serviceInformation.getTotalInstances(),
+        Assert.assertEquals("Instances Running == total for docker all the time.", serviceInformation.getTotalRunningAndStageInstances(),
                             serviceInformation.getInstancesRunning());
         Assert.assertTrue("No hosts map for docker swarm scaler", serviceInformation.getHosts().isEmpty());
     }
@@ -110,7 +110,7 @@ public class DockerSwarmServiceScalerIT
 
         InstanceInfo serviceInformation = scaler.getInstanceInfo(serviceReference);
 
-        final int currentAmount = serviceInformation.getTotalInstances();
+        final int currentAmount = serviceInformation.getTotalRunningAndStageInstances();
         final int requestedAmount = 2;
         final int expectedAmount  = Math.max(config.getMaximumInstances(), currentAmount + requestedAmount);
         scaler.scaleUp(serviceReference, requestedAmount);
@@ -118,8 +118,8 @@ public class DockerSwarmServiceScalerIT
         InstanceInfo serviceInformationNow = scaler.getInstanceInfo(serviceReference);
         
         // check instance info for a runnin element.
-        Assert.assertTrue("Total instances should have at least 1 running app", serviceInformationNow.getTotalInstances() > 0);
-        Assert.assertEquals("Total instances should now match updated value.", expectedAmount, serviceInformationNow.getTotalInstances());
+        Assert.assertTrue("Total instances should have at least 1 running app", serviceInformationNow.getTotalRunningAndStageInstances() > 0);
+        Assert.assertEquals("Total instances should now match updated value.", expectedAmount, serviceInformationNow.getTotalRunningAndStageInstances());
     }
     
     @Test
@@ -137,7 +137,7 @@ public class DockerSwarmServiceScalerIT
 
         InstanceInfo serviceInformation = scaler.getInstanceInfo(serviceReference);
 
-        final int currentAmount = serviceInformation.getTotalInstances();
+        final int currentAmount = serviceInformation.getTotalRunningAndStageInstances();
         final int requestedAmount = 1;
         final int expectedAmount  = Math.max(0, currentAmount - requestedAmount);
         scaler.scaleDown(serviceReference, requestedAmount);
@@ -145,7 +145,7 @@ public class DockerSwarmServiceScalerIT
         InstanceInfo serviceInformationNow = scaler.getInstanceInfo(serviceReference);
         
         // check instance info for a runnin element.
-        Assert.assertEquals("Total instances should now match updated value.", expectedAmount, serviceInformationNow.getTotalInstances());
+        Assert.assertEquals("Total instances should now match updated value.", expectedAmount, serviceInformationNow.getTotalRunningAndStageInstances());
     }
 
     private String getValidServiceId(DockerSwarm dockerClient) throws HttpClientException

@@ -156,8 +156,37 @@ public class ScalerThread implements Runnable
     private void scaleUp(final int amount)
         throws ScalerException
     {
-        LOG.info("Triggering scale up of service {} by amount {}", serviceRef, amount);
+        LOG.info("Attempting scale up of service {} by amount {}", serviceRef, amount);
         scaler.scaleUp(serviceRef, amount);
+        try {
+            InstanceInfo refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
+            while (refreshedInsanceInfo.getInstances() > refreshedInsanceInfo.getTotalRunningAndStageInstances()) {
+                boolean instanceMet = false;
+                for (int i = 1; i <= 6; i++) {
+                    final int sleep = i * 10 * 1000;
+                    LOG.debug("Sleeping for {} to allow instances to come up.", sleep);
+                    Thread.sleep(sleep);
+                    refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
+                    if (refreshedInsanceInfo.getTotalRunningAndStageInstances() == refreshedInsanceInfo.getInstances()) {
+                        instanceMet = true;
+                        break;
+                    }
+                }
+                if (!instanceMet) {
+                    if (!governor.freeUpResourcesForService(serviceRef)) {
+                        throw new ScalerException(
+                            "Unable to scale service " + serviceRef + " due to an inability to make room for it on the orchestrator.");
+                    }
+                }
+            }
+        } catch (final InterruptedException ex) {
+            // Set interupted flag
+            Thread.currentThread().interrupt();
+            // Throw exception to suppress further calls from current scaler thread until after scaler thread refresh
+            throw new ScalerException("An error occured during an attempt to have the main thread sleep before rechecking the number"
+                + " of instance present for the application.", ex);
+        }
+        LOG.info("Scale up of service {} by amount {} successful", serviceRef, amount);
         backoff = true;
     }
 
@@ -173,7 +202,23 @@ public class ScalerThread implements Runnable
     {
         LOG.info("Triggering scale down of service {} by amount {}", serviceRef, amount);
         scaler.scaleDown(serviceRef, amount);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            // Set interupted flag
+            Thread.currentThread().interrupt();
+            // Throw exception to suppress further calls from current scaler thread until after scaler thread refresh
+            throw new ScalerException("An error occured during an attempt to have the main thread sleep before rechecking the number"
+                + " of instance present for the application.", ex);
+        }
+        final InstanceInfo info = scaler.getInstanceInfo(serviceRef);
+        governor.recordInstances(serviceRef, info);
         backoff = true;
+    }
+
+    public void scaleDownNow() throws ScalerException
+    {
+        scaleDown(1);
     }
 
     private boolean handleMemoryLoadIssues(final InstanceInfo instances, final double currentMemoryLoadLimit, final int shutdownPriority)
@@ -186,13 +231,13 @@ public class ScalerThread implements Runnable
         handleAlerterDispatch(currentMemoryLoadLimit);
 
         if (currentMemoryLoadLimit == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
-            scaleDown(instances.getTotalInstances());
+            scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
         } else if (currentMemoryLoadLimit == 2 && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
-            scaleDown(instances.getTotalInstances());
+            scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
         } else if (currentMemoryLoadLimit == 3 && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
-            scaleDown(instances.getTotalInstances());
+            scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
         }
         return false;

@@ -171,7 +171,7 @@ public class MarathonServiceScalerTest
         InstanceInfo info = scaler.getInstanceInfo(SERVICE);
         Assert.assertEquals(1, info.getInstancesRunning());
         Assert.assertEquals(0, info.getInstancesStaging());
-        Assert.assertEquals(1, info.getTotalInstances());
+        Assert.assertEquals(1, info.getTotalRunningAndStageInstances());
         Assert.assertEquals(host1, info.getHosts().iterator().next().getHost());
         Assert.assertTrue(info.getHosts().iterator().next().getPorts().containsAll(ports1));
     }

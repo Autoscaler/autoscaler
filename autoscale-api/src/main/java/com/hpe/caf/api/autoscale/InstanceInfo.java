@@ -24,12 +24,13 @@ import java.util.Objects;
 /**
  * Contains information about the instances of a currently running service.
  */
-public final class InstanceInfo
+public class InstanceInfo
 {
     private final int instancesRunning;
     private final int instancesStaging;
     private final Collection<ServiceHost> hosts;
     private final int shutdownPriority;
+    private final int instances;
 
 
     /**
@@ -41,7 +42,7 @@ public final class InstanceInfo
      */
     public InstanceInfo(final int running, final int staging, final Collection<ServiceHost> hosts)
     {
-        this(running, staging, hosts, -1);
+        this(running, staging, hosts, -1, running + staging);
     }
 
     /**
@@ -51,13 +52,16 @@ public final class InstanceInfo
      * @param staging number of instances in staging
      * @param hosts hosts running or staging an instance of this application
      * @param shutdownPriority the priority of the service, used when making scaling decisions during resource shortages
+     * @param instances The total number of instances registered against the app including all running, staging and waiting
      */
-    public InstanceInfo(final int running, final int staging, final Collection<ServiceHost> hosts, final int shutdownPriority)
+    public InstanceInfo(final int running, final int staging, final Collection<ServiceHost> hosts, final int shutdownPriority,
+                        final int instances)
     {
         this.instancesRunning = running;
         this.instancesStaging = staging;
         this.hosts = Collections.unmodifiableCollection(Objects.requireNonNull(hosts));
         this.shutdownPriority = shutdownPriority;
+        this.instances = instances;
     }
 
 
@@ -82,7 +86,7 @@ public final class InstanceInfo
     /**
      * @return the combination of the number of running instances and those being prepared
      */
-    public int getTotalInstances()
+    public int getTotalRunningAndStageInstances()
     {
         return getInstancesRunning() + getInstancesStaging();
     }
@@ -104,4 +108,13 @@ public final class InstanceInfo
     {
         return shutdownPriority;
     }
+    
+    /**
+     * @return the number of instances of this application that are registered against this app in marathon, this will include all 
+     * instances running, staging and waiting.
+     */
+    public int getInstances()
+    {
+        return this.instances;
+    }  
 }

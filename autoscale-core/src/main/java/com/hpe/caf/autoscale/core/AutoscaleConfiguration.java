@@ -33,9 +33,9 @@ public class AutoscaleConfiguration extends Configuration
     /**
      * The number of threads to use for the scheduled executor service.
      */
-    @Min(2)
+    @Min(1)
     @Max(20)
-    private int executorThreads = 5;
+    private int executorThreads = 1;
 
 
     public int getSourceRefreshPeriod()

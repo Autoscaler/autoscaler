@@ -159,7 +159,7 @@ public class ScalerThread implements Runnable
     private void scaleUp(final int amount)
         throws ScalerException
     {
-        LOG.info("Attempting scale up of service {} by amount {}", serviceRef, amount);
+        LOG.debug("Attempting scale up of service {} by amount {}", serviceRef, amount);
         scaler.scaleUp(serviceRef, amount);
         try {
             InstanceInfo refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
@@ -189,7 +189,7 @@ public class ScalerThread implements Runnable
             throw new ScalerException("An error occured during an attempt to have the main thread sleep before rechecking the number"
                 + " of instance present for the application.", ex);
         }
-        LOG.info("Scale up of service {} by amount {} successful", serviceRef, amount);
+        LOG.info("Service {} scaled up by {} instances", serviceRef, amount);
         backoff = true;
     }
 
@@ -203,7 +203,7 @@ public class ScalerThread implements Runnable
     private void scaleDown(final int amount)
         throws ScalerException
     {
-        LOG.info("Triggering scale down of service {} by amount {}", serviceRef, amount);
+        LOG.debug("Attempting scale down of service {} by {} instances", serviceRef, amount);
         scaler.scaleDown(serviceRef, amount);
         try {
             Thread.sleep(1000);
@@ -214,6 +214,7 @@ public class ScalerThread implements Runnable
             throw new ScalerException("An error occured during an attempt to have the main thread sleep before rechecking the number"
                 + " of instance present for the application.", ex);
         }
+        LOG.debug("Service {} scaled down by {} instances.", serviceRef, amount);
         final InstanceInfo info = scaler.getInstanceInfo(serviceRef);
         governor.recordInstances(serviceRef, info);
         backoff = true;

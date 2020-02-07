@@ -121,6 +121,9 @@ public class ScalerThread implements Runnable
             action = governor.govern(serviceRef, action, currentMemoryLimitStage);
             LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
                      action.getOperation(), serviceRef, action.getAmount());
+            if (action.getAmount() == 0) {
+                return;
+            }
             switch (action.getOperation()) {
                 case SCALE_UP:
                     scaleUp(action.getAmount());

@@ -184,11 +184,18 @@ public class GovernorImpl implements Governor {
             }
             case SCALE_DOWN: {
                 if (lastInstanceInfo.getTotalRunningAndStageInstances() == scalingConfiguration.getMinInstances()) {
+                    LOG.debug("Action is currently set to SCALE_DOWN however service {} is currently running at its configured minimum "
+                        + "instances. Action overriden to take no action.", serviceRef);
                     return new ScalingAction(ScalingOperation.NONE, 0);
                 } else if (lastInstanceInfo.getTotalRunningAndStageInstances() < scalingConfiguration.getMinInstances()) {
-                    return new ScalingAction(ScalingOperation.SCALE_UP,
-                                             scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances());
+                    final int instanceDelta = scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances();
+                    LOG.debug("Action is currently set to SCALE_DOWN however service {} is currently running less than it's configured "
+                        + "minimum number instances. For this reason action has been reset to SCALE UP by {} instances", serviceRef,
+                              instanceDelta);
+                    return new ScalingAction(ScalingOperation.SCALE_UP, instanceDelta);
                 } else if ((lastInstanceInfo.getTotalRunningAndStageInstances() - action.getAmount()) < scalingConfiguration.getMinInstances()) {
+                    LOG.debug("Action is currently set to scale service {} down by {} instances, this would leave the service below its "
+                        + "configured minimum number of instances. Action overriden to scale the service down to its minimum instances");
                     return new ScalingAction(ScalingOperation.SCALE_DOWN,
                                              lastInstanceInfo.getTotalRunningAndStageInstances() - scalingConfiguration.getMinInstances());
                 }

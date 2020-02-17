@@ -124,24 +124,41 @@ public class GovernorImpl implements Governor {
         switch(action.getOperation()){
             case NONE: {
                 if (lastInstanceInfo.getTotalRunningAndStageInstances() < scalingConfiguration.getMinInstances()) {
-                    return new ScalingAction(ScalingOperation.SCALE_UP,
-                                             scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances());
+                    final int instanceDelta = scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances();
+                    LOG.debug("Action is currently set to NONE however service {} is currently running less than it's configured minimum"
+                        + " number instances. For this reason action has been reset to SCALE UP by {} instances", serviceRef,
+                              instanceDelta);
+                    return new ScalingAction(ScalingOperation.SCALE_UP, instanceDelta);
                 } else if (lastInstanceInfo.getTotalRunningAndStageInstances() > scalingConfiguration.getMaxInstances()) {
-                    return new ScalingAction(ScalingOperation.SCALE_DOWN,
-                                             lastInstanceInfo.getTotalRunningAndStageInstances() - scalingConfiguration.getMaxInstances());
+                    final int instanceDelta = lastInstanceInfo.getTotalRunningAndStageInstances() - scalingConfiguration.getMaxInstances();
+                    LOG.debug("Action is currently set to NONE however service {} is currently running more than it's configured maximum"
+                        + " number instances. For this reason action has been reset to SCALE DOWN by {} instances", serviceRef,
+                              instanceDelta);
+                    return new ScalingAction(ScalingOperation.SCALE_DOWN, instanceDelta);
                 }
                 break;
             }
             case SCALE_UP:
             {
                 if (lastInstanceInfo.getTotalRunningAndStageInstances() > scalingConfiguration.getMaxInstances()) {
+                    final int instanceDelta = lastInstanceInfo.getTotalRunningAndStageInstances() - scalingConfiguration.getMaxInstances();
+                    LOG.debug("Action is currently set to SCALE_UP however service {} is currently running more than it's configured "
+                        + "maximum number instances. For this reason action has been reset to SCALE DOWN by {} instances", serviceRef,
+                              instanceDelta);
                     return new ScalingAction(ScalingOperation.SCALE_DOWN,
                                              lastInstanceInfo.getTotalRunningAndStageInstances() - scalingConfiguration.getMaxInstances());
                 } else if (!otherServicesMinimumInstancesMet) {
                     if (lastInstanceInfo.getTotalRunningAndStageInstances() < scalingConfiguration.getMinInstances()) {
-                        return new ScalingAction(ScalingOperation.SCALE_UP,
-                                                 scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances());
+                    final int instanceDelta = scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances();
+                        LOG.debug("Action is currently set to SCALE_UP however not all services have reached their minimum instances yet."
+                            + "Service scaling is usually disabled during this time however service {} is currently running less than "
+                            + "it's configured minimum number instances. The scaling command has been overriden to scale the service "
+                            + "to its minimum. New command is SCALE_UP by {} instances", serviceRef, instanceDelta);
+                        return new ScalingAction(ScalingOperation.SCALE_UP, instanceDelta);
                     } else if (lastInstanceInfo.getTotalRunningAndStageInstances() == scalingConfiguration.getMinInstances()) {
+                        LOG.debug("Action is currently set to SCALE_UP however not all services have reached their minimum instances yet."
+                            + "Service {} is currently running at it's configured minimum instances, for this reason scaling action has "
+                            + "been overriden and no scaling action will occur for this service.", serviceRef);
                         return new ScalingAction(ScalingOperation.NONE, 0);
                     } else if (lastInstanceInfo.getTotalRunningAndStageInstances() > scalingConfiguration.getMinInstances()) {
                         //Gradually reduce the totalInstances by a percentage until Minimums are met.
@@ -151,23 +168,39 @@ public class GovernorImpl implements Governor {
                         int target = Math.max(scalingConfiguration.getMinInstances(),
                                               (int) Math.floor(lastInstanceInfo.getTotalRunningAndStageInstances() * reduceToPercentage));
                         int amount = lastInstanceInfo.getTotalRunningAndStageInstances() - target;
-
+                        LOG.debug("Action is currently set to SCALE_UP however not all services have reached their minimum instances yet."
+                            + "Service scaling is disabled during this time. Service {} is currently running more than it's configured "
+                            + "minimum number instances, due to the scaling restriction this will be reduced to attempt to allow other "
+                            + "services to reach their minimum. The scaling command has been overriden to scale the service "
+                            + "down. New command is SCALE_DOWN by {} instances", serviceRef, amount);
                         return new ScalingAction(ScalingOperation.SCALE_DOWN, amount);
                     }
                 } else {
                     final int delta = Math.min(scalingConfiguration.getMaxInstances() - lastInstanceInfo.getTotalRunningAndStageInstances(),
                                                 Math.max(0, action.getAmount()));
+                    if(delta < action.getAmount()){
+                        LOG.info("Service {} requested {} more instances but will only be scaled by {} as the service has a max instance "
+                            + "restriction of {} instances.", serviceRef, action.getAmount(), delta,
+                                 scalingConfiguration.getMaxInstances());
+                    }
                     return new ScalingAction(ScalingOperation.SCALE_UP, delta);
                 }
                 break;
             }
             case SCALE_DOWN: {
                 if (lastInstanceInfo.getTotalRunningAndStageInstances() == scalingConfiguration.getMinInstances()) {
+                    LOG.debug("Action is currently set to SCALE_DOWN however service {} is currently running at its configured minimum "
+                        + "instances. Action overriden to take no action.", serviceRef);
                     return new ScalingAction(ScalingOperation.NONE, 0);
                 } else if (lastInstanceInfo.getTotalRunningAndStageInstances() < scalingConfiguration.getMinInstances()) {
-                    return new ScalingAction(ScalingOperation.SCALE_UP,
-                                             scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances());
+                    final int instanceDelta = scalingConfiguration.getMinInstances() - lastInstanceInfo.getTotalRunningAndStageInstances();
+                    LOG.debug("Action is currently set to SCALE_DOWN however service {} is currently running less than it's configured "
+                        + "minimum number instances. For this reason action has been reset to SCALE UP by {} instances", serviceRef,
+                              instanceDelta);
+                    return new ScalingAction(ScalingOperation.SCALE_UP, instanceDelta);
                 } else if ((lastInstanceInfo.getTotalRunningAndStageInstances() - action.getAmount()) < scalingConfiguration.getMinInstances()) {
+                    LOG.debug("Action is currently set to scale service {} down by {} instances, this would leave the service below its "
+                        + "configured minimum number of instances. Action overriden to scale the service down to its minimum instances");
                     return new ScalingAction(ScalingOperation.SCALE_DOWN,
                                              lastInstanceInfo.getTotalRunningAndStageInstances() - scalingConfiguration.getMinInstances());
                 }

@@ -214,7 +214,7 @@ public class ScalerThread implements Runnable
             throw new ScalerException("An error occured during an attempt to have the main thread sleep before rechecking the number"
                 + " of instance present for the application.", ex);
         }
-        LOG.debug("Service {} scaled down by {} instances.", serviceRef, amount);
+        LOG.info("Service {} scaled down by {} instances.", serviceRef, amount);
         final InstanceInfo info = scaler.getInstanceInfo(serviceRef);
         governor.recordInstances(serviceRef, info);
         backoff = true;

@@ -179,8 +179,9 @@ public class GovernorImpl implements Governor {
                     final int delta = Math.min(scalingConfiguration.getMaxInstances() - lastInstanceInfo.getTotalRunningAndStageInstances(),
                                                 Math.max(0, action.getAmount()));
                     if(delta < action.getAmount()){
-                        LOG.info("Service {} requested {} more instances but will only be scaled by {} more instances due to max instance"
-                            + " restrictions", serviceRef, action.getAmount(), delta);
+                        LOG.info("Service {} requested {} more instances but will only be scaled by {} as the service has a max instance "
+                            + "restriction of {} instances.", serviceRef, action.getAmount(), delta,
+                                 scalingConfiguration.getMaxInstances());
                     }
                     return new ScalingAction(ScalingOperation.SCALE_UP, delta);
                 }

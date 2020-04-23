@@ -35,6 +35,8 @@ public final class ScalingConfiguration
     public static final String KEY_MAX_INSTANCES = "autoscale.maxinstances";
     public static final String KEY_SCALING_PROFILE = "autoscale.profile";
     public static final String KEY_BACKOFF_AMOUNT = "autoscale.backoff";
+    public static final String KEY_SCALE_DOWN_BACKOFF_AMOUNT = "autoscale.scaledownbackoff";
+    public static final String KEY_SCALE_UP_BACKOFF_AMOUNT = "autoscale.scaleupbackoff";
     /**
      * The unique id of the service
      */
@@ -61,6 +63,16 @@ public final class ScalingConfiguration
      */
     @Min(0)
     private int backoffAmount = 0;
+    /**
+     * The number of interval periods to avoid scaling computations after a scale down has been issued
+     */
+    @Min(0)
+    private int scaleDownBackoffAmount = -1;
+    /**
+     * The number of interval periods to avoid scaling computations after a scale up has been issued
+     */
+    @Min(0)
+    private int scaleUpBackoffAmount = -1;
     /**
      * The key/name of the WorkloadAnalyser to use for scaling this service
      */
@@ -179,6 +191,40 @@ public final class ScalingConfiguration
     public void setBackoffAmount(final int backoffAmount)
     {
         this.backoffAmount = backoffAmount;
+    }
+
+    /**
+     * @return the number of intervals to skip scaling computations following a scaling request.
+     */
+    public int getScaleDownBackoffAmount()
+    {
+        return scaleDownBackoffAmount;
+    }
+
+
+    /**
+     * @param scaleDownBackoffAmount the number of intervals to skip scaling computations following a scaling request.
+     */
+    public void setScaleDownBackoffAmount(final int scaleDownBackoffAmount)
+    {
+        this.scaleDownBackoffAmount = scaleDownBackoffAmount;
+    }
+
+    /**
+     * @return the number of intervals to skip scaling computations following a scaling request.
+     */
+    public int getScaleUpBackoffAmount()
+    {
+        return scaleUpBackoffAmount;
+    }
+
+
+    /**
+     * @param scaleUpBackoffAmount the number of intervals to skip scaling computations following a scaling request.
+     */
+    public void setScaleUpBackoffAmount(final int scaleUpBackoffAmount)
+    {
+        this.scaleUpBackoffAmount = scaleUpBackoffAmount;
     }
 
 

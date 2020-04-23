@@ -18,6 +18,7 @@ package com.hpe.caf.autoscale.core;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingAction;
+import com.hpe.caf.api.autoscale.ScalingOperation;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
 import java.text.DecimalFormat;
@@ -39,6 +40,8 @@ public class ScalerThread implements Runnable
     private final WorkloadAnalyser analyser;
     private final ServiceScaler scaler;
     private final int backoffAmount;
+    private final int scaleDownBackoffAmount;
+    private final int scaleUpBackoffAmount;
     private final String serviceRef;
     private int backoffCount = 0;
     private boolean backoff = false;
@@ -46,6 +49,8 @@ public class ScalerThread implements Runnable
 
     private final Governor governor;
     private final ResourceMonitoringConfiguration resourceConfig;
+
+    private ScalingOperation lastOperation;
 
     /**
      * Create a new ScalerThread.
@@ -63,7 +68,32 @@ public class ScalerThread implements Runnable
                         final String serviceReference, final int minInstances, final int maxInstances, final int backoffAmount,
                         final Alerter alertDispatcher, final ResourceMonitoringConfiguration resourceConfig)
     {
+        this(governor, workloadAnalyser, serviceScaler, serviceReference, minInstances, maxInstances, backoffAmount, -1, -1,
+             alertDispatcher, resourceConfig);
+    }
+
+    /**
+     * Create a new ScalerThread.
+     *
+     * @param governor a Governor instance to prevent one service from starving others
+     * @param workloadAnalyser the method for this thread to analyse the workload of a service
+     * @param serviceScaler the method for this thread to scale a service
+     * @param serviceReference the named reference to the service this thread will analyse and scale
+     * @param minInstances the minimum number of instances of the service that must be instantiated
+     * @param maxInstances the maximum number of instances of the service that can be instantiated
+     * @param backoffAmount the number of analysis runs to skip after a scaling is triggered
+     * @param scaleUpBackoffAmount the number of analysis runs to skip after a scaling up is triggered
+     * @param scaleDownBackoffAmount the number of analysis runs to skip after a scaling down is triggered
+     * @param alertDispatcher dispatcher to send alerts if required
+     */
+    public ScalerThread(final Governor governor, final WorkloadAnalyser workloadAnalyser, final ServiceScaler serviceScaler,
+                        final String serviceReference, final int minInstances, final int maxInstances, final int backoffAmount,
+                        final int scaleUpBackoffAmount, final int scaleDownBackoffAmount, final Alerter alertDispatcher,
+                        final ResourceMonitoringConfiguration resourceConfig)
+    {
         this.resourceConfig = resourceConfig;
+        this.scaleUpBackoffAmount = scaleUpBackoffAmount;
+        this.scaleDownBackoffAmount = scaleDownBackoffAmount;
         this.alertDispatcher = alertDispatcher;
         this.governor = governor;
         this.analyser = Objects.requireNonNull(workloadAnalyser);
@@ -81,15 +111,7 @@ public class ScalerThread implements Runnable
     @Override
     public void run()
     {
-        if (backoff) {
-            backoffCount++;
-            if (backoffCount > backoffAmount) {
-                backoff = false;
-                backoffCount = 0;
-            }
-        }
-
-        if (backoff) {
+        if (shouldBackoff()) {
             LOG.debug("Not performing workload analysis for service {}, backing off", serviceRef);
         } else {
             LOG.debug("Workload analysis run for service {}", serviceRef);
@@ -117,10 +139,10 @@ public class ScalerThread implements Runnable
             LOG.debug("Performing scaling checks for service {}", serviceRef);
             action = analyser.analyseWorkload(instances);
             LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
-                     action.getOperation(), serviceRef, action.getAmount());
+                      action.getOperation(), serviceRef, action.getAmount());
             action = governor.govern(serviceRef, action, currentMemoryLimitStage);
             LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
-                     action.getOperation(), serviceRef, action.getAmount());
+                      action.getOperation(), serviceRef, action.getAmount());
             if (action.getAmount() == 0) {
                 return;
             }
@@ -161,6 +183,7 @@ public class ScalerThread implements Runnable
     {
         LOG.debug("Attempting scale up of service {} by amount {}", serviceRef, amount);
         scaler.scaleUp(serviceRef, amount);
+        lastOperation = ScalingOperation.SCALE_UP;
         try {
             InstanceInfo refreshedInsanceInfo = scaler.getInstanceInfo(serviceRef);
             while (refreshedInsanceInfo.getInstances() > refreshedInsanceInfo.getTotalRunningAndStageInstances()) {
@@ -205,6 +228,7 @@ public class ScalerThread implements Runnable
     {
         LOG.debug("Attempting scale down of service {} by {} instances", serviceRef, amount);
         scaler.scaleDown(serviceRef, amount);
+        lastOperation = ScalingOperation.SCALE_DOWN;
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
@@ -254,7 +278,7 @@ public class ScalerThread implements Runnable
             alertDispatcher.dispatchAlert(emailBody);
         }
     }
-    
+
     private int establishMemLimitReached(final double currentMemoryLoad)
     {
         if (currentMemoryLoad >= resourceConfig.getResourceLimitThree()) {
@@ -265,5 +289,34 @@ public class ScalerThread implements Runnable
             return 1;
         }
         return 0;
+    }
+
+    private boolean shouldBackoff()
+    {
+        if (backoff) {
+            backoffCount++;
+            switch (lastOperation) {
+                case SCALE_DOWN: {
+                    return scaleUpBackoffAmount == -1 ? defaultBackoff() : scaleDownBackoffAmount < backoffCount;
+                }
+                case SCALE_UP: {
+                    return scaleUpBackoffAmount == -1 ? defaultBackoff() : scaleUpBackoffAmount < backoffCount;
+                }
+                default: {
+                    return defaultBackoff();
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean defaultBackoff()
+    {
+        if (backoffCount > backoffAmount) {
+            backoff = false;
+            backoffCount = 0;
+            return false;
+        }
+        return true;
     }
 }

@@ -66,12 +66,12 @@ public final class ScalingConfiguration
     /**
      * The number of interval periods to avoid scaling computations after a scale down has been issued
      */
-    @Min(0)
+    @Min(-1)
     private int scaleDownBackoffAmount = -1;
     /**
      * The number of interval periods to avoid scaling computations after a scale up has been issued
      */
-    @Min(0)
+    @Min(-1)
     private int scaleUpBackoffAmount = -1;
     /**
      * The key/name of the WorkloadAnalyser to use for scaling this service

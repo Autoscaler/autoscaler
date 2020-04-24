@@ -293,7 +293,7 @@ public class ScalerThread implements Runnable
 
     private boolean shouldBackoff()
     {
-        if (backoff) {
+        if (backoff & lastOperation != null) {
             backoffCount++;
             switch (lastOperation) {
                 case SCALE_DOWN: {

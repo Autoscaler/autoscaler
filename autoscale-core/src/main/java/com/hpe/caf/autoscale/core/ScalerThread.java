@@ -312,7 +312,8 @@ public class ScalerThread implements Runnable
             }
         }
         if (shouldBackoff) {
-            resetBackoff();
+                    backoff = false;
+        backoffCount = 0;
         }
         return shouldBackoff;
     }
@@ -320,11 +321,5 @@ public class ScalerThread implements Runnable
     private boolean defaultBackoff()
     {
         return backoffCount < backoffAmount;
-    }
-
-    private void resetBackoff()
-    {
-        backoff = false;
-        backoffCount = 0;
     }
 }

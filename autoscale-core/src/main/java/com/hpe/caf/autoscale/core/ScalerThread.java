@@ -293,30 +293,38 @@ public class ScalerThread implements Runnable
 
     private boolean shouldBackoff()
     {
+        boolean shouldBackoff = false;
         if (backoff) {
             backoffCount++;
             switch (lastOperation) {
                 case SCALE_DOWN: {
-                    return scaleUpBackoffAmount == -1 ? defaultBackoff() : scaleDownBackoffAmount < backoffCount;
+                    shouldBackoff = scaleUpBackoffAmount == -1 ? defaultBackoff() : scaleDownBackoffAmount < backoffCount;
+                    break;
                 }
                 case SCALE_UP: {
-                    return scaleUpBackoffAmount == -1 ? defaultBackoff() : scaleUpBackoffAmount < backoffCount;
+                    shouldBackoff = scaleUpBackoffAmount == -1 ? defaultBackoff() : scaleUpBackoffAmount < backoffCount;
+                    break;
                 }
                 default: {
-                    return defaultBackoff();
+                    shouldBackoff = defaultBackoff();
+                    break;
                 }
             }
         }
-        return false;
+        if (shouldBackoff) {
+            resetBackoff();
+        }
+        return shouldBackoff;
     }
 
     private boolean defaultBackoff()
     {
-        if (backoffCount > backoffAmount) {
-            backoff = false;
-            backoffCount = 0;
-            return false;
-        }
-        return true;
+        return backoffCount > backoffAmount;
+    }
+
+    private void resetBackoff()
+    {
+        backoff = false;
+        backoffCount = 0;
     }
 }

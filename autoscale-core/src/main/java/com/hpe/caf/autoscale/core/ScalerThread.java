@@ -312,7 +312,7 @@ public class ScalerThread implements Runnable
                 break;
             }
         }
-        
+
         if (backoffCount > backoffLimit) {
             backoff = false;
             backoffCount = 0;

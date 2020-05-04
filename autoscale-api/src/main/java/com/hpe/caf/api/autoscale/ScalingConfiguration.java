@@ -253,6 +253,8 @@ public final class ScalingConfiguration
                minInstances == that.minInstances &&
                maxInstances == that.maxInstances &&
                backoffAmount == that.backoffAmount &&
+               scaleDownBackoffAmount == that.scaleDownBackoffAmount &&
+               scaleUpBackoffAmount == that.scaleUpBackoffAmount &&
                Objects.equals(id, that.id) &&
                Objects.equals(scalingProfile, that.scalingProfile) &&
                Objects.equals(workloadMetric, that.workloadMetric) &&
@@ -263,6 +265,7 @@ public final class ScalingConfiguration
     @Override
     public int hashCode()
     {
-        return Objects.hash(id, interval, minInstances, maxInstances, workloadMetric, scalingTarget, scalingProfile, backoffAmount);
+        return Objects.hash(id, interval, minInstances, maxInstances, workloadMetric, scalingTarget, scalingProfile, backoffAmount,
+                            scaleDownBackoffAmount, scaleUpBackoffAmount);
     }
 }

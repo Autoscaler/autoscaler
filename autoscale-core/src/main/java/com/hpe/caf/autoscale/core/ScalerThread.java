@@ -300,12 +300,12 @@ public class ScalerThread implements Runnable
         backoffCount++;
         switch (lastOperation) {
             case SCALE_DOWN: {
-                LOG.debug("Last Action was scale down, setting backoff amount to %s", scaleDownBackoffAmount);
+                LOG.debug("Last Action was scale down, setting backoff amount to " + scaleDownBackoffAmount);
                 backoffLimit = scaleUpBackoffAmount == -1 ? backoffAmount : scaleDownBackoffAmount;
                 break;
             }
             case SCALE_UP: {
-                LOG.debug("Last Action was scale up, setting backoff amount to %s", scaleUpBackoffAmount);
+                LOG.debug("Last Action was scale up, setting backoff amount to " + scaleUpBackoffAmount);
                 backoffLimit = scaleUpBackoffAmount == -1 ? backoffAmount : scaleUpBackoffAmount;
                 break;
             }
@@ -315,7 +315,7 @@ public class ScalerThread implements Runnable
             }
         }
 
-        LOG.debug("backoffLimit set to ", backoffLimit);
+        LOG.debug("backoffLimit set to " + backoffLimit);
         if (backoffCount > backoffLimit) {
             backoff = false;
             backoffCount = 0;

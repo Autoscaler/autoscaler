@@ -139,10 +139,10 @@ public class ScalerThread implements Runnable
             LOG.debug("Performing scaling checks for service {}", serviceRef);
             action = analyser.analyseWorkload(instances);
             LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
-                     action.getOperation(), serviceRef, action.getAmount());
+                      action.getOperation(), serviceRef, action.getAmount());
             action = governor.govern(serviceRef, action, currentMemoryLimitStage);
             LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
-                     action.getOperation(), serviceRef, action.getAmount());
+                      action.getOperation(), serviceRef, action.getAmount());
             if (action.getAmount() == 0) {
                 return;
             }
@@ -278,7 +278,7 @@ public class ScalerThread implements Runnable
             alertDispatcher.dispatchAlert(emailBody);
         }
     }
-    
+
     private int establishMemLimitReached(final double currentMemoryLoad)
     {
         if (currentMemoryLoad >= resourceConfig.getResourceLimitThree()) {
@@ -300,10 +300,12 @@ public class ScalerThread implements Runnable
         backoffCount++;
         switch (lastOperation) {
             case SCALE_DOWN: {
+                LOG.debug("Last Action was scale down, setting backoff amount to %s", scaleDownBackoffAmount);
                 backoffLimit = scaleUpBackoffAmount == -1 ? backoffAmount : scaleDownBackoffAmount;
                 break;
             }
             case SCALE_UP: {
+                LOG.debug("Last Action was scale up, setting backoff amount to %s", scaleUpBackoffAmount);
                 backoffLimit = scaleUpBackoffAmount == -1 ? backoffAmount : scaleUpBackoffAmount;
                 break;
             }
@@ -313,6 +315,7 @@ public class ScalerThread implements Runnable
             }
         }
 
+        LOG.debug("backoffLimit set to ", backoffLimit);
         if (backoffCount > backoffLimit) {
             backoff = false;
             backoffCount = 0;

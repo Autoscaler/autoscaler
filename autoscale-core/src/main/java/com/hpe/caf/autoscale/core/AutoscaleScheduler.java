@@ -200,6 +200,8 @@ public class AutoscaleScheduler implements HealthReporter
         final ScalerThread scalerThread = new ScalerThread(governor, analyser, scaler, config.getId(),
                                                                                    config.getMinInstances(), config.getMaxInstances(),
                                                                                    config.getBackoffAmount(),
+                                                                                   config.getScaleUpBackoffAmount(),
+                                                                                   config.getScaleDownBackoffAmount(),
                                                                                    alerter,
                                                                                    resourceConfig);
         governor.registerListener(config.getId(), scalerThread);

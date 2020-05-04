@@ -139,10 +139,10 @@ public class ScalerThread implements Runnable
             LOG.debug("Performing scaling checks for service {}", serviceRef);
             action = analyser.analyseWorkload(instances);
             LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
-                      action.getOperation(), serviceRef, action.getAmount());
+                     action.getOperation(), serviceRef, action.getAmount());
             action = governor.govern(serviceRef, action, currentMemoryLimitStage);
             LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
-                      action.getOperation(), serviceRef, action.getAmount());
+                     action.getOperation(), serviceRef, action.getAmount());
             if (action.getAmount() == 0) {
                 return;
             }
@@ -278,7 +278,7 @@ public class ScalerThread implements Runnable
             alertDispatcher.dispatchAlert(emailBody);
         }
     }
-
+    
     private int establishMemLimitReached(final double currentMemoryLoad)
     {
         if (currentMemoryLoad >= resourceConfig.getResourceLimitThree()) {

@@ -111,7 +111,7 @@ public class ScalerThread implements Runnable
     @Override
     public void run()
     {
-        if (!backoffComplete()) {
+        if (isShouldBackoff()) {
             LOG.debug("Not performing workload analysis for service {}, backing off", serviceRef);
         } else {
             LOG.debug("Workload analysis run for service {}", serviceRef);
@@ -291,10 +291,10 @@ public class ScalerThread implements Runnable
         return 0;
     }
 
-    private boolean backoffComplete()
+    private boolean isShouldBackoff()
     {
         if (!backoff) {
-            return true;
+            return false;
         }
         final int backoffLimit;
         backoffCount++;
@@ -319,8 +319,8 @@ public class ScalerThread implements Runnable
         if (backoffCount > backoffLimit) {
             backoff = false;
             backoffCount = 0;
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 }

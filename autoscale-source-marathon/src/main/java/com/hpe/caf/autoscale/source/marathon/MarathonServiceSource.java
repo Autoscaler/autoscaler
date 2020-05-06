@@ -173,6 +173,12 @@ public class MarathonServiceSource implements ServiceSource
         if ( labels.containsKey(ScalingConfiguration.KEY_BACKOFF_AMOUNT) ) {
             sv.setBackoffAmount(Integer.parseInt(labels.get(ScalingConfiguration.KEY_BACKOFF_AMOUNT)));
         }
+        if ( labels.containsKey(ScalingConfiguration.KEY_SCALE_DOWN_BACKOFF_AMOUNT) ) {
+            sv.setScaleDownBackoffAmount(Integer.parseInt(labels.get(ScalingConfiguration.KEY_SCALE_DOWN_BACKOFF_AMOUNT)));
+        }
+        if ( labels.containsKey(ScalingConfiguration.KEY_SCALE_UP_BACKOFF_AMOUNT) ) {
+            sv.setScaleUpBackoffAmount(Integer.parseInt(labels.get(ScalingConfiguration.KEY_SCALE_UP_BACKOFF_AMOUNT)));
+        }
     }
 
 

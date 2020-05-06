@@ -67,7 +67,9 @@ Services deployed by Marathon (such as Example-Worker) contain **labels** in the
 `autoscale.metric`: Dictates the scaling methodology used. This should be set to "rabbitmq". <br>
 `autoscale.maxinstances`: The maximum number of instances a worker can have; set as your level of resources and quality of service dictate.<br>
 `autoscale.interval`: Measured in seconds. This controls how fervently the autoscaler monitors the service (i.e. how often it re-evaluates the number of services required to service the workload).<br>
-`autoscale.backoff`: Manages the number of intervals to skip after a scale up or down command is issued while monitoring. This prevents unusual values being considered when the system is in an unstable state.
+`autoscale.backoff`: Manages the number of intervals to skip after a scale up or down command is issued while monitoring. This prevents unusual values being considered when the system is in an unstable state.  <br>
+`autoscale.scaledownbackoff`: Optional. Manages the number of intervals to skip after a scale down command is issued while monitoring. This prevents unusual values being considered when the system is in an unstable state. If this is not set it will fall back to `autoscale.backoff`.  <br>
+`autoscale.scaleupbackoff`: Optional. Manages the number of intervals to skip after a scale up command is issued while monitoring. This prevents unusual values being considered when the system is in an unstable state. If this is not set it will fall back to `autoscale.backoff`.   
 
 
 **NOTE:** <br>

@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import retrofit.ErrorHandler;
 import retrofit.RestAdapter;

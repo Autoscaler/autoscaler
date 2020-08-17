@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
@@ -72,10 +73,14 @@ public final class RabbitSystemResourceMonitor
                 double highestMemUsedInCluster = 0;
                 while (iterator.hasNext()) {
                     final JsonNode node = iterator.next();
-                    final long memory_limit = node.get("mem_limit").asLong();
-                    final long memory_used = node.get("mem_used").asLong();
-                    final double memPercentage = ((double) memory_used / memory_limit) * 100;
-                    highestMemUsedInCluster = memPercentage > highestMemUsedInCluster ? memPercentage : highestMemUsedInCluster;
+                    final JsonNode memLimitNode = node.get("mem_limit");
+                    final JsonNode memUsedNode = node.get("mem_used");
+                    if (memLimitNode != null && memUsedNode != null) { // These will be null if this node is down
+                        final long memory_limit = memLimitNode.asLong();
+                        final long memory_used = memUsedNode.asLong();
+                        final double memPercentage = ((double) memory_used / memory_limit) * 100;
+                        highestMemUsedInCluster = memPercentage > highestMemUsedInCluster ? memPercentage : highestMemUsedInCluster;
+                    }
                 }
                 memoryAllocated =  highestMemUsedInCluster;
                 lastTime = System.currentTimeMillis();

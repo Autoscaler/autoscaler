@@ -8,7 +8,7 @@ Scaling backoffs have been split into 3 separate backoff values. These backoffs 
 - **SCMOD-9780**: Updated images to use Java 11
 
 #### Bug Fixes
-- **SCMOD-9987**: Better handling of unavialble RabbitMQ nodes during workload analysis.
+- **SCMOD-9987**: Better handling of unavailable RabbitMQ nodes during workload analysis.
 
 #### Known Issues
 - None

@@ -6,7 +6,7 @@ services:
     environment:
       DOCKER_HOST: ${DOCKER_HOST:-<DOCKER_HOST_HERE_PLEASE_SET>}
       CAF_AUTOSCALER_DOCKER_SWARM_STACK: ${CAF_AUTOSCALER_DOCKER_SWARM_STACK:-autoscalerdemo}
-    image: autoscaler/autoscale-dockerswarm-rabbit:1.7.0
+    image: autoscaler/autoscale-dockerswarm-rabbit:1.8.0
     ports:
       - "${AUTOSCALER_PORT:-9981}:8081"
 

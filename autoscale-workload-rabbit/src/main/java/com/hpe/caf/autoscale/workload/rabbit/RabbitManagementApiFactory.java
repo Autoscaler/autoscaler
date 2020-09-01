@@ -27,13 +27,12 @@ import retrofit.client.OkClient;
 import retrofit.client.Response;
 import retrofit.http.GET;
 
-final class RabbitManagementApiWrapper
+final class RabbitManagementApiFactory
 {
     private static final int READ_TIMEOUT_SECONDS = 10;
     private static final int CONNECT_TIMEOUT_SECONDS = 10;
-    private final RabbitManagementApi rabbitManagementApi;
 
-    RabbitManagementApiWrapper(final String endpoint, final String user, final String password)
+    public static RabbitManagementApi create(final String endpoint, final String user, final String password)
     {
         final OkHttpClient okHttpClient = new OkHttpClient();
         okHttpClient.setReadTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS);
@@ -50,7 +49,11 @@ final class RabbitManagementApiWrapper
 
         restAdapterBuilder.setErrorHandler(new RabbitApiErrorHandler());
         final RestAdapter adapter = restAdapterBuilder.build();
-        this.rabbitManagementApi = adapter.create(RabbitManagementApi.class);
+        return adapter.create(RabbitManagementApi.class);
+    }
+
+    private RabbitManagementApiFactory()
+    {
     }
 
     private static class RabbitApiErrorHandler implements ErrorHandler
@@ -66,10 +69,5 @@ final class RabbitManagementApiWrapper
     {
         @GET("/api/nodes/")
         Response getNodeStatus();
-    }
-
-    public RabbitManagementApi getRabbitManagementApi()
-    {
-        return rabbitManagementApi;
     }
 }

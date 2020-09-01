@@ -22,7 +22,7 @@ import com.hpe.caf.api.HealthResult;
 import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
 import com.hpe.caf.api.autoscale.WorkloadAnalyserFactory;
-import com.hpe.caf.autoscale.workload.rabbit.RabbitManagementApiWrapper.RabbitManagementApi;
+import com.hpe.caf.autoscale.workload.rabbit.RabbitManagementApiFactory.RabbitManagementApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,11 +50,10 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
             config.getRabbitManagementUser(),
             config.getRabbitManagementPassword(),
             config.getVhost());
-        this.rabbitManagementApi = new RabbitManagementApiWrapper(
+        this.rabbitManagementApi = RabbitManagementApiFactory.create(
             config.getRabbitManagementEndpoint(),
             config.getRabbitManagementUser(),
-            config.getRabbitManagementPassword())
-            .getRabbitManagementApi();
+            config.getRabbitManagementPassword());
         this.memoryMonitor = new RabbitSystemResourceMonitor(rabbitManagementApi, config.getMemoryQueryRequestFrequency());
         this.defaultProfile = config.getProfiles().get(RabbitWorkloadAnalyserConfiguration.DEFAULT_PROFILE_NAME);
         this.objectMapper = new ObjectMapper();

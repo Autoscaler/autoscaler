@@ -18,7 +18,7 @@ package com.hpe.caf.autoscale.workload.rabbit;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hpe.caf.api.autoscale.ScalerException;
-import com.hpe.caf.autoscale.workload.rabbit.RabbitManagementApiWrapper.RabbitManagementApi;
+import com.hpe.caf.autoscale.workload.rabbit.RabbitManagementApiFactory.RabbitManagementApi;
 import java.io.IOException;
 import java.util.Iterator;
 import retrofit.client.Response;

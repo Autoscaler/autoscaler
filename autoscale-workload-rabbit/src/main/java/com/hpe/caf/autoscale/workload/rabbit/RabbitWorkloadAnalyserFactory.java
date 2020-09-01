@@ -76,8 +76,6 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
     @Override
     public HealthResult healthCheck()
     {
-        // TODO TEMP: Remove (rory)
-        LOG.info("TEMP LOG: In healthcheck: " + config.getRabbitManagementEndpoint() + " " + config.getRabbitManagementUser() + " " + config.getRabbitManagementPassword());
         try {
             if (atLeastOneNodeRunning()) {
                 return HealthResult.RESULT_HEALTHY;

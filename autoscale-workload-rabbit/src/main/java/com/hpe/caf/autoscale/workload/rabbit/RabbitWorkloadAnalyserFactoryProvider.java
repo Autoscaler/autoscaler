@@ -22,9 +22,6 @@ import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.WorkloadAnalyserFactory;
 import com.hpe.caf.api.autoscale.WorkloadAnalyserFactoryProvider;
 
-import java.net.MalformedURLException;
-
-
 public class RabbitWorkloadAnalyserFactoryProvider implements WorkloadAnalyserFactoryProvider
 {
     @Override
@@ -33,11 +30,10 @@ public class RabbitWorkloadAnalyserFactoryProvider implements WorkloadAnalyserFa
     {
         try {
             return new RabbitWorkloadAnalyserFactory(configurationSource.getConfiguration(RabbitWorkloadAnalyserConfiguration.class));
-        } catch (ConfigurationException | MalformedURLException e) {
+        } catch (ConfigurationException e) {
             throw new ScalerException("Failed to create a workload analyser factory", e);
         }
     }
-
 
     @Override
     public String getWorkloadAnalyserName()

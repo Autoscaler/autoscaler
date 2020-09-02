@@ -46,10 +46,9 @@ final class RabbitManagementApiFactory
             requestFacade.addHeader("Accept", "application/json");
             requestFacade.addHeader("Authorization", authorizationHeaderValue);
         });
-
         restAdapterBuilder.setErrorHandler(new RabbitApiErrorHandler());
-        final RestAdapter adapter = restAdapterBuilder.build();
-        return adapter.create(RabbitManagementApi.class);
+        final RestAdapter restAdapter = restAdapterBuilder.build();
+        return restAdapter.create(RabbitManagementApi.class);
     }
 
     private RabbitManagementApiFactory()
@@ -68,6 +67,6 @@ final class RabbitManagementApiFactory
     public interface RabbitManagementApi
     {
         @GET("/api/nodes/")
-        Response getNodeStatus();
+        Response getNodeStatus() throws ScalerException;
     }
 }

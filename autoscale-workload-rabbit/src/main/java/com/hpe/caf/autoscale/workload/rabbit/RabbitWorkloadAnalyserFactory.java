@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hpe.caf.api.HealthResult;
 import com.hpe.caf.api.HealthStatus;
+import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
 import com.hpe.caf.api.autoscale.WorkloadAnalyserFactory;
 import com.hpe.caf.autoscale.workload.rabbit.RabbitManagementApiFactory.RabbitManagementApi;
@@ -79,19 +80,18 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
             if (atLeastOneNodeRunning()) {
                 return HealthResult.RESULT_HEALTHY;
             } else {
-                final String message
-                    = "At least 1 RabbitMQ node must be running, found 0 after checking " + nodeStatusEndpoint;
+                final String message = "RabbitMQ management API reports 0 nodes are running: " + nodeStatusEndpoint;
                 LOG.warn(message);
                 return new HealthResult(HealthStatus.UNHEALTHY, message);
             }
-        } catch (final IOException e) {
-            final String message = "IOException when trying to query " + nodeStatusEndpoint + " during healthcheck";
+        } catch (final IOException | ScalerException e) {
+            final String message = "Failed to contact RabbitMQ management API: " + nodeStatusEndpoint;
             LOG.warn(message, e);
             return new HealthResult(HealthStatus.UNHEALTHY, message);
         }
     }
 
-    private boolean atLeastOneNodeRunning() throws IOException
+    private boolean atLeastOneNodeRunning() throws ScalerException, IOException
     {
         final Response nodeStatusResponse = rabbitManagementApi.getNodeStatus();
         final JsonNode nodeArray = objectMapper.readTree(nodeStatusResponse.getBody().in());

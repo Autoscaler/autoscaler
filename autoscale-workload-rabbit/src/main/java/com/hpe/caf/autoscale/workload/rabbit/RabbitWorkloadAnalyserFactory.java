@@ -16,43 +16,50 @@
 package com.hpe.caf.autoscale.workload.rabbit;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hpe.caf.api.HealthResult;
 import com.hpe.caf.api.HealthStatus;
+import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.WorkloadAnalyser;
 import com.hpe.caf.api.autoscale.WorkloadAnalyserFactory;
+import com.hpe.caf.autoscale.workload.rabbit.RabbitManagementApiFactory.RabbitManagementApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.Socket;
-import java.net.URL;
+import java.util.Iterator;
 import java.util.Objects;
-
+import retrofit.client.Response;
 
 public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
 {
     private final RabbitWorkloadAnalyserConfiguration config;
     private final RabbitStatsReporter provider;
+    private final RabbitManagementApi rabbitManagementApi;
     private final RabbitSystemResourceMonitor memoryMonitor;
-    private final URL url;
     private final RabbitWorkloadProfile defaultProfile;
+    private final ObjectMapper objectMapper;
+    private final String nodeStatusEndpoint;
     private static final Logger LOG = LoggerFactory.getLogger(RabbitWorkloadAnalyserFactory.class);
 
-
     public RabbitWorkloadAnalyserFactory(final RabbitWorkloadAnalyserConfiguration config)
-            throws MalformedURLException
     {
         this.config = Objects.requireNonNull(config);
-        this.url = new URL(config.getRabbitManagementEndpoint());
-        this.provider = new RabbitStatsReporter(config.getRabbitManagementEndpoint(), config.getRabbitManagementUser(),
-                                                        config.getRabbitManagementPassword(), config.getVhost());
-        this.memoryMonitor = new RabbitSystemResourceMonitor(config.getRabbitManagementEndpoint(), config.getRabbitManagementUser(),
-                                                        config.getRabbitManagementPassword(), config.getMemoryQueryRequestFrequency());
+        this.provider = new RabbitStatsReporter(
+            config.getRabbitManagementEndpoint(),
+            config.getRabbitManagementUser(),
+            config.getRabbitManagementPassword(),
+            config.getVhost());
+        this.rabbitManagementApi = RabbitManagementApiFactory.create(
+            config.getRabbitManagementEndpoint(),
+            config.getRabbitManagementUser(),
+            config.getRabbitManagementPassword());
+        this.memoryMonitor = new RabbitSystemResourceMonitor(rabbitManagementApi, config.getMemoryQueryRequestFrequency());
         this.defaultProfile = config.getProfiles().get(RabbitWorkloadAnalyserConfiguration.DEFAULT_PROFILE_NAME);
+        this.objectMapper = new ObjectMapper();
+        this.nodeStatusEndpoint = config.getRabbitManagementEndpoint() + "/api/nodes/";
     }
-
 
     @Override
     public WorkloadAnalyser getAnalyser(final String scalingTarget, final String scalingProfile)
@@ -66,16 +73,36 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
         return new RabbitWorkloadAnalyser(scalingTarget, provider, profile, memoryMonitor);
     }
 
-
     @Override
     public HealthResult healthCheck()
     {
-        try ( Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(url.getHost(), url.getPort()), 5000);
-            return HealthResult.RESULT_HEALTHY;
-        } catch (IOException e) {
-            LOG.warn("Connection failure to HTTP endpoint", e);
-            return new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to REST endpoint: " + url);
+        try {
+            if (atLeastOneNodeRunning()) {
+                return HealthResult.RESULT_HEALTHY;
+            } else {
+                final String message = "RabbitMQ management API reports 0 nodes are running: " + nodeStatusEndpoint;
+                LOG.warn(message);
+                return new HealthResult(HealthStatus.UNHEALTHY, message);
+            }
+        } catch (final IOException | ScalerException e) {
+            final String message = "Failed to contact RabbitMQ management API: " + nodeStatusEndpoint;
+            LOG.warn(message, e);
+            return new HealthResult(HealthStatus.UNHEALTHY, message);
         }
+    }
+
+    private boolean atLeastOneNodeRunning() throws ScalerException, IOException
+    {
+        final Response nodeStatusResponse = rabbitManagementApi.getNodeStatus();
+        final JsonNode nodeArray = objectMapper.readTree(nodeStatusResponse.getBody().in());
+        final Iterator<JsonNode> iterator = nodeArray.elements();
+        while (iterator.hasNext()) {
+            final JsonNode jsonNode = iterator.next();
+            final JsonNode runningJsonNode = jsonNode.get("running");
+            if (runningJsonNode != null && runningJsonNode.asBoolean()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

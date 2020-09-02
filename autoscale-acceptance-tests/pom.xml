@@ -231,9 +231,9 @@
                                 <env>
                                     <DOCKER_HOST>http://${docker.host.address}:2375</DOCKER_HOST>
                                     <CAF_AUTOSCALER_DOCKER_SWARM_STACK>autoscalerdemo</CAF_AUTOSCALER_DOCKER_SWARM_STACK>
-                                    <CAF_RABBITMQ_MGMT_URL>http://rabbitmq:5672</CAF_RABBITMQ_MGMT_URL>
-                                    <!--<CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>
-                                    <CAF_RABBITMQ_MGMT_PASSWORD>guest</CAF_RABBITMQ_MGMT_PASSWORD>-->
+                                    <CAF_RABBITMQ_MGMT_URL>http://rabbitmq:15672</CAF_RABBITMQ_MGMT_URL>
+                                    <CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>
+                                    <CAF_RABBITMQ_MGMT_PASSWORD>guest</CAF_RABBITMQ_MGMT_PASSWORD>
                                 </env>
                                 <links>
                                     <link>marathon</link>
@@ -269,8 +269,8 @@
                                     <CAF_AUTOSCALER_SMTP_PORT>testPort</CAF_AUTOSCALER_SMTP_PORT>
                                     <CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO>noone@nothing.com</CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO>
                                     <CAF_AUTOSCALER_ALERT_DISABLED>true</CAF_AUTOSCALER_ALERT_DISABLED>
-<!--                                    <CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>
-                                    <CAF_RABBITMQ_MGMT_PASSWORD>guest</CAF_RABBITMQ_MGMT_PASSWORD>-->
+                                    <CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>
+                                    <CAF_RABBITMQ_MGMT_PASSWORD>guest</CAF_RABBITMQ_MGMT_PASSWORD>
                                 </env>
                                 <links>
                                     <link>marathon</link>

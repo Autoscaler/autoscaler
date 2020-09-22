@@ -86,7 +86,7 @@
                         
                         <image>
                             <alias>zookeeper</alias>
-                            <name>zookeeper:3.5</name>
+                            <name>${dockerHubPublic}/library/zookeeper:3.5</name>
                             <run>
                                 <ports>
                                     <port>${zookeeper.port}:2181</port>
@@ -107,7 +107,7 @@
                         
                         <image>
                             <alias>mesos-master</alias>
-                            <name>mesosphere/mesos-master:1.5.0</name>
+                            <name>${dockerHubPublic}/mesosphere/mesos-master:1.5.0</name>
                             <run>
                                 <ports>
                                     <port>${mesos.port}:5050</port>
@@ -137,7 +137,7 @@
                         
                         <image>
                             <alias>mesos-slave</alias>
-                            <name>mesosphere/mesos-slave:1.5.0</name>
+                            <name>${dockerHubPublic}/mesosphere/mesos-slave:1.5.0</name>
                             <run>
                                 <ports>
                                     <port>${mesos.slave.port}:5051</port>
@@ -177,7 +177,7 @@
                         
                         <image>
                             <alias>marathon</alias>
-                            <name>mesosphere/marathon:v1.6.352</name>
+                            <name>${dockerHubPublic}/mesosphere/marathon:v1.6.352</name>
                             <run>
                                 <ports>
                                     <port>${marathon.port}:8080</port>
@@ -204,7 +204,7 @@
                         
                         <image>
                             <alias>rabbitmq</alias>
-                            <name>rabbitmq:3.7.5-management</name>
+                            <name>${dockerHubPublic}/library/rabbitmq:3.7.5-management</name>
                             <run>
                                 <ports>
                                     <port>${rabbitmq.nodePort}:5672</port>

@@ -23,7 +23,7 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-aggregator</artifactId>
-    <version>1.9.0-SNAPSHOT</version>
+    <version>1.8.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Autoscaler</name>
@@ -39,7 +39,7 @@
     <inceptionYear>2015</inceptionYear>
 
     <properties>
-        <copyrightYear>2020</copyrightYear>
+        <copyrightYear>2021</copyrightYear>
         <dockerHubOrganization>autoscaler</dockerHubOrganization>
         <dockerAutoscalerOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerAutoscalerOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
@@ -113,52 +113,52 @@
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-api</artifactId>
-                <version>1.9.0-SNAPSHOT</version>
+                <version>1.8.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-core</artifactId>
-                <version>1.9.0-SNAPSHOT</version>
+                <version>1.8.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-dockerswarm-shared</artifactId>
-                <version>1.9.0-SNAPSHOT</version>
+                <version>1.8.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-email-alert-dispatcher</artifactId>
-                <version>1.9.0-SNAPSHOT</version>
+                <version>1.8.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-marathon-shared</artifactId>
-                <version>1.9.0-SNAPSHOT</version>
+                <version>1.8.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-scaler-dockerswarm</artifactId>
-                <version>1.9.0-SNAPSHOT</version>
+                <version>1.8.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-scaler-marathon</artifactId>
-                <version>1.9.0-SNAPSHOT</version>
+                <version>1.8.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-source-dockerswarm</artifactId>
-                <version>1.9.0-SNAPSHOT</version>
+                <version>1.8.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-source-marathon</artifactId>
-                <version>1.9.0-SNAPSHOT</version>
+                <version>1.8.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-workload-rabbit</artifactId>
-                <version>1.9.0-SNAPSHOT</version>
+                <version>1.8.1-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -20,7 +20,7 @@ services:
   worker-globfilter:
     environment:
       CAF_LOG_LEVEL: DEBUG
-      _JAVA_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+      _JAVA_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     ports:
       - "9452:5005"
       - "9453:8081"
@@ -29,7 +29,7 @@ services:
   worker-jobtracking:
     environment:
       CAF_LOG_LEVEL: DEBUG
-      _JAVA_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+      _JAVA_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     ports:
       - "9454:5005"
       - "9455:8081"
@@ -38,7 +38,7 @@ services:
   worker-langdetect:
     environment:
       CAF_LOG_LEVEL: DEBUG
-      _JAVA_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+      _JAVA_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     ports:
       - "9456:5005"
       - "9457:8081"

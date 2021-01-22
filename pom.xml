@@ -43,7 +43,6 @@
         <dockerHubOrganization>autoscaler</dockerHubOrganization>
         <dockerAutoscalerOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerAutoscalerOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
-        <gitRepo>https://github.com/Autoscaler/autoscaler</gitRepo>
         <enforceCorrectDependencies>true</enforceCorrectDependencies>
         <enforceBannedDependencies>true</enforceBannedDependencies>
         <fabric8.docker.maven.version>0.26.1</fabric8.docker.maven.version>
@@ -166,7 +165,7 @@
     <scm>
         <connection>scm:git:https://github.com/AutoScaler/autoscaler.git</connection>
         <developerConnection>scm:git:https://github.com/AutoScaler/autoscaler.git</developerConnection>
-        <url>${gitRepo}</url>
+        <url>https://github.com/Autoscaler/autoscaler</url>
     </scm>
 
 </project>

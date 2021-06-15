@@ -80,11 +80,13 @@
         <module>autoscale-core</module>
         <module>autoscale-dockerswarm-shared</module>
         <module>autoscale-dockerswarm-container</module>
+        <module>autoscale-kubernetes-shared</module>
         <module>autoscale-marathon-shared</module>
         <module>autoscale-marathon-container</module>
         <module>autoscale-scaler-dockerswarm</module>
         <module>autoscale-scaler-marathon</module>
         <module>autoscale-source-dockerswarm</module>
+        <module>autoscale-source-kubernetes</module>
         <module>autoscale-source-marathon</module>        
         <module>autoscale-workload-rabbit</module>
         <module>autoscale-acceptance-tests</module>
@@ -127,6 +129,11 @@
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-email-alert-dispatcher</artifactId>
+                <version>1.9.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-kubernetes-shared</artifactId>
                 <version>1.9.0-SNAPSHOT</version>
             </dependency>
             <dependency>

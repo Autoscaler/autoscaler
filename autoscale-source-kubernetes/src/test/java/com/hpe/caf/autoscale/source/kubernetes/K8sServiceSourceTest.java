@@ -99,7 +99,7 @@ public class K8sServiceSourceTest
     }
     
     @Test
-    public void ctorTest() throws ScalerException
+    public void checkThatLabelsAreConvertedToScalingConfigurationTest() throws ScalerException
     { 
         final Set<ScalingConfiguration> scSet = source.getServices(); 
         assertNotNull("K8sServiceSource should not be null", scSet);
@@ -108,13 +108,13 @@ public class K8sServiceSourceTest
         errorCollector.checkThat("Workload metric should be " + METRIC, sc.getWorkloadMetric(), CoreMatchers.equalTo(METRIC));
         errorCollector.checkThat("Scaling profile should be " + PROFILE, sc.getScalingProfile(), CoreMatchers.equalTo(PROFILE));
         errorCollector.checkThat("Id should be the name of the replica set", sc.getId(), CoreMatchers.equalTo(REPLICA_SET_NAME));
-        errorCollector.checkThat("Backoff amount should be 1", sc.getBackoffAmount(), CoreMatchers.equalTo(1));
+        errorCollector.checkThat("Back off amount should be 1", sc.getBackoffAmount(), CoreMatchers.equalTo(1));
         errorCollector.checkThat("Interval should be 2", sc.getInterval(), CoreMatchers.equalTo(2));
-        errorCollector.checkThat("Max Instances should be 3", sc.getMaxInstances(), CoreMatchers.equalTo(3));
-        errorCollector.checkThat("Min Instances should be 4", sc.getMinInstances(), CoreMatchers.equalTo(4));
+        errorCollector.checkThat("Max instances should be 3", sc.getMaxInstances(), CoreMatchers.equalTo(3));
+        errorCollector.checkThat("Min instances should be 4", sc.getMinInstances(), CoreMatchers.equalTo(4));
         errorCollector.checkThat("Scale down backoff should be 5", sc.getScaleDownBackoffAmount(), CoreMatchers.equalTo(5));
         errorCollector.checkThat("Scale ip backoff should be 6", sc.getScaleUpBackoffAmount(), CoreMatchers.equalTo(6));
-        errorCollector.checkThat("Scaling target should be 7", sc.getScalingTarget(), CoreMatchers.equalTo("7"));
+        errorCollector.checkThat("Scaling target should be (string)7", sc.getScalingTarget(), CoreMatchers.equalTo("7"));
     }
     
     @Test

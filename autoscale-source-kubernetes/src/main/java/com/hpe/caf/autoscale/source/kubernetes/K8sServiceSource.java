@@ -22,9 +22,9 @@ import com.hpe.caf.api.autoscale.ServiceSource;
 import com.hpe.caf.autoscale.K8sAutoscaleConfiguration;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
+import io.kubernetes.client.openapi.models.V1Deployment;
+import io.kubernetes.client.openapi.models.V1DeploymentList;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
-import io.kubernetes.client.openapi.models.V1ReplicaSet;
-import io.kubernetes.client.openapi.models.V1ReplicaSetList;
 
 import java.util.Map;
 import java.util.Objects;
@@ -63,22 +63,22 @@ public class K8sServiceSource implements ServiceSource
     
     private Set<ScalingConfiguration> getScalingConfiguration() throws ApiException
     {
-        final V1ReplicaSetList replicaSets = api.listNamespacedReplicaSet(
+        final V1DeploymentList deployments = api.listNamespacedDeployment(
             config.getNamespace(), 
             "false", 
             false, null, null, null, null, null, null, 
             false);
-        return replicaSets.getItems()
+        return deployments.getItems()
             .stream()
-            .filter(rs -> isLabelledForScaling(rs))
-            .map(rs -> mapToScalingConfig(rs))
+            .filter(d -> isLabelledForScaling(d))
+            .map(d -> mapToScalingConfig(d))
             .collect(Collectors.toSet());
     }
 
-    private ScalingConfiguration mapToScalingConfig(final V1ReplicaSet rs)
+    private ScalingConfiguration mapToScalingConfig(final V1Deployment deployment)
     {
         final ScalingConfiguration cfg = new ScalingConfiguration();
-        final V1ObjectMeta metadata = rs.getMetadata();
+        final V1ObjectMeta metadata = deployment.getMetadata();
         final Map<String, String> labels = metadata.getLabels();
         cfg.setId(metadata.getName());
         if (labels.containsKey(ScalingConfiguration.KEY_WORKLOAD_METRIC)) {
@@ -113,12 +113,12 @@ public class K8sServiceSource implements ServiceSource
 
     /**
      * // DDD Still to work out ho we determine this
-     * @param rs
+     * @param deployment
      * @return
      */
-    private boolean isLabelledForScaling(final V1ReplicaSet rs)
+    private boolean isLabelledForScaling(final V1Deployment deployment)
     {
-        return RABBITMQ_METRIC.equalsIgnoreCase(rs.getMetadata().getLabels().get(ScalingConfiguration.KEY_WORKLOAD_METRIC));
+        return RABBITMQ_METRIC.equalsIgnoreCase(deployment.getMetadata().getLabels().get(ScalingConfiguration.KEY_WORKLOAD_METRIC));
     }
 
     /**

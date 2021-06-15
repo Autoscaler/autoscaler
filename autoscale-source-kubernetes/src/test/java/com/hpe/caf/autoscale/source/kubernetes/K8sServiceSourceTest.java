@@ -30,9 +30,9 @@ import static com.hpe.caf.api.autoscale.ScalingConfiguration.KEY_WORKLOAD_METRIC
 import com.hpe.caf.autoscale.K8sAutoscaleConfiguration;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
+import io.kubernetes.client.openapi.models.V1Deployment;
+import io.kubernetes.client.openapi.models.V1DeploymentList;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
-import io.kubernetes.client.openapi.models.V1ReplicaSet;
-import io.kubernetes.client.openapi.models.V1ReplicaSetList;
 import org.hamcrest.CoreMatchers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -54,7 +54,7 @@ public class K8sServiceSourceTest
     private K8sServiceSource source;
     private final String METRIC = "rabbitmq";
     private final String PROFILE = "profile";
-    private final String REPLICA_SET_NAME = "myreplicaset";
+    private final String DEPLOYMENT_NAME = "myreplicaset";
     
     @Rule
     public ErrorCollector errorCollector = new ErrorCollector();
@@ -63,38 +63,38 @@ public class K8sServiceSourceTest
     public void setup() throws ApiException
     {
         final AppsV1Api mockApi = Mockito.mock(AppsV1Api.class);
-        final V1ReplicaSetList mockReplicaSetList = Mockito.mock(V1ReplicaSetList.class);
-        final V1ReplicaSet mockReplicaSetForRabbitMQ = Mockito.mock(V1ReplicaSet.class);
+        final V1DeploymentList mockDeploymentList = Mockito.mock(V1DeploymentList.class);
+        final V1Deployment mockDeploymentForRabbitMQ = Mockito.mock(V1Deployment.class);
         
         final V1ObjectMeta mockV1ObjectMeta = Mockito.mock(V1ObjectMeta.class);
-        final Map<String, String> labelsForRabbitMQReplicaSet = new HashMap<>();
-        labelsForRabbitMQReplicaSet.put(KEY_WORKLOAD_METRIC, METRIC);
-        labelsForRabbitMQReplicaSet.put(KEY_SCALING_PROFILE, PROFILE);
-        labelsForRabbitMQReplicaSet.put(KEY_BACKOFF_AMOUNT, "1");
-        labelsForRabbitMQReplicaSet.put(KEY_INTERVAL, "2");
-        labelsForRabbitMQReplicaSet.put(KEY_MAX_INSTANCES, "3");
-        labelsForRabbitMQReplicaSet.put(KEY_MIN_INSTANCES, "4");
-        labelsForRabbitMQReplicaSet.put(KEY_SCALE_DOWN_BACKOFF_AMOUNT, "5");
-        labelsForRabbitMQReplicaSet.put(KEY_SCALE_UP_BACKOFF_AMOUNT, "6");
-        labelsForRabbitMQReplicaSet.put(KEY_SCALING_TARGET, "7");
-        when(mockV1ObjectMeta.getLabels()).thenReturn(labelsForRabbitMQReplicaSet);
-        when(mockV1ObjectMeta.getName()).thenReturn(REPLICA_SET_NAME);
-        when(mockReplicaSetForRabbitMQ.getMetadata()).thenReturn(mockV1ObjectMeta);
+        final Map<String, String> labelsForRabbitMQDeployment = new HashMap<>();
+        labelsForRabbitMQDeployment.put(KEY_WORKLOAD_METRIC, METRIC);
+        labelsForRabbitMQDeployment.put(KEY_SCALING_PROFILE, PROFILE);
+        labelsForRabbitMQDeployment.put(KEY_BACKOFF_AMOUNT, "1");
+        labelsForRabbitMQDeployment.put(KEY_INTERVAL, "2");
+        labelsForRabbitMQDeployment.put(KEY_MAX_INSTANCES, "3");
+        labelsForRabbitMQDeployment.put(KEY_MIN_INSTANCES, "4");
+        labelsForRabbitMQDeployment.put(KEY_SCALE_DOWN_BACKOFF_AMOUNT, "5");
+        labelsForRabbitMQDeployment.put(KEY_SCALE_UP_BACKOFF_AMOUNT, "6");
+        labelsForRabbitMQDeployment.put(KEY_SCALING_TARGET, "7");
+        when(mockV1ObjectMeta.getLabels()).thenReturn(labelsForRabbitMQDeployment);
+        when(mockV1ObjectMeta.getName()).thenReturn(DEPLOYMENT_NAME);
+        when(mockDeploymentForRabbitMQ.getMetadata()).thenReturn(mockV1ObjectMeta);
 
 
-        final V1ReplicaSet mockReplicaSet_NOT_FOR_RABBITMQ = Mockito.mock(V1ReplicaSet.class);
+        final V1Deployment mockDeployment_NOT_FOR_RABBITMQ = Mockito.mock(V1Deployment.class);
         final V1ObjectMeta mockV1ObjectMeta_NOT_FOR_RABBITMQ = Mockito.mock(V1ObjectMeta.class);
-        final Map<String, String> labelsMQReplicaSet_NOT_FOR_RABBITMQ = new HashMap<>();
-        labelsMQReplicaSet_NOT_FOR_RABBITMQ.put(KEY_WORKLOAD_METRIC, "SomethingElse");
+        final Map<String, String> labelsMQDeployment_NOT_FOR_RABBITMQ = new HashMap<>();
+        labelsMQDeployment_NOT_FOR_RABBITMQ.put(KEY_WORKLOAD_METRIC, "SomethingElse");
         when(mockV1ObjectMeta_NOT_FOR_RABBITMQ.getName()).thenReturn("SomethingElse");
-        when(mockV1ObjectMeta_NOT_FOR_RABBITMQ.getLabels()).thenReturn(labelsMQReplicaSet_NOT_FOR_RABBITMQ);
-        when(mockReplicaSet_NOT_FOR_RABBITMQ.getMetadata()).thenReturn(mockV1ObjectMeta_NOT_FOR_RABBITMQ);     
+        when(mockV1ObjectMeta_NOT_FOR_RABBITMQ.getLabels()).thenReturn(labelsMQDeployment_NOT_FOR_RABBITMQ);
+        when(mockDeployment_NOT_FOR_RABBITMQ.getMetadata()).thenReturn(mockV1ObjectMeta_NOT_FOR_RABBITMQ);     
 
         //  This will contain 2 items, only one of which is labeled for rabbit mq scaling.
-        when(mockReplicaSetList.getItems()).thenReturn(Arrays.asList(mockReplicaSetForRabbitMQ, mockReplicaSet_NOT_FOR_RABBITMQ));
-        when(mockApi.listNamespacedReplicaSet(
+        when(mockDeploymentList.getItems()).thenReturn(Arrays.asList(mockDeploymentForRabbitMQ, mockDeployment_NOT_FOR_RABBITMQ));
+        when(mockApi.listNamespacedDeployment(
             any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
-        ).thenReturn(mockReplicaSetList);
+        ).thenReturn(mockDeploymentList);
         source = new K8sServiceSource(mockApi, new K8sAutoscaleConfiguration());
     }
     
@@ -107,7 +107,7 @@ public class K8sServiceSourceTest
         final ScalingConfiguration sc = scSet.iterator().next();
         errorCollector.checkThat("Workload metric should be " + METRIC, sc.getWorkloadMetric(), CoreMatchers.equalTo(METRIC));
         errorCollector.checkThat("Scaling profile should be " + PROFILE, sc.getScalingProfile(), CoreMatchers.equalTo(PROFILE));
-        errorCollector.checkThat("Id should be the name of the replica set", sc.getId(), CoreMatchers.equalTo(REPLICA_SET_NAME));
+        errorCollector.checkThat("Id should be the name of the replica set", sc.getId(), CoreMatchers.equalTo(DEPLOYMENT_NAME));
         errorCollector.checkThat("Back off amount should be 1", sc.getBackoffAmount(), CoreMatchers.equalTo(1));
         errorCollector.checkThat("Interval should be 2", sc.getInterval(), CoreMatchers.equalTo(2));
         errorCollector.checkThat("Max instances should be 3", sc.getMaxInstances(), CoreMatchers.equalTo(3));

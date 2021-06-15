@@ -90,7 +90,7 @@ public class K8sServiceSourceTest
         when(mockV1ObjectMeta_NOT_FOR_RABBITMQ.getLabels()).thenReturn(labelsMQReplicaSet_NOT_FOR_RABBITMQ);
         when(mockReplicaSet_NOT_FOR_RABBITMQ.getMetadata()).thenReturn(mockV1ObjectMeta_NOT_FOR_RABBITMQ);     
 
-        //  This will contain 2 items, only one of which is labeled for reabbit mq scaling.
+        //  This will contain 2 items, only one of which is labeled for rabbit mq scaling.
         when(mockReplicaSetList.getItems()).thenReturn(Arrays.asList(mockReplicaSetForRabbitMQ, mockReplicaSet_NOT_FOR_RABBITMQ));
         when(mockApi.listNamespacedReplicaSet(
             any(), any(), any(), any(), any(), any(), any(), any(), any(), any())

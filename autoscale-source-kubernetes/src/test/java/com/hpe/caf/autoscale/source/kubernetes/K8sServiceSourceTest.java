@@ -55,17 +55,16 @@ public class K8sServiceSourceTest
     private final String METRIC = "rabbitmq";
     private final String PROFILE = "profile";
     private final String DEPLOYMENT_NAME = "myreplicaset";
-    
+
     @Rule
     public ErrorCollector errorCollector = new ErrorCollector();
-    
+
     @Before
     public void setup() throws ApiException
     {
         final AppsV1Api mockApi = Mockito.mock(AppsV1Api.class);
         final V1DeploymentList mockDeploymentList = Mockito.mock(V1DeploymentList.class);
         final V1Deployment mockDeploymentForRabbitMQ = Mockito.mock(V1Deployment.class);
-        
         final V1ObjectMeta mockV1ObjectMeta = Mockito.mock(V1ObjectMeta.class);
         final Map<String, String> labelsForRabbitMQDeployment = new HashMap<>();
         labelsForRabbitMQDeployment.put(KEY_WORKLOAD_METRIC, METRIC);
@@ -81,14 +80,13 @@ public class K8sServiceSourceTest
         when(mockV1ObjectMeta.getName()).thenReturn(DEPLOYMENT_NAME);
         when(mockDeploymentForRabbitMQ.getMetadata()).thenReturn(mockV1ObjectMeta);
 
-
         final V1Deployment mockDeployment_NOT_FOR_RABBITMQ = Mockito.mock(V1Deployment.class);
         final V1ObjectMeta mockV1ObjectMeta_NOT_FOR_RABBITMQ = Mockito.mock(V1ObjectMeta.class);
         final Map<String, String> labelsMQDeployment_NOT_FOR_RABBITMQ = new HashMap<>();
         labelsMQDeployment_NOT_FOR_RABBITMQ.put(KEY_WORKLOAD_METRIC, "SomethingElse");
         when(mockV1ObjectMeta_NOT_FOR_RABBITMQ.getName()).thenReturn("SomethingElse");
         when(mockV1ObjectMeta_NOT_FOR_RABBITMQ.getLabels()).thenReturn(labelsMQDeployment_NOT_FOR_RABBITMQ);
-        when(mockDeployment_NOT_FOR_RABBITMQ.getMetadata()).thenReturn(mockV1ObjectMeta_NOT_FOR_RABBITMQ);     
+        when(mockDeployment_NOT_FOR_RABBITMQ.getMetadata()).thenReturn(mockV1ObjectMeta_NOT_FOR_RABBITMQ);
 
         //  This will contain 2 items, only one of which is labeled for rabbit mq scaling.
         when(mockDeploymentList.getItems()).thenReturn(Arrays.asList(mockDeploymentForRabbitMQ, mockDeployment_NOT_FOR_RABBITMQ));
@@ -97,11 +95,11 @@ public class K8sServiceSourceTest
         ).thenReturn(mockDeploymentList);
         source = new K8sServiceSource(mockApi, new K8sAutoscaleConfiguration());
     }
-    
+
     @Test
     public void checkThatLabelsAreConvertedToScalingConfigurationTest() throws ScalerException
     { 
-        final Set<ScalingConfiguration> scSet = source.getServices(); 
+        final Set<ScalingConfiguration> scSet = source.getServices();
         assertNotNull("K8sServiceSource should not be null", scSet);
         assertEquals("There should only be one ScalingConfiguration", 1, scSet.size());
         final ScalingConfiguration sc = scSet.iterator().next();
@@ -116,7 +114,7 @@ public class K8sServiceSourceTest
         errorCollector.checkThat("Scale ip backoff should be 6", sc.getScaleUpBackoffAmount(), CoreMatchers.equalTo(6));
         errorCollector.checkThat("Scaling target should be (string)7", sc.getScalingTarget(), CoreMatchers.equalTo("7"));
     }
-    
+
     @Test
     public void healthCheckTest() {
         assertEquals(HealthResult.RESULT_HEALTHY, source.healthCheck());

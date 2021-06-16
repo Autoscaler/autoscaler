@@ -31,12 +31,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-// DDD complete header
 public class K8sServiceSource implements ServiceSource
 {
     private final K8sAutoscaleConfiguration config;
     private final AppsV1Api api;
-    
     private final String RABBITMQ_METRIC = "rabbitmq";
 
     public K8sServiceSource(final AppsV1Api api, final K8sAutoscaleConfiguration config)
@@ -44,10 +42,7 @@ public class K8sServiceSource implements ServiceSource
         this.config = Objects.requireNonNull(config);
         this.api = api;
     }
-        
-    /**
-     * Needs to talk to K8S and load replica sets with autoscaling labels
-     */
+
     @Override
     public Set<ScalingConfiguration> getServices()
         throws ScalerException
@@ -60,13 +55,13 @@ public class K8sServiceSource implements ServiceSource
             throw new ScalerException("Error loading services", e);
         }
     }
-    
+
     private Set<ScalingConfiguration> getScalingConfiguration() throws ApiException
     {
         final V1DeploymentList deployments = api.listNamespacedDeployment(
-            config.getNamespace(), 
-            "false", 
-            false, null, null, null, null, null, null, 
+            config.getNamespace(),
+            "false",
+            false, null, null, null, null, null, null,
             false);
         return deployments.getItems()
             .stream()
@@ -112,7 +107,6 @@ public class K8sServiceSource implements ServiceSource
     }
 
     /**
-     * // DDD Still to work out ho we determine this
      * @param deployment
      * @return
      */
@@ -122,7 +116,7 @@ public class K8sServiceSource implements ServiceSource
     }
 
     /**
-     * // DDD Add kubectl healthcheck 
+     * Assumption is that this will be handled in the deployment yaml.
      */
     @Override
     public HealthResult healthCheck()

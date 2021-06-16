@@ -18,12 +18,12 @@ package com.hpe.caf.autoscale;
 import javax.validation.constraints.Min;
 
 /**
- * Shared configuration between the KubernetesServiceScalar and KubernetesServiceSource.
+ * Shared configuration between the K8sServiceScalar and K8sServiceSource.
  */
 public class K8sAutoscaleConfiguration
 {
     /**
-     * The absolute maximum instances for any service in Marathon.
+     * The absolute maximum instances for any service in Kubernetes.
      */
     @Min(1)
     private int maximumInstances;
@@ -44,6 +44,7 @@ public class K8sAutoscaleConfiguration
     {
         return this.namespace;
     }
+
     public void setNamespace(String namespace)
     {
         this.namespace = namespace;

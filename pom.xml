@@ -84,6 +84,7 @@
         <module>autoscale-marathon-shared</module>
         <module>autoscale-marathon-container</module>
         <module>autoscale-scaler-dockerswarm</module>
+        <module>autoscale-scaler-kubernetes</module>
         <module>autoscale-scaler-marathon</module>
         <module>autoscale-source-dockerswarm</module>
         <module>autoscale-source-kubernetes</module>
@@ -144,6 +145,11 @@
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-scaler-dockerswarm</artifactId>
+                <version>1.9.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-scaler-kubernetes</artifactId>
                 <version>1.9.0-SNAPSHOT</version>
             </dependency>
             <dependency>

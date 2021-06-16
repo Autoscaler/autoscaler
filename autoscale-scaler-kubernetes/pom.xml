@@ -22,11 +22,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.autoscaler</groupId>
-    <artifactId>autoscale-source-kubernetes</artifactId>
-    
+    <artifactId>autoscale-scaler-kubernetes</artifactId>
+
     <parent>
-        <artifactId>autoscale-aggregator</artifactId>
         <groupId>com.github.autoscaler</groupId>
+        <artifactId>autoscale-aggregator</artifactId>
         <version>1.9.0-SNAPSHOT</version>
     </parent>
 
@@ -34,10 +34,7 @@
         <dependency>
             <groupId>com.github.cafapi</groupId>
             <artifactId>caf-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cafapi.util</groupId>
-            <artifactId>util-naming</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
@@ -51,6 +48,10 @@
             <groupId>io.kubernetes</groupId>
             <artifactId>client-java-api</artifactId>
             <version>10.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

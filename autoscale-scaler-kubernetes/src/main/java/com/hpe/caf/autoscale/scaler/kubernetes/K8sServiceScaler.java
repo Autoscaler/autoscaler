@@ -23,7 +23,7 @@ import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.autoscale.K8sAutoscaleConfiguration;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
-import io.kubernetes.client.openapi.models.V1Scale;
+import io.kubernetes.client.openapi.models.V1Deployment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,11 +32,11 @@ import java.util.Map;
 
 public class K8sServiceScaler implements ServiceScaler
 {
+    private static final Logger LOG = LoggerFactory.getLogger(K8sServiceScaler.class);
+
     private final int maximumInstances;
     private final AppsV1Api api;
     private final String namespace;
-
-    private static final Logger LOG = LoggerFactory.getLogger(K8sServiceScaler.class);
 
     public K8sServiceScaler(final AppsV1Api api, final K8sAutoscaleConfiguration config)
     {
@@ -49,15 +49,16 @@ public class K8sServiceScaler implements ServiceScaler
     public void scaleUp(final String deploymentName, final int amount) throws ScalerException
     {
         try {
-            final V1Scale scale = getDeploymentScale(deploymentName);
+            final V1Deployment scale = getDeploymentScale(deploymentName);
             final int currentReplicas = scale.getSpec().getReplicas();
             final int target = Math.min(maximumInstances, currentReplicas + amount);
             if (target > currentReplicas) {
                 scale.getSpec().setReplicas(Math.min(maximumInstances, currentReplicas + amount));
                 LOG.info("Scaling deployment {} up by {} instances", deploymentName, amount);
-                api.replaceNamespacedDeploymentScale(deploymentName, namespace, scale, null, null, null);
+                api.replaceNamespacedDeployment(deploymentName, namespace, scale, null, null, null);
             }
         } catch (ApiException e) {
+            LOG.error("Error scaling up deployment {}", deploymentName, e);
             throw new ScalerException("Error scaling up deployment " + deploymentName, e);
         }
     }
@@ -66,15 +67,16 @@ public class K8sServiceScaler implements ServiceScaler
     public void scaleDown(final String deploymentName, final int amount) throws ScalerException
     {
         try {
-            final V1Scale scale = getDeploymentScale(deploymentName);
+            final V1Deployment scale = getDeploymentScale(deploymentName);
             final int currentReplicas = scale.getSpec().getReplicas();
             final int target = Math.max(0, currentReplicas - amount);
             if (currentReplicas > 0) {
                 scale.getSpec().setReplicas(target);
                 LOG.info("Scaling deployment {} down by {} instances", deploymentName, amount);
-                api.replaceNamespacedDeploymentScale(deploymentName, namespace, scale, null, null, null);
+                api.replaceNamespacedDeployment(deploymentName, namespace, scale, null, null, null);
             }
         } catch (ApiException e) {
+            LOG.error("Error scaling down deployment {}", deploymentName, e);
             throw new ScalerException("Error scaling down deployment " + deploymentName, e);
         }
     }
@@ -83,16 +85,18 @@ public class K8sServiceScaler implements ServiceScaler
     public InstanceInfo getInstanceInfo(final String deploymentName) throws ScalerException
     {
         try {
-            final V1Scale scale = getDeploymentScale(deploymentName);
+            final V1Deployment scale = getDeploymentScale(deploymentName);
             final Map<String, String> labels = scale.getMetadata().getLabels();
             int shutdownPriority = labels.containsKey(KEY_SHUTDOWN_PRIORITY) ? Integer.parseInt(labels.get(KEY_SHUTDOWN_PRIORITY)) : -1;
-            return new InstanceInfo(
+            final InstanceInfo instanceInfo = new InstanceInfo(
                 scale.getSpec().getReplicas(),
                 0,
                 Collections.EMPTY_LIST,
                 shutdownPriority,
                 scale.getSpec().getReplicas());
+            return instanceInfo;
         } catch (ApiException e) {
+            LOG.error("Error loading instance info for {}", deploymentName, e);
             throw new ScalerException("Error loading deployment scale " + deploymentName, e);
         }
     }
@@ -106,8 +110,8 @@ public class K8sServiceScaler implements ServiceScaler
         return HealthResult.RESULT_HEALTHY;
     }
 
-    private V1Scale getDeploymentScale(final String deploymentName) throws ApiException
+    private V1Deployment getDeploymentScale(final String deploymentName) throws ApiException
     {
-        return api.readNamespacedDeploymentScale(namespace, deploymentName, "false");
+        return api.readNamespacedDeployment(deploymentName, namespace, "false", false, false);
     }
 }

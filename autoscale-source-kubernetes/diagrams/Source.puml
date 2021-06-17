@@ -1,0 +1,46 @@
+@startuml
+
+interface ServiceSource {
+    + Set<ScalingConfiguration> getServices()
+}
+
+interface ServiceSourceProvider {
+     + ServiceSource getServiceSource()
+}
+
+class K8sServiceSourceProvider {
+    + K8sServiceSource getServiceSource()
+}
+class K8sServiceSource {
+    +  Set<ScalingConfiguration> getServices()
+}
+
+class ScalingConfiguration {
+    Used by the autoscale application
+    in determining how to scale a service.
+    The below methods return the value of labels
+    on a ReplicaSet.
+    + String getId();
+    + String getWorkloadMetric(); autoscale.metric
+    + String getScalingTarget(); autoscale.scalingtarget
+    + int int getInterval(); autoscale.interval
+    + int getMinInstances(); autoscale.mininstances
+    + int getMaxInstances(); autoscale.maxinstances  
+    + String getScalingProfile(); autoscale.profile
+    + int getBackoffAmount(); autoscale.backoff
+    + int getScaleDownBackoffAmount(); autoscale.scaledownbackoff
+    + int getScaleUpBackoffAmount(); autoscale.scaleupbackoff
+}
+
+class K8sAutoscaleConfiguration {
+ + int getMaximumInstances()
+ + String getNamespace()
+}
+
+K8sServiceSource -- ScalingConfiguration
+K8sServiceSource -- K8sAutoscaleConfiguration
+K8sServiceSourceProvider -- K8sAutoscaleConfiguration
+ServiceSource <|.. K8sServiceSource
+ServiceSourceProvider <|.. K8sServiceSourceProvider
+
+@enduml

@@ -22,8 +22,11 @@ import com.hpe.caf.api.autoscale.ServiceSource;
 import com.hpe.caf.api.autoscale.ServiceSourceProvider;
 import com.hpe.caf.autoscale.K8sAutoscaleConfiguration;
 import com.hpe.caf.naming.ServicePath;
-import io.kubernetes.client.openapi.Configuration;
+import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
+import io.kubernetes.client.util.ClientBuilder;
+
+import java.io.IOException;
 
 public class K8sServiceSourceProvider implements ServiceSourceProvider
 {
@@ -34,8 +37,9 @@ public class K8sServiceSourceProvider implements ServiceSourceProvider
     {
         try {
             final K8sAutoscaleConfiguration config = configurationSource.getConfiguration(K8sAutoscaleConfiguration.class);
-            return new K8sServiceSource(new AppsV1Api(Configuration.getDefaultApiClient()), config);
-        } catch (ConfigurationException e) {
+            final ApiClient client = ClientBuilder.standard().build();
+            return new K8sServiceSource(new AppsV1Api(client), config);
+        } catch (ConfigurationException | IOException e) {
             throw new ScalerException("Failed to create service source", e);
         }
     }

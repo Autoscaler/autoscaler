@@ -21,9 +21,9 @@ import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.autoscale.K8sAutoscaleConfiguration;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
+import io.kubernetes.client.openapi.models.V1Deployment;
+import io.kubernetes.client.openapi.models.V1DeploymentSpec;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
-import io.kubernetes.client.openapi.models.V1Scale;
-import io.kubernetes.client.openapi.models.V1ScaleSpec;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.fail;
 import org.hamcrest.CoreMatchers;
@@ -44,7 +44,7 @@ public class K8sServiceScalerTest
 {   
     private K8sServiceScaler serviceScaler;
     private AppsV1Api mockApi;
-    private V1ScaleSpec mockScaleSpec;
+    private V1DeploymentSpec mockScaleSpec;
 
     @Rule
     public ErrorCollector errorCollector = new ErrorCollector();
@@ -56,15 +56,15 @@ public class K8sServiceScalerTest
         k8sAutoscaleConfiguration.setNamespace("namespace");
         k8sAutoscaleConfiguration.setMaximumInstances(10);
         mockApi = Mockito.mock(AppsV1Api.class);
-        final V1Scale mockScale = Mockito.mock(V1Scale.class);
+        final V1Deployment mockScale = Mockito.mock(V1Deployment.class);
         final V1ObjectMeta mockMetadata = Mockito.mock(V1ObjectMeta.class);
-        mockScaleSpec = Mockito.mock(V1ScaleSpec.class);
+        mockScaleSpec = Mockito.mock(V1DeploymentSpec.class);
         when(mockScale.getSpec()).thenReturn(mockScaleSpec);
         when(mockMetadata.getLabels()).thenReturn(new HashMap<>());
         when(mockScale.getMetadata()).thenReturn(mockMetadata);
         when(mockScaleSpec.getReplicas()).thenReturn(1);
-        when(mockApi.readNamespacedDeploymentScale(any(), any(), any())).thenReturn(mockScale);
-        when(mockApi.replaceNamespacedDeploymentScale(any(), any(), any(), any(), any(), any())).thenReturn(null);
+        when(mockApi.readNamespacedDeployment(any(), any(), any(), any(), any())).thenReturn(mockScale);
+        when(mockApi.replaceNamespacedDeployment(any(), any(), any(), any(), any(), any())).thenReturn(null);
         serviceScaler = new K8sServiceScaler(mockApi, k8sAutoscaleConfiguration);
     }
     
@@ -77,7 +77,7 @@ public class K8sServiceScalerTest
     public void scaleUpTest() {
         try {
             serviceScaler.scaleUp("placeHolder", 1);
-            verify(mockApi, times(1)).replaceNamespacedDeploymentScale(any(), any(), any(), any(), any(), any());
+            verify(mockApi, times(1)).replaceNamespacedDeployment(any(), any(), any(), any(), any(), any());
         } catch (ScalerException | ApiException e) {
             fail("Should not have thrown exception scaling up");
         }
@@ -88,7 +88,7 @@ public class K8sServiceScalerTest
         try {
             when(mockScaleSpec.getReplicas()).thenReturn(10);
             serviceScaler.scaleUp("placeHolder", 1);
-            verify(mockApi, times(0)).replaceNamespacedDeploymentScale(any(), any(), any(), any(), any(), any());
+            verify(mockApi, times(0)).replaceNamespacedDeployment(any(), any(), any(), any(), any(), any());
         } catch (ScalerException | ApiException e) {
             fail("Should not have thrown exception scaling up");
         }
@@ -98,7 +98,7 @@ public class K8sServiceScalerTest
     public void scaleDownTest() {
         try {
             serviceScaler.scaleDown("placeHolder", 1);
-            verify(mockApi, times(1)).replaceNamespacedDeploymentScale(any(), any(), any(), any(), any(), any());
+            verify(mockApi, times(1)).replaceNamespacedDeployment(any(), any(), any(), any(), any(), any());
         } catch (ScalerException | ApiException e) {
             fail("Should not have thrown exception scaling down");
         }
@@ -109,7 +109,7 @@ public class K8sServiceScalerTest
         try {
             when(mockScaleSpec.getReplicas()).thenReturn(0);
             serviceScaler.scaleDown("placeHolder", 1);
-            verify(mockApi, times(0)).replaceNamespacedDeploymentScale(any(), any(), any(), any(), any(), any());
+            verify(mockApi, times(0)).replaceNamespacedDeployment(any(), any(), any(), any(), any(), any());
         } catch (ScalerException | ApiException e) {
             fail("Should not have thrown exception scaling down");
         }

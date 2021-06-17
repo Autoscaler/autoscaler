@@ -1,0 +1,44 @@
+#
+# Copyright 2015-2021 Micro Focus or one of its affiliates.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autoscaler-deployment
+  labels:
+    app: autoscaler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: autoscaler
+  template:
+    metadata:
+      labels:
+        app: autoscaler
+    spec:
+      containers:
+        - name: autoscaler
+          image: dev/autoscaler/autoscale-kubernetes-rabbit:1.9.0-SNAPSHOT
+          ports:
+            - containerPort: 80
+          env:
+            - name: CAF_RABBITMQ_MGMT_URL
+              value: "http://mu-rabbit-rabbitmq.rabbit:15672"
+            - name: CAF_RABBITMQ_MGMT_USERNAME
+              value: "user"
+            - name: CAF_RABBITMQ_MGMT_PASSWORD
+              value: "xwSYg2JOBa"

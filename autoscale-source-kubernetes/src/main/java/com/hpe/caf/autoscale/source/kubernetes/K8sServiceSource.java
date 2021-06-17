@@ -25,6 +25,8 @@ import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.openapi.models.V1DeploymentList;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Objects;
@@ -33,6 +35,8 @@ import java.util.stream.Collectors;
 
 public class K8sServiceSource implements ServiceSource
 {
+    private static final Logger LOG = LoggerFactory.getLogger(K8sServiceSource.class);
+    
     private final K8sAutoscaleConfiguration config;
     private final AppsV1Api api;
     private final String RABBITMQ_METRIC = "rabbitmq";
@@ -50,9 +54,9 @@ public class K8sServiceSource implements ServiceSource
         try {
             return getScalingConfiguration();
         } catch (NumberFormatException e) {
-            throw new ScalerException("Error parsing ReplicaSet label", e);
+            throw new ScalerException("Error parsing Deployment label", e);
         } catch (ApiException e) {
-            throw new ScalerException("Error loading services", e);
+            throw new ScalerException("Error loading deployments", e);
         }
     }
 
@@ -111,8 +115,11 @@ public class K8sServiceSource implements ServiceSource
      * @return
      */
     private boolean isLabelledForScaling(final V1Deployment deployment)
-    {
-        return RABBITMQ_METRIC.equalsIgnoreCase(deployment.getMetadata().getLabels().get(ScalingConfiguration.KEY_WORKLOAD_METRIC));
+    {        
+        final Map<String, String> labels = deployment.getMetadata().getLabels();
+        final boolean isRabbitMQScaled = RABBITMQ_METRIC.equalsIgnoreCase(labels.get(ScalingConfiguration.KEY_WORKLOAD_METRIC));
+        LOG.debug("Deployment {} is {}configured for scaling.", deployment.getMetadata().getName(), (isRabbitMQScaled ? "": "not "));
+        return isRabbitMQScaled;
     }
 
     /**

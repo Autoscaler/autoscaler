@@ -16,30 +16,32 @@
 package com.hpe.caf.autoscale.scaler.kubernetes;
 
 import com.hpe.caf.api.HealthResult;
-import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import static com.hpe.caf.api.autoscale.ScalingConfiguration.KEY_SHUTDOWN_PRIORITY;
 import com.hpe.caf.api.autoscale.ServiceScaler;
 import com.hpe.caf.autoscale.K8sAutoscaleConfiguration;
-import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.apis.AppsV1Api;
+import io.kubernetes.client.extended.kubectl.Kubectl;
+import io.kubernetes.client.extended.kubectl.KubectlGet;
+import io.kubernetes.client.extended.kubectl.exception.KubectlException;
 import io.kubernetes.client.openapi.models.V1Deployment;
+import io.kubernetes.client.openapi.models.V1Pod;
+import io.kubernetes.client.util.generic.options.ListOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class K8sServiceScaler implements ServiceScaler
 {
     private static final Logger LOG = LoggerFactory.getLogger(K8sServiceScaler.class);
 
-    private final AppsV1Api api;
     private final K8sAutoscaleConfiguration config;
-    public K8sServiceScaler(final AppsV1Api api, final K8sAutoscaleConfiguration config)
+    public K8sServiceScaler(final K8sAutoscaleConfiguration config)
     {
-        this.api = api;
         this.config = config;
     }
 
@@ -51,11 +53,14 @@ public class K8sServiceScaler implements ServiceScaler
             final int currentReplicas = deployment.getSpec().getReplicas();
             final int target = Math.min(config.getMaximumInstances(), currentReplicas + amount);
             if (target > currentReplicas) {
-                deployment.getSpec().setReplicas(Math.min(config.getMaximumInstances(), currentReplicas + amount));
                 LOG.info("Scaling deployment {} up by {} instances", deploymentName, amount);
-                api.replaceNamespacedDeployment(deploymentName, config.getNamespace(), deployment, null, null, null);
+                Kubectl.scale(V1Deployment.class)
+                    .namespace(config.getNamespace())
+                    .name(deploymentName)
+                    .replicas(target)
+                    .execute();
             }
-        } catch (ApiException e) {
+        } catch (KubectlException e) {
             LOG.error("Error scaling up deployment {}", deploymentName, e);
             throw new ScalerException("Error scaling up deployment " + deploymentName, e);
         }
@@ -69,11 +74,14 @@ public class K8sServiceScaler implements ServiceScaler
             final int currentReplicas = deployment.getSpec().getReplicas();
             final int target = Math.max(0, currentReplicas - amount);
             if (currentReplicas > 0) {
-                deployment.getSpec().setReplicas(target);
                 LOG.info("Scaling deployment {} down by {} instances", deploymentName, amount);
-                api.replaceNamespacedDeployment(deploymentName, config.getNamespace(), deployment, null, null, null);
+                Kubectl.scale(V1Deployment.class)
+                    .namespace(config.getNamespace())
+                    .name(deploymentName)
+                    .replicas(target)
+                    .execute();
             }
-        } catch (ApiException e) {
+        } catch (KubectlException e) {
             LOG.error("Error scaling down deployment {}", deploymentName, e);
             throw new ScalerException("Error scaling down deployment " + deploymentName, e);
         }
@@ -85,15 +93,35 @@ public class K8sServiceScaler implements ServiceScaler
         try {
             final V1Deployment deployment = getDeployment(deploymentName);
             final Map<String, String> labels = deployment.getMetadata().getLabels();
+            String appName = labels.get("app");
+            int running = deployment.getSpec().getReplicas();
+            int staging = 0;
+            if (appName != null) {
+                final KubectlGet kubectlGet = Kubectl.get(V1Pod.class)
+                    .namespace(config.getNamespace());
+                final ListOptions listOptions = new ListOptions();
+                listOptions.setLabelSelector(String.format("app=%s", appName));
+                kubectlGet.options(listOptions);
+                final List<V1Pod> pods = kubectlGet.execute();
+                running = pods.stream()
+                    .filter(p -> p.getStatus().getPhase().equalsIgnoreCase("running"))
+                    .collect(Collectors.toList()).size();
+                staging = pods.stream()
+                    .filter(p -> p.getStatus().getPhase().equalsIgnoreCase("pending"))
+                    .collect(Collectors.toList()).size();
+            }
+            
             int shutdownPriority = labels.containsKey(KEY_SHUTDOWN_PRIORITY) ? Integer.parseInt(labels.get(KEY_SHUTDOWN_PRIORITY)) : -1;
             final InstanceInfo instanceInfo = new InstanceInfo(
-                deployment.getSpec().getReplicas(),
-                0,
+                running,
+                staging,
                 Collections.EMPTY_LIST,
                 shutdownPriority,
-                deployment.getSpec().getReplicas());
+                running + staging);
+            
+            LOG.info("Got:{}", instanceInfo);
             return instanceInfo;
-        } catch (ApiException e) {
+        } catch (KubectlException e) {
             LOG.error("Error loading instance info for {}", deploymentName, e);
             throw new ScalerException("Error loading deployment scale " + deploymentName, e);
         }
@@ -102,21 +130,14 @@ public class K8sServiceScaler implements ServiceScaler
     @Override
     public HealthResult healthCheck()
     {
-        try {
-            api.listNamespacedDeployment(
-                config.getNamespace(),
-                "false",
-                false, null, null, null, null, null, null,
-                false);
-            return HealthResult.RESULT_HEALTHY;
-        } catch (ApiException e) {
-            LOG.warn("Cannot load deployments in namespace: " + config.getNamespace(), e);
-            return new HealthResult(HealthStatus.UNHEALTHY, "Cannot load deployments in namespace: " + config.getNamespace());
-        }
+        return HealthResult.RESULT_HEALTHY;
     }
 
-    private V1Deployment getDeployment(final String deploymentName) throws ApiException
+    private V1Deployment getDeployment(final String deploymentName) throws KubectlException
     {
-        return api.readNamespacedDeployment(deploymentName, config.getNamespace(), "false", false, false);
+        return Kubectl.get(V1Deployment.class)
+            .namespace(config.getNamespace())
+            .name(deploymentName)
+            .execute();
     }
 }

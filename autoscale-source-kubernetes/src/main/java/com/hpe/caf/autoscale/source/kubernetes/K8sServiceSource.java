@@ -16,19 +16,18 @@
 package com.hpe.caf.autoscale.source.kubernetes;
 
 import com.hpe.caf.api.HealthResult;
-import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import com.hpe.caf.api.autoscale.ServiceSource;
 import com.hpe.caf.autoscale.K8sAutoscaleConfiguration;
-import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.apis.AppsV1Api;
+import io.kubernetes.client.extended.kubectl.Kubectl;
+import io.kubernetes.client.extended.kubectl.exception.KubectlException;
 import io.kubernetes.client.openapi.models.V1Deployment;
-import io.kubernetes.client.openapi.models.V1DeploymentList;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -39,12 +38,10 @@ public class K8sServiceSource implements ServiceSource
     private static final Logger LOG = LoggerFactory.getLogger(K8sServiceSource.class);
     
     private final K8sAutoscaleConfiguration config;
-    private final AppsV1Api api;
 
-    public K8sServiceSource(final AppsV1Api api, final K8sAutoscaleConfiguration config)
+    public K8sServiceSource(final K8sAutoscaleConfiguration config)
     {
         this.config = Objects.requireNonNull(config);
-        this.api = api;
     }
 
     @Override
@@ -55,20 +52,17 @@ public class K8sServiceSource implements ServiceSource
             return getScalingConfiguration();
         } catch (NumberFormatException e) {
             throw new ScalerException("Error parsing Deployment label", e);
-        } catch (ApiException e) {
+        } catch (KubectlException e) {
             throw new ScalerException("Error loading deployments", e);
         }
     }
 
-    private Set<ScalingConfiguration> getScalingConfiguration() throws ApiException
+    private Set<ScalingConfiguration> getScalingConfiguration() throws KubectlException
     {
-        final V1DeploymentList deployments = api.listNamespacedDeployment(
-            config.getNamespace(),
-            "false",
-            false, null, null, null, null, null, null,
-            false);
-        return deployments.getItems()
-            .stream()
+        List<V1Deployment> deployments = Kubectl.get(V1Deployment.class)
+            .namespace(config.getNamespace())
+            .execute();
+        return deployments.stream()
             .filter(d -> isLabelledForScaling(d))
             .map(d -> mapToScalingConfig(d))
             .collect(Collectors.toSet());
@@ -125,16 +119,6 @@ public class K8sServiceSource implements ServiceSource
     @Override
     public HealthResult healthCheck()
     {
-        try {
-            api.listNamespacedDeployment(
-                config.getNamespace(),
-                "false",
-                false, null, null, null, null, null, null,
-                false);
-            return HealthResult.RESULT_HEALTHY;
-        } catch (ApiException e) {
-            LOG.warn("Cannot load deployments in namespace: " + config.getNamespace(), e);
-            return new HealthResult(HealthStatus.UNHEALTHY, "Cannot load deployments in namespace: " + config.getNamespace());
-        }
+        return HealthResult.RESULT_HEALTHY;
     }
 }

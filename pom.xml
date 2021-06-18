@@ -181,12 +181,17 @@
             <dependency>
                 <groupId>io.kubernetes</groupId>
                 <artifactId>client-java</artifactId>
-                <version>10.0.1</version>
+                <version>12.0.0</version>
             </dependency>
             <dependency>
                 <groupId>io.kubernetes</groupId>
                 <artifactId>client-java-api</artifactId>
-                <version>10.0.1</version>
+                <version>12.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.kubernetes</groupId>
+                <artifactId>client-java-extended</artifactId>
+                <version>12.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

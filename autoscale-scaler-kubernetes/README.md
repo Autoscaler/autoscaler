@@ -11,10 +11,12 @@
  The configuration source for this module is [K8sAutoscaleConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/autoscale-kubernetes-container/src/main/config/cfg~caf~autoscaler~K8sAutoscaleConfiguration.js).
  The following configuration options are present:
 
- - namespace: the Kubernetes namespace which contains the target deployments.
-  Must not be null and must not be empty.
  - maximumInstances: the absolute upper ceiling for number of instances of a
-  service. Minimum 1.
+ service. Minimum 1.
+ - metric: the Kubernetes metadata lablel that will identify deployments
+ to scale.  Must not be null and must not be empty.
+ - namespace: the Kubernetes namespace which contains the target deployments.
+ Must not be null and must not be empty.
 
 ## Usage
 

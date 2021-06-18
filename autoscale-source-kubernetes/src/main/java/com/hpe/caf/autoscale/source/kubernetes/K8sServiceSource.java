@@ -16,6 +16,7 @@
 package com.hpe.caf.autoscale.source.kubernetes;
 
 import com.hpe.caf.api.HealthResult;
+import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import com.hpe.caf.api.autoscale.ServiceSource;
@@ -39,7 +40,6 @@ public class K8sServiceSource implements ServiceSource
     
     private final K8sAutoscaleConfiguration config;
     private final AppsV1Api api;
-    private final String RABBITMQ_METRIC = "rabbitmq";
 
     public K8sServiceSource(final AppsV1Api api, final K8sAutoscaleConfiguration config)
     {
@@ -117,17 +117,24 @@ public class K8sServiceSource implements ServiceSource
     private boolean isLabelledForScaling(final V1Deployment deployment)
     {        
         final Map<String, String> labels = deployment.getMetadata().getLabels();
-        final boolean isRabbitMQScaled = RABBITMQ_METRIC.equalsIgnoreCase(labels.get(ScalingConfiguration.KEY_WORKLOAD_METRIC));
+        final boolean isRabbitMQScaled = config.getMetric().equalsIgnoreCase(labels.get(ScalingConfiguration.KEY_WORKLOAD_METRIC));
         LOG.debug("Deployment {} is {}configured for scaling.", deployment.getMetadata().getName(), (isRabbitMQScaled ? "": "not "));
         return isRabbitMQScaled;
     }
 
-    /**
-     * Assumption is that this will be handled in the deployment yaml.
-     */
     @Override
     public HealthResult healthCheck()
     {
-        return HealthResult.RESULT_HEALTHY;
+        try {
+            api.listNamespacedDeployment(
+                config.getNamespace(),
+                "false",
+                false, null, null, null, null, null, null,
+                false);
+            return HealthResult.RESULT_HEALTHY;
+        } catch (ApiException e) {
+            LOG.warn("Cannot load deployments in namespace: " + config.getNamespace(), e);
+            return new HealthResult(HealthStatus.UNHEALTHY, "Cannot load deployments in namespace: " + config.getNamespace());
+        }
     }
 }

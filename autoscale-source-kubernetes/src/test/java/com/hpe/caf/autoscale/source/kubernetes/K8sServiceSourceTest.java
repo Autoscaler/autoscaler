@@ -93,7 +93,9 @@ public class K8sServiceSourceTest
         when(mockApi.listNamespacedDeployment(
             any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
         ).thenReturn(mockDeploymentList);
-        source = new K8sServiceSource(mockApi, new K8sAutoscaleConfiguration());
+        final K8sAutoscaleConfiguration cfg = new K8sAutoscaleConfiguration();
+        cfg.setMetric(METRIC);
+        source = new K8sServiceSource(mockApi, cfg);
     }
 
     @Test

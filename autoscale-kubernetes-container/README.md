@@ -41,6 +41,14 @@ Configuration of the AutoScaler is supported through the following environment v
     Default: `100`  
     Used to specify the maximum number of instances that any worker can be scaled to.
 
+ - `CAF_AUTOSCALER_METRIC`  
+    Default: `rabbitmq`  
+    Used to specify value to look for in a Kubernetes deployment's metadata `autoscale.metric` label.
+
+ - `CAF_AUTOSCALER_KUBERNETES_NAMESPACE`
+    Default: `default`
+    Used to specify the Kubernetes namespace to search for deployments in.
+ 
  -  `CAF_LOG_LEVEL`  
     Default: `INFO`  
     Used to specify the required level of logging.

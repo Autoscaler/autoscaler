@@ -16,6 +16,7 @@
 package com.hpe.caf.autoscale;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * Shared configuration between the K8sServiceScalar and K8sServiceSource.
@@ -28,7 +29,22 @@ public class K8sAutoscaleConfiguration
     @Min(1)
     private int maximumInstances;
 
+    @NotEmpty
+    private String metric;
+
+    @NotEmpty
     private String namespace;
+
+    public String getMetric()
+    {
+        return metric;
+    }
+
+    public void setMetric(String metric)
+    {
+        this.metric = metric;
+    }
+
 
     public int getMaximumInstances()
     {

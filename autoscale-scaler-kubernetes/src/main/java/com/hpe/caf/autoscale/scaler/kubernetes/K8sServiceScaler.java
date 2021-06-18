@@ -16,6 +16,7 @@
 package com.hpe.caf.autoscale.scaler.kubernetes;
 
 import com.hpe.caf.api.HealthResult;
+import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.InstanceInfo;
 import com.hpe.caf.api.autoscale.ScalerException;
 import static com.hpe.caf.api.autoscale.ScalingConfiguration.KEY_SHUTDOWN_PRIORITY;
@@ -34,28 +35,25 @@ public class K8sServiceScaler implements ServiceScaler
 {
     private static final Logger LOG = LoggerFactory.getLogger(K8sServiceScaler.class);
 
-    private final int maximumInstances;
     private final AppsV1Api api;
-    private final String namespace;
-
+    private final K8sAutoscaleConfiguration config;
     public K8sServiceScaler(final AppsV1Api api, final K8sAutoscaleConfiguration config)
     {
         this.api = api;
-        this.namespace = config.getNamespace();
-        this.maximumInstances = config.getMaximumInstances();
+        this.config = config;
     }
 
     @Override
     public void scaleUp(final String deploymentName, final int amount) throws ScalerException
     {
         try {
-            final V1Deployment scale = getDeploymentScale(deploymentName);
+            final V1Deployment scale = getDeployment(deploymentName);
             final int currentReplicas = scale.getSpec().getReplicas();
-            final int target = Math.min(maximumInstances, currentReplicas + amount);
+            final int target = Math.min(config.getMaximumInstances(), currentReplicas + amount);
             if (target > currentReplicas) {
-                scale.getSpec().setReplicas(Math.min(maximumInstances, currentReplicas + amount));
+                scale.getSpec().setReplicas(Math.min(config.getMaximumInstances(), currentReplicas + amount));
                 LOG.info("Scaling deployment {} up by {} instances", deploymentName, amount);
-                api.replaceNamespacedDeployment(deploymentName, namespace, scale, null, null, null);
+                api.replaceNamespacedDeployment(deploymentName, config.getNamespace(), scale, null, null, null);
             }
         } catch (ApiException e) {
             LOG.error("Error scaling up deployment {}", deploymentName, e);
@@ -67,13 +65,13 @@ public class K8sServiceScaler implements ServiceScaler
     public void scaleDown(final String deploymentName, final int amount) throws ScalerException
     {
         try {
-            final V1Deployment scale = getDeploymentScale(deploymentName);
+            final V1Deployment scale = getDeployment(deploymentName);
             final int currentReplicas = scale.getSpec().getReplicas();
             final int target = Math.max(0, currentReplicas - amount);
             if (currentReplicas > 0) {
                 scale.getSpec().setReplicas(target);
                 LOG.info("Scaling deployment {} down by {} instances", deploymentName, amount);
-                api.replaceNamespacedDeployment(deploymentName, namespace, scale, null, null, null);
+                api.replaceNamespacedDeployment(deploymentName, config.getNamespace(), scale, null, null, null);
             }
         } catch (ApiException e) {
             LOG.error("Error scaling down deployment {}", deploymentName, e);
@@ -85,7 +83,7 @@ public class K8sServiceScaler implements ServiceScaler
     public InstanceInfo getInstanceInfo(final String deploymentName) throws ScalerException
     {
         try {
-            final V1Deployment scale = getDeploymentScale(deploymentName);
+            final V1Deployment scale = getDeployment(deploymentName);
             final Map<String, String> labels = scale.getMetadata().getLabels();
             int shutdownPriority = labels.containsKey(KEY_SHUTDOWN_PRIORITY) ? Integer.parseInt(labels.get(KEY_SHUTDOWN_PRIORITY)) : -1;
             final InstanceInfo instanceInfo = new InstanceInfo(
@@ -101,17 +99,24 @@ public class K8sServiceScaler implements ServiceScaler
         }
     }
 
-    /**
-     * Assumption is that this will be handled in the deployment yaml.
-     */
     @Override
     public HealthResult healthCheck()
     {
-        return HealthResult.RESULT_HEALTHY;
+        try {
+            api.listNamespacedDeployment(
+                config.getNamespace(),
+                "false",
+                false, null, null, null, null, null, null,
+                false);
+            return HealthResult.RESULT_HEALTHY;
+        } catch (ApiException e) {
+            LOG.warn("Cannot load deployments in namespace: " + config.getNamespace(), e);
+            return new HealthResult(HealthStatus.UNHEALTHY, "Cannot load deployments in namespace: " + config.getNamespace());
+        }
     }
 
-    private V1Deployment getDeploymentScale(final String deploymentName) throws ApiException
+    private V1Deployment getDeployment(final String deploymentName) throws ApiException
     {
-        return api.readNamespacedDeployment(deploymentName, namespace, "false", false, false);
+        return api.readNamespacedDeployment(deploymentName, config.getNamespace(), "false", false, false);
     }
 }

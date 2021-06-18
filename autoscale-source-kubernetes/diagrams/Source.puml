@@ -12,6 +12,8 @@ class K8sServiceSourceProvider {
     + K8sServiceSource getServiceSource()
 }
 class K8sServiceSource {
+    - AppsV1Api api;
+    - K8sAutoscaleConfiguration config;
     +  Set<ScalingConfiguration> getServices()
 }
 
@@ -20,20 +22,21 @@ class ScalingConfiguration {
     in determining how to scale a service.
     The below methods return the value of labels
     on a ReplicaSet.
-    + String getId();
-    + String getWorkloadMetric(); autoscale.metric
-    + String getScalingTarget(); autoscale.scalingtarget
-    + int int getInterval(); autoscale.interval
-    + int getMinInstances(); autoscale.mininstances
-    + int getMaxInstances(); autoscale.maxinstances  
-    + String getScalingProfile(); autoscale.profile
-    + int getBackoffAmount(); autoscale.backoff
-    + int getScaleDownBackoffAmount(); autoscale.scaledownbackoff
-    + int getScaleUpBackoffAmount(); autoscale.scaleupbackoff
+    + String getId()
+    + String getWorkloadMetric() autoscale.metric
+    + String getScalingTarget() autoscale.scalingtarget
+    + int int getInterval() autoscale.interval
+    + int getMinInstances() autoscale.mininstances
+    + int getMaxInstances() autoscale.maxinstances  
+    + String getScalingProfile() autoscale.profile
+    + int getBackoffAmount() autoscale.backoff
+    + int getScaleDownBackoffAmount() autoscale.scaledownbackoff
+    + int getScaleUpBackoffAmount() autoscale.scaleupbackoff
 }
 
 class K8sAutoscaleConfiguration {
  + int getMaximumInstances()
+  + String getMetric()
  + String getNamespace()
 }
 

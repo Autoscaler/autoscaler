@@ -22,12 +22,15 @@ public class K8sAutoscaleConfigurationTest
 {
     final int maxInstances = 1;
     final String namespace = "mynamespace";
+    final String metric = "mymetric";
     @Test
     public void ctorTest() {
         final K8sAutoscaleConfiguration k8SAutoscaleConfiguration = new K8sAutoscaleConfiguration();
         k8SAutoscaleConfiguration.setMaximumInstances(maxInstances);
         k8SAutoscaleConfiguration.setNamespace(namespace);
+        k8SAutoscaleConfiguration.setMetric(metric);
         Assert.assertEquals(maxInstances, k8SAutoscaleConfiguration.getMaximumInstances());
         Assert.assertEquals(namespace, k8SAutoscaleConfiguration.getNamespace());
+        Assert.assertEquals(metric, k8SAutoscaleConfiguration.getMetric());
     }
 }

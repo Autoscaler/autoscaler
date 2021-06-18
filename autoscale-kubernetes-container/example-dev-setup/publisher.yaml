@@ -17,7 +17,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: rabbitmq-publish2
+  name: rabbitmq-publisher
 spec:
   template:
     spec:

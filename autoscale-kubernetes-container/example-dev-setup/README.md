@@ -24,7 +24,7 @@ Enable Kubenetes on Docker for Desktop.
 `user`  
 **Get the password**  
 `kubectl get secret --namespace rabbit mu-rabbit-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode`  
-Configure amqp/http connections in `producer.yaml` `consumer.yaml` `autoscaler.yaml`.   
+Configure amqp/http connections in `publisher.yaml` `consumer.yaml` `autoscaler.yaml`.   
 
 **Log into RabbitMQ**  
 *Start the proxy if not already started*  
@@ -32,7 +32,7 @@ Configure amqp/http connections in `producer.yaml` `consumer.yaml` `autoscaler.y
 `http://localhost:15672/`
 
 ###Create a job to publish messages to RabbitMQ  
-`kubectl apply -f ./producer.yaml`  
+`kubectl apply -f ./publisher.yaml`  
 This will publish a number of messages to the `hello` queue.   
 To publish again rename the `metadata.name` and run again. 
  

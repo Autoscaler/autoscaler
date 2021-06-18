@@ -45,9 +45,9 @@ Configuration of the AutoScaler is supported through the following environment v
     Default: `rabbitmq`  
     Used to specify value to look for in a Kubernetes deployment's metadata `autoscale.metric` label.
 
- - `CAF_AUTOSCALER_KUBERNETES_NAMESPACE`
+ - `CAF_AUTOSCALER_KUBERNETES_NAMESPACES`
     Default: `default`
-    Used to specify the Kubernetes namespace to search for deployments in.
+    Used to specify the Kubernetes namespaces to search for deployments in. Add as comma separated string.
  
  -  `CAF_LOG_LEVEL`  
     Default: `INFO`  

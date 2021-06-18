@@ -80,6 +80,7 @@
         <module>autoscale-core</module>
         <module>autoscale-dockerswarm-shared</module>
         <module>autoscale-dockerswarm-container</module>
+        <module>autoscale-kubernetes-container</module>
         <module>autoscale-kubernetes-shared</module>
         <module>autoscale-marathon-shared</module>
         <module>autoscale-marathon-container</module>
@@ -88,11 +89,10 @@
         <module>autoscale-scaler-marathon</module>
         <module>autoscale-source-dockerswarm</module>
         <module>autoscale-source-kubernetes</module>
-        <module>autoscale-source-marathon</module>        
+        <module>autoscale-source-marathon</module>
         <module>autoscale-workload-rabbit</module>
         <module>autoscale-acceptance-tests</module>
         <module>autoscale-email-alert-dispatcher</module>
-        <module>autoscale-kubernetes-container</module>
     </modules>
 
     <dependencyManagement>

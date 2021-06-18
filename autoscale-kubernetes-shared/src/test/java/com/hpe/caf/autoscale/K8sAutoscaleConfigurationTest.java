@@ -18,19 +18,23 @@ package com.hpe.caf.autoscale;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class K8sAutoscaleConfigurationTest
 {
     final int maxInstances = 1;
-    final String namespace = "mynamespace";
+    final List<String> namespacesArray = Arrays.asList("1","2","3","4");
+    final String namespaces = " 1,  2, 3 ,4";
     final String metric = "mymetric";
     @Test
     public void ctorTest() {
         final K8sAutoscaleConfiguration k8SAutoscaleConfiguration = new K8sAutoscaleConfiguration();
         k8SAutoscaleConfiguration.setMaximumInstances(maxInstances);
-        k8SAutoscaleConfiguration.setNamespace(namespace);
+        k8SAutoscaleConfiguration.setNamespaces(namespaces);
         k8SAutoscaleConfiguration.setMetric(metric);
         Assert.assertEquals(maxInstances, k8SAutoscaleConfiguration.getMaximumInstances());
-        Assert.assertEquals(namespace, k8SAutoscaleConfiguration.getNamespace());
+        Assert.assertEquals(namespacesArray, k8SAutoscaleConfiguration.getNamespacesArray());
         Assert.assertEquals(metric, k8SAutoscaleConfiguration.getMetric());
     }
 }

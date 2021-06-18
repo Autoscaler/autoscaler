@@ -36,9 +36,9 @@ Configure amqp/http connections in `publisher.yaml` `consumer.yaml` `autoscaler.
 This will publish a number of messages to the `hello` queue.   
 To publish again rename the `metadata.name` and run again. 
  
-###Create a deployment to consume messages from RabbitMQ. 
-`kubectl apply -f ./consumer.yaml`  
-This will create a deployment that will consume 1 message per second per pod from the `hello` queue.  
+###Create 2 deployments in different namespaces to consume messages from RabbitMQ. 
+`kubectl apply -f ./consumers.yaml`  
+This will create 2 deployments that will consume 1 message per second per pod from the `hello` queue.  
 
 ###Deploy the autoscaler  
 `kubectl apply -f ./autoscaler.yaml` 

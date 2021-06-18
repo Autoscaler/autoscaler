@@ -15,8 +15,12 @@
  */
 package com.hpe.caf.autoscale;
 
+import static java.util.stream.Collectors.toList;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Shared configuration between the K8sServiceScalar and K8sServiceSource.
@@ -33,14 +37,16 @@ public class K8sAutoscaleConfiguration
     private String metric;
 
     @NotEmpty
-    private String namespace;
+    private String namespaces;
+    
+    private List<String> namespacesArray;
 
     public String getMetric()
     {
         return metric;
     }
 
-    public void setMetric(String metric)
+    public void setMetric(final String metric)
     {
         this.metric = metric;
     }
@@ -51,18 +57,25 @@ public class K8sAutoscaleConfiguration
         return maximumInstances;
     }
 
-    public void setMaximumInstances(int maximumInstances)
+    public void setMaximumInstances(final int maximumInstances)
     {
         this.maximumInstances = maximumInstances;
     }
 
-    public String getNamespace()
+    public String getNamespaces()
     {
-        return this.namespace;
+        return namespaces;
     }
 
-    public void setNamespace(String namespace)
+    public void setNamespaces(String namespaces)
     {
-        this.namespace = namespace;
+        this.namespaces = namespaces;
+    }
+
+    public List<String> getNamespacesArray()
+    {
+        return Stream.of(this.namespaces.split(","))
+            .map(String::trim)
+            .collect(toList());
     }
 }

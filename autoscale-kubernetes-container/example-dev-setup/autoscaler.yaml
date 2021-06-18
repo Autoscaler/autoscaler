@@ -42,3 +42,5 @@ spec:
               value: "user"
             - name: CAF_RABBITMQ_MGMT_PASSWORD
               value: "xwSYg2JOBa"
+            - name: CAF_AUTOSCALER_KUBERNETES_NAMESPACES
+              value: "default,test"

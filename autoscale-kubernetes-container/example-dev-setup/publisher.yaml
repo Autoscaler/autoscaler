@@ -17,7 +17,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: rabbitmq-publisher
+  name: rabbitmq-publisher2
 spec:
   template:
     spec:
@@ -25,6 +25,6 @@ spec:
         - name: rabbitmq-client
           image: jeffhollan/rabbitmq-client:dev
           imagePullPolicy: Always
-          command: ["send",  "amqp://user:xwSYg2JOBa@mu-rabbit-rabbitmq.rabbit.svc.cluster.local:5672", "10000"]
+          command: ["send",  "amqp://user:xwSYg2JOBa@mu-rabbit-rabbitmq.rabbit.svc.cluster.local:5672", "100000"]
       restartPolicy: Never
   backoffLimit: 4

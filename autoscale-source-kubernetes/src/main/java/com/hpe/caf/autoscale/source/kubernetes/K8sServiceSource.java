@@ -27,6 +27,8 @@ import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -59,21 +61,26 @@ public class K8sServiceSource implements ServiceSource
 
     private Set<ScalingConfiguration> getScalingConfiguration() throws KubectlException
     {
-        List<V1Deployment> deployments = Kubectl.get(V1Deployment.class)
-            .namespace(config.getNamespace())
-            .execute();
-        return deployments.stream()
-            .filter(d -> isLabelledForScaling(d))
-            .map(d -> mapToScalingConfig(d))
-            .collect(Collectors.toSet());
+        final Set<ScalingConfiguration> scalingConfigurations = new HashSet<>();
+        final List<V1Deployment> deployments = new ArrayList<>();
+        for (final String namespace: config.getNamespacesArray()) {
+            scalingConfigurations.addAll(Kubectl.get(V1Deployment.class)
+                .namespace(namespace)
+                .execute()
+                .stream()
+                .filter(d -> isLabelledForScaling(d))
+                .map(d -> mapToScalingConfig(d, namespace))
+                .collect(Collectors.toSet()));
+        }
+        return scalingConfigurations;
     }
 
-    private ScalingConfiguration mapToScalingConfig(final V1Deployment deployment)
+    private ScalingConfiguration mapToScalingConfig(final V1Deployment deployment, final String namespace)
     {
         final ScalingConfiguration cfg = new ScalingConfiguration();
         final V1ObjectMeta metadata = deployment.getMetadata();
         final Map<String, String> labels = metadata.getLabels();
-        cfg.setId(metadata.getName());
+        cfg.setId(metadata.getName() + ":" + namespace);
         if (labels.containsKey(ScalingConfiguration.KEY_WORKLOAD_METRIC)) {
             cfg.setWorkloadMetric(labels.get(ScalingConfiguration.KEY_WORKLOAD_METRIC));
         }

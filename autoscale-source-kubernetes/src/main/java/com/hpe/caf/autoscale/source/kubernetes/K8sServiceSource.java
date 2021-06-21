@@ -16,6 +16,7 @@
 package com.hpe.caf.autoscale.source.kubernetes;
 
 import com.hpe.caf.api.HealthResult;
+import com.hpe.caf.api.HealthStatus;
 import com.hpe.caf.api.autoscale.ScalerException;
 import com.hpe.caf.api.autoscale.ScalingConfiguration;
 import com.hpe.caf.api.autoscale.ServiceSource;
@@ -123,6 +124,12 @@ public class K8sServiceSource implements ServiceSource
     @Override
     public HealthResult healthCheck()
     {
-        return HealthResult.RESULT_HEALTHY;
+        try {
+            Kubectl.version().execute();
+            return HealthResult.RESULT_HEALTHY;
+        } catch (KubectlException e) {
+            LOG.warn("Connection failure to kubernetes", e);
+            return new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to Kubernetes");
+        }  
     }
 }

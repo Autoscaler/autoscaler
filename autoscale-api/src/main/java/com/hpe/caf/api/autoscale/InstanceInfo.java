@@ -116,17 +116,5 @@ public class InstanceInfo
     public int getInstances()
     {
         return this.instances;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "InstanceInfo{" +
-            "instancesRunning=" + instancesRunning +
-            ", instancesStaging=" + instancesStaging +
-            ", hosts=" + hosts +
-            ", shutdownPriority=" + shutdownPriority +
-            ", instances=" + instances +
-            '}';
-    }
+    }  
 }

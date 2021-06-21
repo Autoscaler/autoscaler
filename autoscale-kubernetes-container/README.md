@@ -48,6 +48,10 @@ Configuration of the AutoScaler is supported through the following environment v
     Default: `default`
     Used to specify the Kubernetes namespaces, comma separated, to search for deployments.
  
+- `CAF_AUTOSCALER_RESOURCE_ID_SEPARATOR`
+  Default: `:`
+  Description: The separator used when storing namespace/deployment source configuration. 
+  
  -  `CAF_LOG_LEVEL`  
     Default: `INFO`  
     Used to specify the required level of logging.
@@ -87,10 +91,6 @@ Configuration supported through the following environment variables:
 - `CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD`  
   Default: `5`  
   Description: The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 3 resource limit. Any service with a shutdown priority of or less than this value will be shutdown.  
-
-- `CAF_AUTOSCALER_RESOURCE_ID_SEPARATOR`
-Default: `:`
-Description: The separator used when storing namespace/deployment source configuration. 
 
 ### Alert Configuration
 

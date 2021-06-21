@@ -16,5 +16,6 @@
 ({
     maximumInstances: getenv("CAF_AUTOSCALER_MAXIMUM_INSTANCES") || 100,
     namespaces: getenv("CAF_AUTOSCALER_KUBERNETES_NAMESPACES") || "default",
-    metric: getenv("CAF_AUTOSCALER_METRIC") || "rabbitmq"
+    metric: getenv("CAF_AUTOSCALER_METRIC") || "rabbitmq",
+    resourceIdSeparator: getenv("CAF_AUTOSCALER_RESOURCE_ID_SEPARATOR") || ":"
 });

@@ -4,7 +4,7 @@
 
  This is an implementation of a `ServiceScaler` that uses the Kubernetes Client API 
  to scale up and down services.
-`https://github.com/kubernetes-client/java/`
+ - `https://github.com/kubernetes-client/java/`
 
 ## Configuration
 
@@ -13,17 +13,16 @@
 
  - maximumInstances: the absolute upper ceiling for number of instances of a
  service. Minimum 1.
- - metric: the Kubernetes metadata lablel that will identify deployments
+ - metric: the Kubernetes metadata label that will identify deployments
  to scale.  Must not be null and must not be empty.
- - namespace: the Kubernetes namespace which contains the target deployments.
+ - namespaces: the Kubernetes namespaces, comma separated, which contains the target deployments.
  Must not be null and must not be empty.
 
 ## Usage
 
- This module relies on performing API calls to Kubernetes and
- retrieving intance info on deployments which have a `metadata.label.autoscale.metric: rabbitmq`.   
+ This module relies on performing API calls to Kubernetes and retrieving instance info on deployments 
+ which have the label `autoscale.metric: rabbitmq`.   
  This module has a dummy health check to comply with the existing interface.
-
 
 ## Failure modes
 

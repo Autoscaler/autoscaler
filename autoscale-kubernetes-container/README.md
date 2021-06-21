@@ -1,13 +1,13 @@
-# Autoscaler Kubernetes Service Container
+# Autoscaler Kubernetes Module
 
 This repository consists of the source to build a pre-defined CAF approved
-container that includes the CAF autoscale application along with
-standard modules. Sample configuration is also supplied in the code base.
+container that includes the CAF autoscale application. Sample configuration is also supplied in the code base.
 
-To get the autoscale application up and running look at the [Quick Start](#quick-start) section below.
+To get the kubernetes autoscaler module up and running look at the [Quick Start](#quick-start) section below.
 
-
-### Container deployment
+### Installing the Autoscaler.
+The autoscaler can be installed to Kubernetes by using the kubectl command line tool.  
+ - `kubectl apply -f ./autoscaler.yaml`
 
 ### Configuration
 
@@ -43,11 +43,10 @@ Configuration of the AutoScaler is supported through the following environment v
 
  - `CAF_AUTOSCALER_METRIC`  
     Default: `rabbitmq`  
-    Used to specify value to look for in a Kubernetes deployment's metadata `autoscale.metric` label.
 
  - `CAF_AUTOSCALER_KUBERNETES_NAMESPACES`
     Default: `default`
-    Used to specify the Kubernetes namespaces to search for deployments in. Add as comma separated string.
+    Used to specify the Kubernetes namespaces, comma separated, to search for deployments.
  
  -  `CAF_LOG_LEVEL`  
     Default: `INFO`  
@@ -89,6 +88,10 @@ Configuration supported through the following environment variables:
   Default: `5`  
   Description: The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 3 resource limit. Any service with a shutdown priority of or less than this value will be shutdown.  
 
+- `CAF_AUTOSCALER_RESOURCE_ID_SEPARATOR`
+Default: `:`
+Description: The separator used when storing namespace/deployment source configuration. 
+
 ### Alert Configuration
 
 Configuration supported through the following environment variables:
@@ -129,30 +132,22 @@ Description: The monitored email address to send alert emails to. If this proper
 Default: `apollo-autoscaler@microfocus.com`  
 Description: The email address to send alert emails from. 
 
-
 ### Health checks
-
-The [autoscale-core](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-core) application inherently exposes standard and
-module-specific health checks. If you expose the admin port (default 8081)
-then this can be accessed via HTTP to examine metrics and health checks.
-The health check REST call will return HTTP 500 if any health check fails.
-For details on the health checks for specific components, examine the module
-documentation.
-
+TODO
 
 ### Logging
 
-Currently the logging is accessible via the Marathon sandbox. The default log level in this container is `INFO` and this can be configured by supplying the required level in the `CAF_LOG_LEVEL` environment variable.
+Currently the logging is accessible via the kubectl api or via the Kubernetes dashboard if installed. The default log level in this container is `INFO` and this can be configured by supplying the required level in the `CAF_LOG_LEVEL` environment variable.
 
 
 ### Scaling
 
 This container is not election-enabled. This means there should only be one
-instance per set of services the container is scaling. If the container is
-being run on Marathon, this will ensure the container is restarted if it
+instance per set of deployments the container is scaling. If the container is
+being run on Kubernetes this will ensure the container is restarted if it
 crashes. It is recommended you do not attempt to monitor and scale a very
 large number of applications with a single instance. While this should work
-with an arbitrary number of target services, the monitoring and scaling
+with an arbitrary number of target deployments, the monitoring and scaling
 actions may begin to lag behind the requested period once the container goes
 beyond its normal capability.
 
@@ -161,18 +156,13 @@ beyond its normal capability.
 
 The container uses very little memory and CPU, and effectively no disk load.
 It does, however, generate some network traffic through monitoring and scaling
-of services. Marathon will be the target of most of the network traffic, though
+of services. Kubernetes will be the target of most of the network traffic, though
 the RabbitMQ management host will also be polled. The frequency of the traffic
-depends upon the number of services being monitored and the service template
-requested frequency. Each individual network call should be no more than a
-handful of kilobytes, though the 15-minute scheduled refresh of all Marathon
-services may be more if Marathon is running a large number of services.
-Recommended values:
+depends upon the number of deployments being monitored and the requested frequency. 
 
 - 128-196MB of RAM
 - 0.1 CPUs per 10 services monitored
 - Slow I/O is acceptable
-- Preferred to be network-local to Marathon and RabbitMQ
 
 
 ### Failure modes
@@ -184,24 +174,16 @@ topic.
 
 ### Upgrade procedures
 
-Since there is a single instance per scaling group, simply power off the old
-container and start the new one. There may be a delay or a minute or two before
-scaling starts again. Different scaling groups may have different container
-versions.
+TODO
 
 
 ### Quick start
+Assuming Kubernetes is enabled, follow the instructions in [example-dev-setup](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-kubernetes-container/example-dev-setup/README.md). 
+Note that the [consumer](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-kubernetes-container/example-dev-setup/example-dev-setup/consumers.yaml) deployment
+and [publisher](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-kubernetes-container/example-dev-setup/example-dev-setup/publisher.yaml) job are 
+are purely to demonstrate the scaling functionality
 
-Assuming Marathon and RabbitMQ are already deployed, take the sample
-configuration files present in [example-configs](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-container/example-configs) and change the endpoints to
-match your deployments. Create a Marathon template to deploy making sure the
-`id` of this autoscale template is in the same subgroup as the services that
-it should scale. Put the configuration files on your configuration server and
-then add URIs to the template for all the configuration resources specified
-earlier in the documentation. Expose port 8081 using bridge networking for
-health checks.
-
-For each of the services to scale its Marathon template must be updated to
+For each of the deployments to scale its labels must be updated to
 include labels such as the following:
 
 ```
@@ -234,7 +216,7 @@ dictate. The `autoscale.backoff` is the number of intervals to skip monitoring
 after a scale up or down command is issued. This prevents unusual values
 being considered when the system is in an unstable state.
 
-Finally the `autoscale.profile` can be an arbitrary string, but one that should exist in the [RabbitWorkloadAnalyserConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/autoscale-container/example-configs/cfg_autoscaler_marathon_RabbitWorkloadAnalyserConfiguration) resource deployed inside the autoscale container.
+Finally the `autoscale.profile` can be an arbitrary string, but one that should exist in the [RabbitWorkloadAnalyserConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/autoscale-kubernetes-container/autoscale-kubernetes-container/src/main/config/cfg~caf~autoscaler~RabbitWorkloadAnalyserConfiguration.js) resource deployed inside the autoscale container.
 
-Deploy/redeploy the services and the autoscale container. After one or two
-minutes the autoscale container should find the services and start monitoring.
+Deploy/redeploy the deployments and the autoscale container. After one or two
+minutes the autoscale container should find the deployments and start monitoring.

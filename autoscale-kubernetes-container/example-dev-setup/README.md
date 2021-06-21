@@ -43,5 +43,10 @@ This will create 2 deployments that will consume 1 message per second per pod fr
 ###Deploy the autoscaler  
 `kubectl apply -f ./autoscaler.yaml` 
 
+###Observing the scaling in action
+If the dashboard is installed the scaling can be observed on the deployments panel and also by viewing the pods panel.  
+Alternatively the autoscaler will log output scaling actions and can be viewed either by `kubectl logs <autoscaler-pod>` 
+or via the dashboard logging feature. 
+
 
 

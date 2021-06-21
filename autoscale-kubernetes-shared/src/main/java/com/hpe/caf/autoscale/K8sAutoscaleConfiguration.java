@@ -39,8 +39,9 @@ public class K8sAutoscaleConfiguration
     @NotEmpty
     private String namespaces;
     
-    private List<String> namespacesArray;
-
+    @NotEmpty
+    private String resourceIdSeparator;
+    
     public String getMetric()
     {
         return metric;
@@ -62,11 +63,6 @@ public class K8sAutoscaleConfiguration
         this.maximumInstances = maximumInstances;
     }
 
-    public String getNamespaces()
-    {
-        return namespaces;
-    }
-
     public void setNamespaces(String namespaces)
     {
         this.namespaces = namespaces;
@@ -77,5 +73,15 @@ public class K8sAutoscaleConfiguration
         return Stream.of(this.namespaces.split(","))
             .map(String::trim)
             .collect(toList());
+    }
+
+    public String getResourceIdSeparator()
+    {
+        return resourceIdSeparator;
+    }
+
+    public void setResourceIdSeparator(String resourceIdSeparator)
+    {
+        this.resourceIdSeparator = resourceIdSeparator;
     }
 }

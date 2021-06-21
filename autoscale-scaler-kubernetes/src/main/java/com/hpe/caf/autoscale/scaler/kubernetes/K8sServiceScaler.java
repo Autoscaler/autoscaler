@@ -46,63 +46,63 @@ public class K8sServiceScaler implements ServiceScaler
     }
 
     @Override
-    public void scaleUp(final String identifier, final int amount) throws ScalerException
+    public void scaleUp(final String resourceId, final int amount) throws ScalerException
     {
-        final Deployment deployment = new Deployment(identifier);
+        final DeploymentId deploymentId = new DeploymentId(resourceId);
         try {
-            final V1Deployment v1Deployment = getDeployment(deployment);
+            final V1Deployment v1Deployment = getDeployment(deploymentId);
             final int currentReplicas = v1Deployment.getSpec().getReplicas();
             final int target = Math.min(config.getMaximumInstances(), currentReplicas + amount);
             if (target > currentReplicas) {
-                LOG.info("Scaling deployment {} up by {} instances", deployment.id, amount);
+                LOG.info("Scaling deployment {} up by {} instances", deploymentId.id, amount);
                 Kubectl.scale(V1Deployment.class)
-                    .namespace(deployment.namespace)
-                    .name(deployment.id)
+                    .namespace(deploymentId.namespace)
+                    .name(deploymentId.id)
                     .replicas(target)
                     .execute();
             }
         } catch (KubectlException e) {
-            LOG.error("Error scaling up deployment {}", deployment.id, e);
-            throw new ScalerException("Error scaling up deployment " + deployment.id, e);
+            LOG.error("Error scaling up deployment {}", deploymentId.id, e);
+            throw new ScalerException("Error scaling up deployment " + deploymentId.id, e);
         }
     }
 
     @Override
-    public void scaleDown(final String identifier, final int amount) throws ScalerException
+    public void scaleDown(final String resourceId, final int amount) throws ScalerException
     {
-        final Deployment deployment = new Deployment(identifier);
+        final DeploymentId deploymentId = new DeploymentId(resourceId);
         try {
             
-            final V1Deployment v1Deployment = getDeployment(deployment);
+            final V1Deployment v1Deployment = getDeployment(deploymentId);
             final int currentReplicas = v1Deployment.getSpec().getReplicas();
             final int target = Math.max(0, currentReplicas - amount);
             if (currentReplicas > 0) {
-                LOG.info("Scaling deployment {} down by {} instances", deployment.id, amount);
+                LOG.info("Scaling deployment {} down by {} instances", deploymentId.id, amount);
                 Kubectl.scale(V1Deployment.class)
-                    .namespace(deployment.namespace)
-                    .name(deployment.id)
+                    .namespace(deploymentId.namespace)
+                    .name(deploymentId.id)
                     .replicas(target)
                     .execute();
             }
         } catch (KubectlException e) {
-            LOG.error("Error scaling down deployment {}", deployment.id, e);
-            throw new ScalerException("Error scaling down deployment " + deployment.id, e);
+            LOG.error("Error scaling down deployment {}", deploymentId.id, e);
+            throw new ScalerException("Error scaling down deployment " + deploymentId.id, e);
         }
     }
 
     @Override
-    public InstanceInfo getInstanceInfo(final String identifier) throws ScalerException
+    public InstanceInfo getInstanceInfo(final String resourceId) throws ScalerException
     {
-        final Deployment deployment = new Deployment(identifier);
+        final DeploymentId deploymentId = new DeploymentId(resourceId);
         try {            
-            final V1Deployment v1Deployment = getDeployment(deployment);
+            final V1Deployment v1Deployment = getDeployment(deploymentId);
             final Map<String, String> labels = v1Deployment.getMetadata().getLabels();
             String appName = labels.get("app");
             int running = v1Deployment.getSpec().getReplicas();
             int staging = 0;
             if (appName != null) {
                 final KubectlGet kubectlGet = Kubectl.get(V1Pod.class)
-                    .namespace(deployment.namespace);
+                    .namespace(deploymentId.namespace);
                 final ListOptions listOptions = new ListOptions();
                 listOptions.setLabelSelector(String.format("app=%s", appName));
                 kubectlGet.options(listOptions);
@@ -125,36 +125,38 @@ public class K8sServiceScaler implements ServiceScaler
             
             return instanceInfo;
         } catch (KubectlException e) {
-            LOG.error("Error loading instance info for {}", deployment.id, e);
-            throw new ScalerException("Error loading deployment scale " + deployment.id, e);
+            LOG.error("Error loading instance info for {}", deploymentId.id, e);
+            throw new ScalerException("Error loading deployment scale " + deploymentId.id, e);
         }
     }
 
     @Override
     public HealthResult healthCheck()
-    {
+    {        
         return HealthResult.RESULT_HEALTHY;
     }
 
-    private V1Deployment getDeployment(final Deployment deployment) throws KubectlException
+    private V1Deployment getDeployment(final DeploymentId deploymentId) throws KubectlException
     {
         return Kubectl.get(V1Deployment.class)
-            .namespace(deployment.namespace)
-            .name(deployment.id)
+            .namespace(deploymentId.namespace)
+            .name(deploymentId.id)
             .execute();
     }
     
-    class Deployment {
+    private class DeploymentId
+    {
         final String id;
         final String namespace;
-        Deployment(final String identifier) throws ScalerException
+        DeploymentId(final String resourceId) throws ScalerException
         {
-            final String[] data = identifier.split(":");
+            final String[] data = resourceId.split(config.getResourceIdSeparator());
             if (data.length != 2) {
-                throw new ScalerException("Error in deployment name " + identifier);
+                throw new ScalerException("Error in resource id, expected " + config.getResourceIdSeparator() + 
+                                              " as a separator: " + resourceId);
             }
-            id = data[0];
-            namespace = data[1];            
+            namespace = data[0];
+            id = data[1];
         }
     }
 }

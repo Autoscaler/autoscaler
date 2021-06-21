@@ -48,11 +48,11 @@ Configuration of the AutoScaler is supported through the following environment v
     Default: `default`
     Used to specify the Kubernetes namespaces, comma separated, to search for deployments.
  
-- `CAF_AUTOSCALER_RESOURCE_ID_SEPARATOR`
-  Default: `:`
-  Description: The separator used when storing namespace/deployment source configuration. 
+ - `CAF_AUTOSCALER_RESOURCE_ID_SEPARATOR`
+    Default: `:`
+    Description: The separator used when storing namespace/deployment source configuration. 
   
- -  `CAF_LOG_LEVEL`  
+ - `CAF_LOG_LEVEL`  
     Default: `INFO`  
     Used to specify the required level of logging.
 

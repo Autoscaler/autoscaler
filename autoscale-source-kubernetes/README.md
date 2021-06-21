@@ -22,7 +22,6 @@
 
  This module relies on performing API calls to Kubernetes and retrieving instance info on deployments 
  which have the label `autoscale.metric: rabbitmq`.  
- This module has a dummy health check to comply with the existing interface.
 
 ## Failure modes
 

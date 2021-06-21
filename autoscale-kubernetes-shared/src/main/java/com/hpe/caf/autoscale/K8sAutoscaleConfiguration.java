@@ -52,7 +52,6 @@ public class K8sAutoscaleConfiguration
         this.metric = metric;
     }
 
-
     public int getMaximumInstances()
     {
         return maximumInstances;

@@ -14,7 +14,7 @@ Enable Kubenetes on Docker for Desktop.
 **View the dashboard**  
 `http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/workloads?namespace=default`  
 
-###Install a rabbitmq to Kubernetes
+###Install rabbitmq to Kubernetes
 `kubectl create namespace rabbit`  
 `helm repo add bitnami https://charts.bitnami.com/bitnami`  
 `helm install mu-rabbit bitnami/rabbitmq --namespace rabbit`
@@ -24,7 +24,7 @@ Enable Kubenetes on Docker for Desktop.
 `user`  
 **Get the password**  
 `kubectl get secret --namespace rabbit mu-rabbit-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode`  
-Configure amqp/http connections in `publisher.yaml` `consumer.yaml` `autoscaler.yaml`.   
+Configure amqp/http connections in `publisher.yaml` `consumers.yaml` `autoscaler.yaml`.   
 
 **Log into RabbitMQ**  
 *Start the proxy if not already started*  
@@ -47,6 +47,3 @@ This will create 2 deployments that will consume 1 message per second per pod fr
 If the dashboard is installed the scaling can be observed on the deployments panel and also by viewing the pods panel.  
 Alternatively the autoscaler will log output scaling actions and can be viewed either by `kubectl logs <autoscaler-pod>` 
 or via the dashboard logging feature. 
-
-
-

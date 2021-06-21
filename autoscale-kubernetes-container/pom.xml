@@ -154,15 +154,11 @@
                             <name>${dockerAutoscalerOrg}autoscale-kubernetes-rabbit${dockerProjectVersion}</name>
                             <build>
                                 <from>${dockerHubPublic}/cafapi/prereleases:opensuse-jre11-3.4.0-SNAPSHOT</from>
-                                <!-- The entry point will be the worker.sh executable. -->
                                 <cmd>
                                     <exec>
                                         <args>/maven/scaler.sh</args>
                                     </exec>
                                 </cmd>
-                                <healthCheck>
-                                    <cmd>curl --fail http://localhost:8081/healthcheck || exit 1</cmd>
-                                </healthCheck>
                                 <assembly>
                                     <mode>tar</mode>
                                     <inline>
@@ -203,8 +199,7 @@
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration>
                     <excludes combine.children="append">
-                        <exclude>example-configs/**</exclude>
-                        <exclude>src/test/resources/cfg_caf_autoscaler_autoscaler_RabbitWorkloadAnalyserConfiguration</exclude>
+                        <exclude>example-dev-setup/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>

@@ -179,7 +179,7 @@ TODO
 
 ### Quick start
 Assuming Kubernetes is enabled, follow the instructions in [example-dev-setup](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-kubernetes-container/example-dev-setup/README.md). 
-Note that the [consumer](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-kubernetes-container/example-dev-setup/example-dev-setup/consumers.yaml) deployment
+Note that the [consumer](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-kubernetes-container/example-dev-setup/example-dev-setup/consumers.yaml) deployment 
 and [publisher](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-kubernetes-container/example-dev-setup/example-dev-setup/publisher.yaml) job are 
 are purely to demonstrate the scaling functionality
 
@@ -218,5 +218,5 @@ being considered when the system is in an unstable state.
 
 Finally the `autoscale.profile` can be an arbitrary string, but one that should exist in the [RabbitWorkloadAnalyserConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/autoscale-kubernetes-container/autoscale-kubernetes-container/src/main/config/cfg~caf~autoscaler~RabbitWorkloadAnalyserConfiguration.js) resource deployed inside the autoscale container.
 
-Deploy/redeploy the deployments and the autoscale container. After one or two
+Deploy/redeploy the deployments and the autoscale container. After one or two 
 minutes the autoscale container should find the deployments and start monitoring.

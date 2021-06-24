@@ -1,0 +1,56 @@
+@startuml
+
+class ServiceHost
+{
+    + String getHost()
+	+ Collection<Integer> getPorts()
+}
+
+class InstanceInfo {
+    + int getInstancesRunning()
+    + int getInstancesStaging(;
+    + int getTotalRunningAndStageInstances()
+    + Collection<ServiceHost> getHosts()
+    + int getShutdownPriority()
+    + int getInstances()
+}
+
+class K8sServiceScaler {
+    - AppsV1Api api;
+    - K8sAutoscaleConfiguration config
+    + void scaleUp(String service, int amount)
+    + void scaleDown(String service, int amount)
+    + InstanceInfo getInstanceInfo(String service)   
+}
+
+interface ServiceScaler {
+    + void scaleUp(String service, int amount)
+    + scaleDown(String service, int amount)
+    + InstanceInfo getInstanceInfo(String service)    
+}
+
+interface ServiceScalerProvider {
+     + ServiceScaler getServiceScaler()
+}
+
+class K8sServiceScalerProvider {
+    + K8sServiceScaler getServiceScaler()
+} 
+
+class K8sAutoscaleConfiguration {
+ + int getMaximumInstances()
+ + String getMetric()
+ + String getNamespace()
+}
+
+ServiceScaler <|.. K8sServiceScaler
+K8sServiceScaler -- InstanceInfo
+K8sServiceScaler -- K8sAutoscaleConfiguration
+K8sServiceScalerProvider -- K8sAutoscaleConfiguration
+InstanceInfo -- ServiceHost
+ServiceScalerProvider <|.. K8sServiceScalerProvider
+class AutoscaleApplication
+
+K8sServiceScalerProvider <-- AutoscaleApplication
+
+@enduml

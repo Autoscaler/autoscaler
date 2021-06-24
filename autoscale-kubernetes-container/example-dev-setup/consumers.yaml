@@ -1,0 +1,86 @@
+#
+# Copyright 2015-2021 Micro Focus or one of its affiliates.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test
+  labels:
+    name: test
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-consumer-1
+  namespace: default
+  labels:
+    app: rabbitmq-consumer-1
+    autoscale.metric: rabbitmq
+    autoscale.interval: "1"
+    autoscale.scalingtarget: hello
+    autoscale.mininstances: "1"
+    autoscale.maxinstances: "6"
+    autoscale.profile: default
+    autoscale.backoff: "1"
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq-consumer-1
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-consumer-1
+    spec:
+      containers:
+        - name: rabbitmq-consumer-1
+          image: jeffhollan/rabbitmq-client:dev
+          imagePullPolicy: Always
+          command:
+            - receive
+          args:
+            - "amqp://user:xwSYg2JOBa@mu-rabbit-rabbitmq.rabbit.svc.cluster.local:5672"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-consumer-2
+  namespace: test
+  labels:
+    app: rabbitmq-consumer-2
+    autoscale.metric: rabbitmq
+    autoscale.interval: "1"
+    autoscale.scalingtarget: hello
+    autoscale.mininstances: "1"
+    autoscale.maxinstances: "2"
+    autoscale.profile: default
+    autoscale.backoff: "1"
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq-consumer-2
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-consumer-2
+    spec:
+      containers:
+        - name: rabbitmq-consumer-2
+          image: jeffhollan/rabbitmq-client:dev
+          imagePullPolicy: Always
+          command:
+            - receive
+          args:
+            - "amqp://user:xwSYg2JOBa@mu-rabbit-rabbitmq.rabbit.svc.cluster.local:5672"

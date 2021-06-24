@@ -80,12 +80,16 @@
         <module>autoscale-core</module>
         <module>autoscale-dockerswarm-shared</module>
         <module>autoscale-dockerswarm-container</module>
+        <module>autoscale-kubernetes-container</module>
+        <module>autoscale-kubernetes-shared</module>
         <module>autoscale-marathon-shared</module>
         <module>autoscale-marathon-container</module>
         <module>autoscale-scaler-dockerswarm</module>
+        <module>autoscale-scaler-kubernetes</module>
         <module>autoscale-scaler-marathon</module>
         <module>autoscale-source-dockerswarm</module>
-        <module>autoscale-source-marathon</module>        
+        <module>autoscale-source-kubernetes</module>
+        <module>autoscale-source-marathon</module>
         <module>autoscale-workload-rabbit</module>
         <module>autoscale-acceptance-tests</module>
         <module>autoscale-email-alert-dispatcher</module>
@@ -131,12 +135,22 @@
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-kubernetes-shared</artifactId>
+                <version>1.9.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-marathon-shared</artifactId>
                 <version>1.9.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-scaler-dockerswarm</artifactId>
+                <version>1.9.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-scaler-kubernetes</artifactId>
                 <version>1.9.0-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -151,6 +165,11 @@
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
+                <artifactId>autoscale-source-kubernetes</artifactId>
+                <version>1.9.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-source-marathon</artifactId>
                 <version>1.9.0-SNAPSHOT</version>
             </dependency>
@@ -158,6 +177,21 @@
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-workload-rabbit</artifactId>
                 <version>1.9.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>io.kubernetes</groupId>
+                <artifactId>client-java</artifactId>
+                <version>12.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.kubernetes</groupId>
+                <artifactId>client-java-api</artifactId>
+                <version>12.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.kubernetes</groupId>
+                <artifactId>client-java-extended</artifactId>
+                <version>12.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

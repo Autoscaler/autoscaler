@@ -1,0 +1,24 @@
+# autoscale-scaler-kubernetes
+
+---
+
+ This is an implementation of a `ServiceScaler` that uses the Kubernetes Client API 
+ to scale up and down services.
+ `https://github.com/kubernetes-client/java/`
+
+## Configuration
+
+ The configuration source for this module is [K8sAutoscaleConfiguration](../autoscale-kubernetes-container/src/main/config/cfg~caf~autoscaler~K8sAutoscaleConfiguration.js).
+ The following configuration options are present:
+
+ - maximumInstances: the absolute upper ceiling for number of instances of a
+ service. Minimum 1.
+ - metric: the Kubernetes metadata `autoscale.metric` label value that will identify deployments
+ to scale.  Must not be null and must not be empty.
+ - namespaces: the Kubernetes namespaces, comma separated, which contains the target deployments.
+ Must not be null and must not be empty.
+
+## Usage
+
+ This module relies on performing API calls to Kubernetes and retrieving instance info on deployments 
+ which have the label `autoscale.metric: rabbitmq`.

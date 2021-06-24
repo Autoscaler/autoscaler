@@ -7,6 +7,8 @@ Replace
 with  
     `autoscale-kubernetes-container/example-dev-setup/cfg~caf~autoscaler~EmailDispatcherConfiguration.js`
 
+If making changes to the autoscaler locally update the image in the [autoscaler yaml](./autoscaler.yaml)
+
 ### Install the dashboard
 `kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml`  
 

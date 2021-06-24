@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
         - name: autoscaler
-          image: dev/autoscaler/autoscale-kubernetes-rabbit:1.9.0-SNAPSHOT
+          image: autoscaler/autoscale-kubernetes-rabbit:latest
           ports:
             - containerPort: 80
           env:

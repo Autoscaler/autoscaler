@@ -7,7 +7,7 @@ Replace
 with  
     `autoscale-kubernetes-container/example-dev-setup/cfg~caf~autoscaler~EmailDispatcherConfiguration.js`
 
-If making changes to the autoscaler locally update the image in the [autoscaler yaml](./autoscaler.yaml)
+If making changes to the autoscaler locally update the image in [autoscaler yaml](./autoscaler.yaml)
 
 ### Install the dashboard
 `kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml`  
@@ -32,6 +32,7 @@ If making changes to the autoscaler locally update the image in the [autoscaler 
 **Get the password**.  
 `kubectl get secret --namespace rabbit mu-rabbit-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode`  
 Configure amqp/http connections in `publisher.yaml` `consumers.yaml` `autoscaler.yaml`.  
+Configure `CAF_RABBITMQ_MGMT_PASSWORD` in [autoscaler yaml](./autoscaler.yaml).  
 
 **Log into RabbitMQ**  
 *Start the proxy if not already started*.  

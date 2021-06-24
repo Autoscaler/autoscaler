@@ -13,7 +13,7 @@
 
  - maximumInstances: the absolute upper ceiling for number of instances of a
  service. Minimum 1.
- - metric: the Kubernetes metadata label that will identify deployments
+ - metric: the Kubernetes metadata `autoscale.metric` label value that will identify deployments
  to scale.  Must not be null and must not be empty.
  - namespaces: the Kubernetes namespaces, comma separated, which contains the target deployments.
  Must not be null and must not be empty.

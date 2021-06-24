@@ -16,5 +16,5 @@
 ({
     maximumInstances: getenv("CAF_AUTOSCALER_MAXIMUM_INSTANCES") || 100,
     namespaces: getenv("CAF_AUTOSCALER_KUBERNETES_NAMESPACES") || "default",
-    groupid: getenv("CAF_AUTOSCALER_GROUP_ID") || undefined
+    groupId: getenv("CAF_AUTOSCALER_GROUP_ID") || undefined
 });

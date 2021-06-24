@@ -7,7 +7,7 @@ To get the kubernetes autoscaler module up and running look at the [Quick Start]
 
 ### Installing the Autoscaler.
 The autoscaler can be installed to Kubernetes by using the kubectl command line tool.  
- - `kubectl apply -f ./autoscaler.yaml`
+  `kubectl apply -f ./autoscaler.yaml`
 
 ### Configuration
 
@@ -43,14 +43,11 @@ Configuration of the AutoScaler is supported through the following environment v
 
  - `CAF_AUTOSCALER_METRIC`  
     Default: `rabbitmq`  
-
+    Used to specify the metric identifier to look for in the `autoscale.metric` label.
+    
  - `CAF_AUTOSCALER_KUBERNETES_NAMESPACES`
     Default: `default`
     Used to specify the Kubernetes namespaces, comma separated, to search for deployments.
- 
- - `CAF_AUTOSCALER_RESOURCE_ID_SEPARATOR`
-    Default: `:`
-    Description: The separator used when storing namespace/deployment source configuration. 
   
  - `CAF_LOG_LEVEL`  
     Default: `INFO`  
@@ -133,7 +130,13 @@ Default: `apollo-autoscaler@microfocus.com`
 Description: The email address to send alert emails from. 
 
 ### Health checks
-TODO
+
+The [autoscale-core](../autoscale-core) application inherently exposes standard and
+module-specific health checks. If you expose the admin port (default 8081)
+then this can be accessed via HTTP to examine metrics and health checks.
+The health check REST call will return HTTP 500 if any health check fails.
+For details on the health checks for specific components, examine the module
+documentation.
 
 ### Logging
 
@@ -164,23 +167,19 @@ depends upon the number of deployments being monitored and the requested frequen
 - 0.1 CPUs per 10 services monitored
 - Slow I/O is acceptable
 
-
-### Failure modes
-
-Since this container is a composite of other CAF components, see the failure
-modes in the documentation for each module for further information on this
-topic.
-
-
 ### Upgrade procedures
-
-TODO
-
+There are various ways the deployment can be upgraded using the `kubectl` CLI.
+- To replace the deployment.
+    `kubectl replace -f autoscaler.yaml`
+- To update the image used for the deployment. 
+    `kubectl set image deployment <image name>`
+- To update a label on the deployment.
+    `kubectl label deployment autoscaler unhealthy=true`
 
 ### Quick start
-Assuming Kubernetes is enabled, follow the instructions in [example-dev-setup](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-kubernetes-container/example-dev-setup/README.md). 
-Note that the [consumer](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-kubernetes-container/example-dev-setup/example-dev-setup/consumers.yaml) deployment 
-and [publisher](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-kubernetes-container/example-dev-setup/example-dev-setup/publisher.yaml) job are 
+Assuming Kubernetes is enabled, follow the instructions in [example-dev-setup](./example-dev-setup/README.md). 
+Note that the [consumer](./example-dev-setup/consumers.yaml) deployment 
+and [publisher](./example-dev-setup/publisher.yaml) job are 
 are purely to demonstrate the scaling functionality
 
 For each of the deployments to scale its labels must be updated to
@@ -216,7 +215,7 @@ dictate. The `autoscale.backoff` is the number of intervals to skip monitoring
 after a scale up or down command is issued. This prevents unusual values
 being considered when the system is in an unstable state.
 
-Finally the `autoscale.profile` can be an arbitrary string, but one that should exist in the [RabbitWorkloadAnalyserConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/autoscale-kubernetes-container/autoscale-kubernetes-container/src/main/config/cfg~caf~autoscaler~RabbitWorkloadAnalyserConfiguration.js) resource deployed inside the autoscale container.
+Finally the `autoscale.profile` can be an arbitrary string, but one that should exist in the [RabbitWorkloadAnalyserConfiguration](./src/main/config/cfg~caf~autoscaler~RabbitWorkloadAnalyserConfiguration.js) resource deployed inside the autoscale container.
 
 Deploy/redeploy the deployments and the autoscale container. After one or two 
 minutes the autoscale container should find the deployments and start monitoring.

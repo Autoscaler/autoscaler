@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 ({
-    disableAlertDispatch: getenv("CAF_AUTOSCALER_ALERT_DISABLED") || true,
+    disableAlertDispatch: getenv("CAF_AUTOSCALER_ALERT_DISABLED") || false,
     alertDispatchFrequency: getenv("CAF_AUTOSCALER_ALERT_FREQUENCY") || 20
 });

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 ({
-    host: getenv("CAF_AUTOSCALER_SMTP_HOST") || "testhost",
-    port: getenv("CAF_AUTOSCALER_SMTP_PORT") || "testhost",
+    host: getenv("CAF_AUTOSCALER_SMTP_HOST") || undefined,
+    port: getenv("CAF_AUTOSCALER_SMTP_PORT") || undefined,
     username: getenv("CAF_AUTOSCALER_SMTP_USERNAME") || "",
     password: getenv("CAF_AUTOSCALER_SMTP_PASSWORD") || "",
-    emailAddressTo: getenv("CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO") || "noone@nothing.com",
+    emailAddressTo: getenv("CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO") || undefined,
     emailAddressFrom: getenv("CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_FROM") || "apollo-autoscaler@microfocus.com"
 });

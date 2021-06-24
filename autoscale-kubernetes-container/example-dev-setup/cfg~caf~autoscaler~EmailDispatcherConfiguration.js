@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 ({
-    maximumInstances: getenv("CAF_AUTOSCALER_MAXIMUM_INSTANCES") || 100,
-    namespaces: getenv("CAF_AUTOSCALER_KUBERNETES_NAMESPACES") || "default",
-    metric: getenv("CAF_AUTOSCALER_METRIC") || "rabbitmq"
+    host: getenv("CAF_AUTOSCALER_SMTP_HOST") || "testhost",
+    port: getenv("CAF_AUTOSCALER_SMTP_PORT") || "testhost",
+    username: getenv("CAF_AUTOSCALER_SMTP_USERNAME") || "",
+    password: getenv("CAF_AUTOSCALER_SMTP_PASSWORD") || "",
+    emailAddressTo: getenv("CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO") || "noone@nothing.com",
+    emailAddressFrom: getenv("CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_FROM") || "apollo-autoscaler@microfocus.com"
 });

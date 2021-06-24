@@ -4,11 +4,11 @@
 
  This is an implementation of a `ServiceSource` that uses the Kubernetes REST API
  to acquire a list of scalable services.
- - `https://github.com/kubernetes-client/java/`
+  `https://github.com/kubernetes-client/java/`
 
 ## Configuration
 
- The configuration source for this module is [K8sAutoscaleConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/autoscale-kubernetes-container/src/main/config/cfg~caf~autoscaler~K8sAutoscaleConfiguration.js).
+ The configuration source for this module is [K8sAutoscaleConfiguration](../autoscale-kubernetes-container/src/main/config/cfg~caf~autoscaler~K8sAutoscaleConfiguration.js).
  The following configuration options are present:
 
  - maximumInstances: the absolute upper ceiling for number of instances of a

@@ -66,19 +66,26 @@ public class K8sServiceSource implements ServiceSource
                 .namespace(namespace)
                 .execute()
                 .stream()
-                .filter(d -> isLabelledForScaling(d))
-                .map(d -> mapToScalingConfig(d, namespace))
+                .filter(d -> hasMetadata(d) && isLabelledForScaling(d.getMetadata()))
+                .map(d -> mapToScalingConfig(d.getMetadata(), namespace))
                 .collect(Collectors.toSet()));
         }
         return scalingConfigurations;
     }
+    
+    private boolean hasMetadata(final V1Deployment v1Deployment) {
+        return v1Deployment.getMetadata() != null && 
+               v1Deployment.getMetadata().getName() != null &&
+               v1Deployment.getMetadata().getLabels() != null;
+    }
 
-    private ScalingConfiguration mapToScalingConfig(final V1Deployment deployment, final String namespace)
+    private ScalingConfiguration mapToScalingConfig(
+        final V1ObjectMeta metadata, 
+        final String namespace)
     {
-        final ScalingConfiguration cfg = new ScalingConfiguration();
-        final V1ObjectMeta metadata = deployment.getMetadata();
         final Map<String, String> labels = metadata.getLabels();
-        cfg.setId(namespace + config.getResourceIdSeparator() + metadata.getName());
+        final ScalingConfiguration cfg = new ScalingConfiguration();
+        cfg.setId(namespace + config.RESOURCE_ID_SEPARATOR + metadata.getName());
         if (labels.containsKey(ScalingConfiguration.KEY_WORKLOAD_METRIC)) {
             cfg.setWorkloadMetric(labels.get(ScalingConfiguration.KEY_WORKLOAD_METRIC));
         }
@@ -110,14 +117,14 @@ public class K8sServiceSource implements ServiceSource
     }
 
     /**
-     * @param deployment
+     * @param metadata
      * @return
      */
-    private boolean isLabelledForScaling(final V1Deployment deployment)
-    {        
-        final Map<String, String> labels = deployment.getMetadata().getLabels();
+    private boolean isLabelledForScaling(final V1ObjectMeta metadata)
+    {   
+        final Map<String, String> labels = metadata.getLabels();
         final boolean isRabbitMQScaled = config.getMetric().equalsIgnoreCase(labels.get(ScalingConfiguration.KEY_WORKLOAD_METRIC));
-        LOG.debug("Deployment {} is {}configured for scaling.", deployment.getMetadata().getName(), (isRabbitMQScaled ? "": "not "));
+        LOG.debug("Deployment {} is {}configured for scaling.", metadata.getName(), (isRabbitMQScaled ? "": "not "));
         return isRabbitMQScaled;
     }
 

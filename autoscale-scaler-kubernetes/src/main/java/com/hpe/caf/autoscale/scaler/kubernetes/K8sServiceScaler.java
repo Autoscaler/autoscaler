@@ -98,7 +98,7 @@ public class K8sServiceScaler implements ServiceScaler
         try {            
             final V1Deployment v1Deployment = getDeployment(deploymentId);
             final Map<String, String> labels = v1Deployment.getMetadata().getLabels();
-            String appName = labels.get("app");
+            final String appName = labels.get("app");
             int running = v1Deployment.getSpec().getReplicas();
             int staging = 0;
             if (appName != null) {
@@ -125,7 +125,7 @@ public class K8sServiceScaler implements ServiceScaler
                 running + staging);
             
             return instanceInfo;
-        } catch (KubectlException e) {
+        } catch (final KubectlException e) {
             LOG.error("Error loading instance info for {}", deploymentId.id, e);
             throw new ScalerException("Error loading deployment scale " + deploymentId.id, e);
         }
@@ -157,9 +157,9 @@ public class K8sServiceScaler implements ServiceScaler
         final String namespace;
         DeploymentId(final String resourceId) throws ScalerException
         {
-            final String[] data = resourceId.split(config.getResourceIdSeparator());
+            final String[] data = resourceId.split(config.RESOURCE_ID_SEPARATOR);
             if (data.length != 2) {
-                throw new ScalerException("Error in resource id, expected " + config.getResourceIdSeparator() + 
+                throw new ScalerException("Error in resource id, expected " + config.RESOURCE_ID_SEPARATOR + 
                                               " as a separator: " + resourceId);
             }
             namespace = data[0];

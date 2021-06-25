@@ -123,9 +123,9 @@ public class K8sServiceSource implements ServiceSource
     private boolean isLabelledForScaling(final V1ObjectMeta metadata)
     {   
         final Map<String, String> labels = metadata.getLabels();
-        final boolean isRabbitMQScaled = config.getMetric().equalsIgnoreCase(labels.get(ScalingConfiguration.KEY_WORKLOAD_METRIC));
-        LOG.debug("Deployment {} is {}configured for scaling.", metadata.getName(), (isRabbitMQScaled ? "": "not "));
-        return isRabbitMQScaled;
+        final boolean isScaled = config.getGroupId().equalsIgnoreCase(labels.get(ScalingConfiguration.KEY_GROUP_ID));
+        LOG.debug("Deployment {} is {}configured for scaling.", metadata.getName(), (isScaled ? "": "not "));
+        return isScaled;
     }
 
     @Override

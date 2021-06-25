@@ -44,3 +44,5 @@ spec:
               value: "xwSYg2JOBa"
             - name: CAF_AUTOSCALER_KUBERNETES_NAMESPACES
               value: "default,test"
+            - name: CAF_AUTOSCALER_GROUP_ID
+              value: "managed-queue-workers"

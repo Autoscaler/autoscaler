@@ -12,6 +12,10 @@ The autoscaler can be installed to Kubernetes by using the kubectl command line 
 ### Configuration
 
 Configuration of the AutoScaler is supported through the following environment variables:
+ - `CAF_AUTOSCALER_GROUP_ID`  
+    Required    
+    Used to specify the group of deployments an instance of the autoscaler will monitor.
+  
  - `CAF_RABBITMQ_MGMT_URL`  
     Default: `http://rabbitmq:15672`  
     Used to specify the RabbitMQ Management API Endpoint.  Alternatively `CAF_RABBITMQ_HOST` and `CAF_RABBITMQ_MGMT_PORT` may instead be specified individually.
@@ -41,10 +45,6 @@ Configuration of the AutoScaler is supported through the following environment v
     Default: `100`  
     Used to specify the maximum number of instances that any worker can be scaled to.
 
- - `CAF_AUTOSCALER_METRIC`  
-    Default: `rabbitmq`  
-    Used to specify the metric identifier to look for in the `autoscale.metric` label.
-    
  - `CAF_AUTOSCALER_KUBERNETES_NAMESPACES`
     Default: `default`
     Used to specify the Kubernetes namespaces, comma separated, to search for deployments.
@@ -193,7 +193,8 @@ include labels such as the following:
         "autoscale.mininstances": "0",
         "autoscale.maxinstances": "5",
         "autoscale.profile": "default",
-        "autoscale.backoff": "1"
+        "autoscale.backoff": "1",
+        "autoscale.groupid": "managed-queue-workers"
     }
 ```
 

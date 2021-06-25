@@ -34,21 +34,21 @@ public class K8sAutoscaleConfiguration
     private int maximumInstances;
 
     @NotEmpty
-    private String metric;
+    private String groupId;
 
     @NotEmpty
     private String namespaces;
     
     public final static String RESOURCE_ID_SEPARATOR = ":";
     
-    public String getMetric()
+    public String getGroupId()
     {
-        return metric;
+        return groupId;
     }
 
-    public void setMetric(final String metric)
+    public void setGroupId(final String groupId)
     {
-        this.metric = metric;
+        this.groupId = groupId;
     }
 
     public int getMaximumInstances()

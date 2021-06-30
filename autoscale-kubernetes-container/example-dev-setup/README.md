@@ -24,15 +24,8 @@ If making changes to the autoscaler locally update the image in [autoscaler yaml
 ### Install rabbitmq to Kubernetes
 `kubectl create namespace rabbit`  
 `helm repo add bitnami https://charts.bitnami.com/bitnami`  
-`helm install mu-rabbit bitnami/rabbitmq --namespace rabbit`  
+`helm install mu-rabbit --set auth.username=guest,auth.password=guest,rabbitmq.erlangCookie=secretcookie bitnami/rabbitmq`  
 `kubectl port-forward --namespace rabbit svc/mu-rabbit-rabbitmq 15672:15672`  
-
-**Username**  
-`user`  
-**Get the password**.  
-`kubectl get secret --namespace rabbit mu-rabbit-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode`  
-Configure amqp/http connections in `publisher.yaml` `consumers.yaml` `autoscaler.yaml`.  
-Configure `CAF_RABBITMQ_MGMT_PASSWORD` in [autoscaler yaml](./autoscaler.yaml).  
 
 **Log into RabbitMQ**  
 *Start the proxy if not already started*.  

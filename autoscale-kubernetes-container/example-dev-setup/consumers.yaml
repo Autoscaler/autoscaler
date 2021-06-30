@@ -52,7 +52,7 @@ spec:
           command:
             - receive
           args:
-            - "amqp://user:xwSYg2JOBa@mu-rabbit-rabbitmq.rabbit.svc.cluster.local:5672"
+            - "amqp://user:guest@mu-rabbit-rabbitmq.rabbit.svc.cluster.local:5672"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -85,4 +85,4 @@ spec:
           command:
             - receive
           args:
-            - "amqp://user:xwSYg2JOBa@mu-rabbit-rabbitmq.rabbit.svc.cluster.local:5672"
+            - "amqp://user:guest@mu-rabbit-rabbitmq.rabbit.svc.cluster.local:5672"

@@ -27,6 +27,9 @@ If building the autoscaler locally update the image in [autoscaler yaml](./autos
 `kubectl proxy`  
 `http://localhost:15672/`  
 
+### Path to the directory
+`cd autoscaler/autoscale-kubernetes-container/example-dev-setup`
+
 ### Create a job to publish messages to RabbitMQ
 `kubectl apply -f ./publisher.yaml`  
 This will publish a number of messages to the `hello` queue.  

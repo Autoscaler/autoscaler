@@ -51,9 +51,7 @@ or via the dashboard logging feature.
 If you get:  
 `message: deployments.apps is forbidden: User \"system:serviceaccount:default:default\" cannot list resource \"deployments\" in API group \"apps\" in the namespace \"default\"`  
  
-Run `kubectl create clusterrolebinding serviceaccounts-cluster-admin \
---clusterrole=cluster-admin \
---group=system:serviceaccounts`  
+Run `kubectl create clusterrolebinding serviceaccounts-cluster-admin --clusterrole=cluster-admin --group=system:serviceaccounts`  
 (**WARNING**: This allows any user with read access to secrets or the ability to create a pod to access super-user credentials.)
 
 ### Create dashboard credentials

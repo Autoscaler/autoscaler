@@ -32,17 +32,25 @@ spec:
     spec:
       containers:
         - name: autoscaler
-          image: autoscaler/autoscale-kubernetes-rabbit:latest
+          image: autoscaler/prereleases:autoscale-kubernetes-rabbit-1.9.0-SNAPSHOT
           ports:
             - containerPort: 80
           env:
             - name: CAF_RABBITMQ_MGMT_URL
               value: "http://mu-rabbit-rabbitmq.rabbit:15672"
             - name: CAF_RABBITMQ_MGMT_USERNAME
-              value: "user"
+              value: "guest"
             - name: CAF_RABBITMQ_MGMT_PASSWORD
               value: "guest"
             - name: CAF_AUTOSCALER_KUBERNETES_NAMESPACES
               value: "default,test"
             - name: CAF_AUTOSCALER_GROUP_ID
               value: "managed-queue-workers"
+            - name: CAF_AUTOSCALER_SMTP_HOST
+              value: "testhost"
+            - name: CAF_AUTOSCALER_SMTP_PORT
+              value: "25"
+            - name: CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO
+              value: "noone@nothing.com"
+            - name: CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_FROM
+              value: "noone@nothing.com"

@@ -2,12 +2,7 @@
 Disable the proxies on your windows box and disconnect from VPN.  
 Enable Kubernetes on Docker for Desktop.  
 
-Replace  
-    `autoscale-kubernetes-container/src/main/config/cfg~caf~autoscaler~EmailDispatcherConfiguration.js` 
-with  
-    `autoscale-kubernetes-container/example-dev-setup/cfg~caf~autoscaler~EmailDispatcherConfiguration.js`
-
-If making changes to the autoscaler locally update the image in [autoscaler yaml](./autoscaler.yaml)
+If building the autoscaler locally update the image in [autoscaler yaml](./autoscaler.yaml)
 
 ### Install the dashboard
 `kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml`  
@@ -24,7 +19,7 @@ If making changes to the autoscaler locally update the image in [autoscaler yaml
 ### Install rabbitmq to Kubernetes
 `kubectl create namespace rabbit`  
 `helm repo add bitnami https://charts.bitnami.com/bitnami`  
-`helm install mu-rabbit --set auth.username=guest,auth.password=guest,rabbitmq.erlangCookie=secretcookie bitnami/rabbitmq`  
+`helm install mu-rabbit --namespace rabbit --set auth.username=guest,auth.password=guest,rabbitmq.erlangCookie=secretcookie bitnami/rabbitmq`  
 `kubectl port-forward --namespace rabbit svc/mu-rabbit-rabbitmq 15672:15672`  
 
 **Log into RabbitMQ**  

@@ -48,7 +48,7 @@ Alternatively the autoscaler will log output scaling actions and can be viewed e
 or via the dashboard logging feature. 
 
 ### '_deployments.apps_' is forbidden issues
-######If you get:  
+If you get:  
 `message: deployments.apps is forbidden: User \"system:serviceaccount:default:default\" cannot list resource \"deployments\" in API group \"apps\" in the namespace \"default\"`  
  
 Run `kubectl create clusterrolebinding serviceaccounts-cluster-admin \

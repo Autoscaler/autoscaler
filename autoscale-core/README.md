@@ -2,7 +2,7 @@
 
 ---
 
- This project contains the container autoscaling applcation code and various
+ This project contains the container autoscaling application code and various
  module implementations that have been designed to work with it.
  
 
@@ -70,7 +70,7 @@
  The following command-line should start the application:
  
  ```
- java -cp "*" com.hpe.caf.autoscale.core.AutoscaleApplication server [yaml]
+ java -cp "*" com.github.autoscaler.core.AutoscaleApplication server [yaml]
  ```
  
 ### The ServiceSource component

@@ -104,21 +104,21 @@ The log of the Autoscaler below can be seen processing incoming tasks:
 <br>
 
 ```
-DEBUG [2016-10-27 15:19:57,504] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example 
-DEBUG [2016-10-27 15:19:57,530] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=0, publishRate=0.0, consumeRate=0.0}
-DEBUG [2016-10-27 15:20:07,531] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:20:07,556] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=8, publishRate=0.0, consumeRate=0.4}
+DEBUG [2016-10-27 15:19:57,504] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example 
+DEBUG [2016-10-27 15:19:57,530] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=0, publishRate=0.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:20:07,531] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:20:07,556] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=8, publishRate=0.0, consumeRate=0.4}
 172.17.0.1 - - [27/Oct/2016:15:20:13 +0000] "GET /healthcheck HTTP/1.1" 200 - "-" "spray-can/1.3.3" 3
-DEBUG [2016-10-27 15:20:17,558] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:20:17,578] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=8, publishRate=0.0, consumeRate=0.0}
-DEBUG [2016-10-27 15:20:27,579] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:20:27,599] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=5, publishRate=0.0, consumeRate=0.0}
-DEBUG [2016-10-27 15:20:37,603] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:20:37,642] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=3, publishRate=0.0, consumeRate=0.0}
-DEBUG [2016-10-27 15:20:47,643] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:20:47,663] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=1, publishRate=0.0, consumeRate=0.4}
-DEBUG [2016-10-27 15:20:57,663] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:20:57,687] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=0, publishRate=0.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:20:17,558] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:20:17,578] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=8, publishRate=0.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:20:27,579] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:20:27,599] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=5, publishRate=0.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:20:37,603] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:20:37,642] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=3, publishRate=0.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:20:47,643] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:20:47,663] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=1, publishRate=0.0, consumeRate=0.4}
+DEBUG [2016-10-27 15:20:57,663] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:20:57,687] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=0, publishRate=0.0, consumeRate=0.0}
 ```
 
 The number of incoming messages does not exceed the Autoscaler's set limit for when a new instance should be scaled up (determined by the properties scalingDelay and backlogGoal in [RabbitWorkloadAnalyserConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/marathon-files/cfg_demo_service_autoscaler_RabbitWorkloadAnalyserConfiguration)). The single running instance will finish the work, as shown by the following logs from Example-Worker:
@@ -149,46 +149,46 @@ The following logs show the Autoscaler detecting the workload and reacting as re
 <br>
 
 ```
-DEBUG [2016-10-27 15:45:51,456] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=0, publishRate=1.4, consumeRate=0.0}
-DEBUG [2016-10-27 15:46:01,457] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:46:01,486] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=104, publishRate=11.2, consumeRate=0.0}
-DEBUG [2016-10-27 15:46:11,487] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:46:11,531] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=212, publishRate=11.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:45:51,456] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=0, publishRate=1.4, consumeRate=0.0}
+DEBUG [2016-10-27 15:46:01,457] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:46:01,486] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=104, publishRate=11.2, consumeRate=0.0}
+DEBUG [2016-10-27 15:46:11,487] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:46:11,531] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=212, publishRate=11.0, consumeRate=0.0}
 172.17.0.1 - - [27/Oct/2016:15:46:14 +0000] "GET /healthcheck HTTP/1.1" 200 - "-" "spray-can/1.3.3" 5
-DEBUG [2016-10-27 15:46:21,534] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:46:21,572] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=323, publishRate=11.6, consumeRate=0.0}
-DEBUG [2016-10-27 15:46:31,574] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:46:31,597] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=441, publishRate=12.0, consumeRate=0.0}
-DEBUG [2016-10-27 15:46:31,597] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Workers needed to meet backlog goal: 1
-DEBUG [2016-10-27 15:46:41,597] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:46:41,618] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=498, publishRate=0.0, consumeRate=0.0}
-DEBUG [2016-10-27 15:46:51,619] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:46:51,643] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=496, publishRate=0.0, consumeRate=0.2}
-DEBUG [2016-10-27 15:47:01,644] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:47:01,664] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=493, publishRate=0.0, consumeRate=0.4}
-DEBUG [2016-10-27 15:47:11,664] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:47:11,686] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=492, publishRate=0.0, consumeRate=0.0}
-DEBUG [2016-10-27 15:47:21,687] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:47:21,705] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=490, publishRate=0.0, consumeRate=0.4}
-DEBUG [2016-10-27 15:47:31,706] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:47:31,724] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=490, publishRate=0.0, consumeRate=0.0}
-DEBUG [2016-10-27 15:47:41,725] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:47:41,745] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=488, publishRate=0.0, consumeRate=0.4}
-DEBUG [2016-10-27 15:47:51,747] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:47:51,765] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=487, publishRate=0.0, consumeRate=0.0}
-DEBUG [2016-10-27 15:48:01,766] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:48:01,790] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=483, publishRate=0.0, consumeRate=0.4}
-DEBUG [2016-10-27 15:48:11,792] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:48:11,819] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=481, publishRate=0.0, consumeRate=0.4}
-DEBUG [2016-10-27 15:48:11,819] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Workers needed to meet backlog goal: 7
-DEBUG [2016-10-27 15:48:11,819] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Scale with operation SCALE_UP by 5 instances
-DEBUG [2016-10-27 15:48:11,820] com.hpe.caf.autoscale.core.ScalerThread: Triggering scale up of service /caf/dataprocessing/example by amount 5
-DEBUG [2016-10-27 15:48:11,837] com.hpe.caf.autoscale.scaler.marathon.MarathonServiceScaler: Scaling service /caf/dataprocessing/example up by 5 instances
+DEBUG [2016-10-27 15:46:21,534] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:46:21,572] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=323, publishRate=11.6, consumeRate=0.0}
+DEBUG [2016-10-27 15:46:31,574] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:46:31,597] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=441, publishRate=12.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:46:31,597] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Workers needed to meet backlog goal: 1
+DEBUG [2016-10-27 15:46:41,597] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:46:41,618] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=498, publishRate=0.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:46:51,619] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:46:51,643] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=496, publishRate=0.0, consumeRate=0.2}
+DEBUG [2016-10-27 15:47:01,644] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:47:01,664] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=493, publishRate=0.0, consumeRate=0.4}
+DEBUG [2016-10-27 15:47:11,664] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:47:11,686] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=492, publishRate=0.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:47:21,687] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:47:21,705] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=490, publishRate=0.0, consumeRate=0.4}
+DEBUG [2016-10-27 15:47:31,706] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:47:31,724] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=490, publishRate=0.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:47:41,725] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:47:41,745] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=488, publishRate=0.0, consumeRate=0.4}
+DEBUG [2016-10-27 15:47:51,747] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:47:51,765] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=487, publishRate=0.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:48:01,766] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:48:01,790] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=483, publishRate=0.0, consumeRate=0.4}
+DEBUG [2016-10-27 15:48:11,792] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:48:11,819] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=481, publishRate=0.0, consumeRate=0.4}
+DEBUG [2016-10-27 15:48:11,819] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Workers needed to meet backlog goal: 7
+DEBUG [2016-10-27 15:48:11,819] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Scale with operation SCALE_UP by 5 instances
+DEBUG [2016-10-27 15:48:11,820] com.github.autoscaler.core.ScalerThread: Triggering scale up of service /caf/dataprocessing/example by amount 5
+DEBUG [2016-10-27 15:48:11,837] com.github.autoscaler.scaler.marathon.MarathonServiceScaler: Scaling service /caf/dataprocessing/example up by 5 instances
 172.17.0.1 - - [27/Oct/2016:15:48:14 +0000] "GET /healthcheck HTTP/1.1" 200 - "-" "spray-can/1.3.3" 12
-DEBUG [2016-10-27 15:48:21,981] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:48:22,032] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=479, publishRate=0.0, consumeRate=0.0}
-DEBUG [2016-10-27 15:48:32,035] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:48:32,083] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=477, publishRate=0.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:48:21,981] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:48:22,032] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=479, publishRate=0.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:48:32,035] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:48:32,083] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=477, publishRate=0.0, consumeRate=0.0}
 ```
 
 New instances of the Example-Worker can be observed being deployed in Marathon, as below:
@@ -207,34 +207,34 @@ The logs show the Autoscaler shutting down instances of the Example Worker:
 <br>
 
 ```
-DEBUG [2016-10-27 15:55:24,420] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:55:24,457] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=123, publishRate=0.0, consumeRate=1.2}
-DEBUG [2016-10-27 15:55:34,459] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:55:34,481] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=112, publishRate=0.0, consumeRate=1.2}
-DEBUG [2016-10-27 15:55:44,482] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:55:44,505] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=112, publishRate=0.0, consumeRate=1.0}
-DEBUG [2016-10-27 15:55:54,506] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:55:54,540] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=110, publishRate=0.0, consumeRate=0.0}
-DEBUG [2016-10-27 15:56:04,541] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:56:04,572] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=108, publishRate=0.0, consumeRate=0.2}
+DEBUG [2016-10-27 15:55:24,420] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:55:24,457] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=123, publishRate=0.0, consumeRate=1.2}
+DEBUG [2016-10-27 15:55:34,459] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:55:34,481] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=112, publishRate=0.0, consumeRate=1.2}
+DEBUG [2016-10-27 15:55:44,482] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:55:44,505] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=112, publishRate=0.0, consumeRate=1.0}
+DEBUG [2016-10-27 15:55:54,506] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:55:54,540] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=110, publishRate=0.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:56:04,541] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:56:04,572] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=108, publishRate=0.0, consumeRate=0.2}
 172.17.0.1 - - [27/Oct/2016:15:56:14 +0000] "GET /healthcheck HTTP/1.1" 200 - "-" "spray-can/1.3.3" 6
-DEBUG [2016-10-27 15:56:14,573] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:56:14,594] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=106, publishRate=0.0, consumeRate=0.4}
-DEBUG [2016-10-27 15:56:24,596] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:56:24,619] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=103, publishRate=0.0, consumeRate=0.2}
-DEBUG [2016-10-27 15:56:34,619] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:56:34,645] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=90, publishRate=0.0, consumeRate=0.8}
-DEBUG [2016-10-27 15:56:34,645] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Workers needed to meet backlog goal: 2
-DEBUG [2016-10-27 15:56:34,645] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Scale with operation SCALE_DOWN by 2 instances
-DEBUG [2016-10-27 15:56:34,645] com.hpe.caf.autoscale.core.ScalerThread: Triggering scale down of service /caf/dataprocessing/example by amount 2
-DEBUG [2016-10-27 15:56:34,665] com.hpe.caf.autoscale.scaler.marathon.MarathonServiceScaler: Scaling service /caf/dataprocessing/example down by 2 instances
-DEBUG [2016-10-27 15:56:44,801] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:56:44,824] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=84, publishRate=0.0, consumeRate=1.6}
-DEBUG [2016-10-27 15:56:54,824] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:56:54,844] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=84, publishRate=0.4, consumeRate=1.0}
-DEBUG [2016-10-27 15:57:04,844] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:57:04,871] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=82, publishRate=0.0, consumeRate=0.0}
-DEBUG [2016-10-27 15:57:14,872] com.hpe.caf.autoscale.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
-DEBUG [2016-10-27 15:57:14,894] com.hpe.caf.autoscale.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=76, publishRate=0.0, consumeRate=0.8}
+DEBUG [2016-10-27 15:56:14,573] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:56:14,594] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=106, publishRate=0.0, consumeRate=0.4}
+DEBUG [2016-10-27 15:56:24,596] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:56:24,619] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=103, publishRate=0.0, consumeRate=0.2}
+DEBUG [2016-10-27 15:56:34,619] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:56:34,645] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=90, publishRate=0.0, consumeRate=0.8}
+DEBUG [2016-10-27 15:56:34,645] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Workers needed to meet backlog goal: 2
+DEBUG [2016-10-27 15:56:34,645] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Scale with operation SCALE_DOWN by 2 instances
+DEBUG [2016-10-27 15:56:34,645] com.github.autoscaler.core.ScalerThread: Triggering scale down of service /caf/dataprocessing/example by amount 2
+DEBUG [2016-10-27 15:56:34,665] com.github.autoscaler.scaler.marathon.MarathonServiceScaler: Scaling service /caf/dataprocessing/example down by 2 instances
+DEBUG [2016-10-27 15:56:44,801] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:56:44,824] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=84, publishRate=0.0, consumeRate=1.6}
+DEBUG [2016-10-27 15:56:54,824] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:56:54,844] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=84, publishRate=0.4, consumeRate=1.0}
+DEBUG [2016-10-27 15:57:04,844] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:57:04,871] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=82, publishRate=0.0, consumeRate=0.0}
+DEBUG [2016-10-27 15:57:14,872] com.github.autoscaler.core.ScalerThread: Workload analysis run for service /caf/dataprocessing/example
+DEBUG [2016-10-27 15:57:14,894] com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyser: Stats for target dataprocessing-example-in: QueueStats{messages=76, publishRate=0.0, consumeRate=0.8}
 ```
 

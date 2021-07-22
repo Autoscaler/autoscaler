@@ -16,11 +16,11 @@
 package com.github.autoscaler.core;
 
 
-import com.hpe.caf.api.autoscale.InstanceInfo;
-import com.hpe.caf.api.autoscale.ScalerException;
-import com.hpe.caf.api.autoscale.ScalingAction;
-import com.hpe.caf.api.autoscale.ServiceScaler;
-import com.hpe.caf.api.autoscale.WorkloadAnalyser;
+import com.github.autoscaler.api.InstanceInfo;
+import com.github.autoscaler.api.ScalerException;
+import com.github.autoscaler.api.ScalingAction;
+import com.github.autoscaler.api.ServiceScaler;
+import com.github.autoscaler.api.WorkloadAnalyser;
 import java.util.HashMap;
 import org.junit.Test;
 import org.mockito.Mockito;

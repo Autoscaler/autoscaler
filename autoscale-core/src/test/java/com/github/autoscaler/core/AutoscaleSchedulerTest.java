@@ -16,13 +16,13 @@
 package com.github.autoscaler.core;
 
 
+import com.github.autoscaler.api.AlertDispatcher;
+import com.github.autoscaler.api.ScalingConfiguration;
+import com.github.autoscaler.api.ServiceScaler;
+import com.github.autoscaler.api.WorkloadAnalyser;
+import com.github.autoscaler.api.WorkloadAnalyserFactory;
 import com.hpe.caf.api.HealthResult;
 import com.hpe.caf.api.HealthStatus;
-import com.hpe.caf.api.autoscale.AlertDispatcher;
-import com.hpe.caf.api.autoscale.ScalingConfiguration;
-import com.hpe.caf.api.autoscale.ServiceScaler;
-import com.hpe.caf.api.autoscale.WorkloadAnalyser;
-import com.hpe.caf.api.autoscale.WorkloadAnalyserFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;

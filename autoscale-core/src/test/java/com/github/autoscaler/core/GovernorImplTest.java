@@ -15,10 +15,10 @@
  */
 package com.github.autoscaler.core;
 
-import com.hpe.caf.api.autoscale.InstanceInfo;
-import com.hpe.caf.api.autoscale.ScalingAction;
-import com.hpe.caf.api.autoscale.ScalingConfiguration;
-import com.hpe.caf.api.autoscale.ScalingOperation;
+import com.github.autoscaler.api.InstanceInfo;
+import com.github.autoscaler.api.ScalingAction;
+import com.github.autoscaler.api.ScalingConfiguration;
+import com.github.autoscaler.api.ScalingOperation;
 import org.junit.Assert;
 import org.junit.Test;
 

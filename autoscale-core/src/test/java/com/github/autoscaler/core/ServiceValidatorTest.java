@@ -16,7 +16,7 @@
 package com.github.autoscaler.core;
 
 
-import com.hpe.caf.api.autoscale.ScalingConfiguration;
+import com.github.autoscaler.api.ScalingConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 

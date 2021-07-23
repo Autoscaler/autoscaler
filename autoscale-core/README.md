@@ -2,7 +2,7 @@
 
 ---
 
- This project contains the container autoscaling applcation code and various
+ This project contains the container autoscaling application code and various
  module implementations that have been designed to work with it.
  
 
@@ -42,10 +42,10 @@
  `WorkloadAnalyser` and creating a new schedule).
  
  Finally it should be noted that `autoscale-core` has (optional) support for
- multiple instances in a master/slave configuration. All instances will monitor
- and perform analysis of the services, but only the master will actually
- trigger the scaling. This means that in the case of the failed master, the
- slaves have historical data to perform scaling with. If your container manager
+ multiple instances in an active/standby configuration. All instances will monitor
+ and perform analysis of the services, but only the active node will actually
+ trigger the scaling. This means that in the case of the failed active node, the
+ standby nodes have historical data to perform scaling with. If your container manager
  supports re-instancing of failed applications, you may not need multi-instance
  support if you are willing to accept that the new instance may have to
  retrieve workload data for some amount of time before triggering scaling
@@ -70,7 +70,7 @@
  The following command-line should start the application:
  
  ```
- java -cp "*" com.hpe.caf.autoscale.core.AutoscaleApplication server [yaml]
+ java -cp "*" com.github.autoscaler.core.AutoscaleApplication server [yaml]
  ```
  
 ### The ServiceSource component

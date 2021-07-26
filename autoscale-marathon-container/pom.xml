@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.autoscaler</groupId>
-    <artifactId>autoscale-marathon-rabbit-container</artifactId>
+    <artifactId>autoscale-marathon-container</artifactId>
     <packaging>pom</packaging>
 
     <parent>

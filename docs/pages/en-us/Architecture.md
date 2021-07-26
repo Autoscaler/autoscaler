@@ -47,7 +47,7 @@ The following configuration can (optionally) be set in the .yaml file:
 The following command-line should start the application:
  
 ```
-java -cp "*" ccom.github.autoscaler.core.AutoscaleApplication server [yaml]
+java -cp "*" com.github.autoscaler.core.AutoscaleApplication server [yaml]
 ```
  
 ### The ServiceSource component

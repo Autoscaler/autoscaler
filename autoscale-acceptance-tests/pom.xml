@@ -93,6 +93,7 @@
                                 </ports>
                                 <wait>
                                     <tcp>
+                                        <mode>mapped</mode>
                                         <ports>
                                             <port>2181</port>
                                         </ports>
@@ -123,6 +124,7 @@
                                 </links>
                                 <wait>
                                     <tcp>
+                                        <mode>mapped</mode>
                                         <ports>
                                             <port>5050</port>
                                         </ports>
@@ -163,6 +165,7 @@
                                 </links>
                                 <wait>
                                     <tcp>
+                                        <mode>mapped</mode>
                                         <ports>
                                             <port>5051</port>
                                         </ports>

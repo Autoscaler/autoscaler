@@ -232,7 +232,7 @@
                                     <port>${swarm.scaler.port}:8081</port>
                                 </ports>
                                 <env>
-                                    <DOCKER_HOST>http://${docker.host.address}:2375</DOCKER_HOST>
+                                    <DOCKER_HOST>http://host.docker.internal:2375</DOCKER_HOST>
                                     <CAF_AUTOSCALER_DOCKER_SWARM_STACK>autoscalerdemo</CAF_AUTOSCALER_DOCKER_SWARM_STACK>
                                     <CAF_RABBITMQ_MGMT_URL>http://rabbitmq:15672</CAF_RABBITMQ_MGMT_URL>
                                     <CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>

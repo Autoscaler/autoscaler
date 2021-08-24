@@ -304,8 +304,13 @@
             <id>use-default-fixed-ports</id>
             <properties>
                 <marathon.port>31080</marathon.port>
+                <marathon.scaler.port>28087</marathon.scaler.port>
+                <mesos.port>5050</mesos.port>
+                <mesos.slave.port>5051</mesos.slave.port>
                 <rabbitmq.nodePort>5672</rabbitmq.nodePort>
                 <rabbitmq.managementPort>15672</rabbitmq.managementPort>
+                <swarm.scaler.port>28086</swarm.scaler.port>
+                <zookeeper.port>2181</zookeeper.port>
             </properties>
         </profile>
     </profiles>

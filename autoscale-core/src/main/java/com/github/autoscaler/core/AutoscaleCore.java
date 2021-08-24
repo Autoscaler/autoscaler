@@ -57,7 +57,7 @@ import java.util.concurrent.TimeUnit;
  *
  * All instances of the AutoscaleCore will monitor all services with the same
  * "group" (which dictates the services it is responsible for scaling). However,
- * only the elected master instance will actually trigger the scaling. This way, if the master
+ * only the elected active instance will actually trigger the scaling. This way, if the active
  * fails over to another instance, it already has historical data to perform scaling with.
  */
 public class AutoscaleCore
@@ -154,23 +154,23 @@ public class AutoscaleCore
 
 
     /**
-     * Set or unset master status based upon a callback from an election.
+     * Set or unset active status based upon a callback from an election.
      */
     private class AutoscaleElectionCallback implements ElectionCallback
     {
         @Override
         public void elected()
         {
-            LOG.info("This service has now been elected master");
-            scaler.setMaster(true);
+            LOG.info("This service has now been elected active");
+            scaler.setActive(true);
         }
 
 
         @Override
         public void rejected()
         {
-            LOG.info("This service is no longer the master");
-            scaler.setMaster(false);
+            LOG.info("This service is no longer active");
+            scaler.setActive(false);
         }
     }
 

@@ -28,34 +28,34 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * A ScalerDecorator is used by the AutoscaleApplication to trivially enable
  * or disable scaling behaviour depending upon whether this instance of the
- * AutoscaleApplication is master or not. The class mimicks a ServiceScaler, hence
- * a Decorator, and if this instance if the master, will simply pass through all
+ * AutoscaleApplication is active or not. The class mimics a ServiceScaler, hence
+ * a Decorator, and if this instance is active, it will simply pass through all
  * requests to the actual ServiceScaler. If it is not, the scale up or down requests
  * will be discarded. This allows the rest of the application to behave identically.
  */
 public class ScalerDecorator implements ServiceScaler
 {
     private final ServiceScaler realScaler;
-    private final AtomicBoolean master;
+    private final AtomicBoolean active;
 
 
-    public ScalerDecorator(final ServiceScaler serviceScaler, final boolean master)
+    public ScalerDecorator(final ServiceScaler serviceScaler, final boolean active)
     {
         this.realScaler = Objects.requireNonNull(serviceScaler);
-        this.master = new AtomicBoolean(master);
+        this.active = new AtomicBoolean(active);
     }
 
 
     /**
      * {@inheritDoc}
      *
-     * If this instance is the master, perform scale up, otherwise ignore.
+     * If this instance is active, perform scale up, otherwise ignore.
      */
     @Override
     public void scaleUp(final String service, final int amount)
             throws ScalerException
     {
-        if ( master.get() ) {
+        if ( active.get() ) {
             realScaler.scaleUp(service, amount);
         }
     }
@@ -64,13 +64,13 @@ public class ScalerDecorator implements ServiceScaler
     /**
      * {@inheritDoc}
      *
-     * If this instance is the master, perform scale down, otherwise ignore.
+     * If this instance is active, perform scale down, otherwise ignore.
      */
     @Override
     public void scaleDown(final String service, final int amount)
             throws ScalerException
     {
-        if ( master.get() ) {
+        if ( active.get() ) {
             realScaler.scaleDown(service, amount);
         }
     }
@@ -85,12 +85,12 @@ public class ScalerDecorator implements ServiceScaler
 
 
     /**
-     * Update the master status of this instance.
-     * @param master the new master status
+     * Update the active status of this instance.
+     * @param active the new active status
      */
-    public void setMaster(final boolean master)
+    public void setActive(final boolean active)
     {
-        this.master.set(master);
+        this.active.set(active);
     }
 
 

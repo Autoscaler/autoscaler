@@ -138,11 +138,11 @@
                         </image>
                         
                         <image>
-                            <alias>mesos-slave</alias>
-                            <name>${dockerHubPublic}/mesosphere/mesos-slave:1.5.0</name>
+                            <alias>mesos-agent</alias>
+                            <name>${dockerHubPublic}/mesosphere/mesos-agent:1.6.2</name>
                             <run>
                                 <ports>
-                                    <port>${mesos.slave.port}:5051</port>
+                                    <port>${mesos.agent.port}:5051</port>
                                 </ports>
                                 <privileged>true</privileged>
                                 <env>
@@ -309,7 +309,7 @@
                 <marathon.port>31080</marathon.port>
                 <marathon.scaler.port>28087</marathon.scaler.port>
                 <mesos.port>5050</mesos.port>
-                <mesos.slave.port>5051</mesos.slave.port>
+                <mesos.agent.port>5051</mesos.agent.port>
                 <rabbitmq.nodePort>5672</rabbitmq.nodePort>
                 <rabbitmq.managementPort>15672</rabbitmq.managementPort>
                 <swarm.scaler.port>28086</swarm.scaler.port>

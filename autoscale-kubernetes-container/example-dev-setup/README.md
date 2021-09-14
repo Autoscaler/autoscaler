@@ -47,12 +47,59 @@ If the dashboard is installed the scaling can be observed on the deployments pan
 Alternatively the autoscaler will log output scaling actions and can be viewed either by `kubectl logs <autoscaler-pod>` 
 or via the dashboard logging feature. 
 
-### '_deployments.apps_' is forbidden issues
-If you get:  
-`message: deployments.apps is forbidden: User \"system:serviceaccount:default:default\" cannot list resource \"deployments\" in API group \"apps\" in the namespace \"default\"`  
+### Kubernetes Permissions ('_deployments.apps_' is forbidden issues)
+Because the autoscaler interacts with the Kubernetes API in order to scale deployments, it requires appropriate permissions.
+If permissions are not configured properly, you may see messages like:
+`deployments.apps is forbidden: User \"system:serviceaccount:default:default\" cannot list resource \"deployments\" in API group \"apps\" in the namespace \"default\"`  
  
-Run `kubectl create clusterrolebinding serviceaccounts-cluster-admin --clusterrole=cluster-admin --group=system:serviceaccounts`  
+The ServiceAccount associated with the kubernetes-autoscaler must be assigned a Role that provides the appropriate permisions.
+
+#### Quickstart demo setup
+To quickly grant the autoscaler permissions you can run the following: 
 (**WARNING**: This allows any user with read access to secrets or the ability to create a pod to access super-user credentials.)
+```
+kubectl create clusterrolebinding serviceaccounts-cluster-admin --clusterrole=cluster-admin --group=system:serviceaccounts
+``` 
+This is not suitable for any production environment.
+
+#### RBAC
+For a more permanent configuration, the following definition will create a Role named 'autoscaler-role' that allows access
+to the patch, get and list verbs for the Deployment and Pod resources. This Role would need to be created in each namespace
+that contains deployments that the autoscaler should manage :
+```
+apiVersion: "rbac.authorization.k8s.io/v1"
+kind: "Role"
+metadata:
+  name: "autoscaler-role"
+rules:
+- apiGroups:
+  - "apps"
+  resources:
+  - "deployments"
+  - "pods"
+  verbs:
+  - "patch"
+  - "get"
+  - "list"
+```
+
+After the Role is created, you need to create a RoleBinding that binds the autoscaler's ServiceAccount to the Role.
+
+The following definition will bind the autoscaler role (defined above) to the "autoscaler-sa" ServiceAccount. This 
+ServiceAccount must be the ServiceAccount assigned to the kubernetes-autoscaler Deployment.
+```
+apiVersion: "rbac.authorization.k8s.io/v1"
+kind: "RoleBinding"
+metadata:
+  name: "autoscaler-rb"
+roleRef:
+  kind: "Role"
+  apiGroup: "rbac.authorization.k8s.io"
+  name: "autoscaler-role"
+subjects:
+- kind: "ServiceAccount"
+  name: "autoscaler-sa"
+```
 
 ### Create dashboard credentials
 If you can't see your deployments in the dashboard, you may need to create a user, then log in.

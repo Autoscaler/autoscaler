@@ -62,45 +62,6 @@ kubectl create clusterrolebinding serviceaccounts-cluster-admin --clusterrole=cl
 ``` 
 This is not suitable for any production environment.
 
-#### RBAC
-For a more permanent configuration, the following definition will create a Role named 'autoscaler-role' that allows access
-to the patch, get and list verbs for the Deployment and Pod resources. This Role would need to be created in each namespace
-that contains deployments that the autoscaler should manage :
-```
-apiVersion: "rbac.authorization.k8s.io/v1"
-kind: "Role"
-metadata:
-  name: "autoscaler-role"
-rules:
-- apiGroups:
-  - "apps"
-  resources:
-  - "deployments"
-  - "pods"
-  verbs:
-  - "patch"
-  - "get"
-  - "list"
-```
-
-After the Role is created, you need to create a RoleBinding that binds the autoscaler's ServiceAccount to the Role.
-
-The following definition will bind the autoscaler role (defined above) to the "autoscaler-sa" ServiceAccount. This 
-ServiceAccount must be the ServiceAccount assigned to the kubernetes-autoscaler Deployment.
-```
-apiVersion: "rbac.authorization.k8s.io/v1"
-kind: "RoleBinding"
-metadata:
-  name: "autoscaler-rb"
-roleRef:
-  kind: "Role"
-  apiGroup: "rbac.authorization.k8s.io"
-  name: "autoscaler-role"
-subjects:
-- kind: "ServiceAccount"
-  name: "autoscaler-sa"
-```
-
 ### Create dashboard credentials
 If you can't see your deployments in the dashboard, you may need to create a user, then log in.
 

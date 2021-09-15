@@ -154,6 +154,51 @@ with an arbitrary number of target deployments, the monitoring and scaling
 actions may begin to lag behind the requested period once the container goes
 beyond its normal capability.
 
+### Kubernetes Permissions ('_deployments.apps_' is forbidden issues)
+Because the autoscaler interacts with the Kubernetes API in order to scale deployments, it requires appropriate permissions.
+If permissions are not configured properly, you may see messages like:
+`deployments.apps is forbidden: User \"system:serviceaccount:default:default\" cannot list resource \"deployments\" in API group \"apps\" in the namespace \"default\"`  
+ 
+The ServiceAccount associated with the kubernetes-autoscaler must be assigned a Role that provides the appropriate permisions.
+
+#### RBAC
+The following definition will create a Role named 'autoscaler-role' that allows access
+to the patch, get and list verbs for the Deployment and Pod resources. This Role would need to be created in each namespace
+that contains deployments that the autoscaler should manage :
+```
+apiVersion: "rbac.authorization.k8s.io/v1"
+kind: "Role"
+metadata:
+  name: "autoscaler-role"
+rules:
+- apiGroups:
+  - "apps"
+  resources:
+  - "deployments"
+  - "pods"
+  verbs:
+  - "patch"
+  - "get"
+  - "list"
+```
+
+After the Role is created, you need to create a RoleBinding that binds the autoscaler's ServiceAccount to the Role.
+
+The following definition will bind the autoscaler role (defined above) to the "autoscaler-sa" ServiceAccount. This 
+ServiceAccount must be the ServiceAccount assigned to the kubernetes-autoscaler Deployment.
+```
+apiVersion: "rbac.authorization.k8s.io/v1"
+kind: "RoleBinding"
+metadata:
+  name: "autoscaler-rb"
+roleRef:
+  kind: "Role"
+  apiGroup: "rbac.authorization.k8s.io"
+  name: "autoscaler-role"
+subjects:
+- kind: "ServiceAccount"
+  name: "autoscaler-sa"
+```
 
 ### Resource requirements
 

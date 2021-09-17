@@ -158,7 +158,9 @@ public class ScalerThread implements Runnable
                     break;
             }
         } catch (ScalerException e) {
-            LOG.warn("Failed analysis run for service {}", serviceRef, e);
+            int start = e.toString().indexOf("Failed");
+            int end = e.toString().indexOf("retry.");
+            LOG.warn("Failed analysis run for service {}", serviceRef, e.toString().substring(start, end) + "retry.");
         } catch (final RuntimeException e) {
             // library methods have been known to throw RuntimeException when there's no programming
             // error - but if we throw, we won't be scheduled to run again, so we must catch and

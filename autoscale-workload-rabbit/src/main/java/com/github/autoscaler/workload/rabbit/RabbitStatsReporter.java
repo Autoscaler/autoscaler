@@ -120,7 +120,7 @@ public class RabbitStatsReporter
         public Throwable handleError(final RetrofitError retrofitError)
         {
             if (retrofitError.getResponse().getStatus() == 404) {
-                return new QueueNotFoundException("Queue instance cannot be be zero "  + retrofitError.getUrl());
+                return new QueueNotFoundException(retrofitError.getUrl());
             }
 
             return new ScalerException("Failed to contact RabbitMQ management API using url " + retrofitError.getUrl() 

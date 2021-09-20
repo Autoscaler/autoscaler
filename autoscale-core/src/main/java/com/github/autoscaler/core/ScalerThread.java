@@ -15,9 +15,16 @@
  */
 package com.github.autoscaler.core;
 
-import com.github.autoscaler.api.*;
 
 import java.text.DecimalFormat;
+
+import com.github.autoscaler.api.InstanceInfo;
+import com.github.autoscaler.api.ScalingOperation;
+import com.github.autoscaler.api.ServiceScaler;
+import com.github.autoscaler.api.WorkloadAnalyser;
+import com.github.autoscaler.api.ScalingAction;
+import com.github.autoscaler.api.ScalerException;
+import com.github.autoscaler.api.QueueNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,9 +160,9 @@ public class ScalerThread implements Runnable
                 default:
                     break;
             }
-        }catch (QueueNotFoundException e) {
-            LOG.warn("Queue not found exception {}", serviceRef, e);
-        } catch (ScalerException e) {
+        }catch (final QueueNotFoundException e) {
+            LOG.warn("Queue not found {}", serviceRef);
+        } catch (final ScalerException e) {
             LOG.warn("Failed analysis run for service {}", serviceRef, e);
         } catch (final RuntimeException e) {
             // library methods have been known to throw RuntimeException when there's no programming

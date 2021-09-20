@@ -18,6 +18,7 @@ package com.github.autoscaler.workload.rabbit;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.autoscaler.api.QueueNotFoundException;
 import com.github.autoscaler.api.ScalerException;
 import com.squareup.okhttp.OkHttpClient;
 import retrofit.ErrorHandler;
@@ -118,6 +119,10 @@ public class RabbitStatsReporter
         @Override
         public Throwable handleError(final RetrofitError retrofitError)
         {
+            if (retrofitError.getResponse().getStatus() == 404) {
+                return new QueueNotFoundException("Queue instance cannot be be zero "  + retrofitError.getUrl());
+            }
+
             return new ScalerException("Failed to contact RabbitMQ management API using url " + retrofitError.getUrl() 
                 + ". Queue may not yet have been created or RabbitMQ could be unavailable, will retry.", retrofitError);
         }

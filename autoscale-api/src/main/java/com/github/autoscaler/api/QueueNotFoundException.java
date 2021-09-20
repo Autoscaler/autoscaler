@@ -18,10 +18,10 @@ package com.github.autoscaler.api;
 /**
  * Thrown by the autoscaler application or components when a Queue is not found.
  */
-public final class QueueNotFoundException extends ScalerException{
-
+public final class QueueNotFoundException extends ScalerException
+{
     public QueueNotFoundException(final String url)
     {
-        super("Queue not found in" + url);
+        super("Queue not found: " + url);
     }
 }

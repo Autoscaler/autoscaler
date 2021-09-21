@@ -1,4 +1,4 @@
-# AutoScalerx
+# AutoScalerxx
 
 The [Autoscaler](https://github.com/Autoscaler/autoscaler) service provides on-demand scaling of services, allowing you to efficiently dedicate resources where they are needed most in your Mesos cluster, and minimizing costs and ensuring user satisfaction. 
 

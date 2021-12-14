@@ -101,14 +101,14 @@
             <dependency>
                 <groupId>com.github.cafapi</groupId>
                 <artifactId>caf-dependency-management-bom</artifactId>
-                <version>1.0.0-158</version>
+                <version>3.1.0-412</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi</groupId>
                 <artifactId>caf-common</artifactId>
-                <version>1.15.0-1</version>
+                <version>1.20.0-288</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

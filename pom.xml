@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2015-2021 Micro Focus or one of its affiliates.
+    Copyright 2015-2022 Micro Focus or one of its affiliates.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@
     <inceptionYear>2015</inceptionYear>
 
     <properties>
-        <copyrightYear>2021</copyrightYear>
+        <copyrightYear>2022</copyrightYear>
         <dockerHubOrganization>autoscaler</dockerHubOrganization>
         <dockerAutoscalerOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerAutoscalerOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>

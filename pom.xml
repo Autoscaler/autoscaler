@@ -26,6 +26,7 @@
     <version>1.9.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    
     <name>Autoscaler</name>
     <description>Provides on-demand scaling of services, allowing you to efficiently dedicate resources where they are needed most in your Mesos cluster, and minimizing costs and ensuring user satisfaction.</description>
     <url>https://autoscaler.github.io/autoscaler/</url>

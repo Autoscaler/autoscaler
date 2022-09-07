@@ -1,9 +1,11 @@
 #### Version Number
 ${version-number}
 
-*Updated to latest release of java base image*
 #### New Features
 - None
+
+#### Bug Fixes
+- Dependency updates only in this release.
 
 #### Known Issues
 - None

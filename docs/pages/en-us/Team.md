@@ -71,17 +71,6 @@ team_members:
           icon: hpe-social-email
           url: mailto:himanshi.agrawal@microfocus.com
 
-    - name: Joseph Astin
-      email: joseph.astin@microfocus.com
-      avatar: /assets/img/Team/joseph.jpg
-      social:
-        - title: GitHub
-          icon: hpe-social-github
-          url: https://github.com/JoeAstin
-        - title: Email
-          icon: hpe-social-email
-          url: mailto:joseph.astin@microfocus.com
-
     - name: Kusuma Ghosh Dastidar
       email: vgkusuma@microfocus.com
       avatar: /assets/img/Team/kusuma.png

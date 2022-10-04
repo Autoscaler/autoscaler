@@ -462,7 +462,6 @@ code {
 */
 .flip-container .front,
 .flip-container .back {
-    height: 240px;
     background-color: #171717;
     box-shadow: none;
     border: 1px solid #192023;

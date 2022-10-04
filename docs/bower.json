@@ -16,6 +16,6 @@
     "tests"
   ],
   "dependencies": {
-    "caf-templates": "^2.0.3"
+    "caf-templates": "https://svsartifactory.swinfra.net:443/artifactory/api/npm/company-central-npm/caf-templates-2.1.0.tgz"
   }
 }

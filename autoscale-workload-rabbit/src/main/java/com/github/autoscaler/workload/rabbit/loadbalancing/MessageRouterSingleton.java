@@ -37,7 +37,7 @@ public class MessageRouterSingleton {
                             "/"), 
                     connection.createChannel());
         } catch (final IOException | TimeoutException e) {
-            LOGGER.error("Failed to initialise - {}", e);
+            LOGGER.error("Failed to initialise - {}", e.toString());
             throw new RuntimeException(e);
         }
     }

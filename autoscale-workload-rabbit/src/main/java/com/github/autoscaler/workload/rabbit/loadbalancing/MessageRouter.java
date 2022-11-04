@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -40,6 +41,8 @@ import java.util.concurrent.TimeUnit;
 public class MessageRouter {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageRouter.class);
+    
+    private static final String LOAD_BALANCED_INDICATOR = "-lb";
 
     private static final Map<String, Object>arguments = Map.of("queue-mode", "lazy");
     
@@ -47,6 +50,7 @@ public class MessageRouter {
             new TenantQueueNameMutator(), new WorkflowQueueNameMutator());
     
     private final LoadingCache<String, QueueStats> queueStatsCache;
+    private final HashSet<String> declaredQueues = new HashSet<>();
     private final Channel channel;
 
     public MessageRouter(final RabbitStatsReporter rabbitStatsReporter, final Channel channel) {
@@ -59,7 +63,7 @@ public class MessageRouter {
                         return rabbitStatsReporter.getQueueStats(queueName);
                     }
                 });
-
+        
         this.channel = channel;
     }
     
@@ -68,19 +72,30 @@ public class MessageRouter {
         final String originalQueueName = response.getSuccessQueue().getName();
         
         if(shouldReroute(response.getSuccessQueue())) {
+            
+            response.getSuccessQueue().set(originalQueueName + LOAD_BALANCED_INDICATOR);
+            
             for(final QueueNameMutator queueNameMutator: queueNameMutators) {
                 queueNameMutator.mutateSuccessQueueName(document);
             }
+            
+            if(response.getSuccessQueue().getName().equals(originalQueueName + LOAD_BALANCED_INDICATOR)) {
+                //No meaningful change was made, revert to using the original queue name
+                response.getSuccessQueue().set(originalQueueName);
+                return;
+            }
+
+            try {
+                ensureQueueExists(response.getSuccessQueue().getName());
+            } catch (final IOException e) {
+                LOGGER.error("Unable to verify the new target queue '{}' exists, reverting to original queue.",
+                        response.getSuccessQueue().getName());
+
+                response.getSuccessQueue().set(originalQueueName);
+            }
+            
         }
 
-        try {
-            ensureQueueExists(originalQueueName, response.getSuccessQueue().getName());
-        } catch (final IOException e) {
-            LOGGER.error("Unable to verify the new target queue '{}' exists, reverting to original queue.", 
-                    response.getSuccessQueue().getName());
-
-            response.getSuccessQueue().set(originalQueueName);
-        }
     }
     
     private boolean shouldReroute(final ResponseQueue successQueue) {
@@ -98,14 +113,18 @@ public class MessageRouter {
         return queueStats.getMessages() > 1000 || (queueStats.getConsumeRate() < queueStats.getConsumeRate());
     }
     
-    private void ensureQueueExists(final String originalQueueName, final String reroutedQueueName) 
+    private void ensureQueueExists(final String reroutedQueueName) 
             throws IOException {
         
-        if(reroutedQueueName.equals(originalQueueName)) {
+        if(declaredQueues.contains(reroutedQueueName)) {
             return;
         }
         
         //Durable lazy queue
+        //This is a basic implementation for the POC, we may want to retrieve the definition of the originalQueue and
+        //use that to ensure the lazy queue has the same configuration.
         channel.queueDeclare(reroutedQueueName, true, false, false, arguments);
+
+        declaredQueues.add(reroutedQueueName);
     }
 }

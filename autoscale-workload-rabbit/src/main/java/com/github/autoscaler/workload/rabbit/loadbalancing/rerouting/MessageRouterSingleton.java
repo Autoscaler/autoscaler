@@ -1,4 +1,4 @@
-package com.github.autoscaler.workload.rabbit.loadbalancing;
+package com.github.autoscaler.workload.rabbit.loadbalancing.rerouting;
 
 import com.github.autoscaler.workload.rabbit.RabbitStatsReporter;
 import com.hpe.caf.worker.document.model.Document;

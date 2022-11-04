@@ -1,4 +1,4 @@
-package com.github.autoscaler.workload.rabbit.loadbalancing.mutators;
+package com.github.autoscaler.workload.rabbit.loadbalancing.rerouting.mutators;
 
 import com.google.common.base.Strings;
 import com.hpe.caf.worker.document.model.Document;

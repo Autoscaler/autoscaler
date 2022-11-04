@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.autoscaler.workload.rabbit.loadbalancing;
+package com.github.autoscaler.workload.rabbit.loadbalancing.rerouting;
 
 import com.github.autoscaler.workload.rabbit.QueueStats;
 import com.github.autoscaler.workload.rabbit.RabbitStatsReporter;
-import com.github.autoscaler.workload.rabbit.loadbalancing.mutators.QueueNameMutator;
-import com.github.autoscaler.workload.rabbit.loadbalancing.mutators.TenantQueueNameMutator;
-import com.github.autoscaler.workload.rabbit.loadbalancing.mutators.WorkflowQueueNameMutator;
+import com.github.autoscaler.workload.rabbit.loadbalancing.rerouting.mutators.QueueNameMutator;
+import com.github.autoscaler.workload.rabbit.loadbalancing.rerouting.mutators.TenantQueueNameMutator;
+import com.github.autoscaler.workload.rabbit.loadbalancing.rerouting.mutators.WorkflowQueueNameMutator;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -42,7 +42,7 @@ public class MessageRouter {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageRouter.class);
     
-    private static final String LOAD_BALANCED_INDICATOR = "-lb";
+    public static final String LOAD_BALANCED_INDICATOR = "-»";
 
     private static final Map<String, Object>arguments = Map.of("queue-mode", "lazy");
     

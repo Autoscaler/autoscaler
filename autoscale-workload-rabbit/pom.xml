@@ -23,6 +23,18 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-workload-rabbit</artifactId>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>9</source>
+                    <target>9</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <parent>
         <groupId>com.github.autoscaler</groupId>
@@ -39,6 +51,14 @@
             <groupId>com.github.cafapi.logging</groupId>
             <artifactId>caf-logging-logback</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafdataprocessing</groupId>
+            <artifactId>worker-document-interface</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
         </dependency>
         <dependency>
             <groupId>com.squareup.retrofit</groupId>

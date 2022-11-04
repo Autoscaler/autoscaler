@@ -45,7 +45,7 @@
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
         <enforceCorrectDependencies>true</enforceCorrectDependencies>
         <enforceBannedDependencies>true</enforceBannedDependencies>
-        <fabric8.docker.maven.version>0.26.1</fabric8.docker.maven.version>
+        <fabric8.docker.maven.version>0.40.2</fabric8.docker.maven.version>
     </properties>
 
     <licenses>
@@ -75,7 +75,7 @@
 
     <modules>
         <module>deploy</module>
-        <module>docs</module>
+<!--        <module>docs</module>-->
         <module>autoscale-api</module>
         <module>autoscale-core</module>
         <module>autoscale-dockerswarm-shared</module>

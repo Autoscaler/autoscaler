@@ -9,8 +9,6 @@ import com.rabbitmq.client.ShutdownSignalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -21,10 +19,11 @@ public class RoundRobinMessageDistributor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RoundRobinMessageDistributor.class);
 
+    private ShutdownSignalException shutdownSignalException = null;
+    private long messageLimit = 1000;
     private final RabbitManagementApi<QueuesApi> queuesApi;
     private final Channel channel;
-    private Set<String> activeConsumerTags = ConcurrentHashMap.newKeySet();
-    private ShutdownSignalException shutdownSignalException = null;
+    private ConcurrentHashMap<String, MessageTarget> messageTargets = new ConcurrentHashMap<>();
 
     public RoundRobinMessageDistributor(final String endpoint, final String username, final String password, 
                                         final Channel channel) {
@@ -38,91 +37,59 @@ public class RoundRobinMessageDistributor {
             throw shutdownSignalException;
         }
         
-        final List<MessageTarget> messageTargets = getMesssageTargets();
-        for(final MessageTarget messageTarget: messageTargets) {
-            wireup(messageTarget);
+        while(true) {
+            
+            final Set<String> messageTargetQueueNames = getMesssageTargetsQueueNames();
+            final List<Queue> queues = queuesApi.getApi().getQueues();
+            
+            for(final String messageTargetQueueName: messageTargetQueueNames) {
+                final MessageTarget messageTarget = 
+                        messageTargets.computeIfAbsent(messageTargetQueueName, k -> new MessageTarget(channel, k));
+                if(messageTarget.getShutdownSignalException() != null) {
+                    messageTargets.remove(messageTargetQueueName);
+                    continue;
+                }
+                final Set<String> messageSources = getMessageSources(messageTarget, queues);
+                messageTarget.updateMessageSources(messageSources);
+            }
+            
+            try {
+                Thread.sleep(1000 * 60);
+            } catch (final InterruptedException e) {
+                LOGGER.warn("Exiting {}", e.getMessage());
+                return;
+            }
         }
-
-//        while(true) {
-//            try {
-//                Thread.sleep(1000 * 60);
-//            } catch (final InterruptedException e) {
-//                LOGGER.warn("Exiting {}", e.getMessage());
-//                return;
-//            }
-//        }
         
     }
     
-    private List<MessageTarget> getMesssageTargets() {
-        final List<MessageTarget> messageTargets = new ArrayList<>();
+    private Set<String> getMesssageTargetsQueueNames() {
         final List<Queue> queues = queuesApi.getApi().getQueues();
 
-        for(final Queue targetQueue: queues.stream()
-                .filter(q -> !q.getName().contains(MessageRouter.LOAD_BALANCED_INDICATOR))
-                .collect(Collectors.toList())) {
-
-            final MessageTarget messageTarget = new MessageTarget(targetQueue.getName());
-            addMessageSources(messageTarget, queues);
-            messageTargets.add(messageTarget);
-        }
-        return messageTargets;
+        return queues.stream()
+                .filter(q ->
+                        !q.getName().contains(MessageRouter.LOAD_BALANCED_INDICATOR)
+                                && q.getMessages() < messageLimit
+                )
+                .map(Queue::getName)
+                .collect(Collectors.toSet());
     }
     
-    private void addMessageSources(final MessageTarget messageTarget, final List<Queue> queues) {
+    private Set<String> getMessageSources(final MessageTarget messageTarget, final List<Queue> queues) {
         
         final Collection<Queue> sourceQueues = queues.stream()
                 .filter(q -> 
-                        q.getName().startsWith(messageTarget.getTargetQueue() + MessageRouter.LOAD_BALANCED_INDICATOR))
+                        q.getName().startsWith(messageTarget.getTargetQueue() + MessageRouter.LOAD_BALANCED_INDICATOR) 
+                                && q.getMessages() > 0
+                )
                 .collect(Collectors.toList());
         
-        messageTarget.getMessageSources()
-                .addAll(sourceQueues.stream().map(Queue::getName).collect(Collectors.toList()));
+        return sourceQueues.stream().map(Queue::getName).collect(Collectors.toSet());
     }
 
     // tq dataprocessing-worker-entity-extract-in
     // sq dataprocessing-worker-entity-extract-in-t1-ingestion
     // sq dataprocessing-worker-entity-extract-in-t1-enrichment
     
-    private void wireup(final MessageTarget messageTarget) {
-        
-        for(final String messageSource: messageTarget.getMessageSources()) {
-            if(!activeConsumerTags.contains(messageSource)) {
-                try {
-                    channel.basicConsume(messageSource,
-                            (consumerTag, message) -> {
-                                try {
-                                    channel.basicPublish("",
-                                            messageTarget.getTargetQueue(), message.getProperties(), message.getBody());
-                                }
-                                catch (final IOException e) {
-                                    LOGGER.error("Exception publishing to '{}' {}", messageTarget.getTargetQueue(), 
-                                            e.toString());
-                                }
-                                try {
-                                    channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
-                                }
-                                catch (final IOException e) {
-                                    LOGGER.error("Exception ack'ing '{}' from '{}' {}", 
-                                            message.getEnvelope().getDeliveryTag(),
-                                            messageSource,
-                                            e.toString());
-                                }
-                            },
-                            consumerTag -> {
-                                //Stop tracking that we are consuming from the consumerTag queue
-                                activeConsumerTags.remove(consumerTag);
-                            },
-                            (consumerTag, sig) -> {
-                                //Connection lost, give up
-                                shutdownSignalException = sig;
-                            });
-                    activeConsumerTags.add(messageSource);
-                } catch (final IOException e) {
-                    LOGGER.error("Exception consuming from '{}'", messageSource);
-                }
-            }
-        }
 
-    }
 }

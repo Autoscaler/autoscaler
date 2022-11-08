@@ -15,8 +15,9 @@
  */
 package com.github.autoscaler.workload.rabbit.loadbalancing.rerouting;
 
-import com.github.autoscaler.workload.rabbit.QueueStats;
-import com.github.autoscaler.workload.rabbit.RabbitStatsReporter;
+import com.github.autoscaler.workload.rabbit.loadbalancing.redistribution.management.Queue;
+import com.github.autoscaler.workload.rabbit.loadbalancing.redistribution.management.QueuesApi;
+import com.github.autoscaler.workload.rabbit.loadbalancing.redistribution.management.RabbitManagementApi;
 import com.github.autoscaler.workload.rabbit.loadbalancing.rerouting.mutators.QueueNameMutator;
 import com.github.autoscaler.workload.rabbit.loadbalancing.rerouting.mutators.TenantQueueNameMutator;
 import com.github.autoscaler.workload.rabbit.loadbalancing.rerouting.mutators.WorkflowQueueNameMutator;
@@ -42,25 +43,28 @@ public class MessageRouter {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageRouter.class);
     
-    public static final String LOAD_BALANCED_INDICATOR = "-»";
+    public static final String LOAD_BALANCED_INDICATOR = "»";
 
     private static final Map<String, Object>arguments = Map.of("queue-mode", "lazy");
     
     private final List<QueueNameMutator> queueNameMutators = List.of(
             new TenantQueueNameMutator(), new WorkflowQueueNameMutator());
     
-    private final LoadingCache<String, QueueStats> queueStatsCache;
+    private final LoadingCache<String, Queue> queuesCache;
     private final HashSet<String> declaredQueues = new HashSet<>();
     private final Channel channel;
+    private final long targetQueueMessageLimit;
 
-    public MessageRouter(final RabbitStatsReporter rabbitStatsReporter, final Channel channel) {
+    public MessageRouter(final RabbitManagementApi<QueuesApi> queuesApi, final String vhost, final Channel channel, 
+                         final long targetQueueMessageLimit) {
+        this.targetQueueMessageLimit = targetQueueMessageLimit;
 
-        this.queueStatsCache = CacheBuilder.newBuilder()
+        this.queuesCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(1, TimeUnit.MINUTES)
-                .build(new CacheLoader<String, QueueStats>() {
+                .build(new CacheLoader<String, Queue>() {
                     @Override
-                    public QueueStats load(@Nonnull final String queueName) throws Exception {
-                        return rabbitStatsReporter.getQueueStats(queueName);
+                    public Queue load(@Nonnull final String queueName) throws Exception {
+                        return queuesApi.getApi().getQueue(vhost, queueName);
                     }
                 });
         
@@ -88,8 +92,8 @@ public class MessageRouter {
             try {
                 ensureQueueExists(response.getSuccessQueue().getName());
             } catch (final IOException e) {
-                LOGGER.error("Unable to verify the new target queue '{}' exists, reverting to original queue.",
-                        response.getSuccessQueue().getName());
+                LOGGER.error("Unable to verify the new target queue '{}' exists, reverting to original queue. {}",
+                        response.getSuccessQueue().getName(), e);
 
                 response.getSuccessQueue().set(originalQueueName);
             }
@@ -99,18 +103,17 @@ public class MessageRouter {
     }
     
     private boolean shouldReroute(final ResponseQueue successQueue) {
-        final QueueStats queueStats;
+        final Queue queue;
         try {
-            queueStats = queueStatsCache.get(successQueue.getName());
+            queue = queuesCache.get(successQueue.getName());
         } catch (final ExecutionException e) {
-            //e.getCause could be the ScalerException thrown by getQueueStats
             LOGGER.error("Could not retrieve queue stats for {} to determine need for reroute.\n{}", 
                     successQueue.getName(), e.getCause().toString());
             
             return false;
         }
 
-        return queueStats.getMessages() > 1000 || (queueStats.getConsumeRate() < queueStats.getConsumeRate());
+        return queue.getMessages() > targetQueueMessageLimit;
     }
     
     private void ensureQueueExists(final String reroutedQueueName) 

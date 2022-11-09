@@ -153,7 +153,7 @@
                             <alias>autoscale-container</alias>
                             <name>${dockerAutoscalerOrg}autoscale-kubernetes-rabbit${dockerProjectVersion}</name>
                             <build>
-                                <from>${dockerHubPublic}/cafapi/opensuse-jre11:3</from>
+                                <from>${docker.base.java.image}</from>
                                 <cmd>
                                     <exec>
                                         <args>/maven/scaler.sh</args>

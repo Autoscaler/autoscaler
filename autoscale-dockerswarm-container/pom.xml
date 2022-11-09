@@ -106,7 +106,7 @@
                             <alias>autoscale-container</alias>
                             <name>${dockerAutoscalerOrg}autoscale-dockerswarm-rabbit${dockerProjectVersion}</name>
                             <build>
-                                <from>${dockerHubPublic}/cafapi/opensuse-jre11:3</from>
+                                <from>${dockerHubPublic}/cafapi/opensuse-jre17:1</from>
                                 <!-- The entry point will be the worker.sh executable. -->
                                 <cmd>
                                     <exec>

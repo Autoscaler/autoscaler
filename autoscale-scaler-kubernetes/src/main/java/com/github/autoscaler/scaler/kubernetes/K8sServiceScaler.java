@@ -25,8 +25,13 @@ import com.hpe.caf.api.HealthStatus;
 import io.kubernetes.client.extended.kubectl.Kubectl;
 import io.kubernetes.client.extended.kubectl.KubectlGet;
 import io.kubernetes.client.extended.kubectl.exception.KubectlException;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.apis.AuthorizationV1Api;
 import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.openapi.models.V1Pod;
+import io.kubernetes.client.openapi.models.V1ResourceAttributes;
+import io.kubernetes.client.openapi.models.V1SelfSubjectAccessReviewSpec;
+import io.kubernetes.client.openapi.models.V1SelfSubjectAccessReview;
 import io.kubernetes.client.util.generic.options.ListOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,11 +141,40 @@ public class K8sServiceScaler implements ServiceScaler
     {
         try {
             Kubectl.version().execute();
-            return HealthResult.RESULT_HEALTHY;
+            if(checkAutoscalerK8sPermissions()) {
+                return HealthResult.RESULT_HEALTHY;
+            } else {
+                return new HealthResult(HealthStatus.UNHEALTHY, "Service Account does not have correct permissions");
+            }
         } catch (KubectlException e) {
             LOG.warn("Connection failure to kubernetes", e);
             return new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to Kubernetes");
+        } catch (ApiException e) {
+            return new HealthResult(HealthStatus.UNHEALTHY, "Error attempting to query account permissions");
         }
+    }
+
+    private Boolean checkAutoscalerK8sPermissions() throws ApiException {
+        V1ResourceAttributes resourceAttributes = new V1ResourceAttributes();
+        resourceAttributes.setGroup("apps");
+        resourceAttributes.setResource("deployments");
+        resourceAttributes.setVerb("patch");
+        resourceAttributes.setNamespace("private");
+
+        V1SelfSubjectAccessReviewSpec spec = new V1SelfSubjectAccessReviewSpec();
+        spec.setResourceAttributes(resourceAttributes);
+
+        V1SelfSubjectAccessReview body = new V1SelfSubjectAccessReview();
+        body.setApiVersion("authorization/v1");
+        body.setKind("SelfSubjectAccessReview");
+        body.setSpec(spec);
+
+        V1SelfSubjectAccessReview review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, "", "", "");
+
+        if(review.getStatus() != null) {
+            return review.getStatus().getAllowed();
+        }
+        return false;
     }
 
     private V1Deployment getDeployment(final DeploymentId deploymentId) throws KubectlException

@@ -165,7 +165,7 @@ public class K8sServiceScaler implements ServiceScaler
         spec.setResourceAttributes(resourceAttributes);
 
         V1SelfSubjectAccessReview body = new V1SelfSubjectAccessReview();
-        body.setApiVersion("authorization/v1");
+        body.setApiVersion("authorization.k8s.io/v1");
         body.setKind("SelfSubjectAccessReview");
         body.setSpec(spec);
 

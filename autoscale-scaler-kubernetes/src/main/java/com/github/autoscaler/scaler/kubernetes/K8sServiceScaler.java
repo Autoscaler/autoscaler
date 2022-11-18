@@ -169,7 +169,7 @@ public class K8sServiceScaler implements ServiceScaler
         body.setKind("SelfSubjectAccessReview");
         body.setSpec(spec);
 
-        V1SelfSubjectAccessReview review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, "", "", "");
+        V1SelfSubjectAccessReview review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, "All", "fas", "true");
 
         if(review.getStatus() != null) {
             return review.getStatus().getAllowed();

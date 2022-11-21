@@ -139,22 +139,34 @@ public class K8sServiceScaler implements ServiceScaler
     @Override
     public HealthResult healthCheck()
     {
+        if(connectionHealthCheck() == HealthResult.RESULT_HEALTHY) {
+            if(permissionsHealthCheck() == HealthResult.RESULT_HEALTHY) {
+                return HealthResult.RESULT_HEALTHY;
+            } else return permissionsHealthCheck();
+        } else return connectionHealthCheck();
+    }
+
+    private HealthResult connectionHealthCheck()
+    {
         try {
             Kubectl.version().execute();
-            if(checkAutoscalerK8sPermissions()) {
-                return HealthResult.RESULT_HEALTHY;
-            } else {
-                return new HealthResult(HealthStatus.UNHEALTHY, "Service Account does not have correct permissions");
-            }
+            return HealthResult.RESULT_HEALTHY;
         } catch (KubectlException e) {
             LOG.warn("Connection failure to kubernetes", e);
             return new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to Kubernetes");
-        } catch (ApiException e) {
-            return new HealthResult(HealthStatus.UNHEALTHY, "Error attempting to query account permissions");
         }
     }
 
-    private Boolean checkAutoscalerK8sPermissions() throws ApiException {
+    private HealthResult permissionsHealthCheck() {
+        if(checkAutoscalerK8sPermissions()) {
+            return HealthResult.RESULT_HEALTHY;
+        } else {
+            LOG.warn("Error: Kubernetes Service Account does not have correct permissions");
+            return new HealthResult(HealthStatus.UNHEALTHY, "Error: Kubernetes Service Account does not have correct permissions");
+        }
+    }
+
+    private Boolean checkAutoscalerK8sPermissions() {
         V1ResourceAttributes resourceAttributes = new V1ResourceAttributes();
         resourceAttributes.setGroup("apps");
         resourceAttributes.setResource("deployments");
@@ -169,7 +181,12 @@ public class K8sServiceScaler implements ServiceScaler
         body.setKind("SelfSubjectAccessReview");
         body.setSpec(spec);
 
-        V1SelfSubjectAccessReview review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, "All", "fas", "true");
+        V1SelfSubjectAccessReview review;
+        try {
+            review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, "All", "fas", "true");
+        } catch (ApiException e) {
+            throw new RuntimeException(e);
+        }
 
         if(review.getStatus() != null) {
             return review.getStatus().getAllowed();

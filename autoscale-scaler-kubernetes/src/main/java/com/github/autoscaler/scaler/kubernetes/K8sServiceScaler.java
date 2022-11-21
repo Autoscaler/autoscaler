@@ -139,11 +139,14 @@ public class K8sServiceScaler implements ServiceScaler
     @Override
     public HealthResult healthCheck()
     {
-        if(connectionHealthCheck() == HealthResult.RESULT_HEALTHY) {
-            if(permissionsHealthCheck() == HealthResult.RESULT_HEALTHY) {
-                return HealthResult.RESULT_HEALTHY;
-            } else return permissionsHealthCheck();
-        } else return connectionHealthCheck();
+        HealthResult connection = connectionHealthCheck();
+        HealthResult permission = permissionsHealthCheck();
+
+        // If HEALTHY, return RESULT_HEALTHY
+        // else, return RESULT_UNHEALTHY with specific error message
+        if(connection != HealthResult.RESULT_HEALTHY) {
+            return connection;
+        } else return permission;
     }
 
     private HealthResult connectionHealthCheck()

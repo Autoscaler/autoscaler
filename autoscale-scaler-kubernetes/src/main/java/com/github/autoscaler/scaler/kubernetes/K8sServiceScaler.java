@@ -143,13 +143,13 @@ public class K8sServiceScaler implements ServiceScaler
         HealthResult permission = permissionsHealthCheck();
 
         // If HEALTHY, return RESULT_HEALTHY
-        // else, return RESULT_UNHEALTHY with specific error message
+        // else, return UNHEALTHY with specific error message
         if(connection != HealthResult.RESULT_HEALTHY) {
             return connection;
         } else return permission;
     }
 
-    private HealthResult connectionHealthCheck()
+    protected HealthResult connectionHealthCheck()
     {
         try {
             Kubectl.version().execute();
@@ -160,7 +160,7 @@ public class K8sServiceScaler implements ServiceScaler
         }
     }
 
-    private HealthResult permissionsHealthCheck() {
+    protected HealthResult permissionsHealthCheck() {
         if(checkAutoscalerK8sPermissions()) {
             return HealthResult.RESULT_HEALTHY;
         } else {

@@ -167,21 +167,21 @@ public class K8sServiceScaler implements ServiceScaler
     }
 
     private Boolean checkAutoscalerK8sPermissions() {
-        V1ResourceAttributes resourceAttributes = new V1ResourceAttributes();
+        final V1ResourceAttributes resourceAttributes = new V1ResourceAttributes();
         resourceAttributes.setGroup("apps");
         resourceAttributes.setResource("deployments");
         resourceAttributes.setVerb("patch");
         resourceAttributes.setNamespace("private");
 
-        V1SelfSubjectAccessReviewSpec spec = new V1SelfSubjectAccessReviewSpec();
+        final V1SelfSubjectAccessReviewSpec spec = new V1SelfSubjectAccessReviewSpec();
         spec.setResourceAttributes(resourceAttributes);
 
-        V1SelfSubjectAccessReview body = new V1SelfSubjectAccessReview();
+        final V1SelfSubjectAccessReview body = new V1SelfSubjectAccessReview();
         body.setApiVersion("authorization.k8s.io/v1");
         body.setKind("SelfSubjectAccessReview");
         body.setSpec(spec);
 
-        V1SelfSubjectAccessReview review;
+        final V1SelfSubjectAccessReview review;
         try {
             review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, "All", "fas", "true");
         } catch (ApiException e) {

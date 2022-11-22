@@ -139,62 +139,7 @@ public class K8sServiceScaler implements ServiceScaler
     @Override
     public HealthResult healthCheck()
     {
-        final HealthResult connection = connectionHealthCheck();
-        final HealthResult permission = permissionsHealthCheck();
-
-        // If HEALTHY, return RESULT_HEALTHY
-        // else, return UNHEALTHY with specific error message
-        if(connection != HealthResult.RESULT_HEALTHY) {
-            return connection;
-        } else return permission;
-    }
-
-    protected HealthResult connectionHealthCheck()
-    {
-        try {
-            Kubectl.version().execute();
-            return HealthResult.RESULT_HEALTHY;
-        } catch (KubectlException e) {
-            LOG.warn("Connection failure to kubernetes", e);
-            return new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to Kubernetes");
-        }
-    }
-
-    protected HealthResult permissionsHealthCheck() {
-        if(checkAutoscalerK8sPermissions()) {
-            return HealthResult.RESULT_HEALTHY;
-        } else {
-            LOG.warn("Error: Kubernetes Service Account does not have correct permissions");
-            return new HealthResult(HealthStatus.UNHEALTHY, "Error: Kubernetes Service Account does not have correct permissions");
-        }
-    }
-
-    private Boolean checkAutoscalerK8sPermissions() {
-        final V1ResourceAttributes resourceAttributes = new V1ResourceAttributes();
-        resourceAttributes.setGroup("apps");
-        resourceAttributes.setResource("deployments");
-        resourceAttributes.setVerb("patch");
-        resourceAttributes.setNamespace("private");
-
-        final V1SelfSubjectAccessReviewSpec spec = new V1SelfSubjectAccessReviewSpec();
-        spec.setResourceAttributes(resourceAttributes);
-
-        final V1SelfSubjectAccessReview body = new V1SelfSubjectAccessReview();
-        body.setApiVersion("authorization.k8s.io/v1");
-        body.setKind("SelfSubjectAccessReview");
-        body.setSpec(spec);
-
-        final V1SelfSubjectAccessReview review;
-        try {
-            review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, "All", "fas", "true");
-        } catch (ApiException e) {
-            throw new RuntimeException(e);
-        }
-
-        if(review.getStatus() != null) {
-            return review.getStatus().getAllowed();
-        }
-        return false;
+        return K8sHealthCheck.healthCheck();
     }
 
     private V1Deployment getDeployment(final DeploymentId deploymentId) throws KubectlException

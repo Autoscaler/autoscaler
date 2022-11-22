@@ -139,8 +139,8 @@ public class K8sServiceScaler implements ServiceScaler
     @Override
     public HealthResult healthCheck()
     {
-        HealthResult connection = connectionHealthCheck();
-        HealthResult permission = permissionsHealthCheck();
+        final HealthResult connection = connectionHealthCheck();
+        final HealthResult permission = permissionsHealthCheck();
 
         // If HEALTHY, return RESULT_HEALTHY
         // else, return UNHEALTHY with specific error message

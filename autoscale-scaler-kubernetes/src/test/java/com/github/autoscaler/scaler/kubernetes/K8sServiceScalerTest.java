@@ -28,7 +28,7 @@ public class K8sServiceScalerTest {
     @Test
     public void testHealthCheck_ReturnHealthy()
     {
-        K8sServiceScaler k8sServiceScaler = Mockito.mock(K8sServiceScaler.class);
+        final K8sServiceScaler k8sServiceScaler = Mockito.mock(K8sServiceScaler.class);
         when(k8sServiceScaler.connectionHealthCheck()).thenReturn(HealthResult.RESULT_HEALTHY);
         when(k8sServiceScaler.permissionsHealthCheck()).thenReturn(HealthResult.RESULT_HEALTHY);
         when(k8sServiceScaler.healthCheck()).thenCallRealMethod();
@@ -39,13 +39,13 @@ public class K8sServiceScalerTest {
     @Test
     public void testHealthCheck_ReturnUnhealthyConnectionError()
     {
-        K8sServiceScaler k8sServiceScaler = Mockito.mock(K8sServiceScaler.class);
+        final K8sServiceScaler k8sServiceScaler = Mockito.mock(K8sServiceScaler.class);
         when(k8sServiceScaler.connectionHealthCheck()).thenReturn(new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to Kubernetes"));
         when(k8sServiceScaler.permissionsHealthCheck()).thenReturn(HealthResult.RESULT_HEALTHY);
         when(k8sServiceScaler.healthCheck()).thenCallRealMethod();
 
-        HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to Kubernetes");
-        HealthResult actualResult = k8sServiceScaler.healthCheck();
+        final HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to Kubernetes");
+        final HealthResult actualResult = k8sServiceScaler.healthCheck();
 
         assertEquals(expectedResult.getStatus(), actualResult.getStatus());
         assertEquals(expectedResult.getMessage(), actualResult.getMessage());
@@ -54,15 +54,15 @@ public class K8sServiceScalerTest {
     @Test
     public void testHealthCheck_ReturnUnhealthyPermissionError()
     {
-        K8sServiceScaler k8sServiceScaler = Mockito.mock(K8sServiceScaler.class);
+        final K8sServiceScaler k8sServiceScaler = Mockito.mock(K8sServiceScaler.class);
         when(k8sServiceScaler.connectionHealthCheck()).thenReturn(HealthResult.RESULT_HEALTHY);
         when(k8sServiceScaler.permissionsHealthCheck())
                 .thenReturn(new HealthResult(HealthStatus.UNHEALTHY, "Error: Kubernetes Service Account does not have correct permissions"));
         when(k8sServiceScaler.healthCheck()).thenCallRealMethod();
 
-        HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY,
+        final HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY,
                 "Error: Kubernetes Service Account does not have correct permissions");
-        HealthResult actualResult = k8sServiceScaler.healthCheck();
+        final HealthResult actualResult = k8sServiceScaler.healthCheck();
 
         assertEquals(expectedResult.getStatus(), actualResult.getStatus());
         assertEquals(expectedResult.getMessage(), actualResult.getMessage());

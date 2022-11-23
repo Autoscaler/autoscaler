@@ -23,6 +23,7 @@ import io.kubernetes.client.extended.kubectl.KubectlVersion;
 import io.kubernetes.client.extended.kubectl.exception.KubectlException;
 import io.kubernetes.client.openapi.apis.AuthorizationV1Api;
 import io.kubernetes.client.openapi.models.*;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -124,7 +125,7 @@ public class K8sHealthCheckTest {
         K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
         K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 
-        String expectedMessage = String.format("Error: Kubernetes Service Account does not have correct permissions: %s", review);
+        String expectedMessage = String.format("Error: Kubernetes Service Account does not have correct permissions: %s", StringUtils.normalizeSpace(review.toString()));
 
         HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY, expectedMessage);
         HealthResult actualResult = serviceScaler.healthCheck();

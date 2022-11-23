@@ -24,6 +24,7 @@ import io.kubernetes.client.openapi.apis.AuthorizationV1Api;
 import io.kubernetes.client.openapi.models.V1ResourceAttributes;
 import io.kubernetes.client.openapi.models.V1SelfSubjectAccessReviewSpec;
 import io.kubernetes.client.openapi.models.V1SelfSubjectAccessReview;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +85,8 @@ final class K8sHealthCheck
             return HealthResult.RESULT_HEALTHY;
         } else {
             final String errorMessage = String.format(
-                    "Error: Kubernetes Service Account does not have correct permissions: %s", review);
+                    "Error: Kubernetes Service Account does not have correct permissions: %s",
+                    StringUtils.normalizeSpace(review.toString()));
             LOG.warn(errorMessage);
             return new HealthResult(HealthStatus.UNHEALTHY, errorMessage);
         }

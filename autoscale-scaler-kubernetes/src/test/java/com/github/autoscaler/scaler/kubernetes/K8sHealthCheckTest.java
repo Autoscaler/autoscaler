@@ -42,8 +42,8 @@ public class K8sHealthCheckTest {
 
     @Test
     public void testHealthCheck_ReturnHealthy() throws Exception {
-        KubectlVersion version = Mockito.mock(KubectlVersion.class);
-        VersionInfo info = Mockito.mock(VersionInfo.class);
+        final KubectlVersion version = Mockito.mock(KubectlVersion.class);
+        final VersionInfo info = Mockito.mock(VersionInfo.class);
         PowerMockito.mockStatic(Kubectl.class);
         when(Kubectl.version()).thenReturn(version);
         when(Kubectl.version().execute()).thenReturn(info);
@@ -53,24 +53,24 @@ public class K8sHealthCheckTest {
         V1SelfSubjectAccessReview review = new V1SelfSubjectAccessReview();
         review.setStatus(status);
 
-        V1SelfSubjectAccessReview body = PowerMockito.mock(V1SelfSubjectAccessReview.class);
+        final V1SelfSubjectAccessReview body = PowerMockito.mock(V1SelfSubjectAccessReview.class);
         PowerMockito.whenNew(V1SelfSubjectAccessReview.class)
                 .withNoArguments().thenReturn(body);
 
-        AuthorizationV1Api authApi = PowerMockito.mock(AuthorizationV1Api.class);
+        final AuthorizationV1Api authApi = PowerMockito.mock(AuthorizationV1Api.class);
         PowerMockito.whenNew(AuthorizationV1Api.class)
                 .withNoArguments().thenReturn(authApi);
         when(authApi.createSelfSubjectAccessReview(body, "All", "fas", "true")).thenReturn(review);
 
-        K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-        K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
+        final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
+        final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 
         assertEquals(HealthResult.RESULT_HEALTHY, serviceScaler.healthCheck());
     }
 
     @Test
     public void testHealthCheck_ReturnUnhealthyConnectionError() throws Exception {
-        KubectlVersion version = Mockito.mock(KubectlVersion.class);
+        final KubectlVersion version = Mockito.mock(KubectlVersion.class);
         PowerMockito.mockStatic(Kubectl.class);
         when(Kubectl.version()).thenReturn(version);
         when(Kubectl.version().execute()).thenThrow(new KubectlException("Error connecting to Kubernetes"));
@@ -80,21 +80,21 @@ public class K8sHealthCheckTest {
         V1SelfSubjectAccessReview review = new V1SelfSubjectAccessReview();
         review.setStatus(status);
 
-        V1SelfSubjectAccessReview body = PowerMockito.mock(V1SelfSubjectAccessReview.class);
+        final V1SelfSubjectAccessReview body = PowerMockito.mock(V1SelfSubjectAccessReview.class);
         PowerMockito.whenNew(V1SelfSubjectAccessReview.class)
                 .withNoArguments().thenReturn(body);
 
-        AuthorizationV1Api authApi = PowerMockito.mock(AuthorizationV1Api.class);
+        final AuthorizationV1Api authApi = PowerMockito.mock(AuthorizationV1Api.class);
         PowerMockito.whenNew(AuthorizationV1Api.class)
                 .withNoArguments().thenReturn(authApi);
         when(authApi.createSelfSubjectAccessReview(body, "All", "fas", "true")).thenReturn(review);
 
-        K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-        K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
+        final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
+        final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 
-        HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY,
+        final HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY,
                 "Cannot connect to Kubernetes");
-        HealthResult actualResult = serviceScaler.healthCheck();
+        final HealthResult actualResult = serviceScaler.healthCheck();
 
         assertEquals(expectedResult.getStatus(), actualResult.getStatus());
         assertEquals(expectedResult.getMessage(), actualResult.getMessage());
@@ -102,8 +102,8 @@ public class K8sHealthCheckTest {
 
     @Test
     public void testHealthCheck_ReturnUnhealthyPermissionError() throws Exception {
-        KubectlVersion version = Mockito.mock(KubectlVersion.class);
-        VersionInfo info = Mockito.mock(VersionInfo.class);
+        final KubectlVersion version = Mockito.mock(KubectlVersion.class);
+        final VersionInfo info = Mockito.mock(VersionInfo.class);
         PowerMockito.mockStatic(Kubectl.class);
         when(Kubectl.version()).thenReturn(version);
         when(Kubectl.version().execute()).thenReturn(info);
@@ -113,22 +113,22 @@ public class K8sHealthCheckTest {
         V1SelfSubjectAccessReview review = new V1SelfSubjectAccessReview();
         review.setStatus(status);
 
-        V1SelfSubjectAccessReview body = PowerMockito.mock(V1SelfSubjectAccessReview.class);
+        final V1SelfSubjectAccessReview body = PowerMockito.mock(V1SelfSubjectAccessReview.class);
         PowerMockito.whenNew(V1SelfSubjectAccessReview.class)
                 .withNoArguments().thenReturn(body);
 
-        AuthorizationV1Api authApi = PowerMockito.mock(AuthorizationV1Api.class);
+        final AuthorizationV1Api authApi = PowerMockito.mock(AuthorizationV1Api.class);
         PowerMockito.whenNew(AuthorizationV1Api.class)
                 .withNoArguments().thenReturn(authApi);
         when(authApi.createSelfSubjectAccessReview(body, "All", "fas", "true")).thenReturn(review);
 
-        K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-        K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
+        final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
+        final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 
-        String expectedMessage = String.format("Error: Kubernetes Service Account does not have correct permissions: %s", StringUtils.normalizeSpace(review.toString()));
+        final String expectedMessage = String.format("Error: Kubernetes Service Account does not have correct permissions: %s", StringUtils.normalizeSpace(review.toString()));
 
-        HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY, expectedMessage);
-        HealthResult actualResult = serviceScaler.healthCheck();
+        final HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY, expectedMessage);
+        final HealthResult actualResult = serviceScaler.healthCheck();
 
         assertEquals(expectedResult.getStatus(), actualResult.getStatus());
         assertEquals(expectedResult.getMessage(), actualResult.getMessage());

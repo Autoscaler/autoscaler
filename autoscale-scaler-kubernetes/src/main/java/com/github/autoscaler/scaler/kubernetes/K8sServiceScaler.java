@@ -21,7 +21,6 @@ import static com.github.autoscaler.api.ScalingConfiguration.KEY_SHUTDOWN_PRIORI
 import com.github.autoscaler.api.ServiceScaler;
 import com.github.autoscaler.kubernetes.shared.K8sAutoscaleConfiguration;
 import com.hpe.caf.api.HealthResult;
-import com.hpe.caf.api.HealthStatus;
 import io.kubernetes.client.extended.kubectl.Kubectl;
 import io.kubernetes.client.extended.kubectl.KubectlGet;
 import io.kubernetes.client.extended.kubectl.exception.KubectlException;
@@ -134,13 +133,7 @@ public class K8sServiceScaler implements ServiceScaler
     @Override
     public HealthResult healthCheck()
     {
-        try {
-            Kubectl.version().execute();
-            return HealthResult.RESULT_HEALTHY;
-        } catch (KubectlException e) {
-            LOG.warn("Connection failure to kubernetes", e);
-            return new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to Kubernetes");
-        }
+        return K8sHealthCheck.healthCheck();
     }
 
     private V1Deployment getDeployment(final DeploymentId deploymentId) throws KubectlException

@@ -48,9 +48,9 @@ public class K8sHealthCheckTest {
         when(Kubectl.version()).thenReturn(version);
         when(Kubectl.version().execute()).thenReturn(info);
 
-        V1SubjectAccessReviewStatus status = new V1SubjectAccessReviewStatus();
+        final V1SubjectAccessReviewStatus status = new V1SubjectAccessReviewStatus();
         status.setAllowed(true);
-        V1SelfSubjectAccessReview review = new V1SelfSubjectAccessReview();
+        final V1SelfSubjectAccessReview review = new V1SelfSubjectAccessReview();
         review.setStatus(status);
 
         final V1SelfSubjectAccessReview body = PowerMockito.mock(V1SelfSubjectAccessReview.class);
@@ -75,9 +75,9 @@ public class K8sHealthCheckTest {
         when(Kubectl.version()).thenReturn(version);
         when(Kubectl.version().execute()).thenThrow(new KubectlException("Error connecting to Kubernetes"));
 
-        V1SubjectAccessReviewStatus status = new V1SubjectAccessReviewStatus();
+        final V1SubjectAccessReviewStatus status = new V1SubjectAccessReviewStatus();
         status.setAllowed(true);
-        V1SelfSubjectAccessReview review = new V1SelfSubjectAccessReview();
+        final V1SelfSubjectAccessReview review = new V1SelfSubjectAccessReview();
         review.setStatus(status);
 
         final V1SelfSubjectAccessReview body = PowerMockito.mock(V1SelfSubjectAccessReview.class);
@@ -108,9 +108,9 @@ public class K8sHealthCheckTest {
         when(Kubectl.version()).thenReturn(version);
         when(Kubectl.version().execute()).thenReturn(info);
 
-        V1SubjectAccessReviewStatus status = new V1SubjectAccessReviewStatus();
+        final V1SubjectAccessReviewStatus status = new V1SubjectAccessReviewStatus();
         status.setAllowed(false);
-        V1SelfSubjectAccessReview review = new V1SelfSubjectAccessReview();
+        final V1SelfSubjectAccessReview review = new V1SelfSubjectAccessReview();
         review.setStatus(status);
 
         final V1SelfSubjectAccessReview body = PowerMockito.mock(V1SelfSubjectAccessReview.class);

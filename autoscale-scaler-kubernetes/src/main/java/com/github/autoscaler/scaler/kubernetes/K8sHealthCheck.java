@@ -83,8 +83,8 @@ final class K8sHealthCheck
         if (review.getStatus() != null && review.getStatus().getAllowed()) {
             return HealthResult.RESULT_HEALTHY;
         } else {
-            final String errorMessage = String.format("Error: Kubernetes Service Account %s does not have %s permissions to resource %s",
-                    review.getMetadata().getManagedFields().get(0).getManager(), review.getSpec().getResourceAttributes().getVerb(), review.getSpec().getResourceAttributes().getResource());
+            final String errorMessage = String.format(
+                    "Error: Kubernetes Service Account does not have correct permissions: %s", review);
             LOG.warn(errorMessage);
             return new HealthResult(HealthStatus.UNHEALTHY, errorMessage);
         }

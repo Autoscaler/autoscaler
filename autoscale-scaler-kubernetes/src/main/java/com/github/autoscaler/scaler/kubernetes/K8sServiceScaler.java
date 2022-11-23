@@ -21,17 +21,11 @@ import static com.github.autoscaler.api.ScalingConfiguration.KEY_SHUTDOWN_PRIORI
 import com.github.autoscaler.api.ServiceScaler;
 import com.github.autoscaler.kubernetes.shared.K8sAutoscaleConfiguration;
 import com.hpe.caf.api.HealthResult;
-import com.hpe.caf.api.HealthStatus;
 import io.kubernetes.client.extended.kubectl.Kubectl;
 import io.kubernetes.client.extended.kubectl.KubectlGet;
 import io.kubernetes.client.extended.kubectl.exception.KubectlException;
-import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.apis.AuthorizationV1Api;
 import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.openapi.models.V1Pod;
-import io.kubernetes.client.openapi.models.V1ResourceAttributes;
-import io.kubernetes.client.openapi.models.V1SelfSubjectAccessReviewSpec;
-import io.kubernetes.client.openapi.models.V1SelfSubjectAccessReview;
 import io.kubernetes.client.util.generic.options.ListOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

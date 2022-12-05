@@ -31,14 +31,14 @@ import org.slf4j.LoggerFactory;
 
 final class K8sHealthCheck
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(K8sHealthCheck.class);
+    private static final Logger LOG = LoggerFactory.getLogger(K8sHealthCheck.class);
 
     private K8sHealthCheck()
     {
 
     }
 
-    public static HealthResult healthCheck(K8sAutoscaleConfiguration config)
+    public static HealthResult healthCheck(final K8sAutoscaleConfiguration config)
     {
         final HealthResult connectionHealthResult = checkConnection();
         if (connectionHealthResult == HealthResult.RESULT_HEALTHY) {
@@ -54,12 +54,12 @@ final class K8sHealthCheck
             Kubectl.version().execute();
             return HealthResult.RESULT_HEALTHY;
         } catch (KubectlException e) {
-            LOGGER.warn("Connection failure to kubernetes", e);
+            LOG.warn("Connection failure to kubernetes", e);
             return new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to Kubernetes");
         }
     }
 
-    private static HealthResult checkPermissions(K8sAutoscaleConfiguration config)
+    private static HealthResult checkPermissions(final K8sAutoscaleConfiguration config)
     {
         for (final String namespace: config.getNamespacesArray()) {
 
@@ -88,7 +88,7 @@ final class K8sHealthCheck
                 final String errorMessage = String.format(
                         "Error: Kubernetes Service Account does not have correct permissions: %s",
                         StringUtils.normalizeSpace(review.toString()));
-                LOGGER.warn(errorMessage);
+                LOG.warn(errorMessage);
                 return new HealthResult(HealthStatus.UNHEALTHY, errorMessage);
             }
         }

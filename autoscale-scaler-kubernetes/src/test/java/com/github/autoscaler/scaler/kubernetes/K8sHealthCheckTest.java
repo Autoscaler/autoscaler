@@ -66,7 +66,7 @@ public class K8sHealthCheckTest {
         when(authApi.createSelfSubjectAccessReview(body, "All", "fas", "true")).thenReturn(review);
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-        List<String> mockNamespaces = Collections.singletonList("private");
+        final List<String> mockNamespaces = Collections.singletonList("private");
         when(config.getNamespacesArray()).thenReturn(mockNamespaces);
         final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 
@@ -95,7 +95,7 @@ public class K8sHealthCheckTest {
         when(authApi.createSelfSubjectAccessReview(body, "All", "fas", "true")).thenReturn(review);
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-        List<String> mockNamespaces = Collections.singletonList("private");
+        final List<String> mockNamespaces = Collections.singletonList("private");
         when(config.getNamespacesArray()).thenReturn(mockNamespaces);
         final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 
@@ -130,7 +130,7 @@ public class K8sHealthCheckTest {
         when(authApi.createSelfSubjectAccessReview(body, "All", "fas", "true")).thenReturn(review);
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-        List<String> mockNamespaces = Collections.singletonList("private");
+        final List<String> mockNamespaces = Collections.singletonList("private");
         when(config.getNamespacesArray()).thenReturn(mockNamespaces);
         final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 
@@ -167,7 +167,7 @@ public class K8sHealthCheckTest {
         when(authApi.createSelfSubjectAccessReview(body, "All", "fas", "true")).thenReturn(review);
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-        List<String> mockNamespaces = Collections.emptyList();
+        final List<String> mockNamespaces = Collections.emptyList();
         when(config.getNamespacesArray()).thenReturn(mockNamespaces);
         final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 

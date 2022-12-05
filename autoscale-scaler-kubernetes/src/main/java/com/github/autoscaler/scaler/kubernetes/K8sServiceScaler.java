@@ -133,7 +133,7 @@ public class K8sServiceScaler implements ServiceScaler
     @Override
     public HealthResult healthCheck()
     {
-        return K8sHealthCheck.healthCheck(this.config);
+        return K8sHealthCheck.healthCheck(config);
     }
 
     private V1Deployment getDeployment(final DeploymentId deploymentId) throws KubectlException

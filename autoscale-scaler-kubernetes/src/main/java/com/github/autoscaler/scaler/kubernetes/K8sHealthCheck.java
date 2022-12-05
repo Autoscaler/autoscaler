@@ -29,8 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 final class K8sHealthCheck
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(K8sHealthCheck.class);

@@ -32,6 +32,9 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -63,6 +66,8 @@ public class K8sHealthCheckTest {
         when(authApi.createSelfSubjectAccessReview(body, "All", "fas", "true")).thenReturn(review);
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
+        final List<String> mockNamespaces = Collections.singletonList("private");
+        when(config.getNamespacesArray()).thenReturn(mockNamespaces);
         final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 
         assertEquals(HealthResult.RESULT_HEALTHY, serviceScaler.healthCheck());
@@ -90,6 +95,8 @@ public class K8sHealthCheckTest {
         when(authApi.createSelfSubjectAccessReview(body, "All", "fas", "true")).thenReturn(review);
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
+        final List<String> mockNamespaces = Collections.singletonList("private");
+        when(config.getNamespacesArray()).thenReturn(mockNamespaces);
         final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 
         final HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY,
@@ -123,11 +130,48 @@ public class K8sHealthCheckTest {
         when(authApi.createSelfSubjectAccessReview(body, "All", "fas", "true")).thenReturn(review);
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
+        final List<String> mockNamespaces = Collections.singletonList("private");
+        when(config.getNamespacesArray()).thenReturn(mockNamespaces);
         final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 
         final String expectedMessage = String.format("Error: Kubernetes Service Account does not have correct permissions: %s", StringUtils.normalizeSpace(review.toString()));
 
         final HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY, expectedMessage);
+        final HealthResult actualResult = serviceScaler.healthCheck();
+
+        assertEquals(expectedResult.getStatus(), actualResult.getStatus());
+        assertEquals(expectedResult.getMessage(), actualResult.getMessage());
+    }
+
+    @Test
+    public void testHealthCheck_ReturnNoNamespacesError() throws Exception
+    {
+        final KubectlVersion version = Mockito.mock(KubectlVersion.class);
+        final VersionInfo info = Mockito.mock(VersionInfo.class);
+        PowerMockito.mockStatic(Kubectl.class);
+        when(Kubectl.version()).thenReturn(version);
+        when(Kubectl.version().execute()).thenReturn(info);
+
+        final V1SubjectAccessReviewStatus status = new V1SubjectAccessReviewStatus();
+        status.setAllowed(false);
+        final V1SelfSubjectAccessReview review = new V1SelfSubjectAccessReview();
+        review.setStatus(status);
+
+        final V1SelfSubjectAccessReview body = PowerMockito.mock(V1SelfSubjectAccessReview.class);
+        PowerMockito.whenNew(V1SelfSubjectAccessReview.class)
+                .withNoArguments().thenReturn(body);
+
+        final AuthorizationV1Api authApi = PowerMockito.mock(AuthorizationV1Api.class);
+        PowerMockito.whenNew(AuthorizationV1Api.class)
+                .withNoArguments().thenReturn(authApi);
+        when(authApi.createSelfSubjectAccessReview(body, "All", "fas", "true")).thenReturn(review);
+
+        final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
+        final List<String> mockNamespaces = Collections.emptyList();
+        when(config.getNamespacesArray()).thenReturn(mockNamespaces);
+        final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
+
+        final HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY, "Error: No namespaces were found");
         final HealthResult actualResult = serviceScaler.healthCheck();
 
         assertEquals(expectedResult.getStatus(), actualResult.getStatus());

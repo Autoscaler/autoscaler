@@ -63,13 +63,7 @@ final class K8sHealthCheck
 
     private static HealthResult checkPermissions(K8sAutoscaleConfiguration config)
     {
-        List<String> namespaces = config.getNamespacesArray();
-        LOGGER.info("Namespaces: " + namespaces.toString());
-        if(namespaces.size() == 0) {
-            namespaces.add("private");
-        }
-
-        for (final String namespace: namespaces) {
+        for (final String namespace: config.getNamespacesArray()) {
 
             final V1ResourceAttributes resourceAttributes = new V1ResourceAttributes();
             resourceAttributes.setGroup("apps");

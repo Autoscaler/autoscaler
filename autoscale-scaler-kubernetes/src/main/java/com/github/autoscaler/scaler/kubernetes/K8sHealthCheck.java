@@ -15,6 +15,7 @@
  */
 package com.github.autoscaler.scaler.kubernetes;
 
+import com.github.autoscaler.kubernetes.shared.K8sAutoscaleConfiguration;
 import com.hpe.caf.api.HealthResult;
 import com.hpe.caf.api.HealthStatus;
 import io.kubernetes.client.extended.kubectl.Kubectl;
@@ -28,20 +29,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 final class K8sHealthCheck
 {
-    private static final Logger LOG = LoggerFactory.getLogger(K8sHealthCheck.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(K8sHealthCheck.class);
 
     private K8sHealthCheck()
     {
 
     }
 
-    public static HealthResult healthCheck()
+    public static HealthResult healthCheck(K8sAutoscaleConfiguration config)
     {
         final HealthResult connectionHealthResult = checkConnection();
         if (connectionHealthResult == HealthResult.RESULT_HEALTHY) {
-            return checkPermissions();
+            return checkPermissions(config);
         } else {
             return connectionHealthResult;
         }
@@ -53,42 +56,50 @@ final class K8sHealthCheck
             Kubectl.version().execute();
             return HealthResult.RESULT_HEALTHY;
         } catch (KubectlException e) {
-            LOG.warn("Connection failure to kubernetes", e);
+            LOGGER.warn("Connection failure to kubernetes", e);
             return new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to Kubernetes");
         }
     }
 
-    private static HealthResult checkPermissions()
+    private static HealthResult checkPermissions(K8sAutoscaleConfiguration config)
     {
-        final V1ResourceAttributes resourceAttributes = new V1ResourceAttributes();
-        resourceAttributes.setGroup("apps");
-        resourceAttributes.setResource("deployments");
-        resourceAttributes.setVerb("patch");
-        resourceAttributes.setNamespace("private");
-
-        final V1SelfSubjectAccessReviewSpec spec = new V1SelfSubjectAccessReviewSpec();
-        spec.setResourceAttributes(resourceAttributes);
-
-        final V1SelfSubjectAccessReview body = new V1SelfSubjectAccessReview();
-        body.setApiVersion("authorization.k8s.io/v1");
-        body.setKind("SelfSubjectAccessReview");
-        body.setSpec(spec);
-
-        final V1SelfSubjectAccessReview review;
-        try {
-            review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, "All", "fas", "true");
-        } catch (final ApiException e) {
-            throw new RuntimeException(e);
+        List<String> namespaces = config.getNamespacesArray();
+        LOGGER.info("Namespaces: " + namespaces.toString());
+        if(namespaces.size() == 0) {
+            namespaces.add("private");
         }
 
-        if (review.getStatus() != null && review.getStatus().getAllowed()) {
-            return HealthResult.RESULT_HEALTHY;
-        } else {
-            final String errorMessage = String.format(
-                    "Error: Kubernetes Service Account does not have correct permissions: %s",
-                    StringUtils.normalizeSpace(review.toString()));
-            LOG.warn(errorMessage);
-            return new HealthResult(HealthStatus.UNHEALTHY, errorMessage);
+        for (final String namespace: namespaces) {
+
+            final V1ResourceAttributes resourceAttributes = new V1ResourceAttributes();
+            resourceAttributes.setGroup("apps");
+            resourceAttributes.setResource("deployments");
+            resourceAttributes.setVerb("patch");
+            resourceAttributes.setNamespace(namespace);
+
+            final V1SelfSubjectAccessReviewSpec spec = new V1SelfSubjectAccessReviewSpec();
+            spec.setResourceAttributes(resourceAttributes);
+
+            final V1SelfSubjectAccessReview body = new V1SelfSubjectAccessReview();
+            body.setApiVersion("authorization.k8s.io/v1");
+            body.setKind("SelfSubjectAccessReview");
+            body.setSpec(spec);
+
+            final V1SelfSubjectAccessReview review;
+            try {
+                review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, "All", "fas", "true");
+            } catch (final ApiException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (review.getStatus() == null || !review.getStatus().getAllowed()) {
+                final String errorMessage = String.format(
+                        "Error: Kubernetes Service Account does not have correct permissions: %s",
+                        StringUtils.normalizeSpace(review.toString()));
+                LOGGER.warn(errorMessage);
+                return new HealthResult(HealthStatus.UNHEALTHY, errorMessage);
+            }
         }
+        return HealthResult.RESULT_HEALTHY;
     }
 }

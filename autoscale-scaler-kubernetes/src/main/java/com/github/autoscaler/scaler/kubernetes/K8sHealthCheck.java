@@ -84,7 +84,7 @@ final class K8sHealthCheck
 
                 final V1SelfSubjectAccessReview review;
                 try {
-                    review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, "All", "fas", "true");
+                    review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, "All", null, "true");
                 } catch (final ApiException e) {
                     throw new RuntimeException(e);
                 }

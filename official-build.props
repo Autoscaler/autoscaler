@@ -1,3 +1,3 @@
 DISABLE_AUTOTAGGING=true
-SEPG_BUILD_ENV_IMAGE=cafapi/opensuse-jdk11-maven:1.0.0
+SEPG_BUILD_ENV_IMAGE=cafapi/opensuse-tomcat-jre11:latest
 REQUIRED_DOCKER_HOST_TYPE=PRIVILEGED

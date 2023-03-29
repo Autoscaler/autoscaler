@@ -8,7 +8,7 @@
         }
     }],
     "feedback_url": "https://github.com/Autoscaler/autoscaler/issues",
-    "copyright": "© 2015-2018 Micro Focus or one of its affiliates.",
+    "copyright": "© 2015-2023 Open Text.",
     "footer_logo": "assets/img/autoscaler-logo.png",
     "footer_columns": [{
     "title": {

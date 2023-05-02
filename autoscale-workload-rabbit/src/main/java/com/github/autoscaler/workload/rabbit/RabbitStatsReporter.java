@@ -28,10 +28,20 @@ import retrofit.client.OkClient;
 import retrofit.client.Response;
 import retrofit.http.GET;
 import retrofit.http.Path;
+import retrofit.http.Query;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class RabbitStatsReporter
 {
-    private final RabbitManagementApi rabbitApi;
+    public final RabbitManagementApi rabbitApi;
     private final ObjectMapper mapper = new ObjectMapper();
     private final String vhost;
     private static final String RMQ_MESSAGES_READY = "messages_ready";
@@ -52,14 +62,68 @@ public class RabbitStatsReporter
     private static final String RMQ_RATE = "rate";
     private static final int RMQ_TIMEOUT = 10;
 
+    // add main method
+    public static void main(String[] args) throws ScalerException
+    {
+        final RabbitStatsReporter rsr = new RabbitStatsReporter("https://larry-cent01.swinfra.net:15672", "darwin_user", "nextgen", "/");
+
+        final List<QueueStats> statsForAllQueuesMatching = rsr.getStatsForAllQueuesMatching("^dataprocessing-entity-extract-in».+$");
+
+        System.out.println(statsForAllQueuesMatching);
+
+        final PagedQueues pagedQueues1 = rsr.rabbitApi.getPagedQueues("/", "^dataprocessing-entity-extract-in(?>».*)?$", 1, 2);
+        System.out.println(pagedQueues1);
+
+        final PagedQueues pagedQueues2 = rsr.rabbitApi.getPagedQueues("/", "^dataprocessing-entity-extract-in(?>».*)?$", 2, 2);
+        System.out.println(pagedQueues2);
+
+        final PagedQueues pagedQueues3 = rsr.rabbitApi.getPagedQueues("/", "^dataprocessing-entity-extract-in(?>».*)?$", 3, 2);
+        System.out.println(pagedQueues3);
+    }
+
 
     public RabbitStatsReporter(final String endpoint, final String user, final String pass, final String vhost)
     {
         this.vhost = Objects.requireNonNull(vhost);
         String credentials = user + ":" + pass;
-        OkHttpClient ok = new OkHttpClient();
-        ok.setReadTimeout(RMQ_TIMEOUT, TimeUnit.SECONDS);
-        ok.setConnectTimeout(RMQ_TIMEOUT, TimeUnit.SECONDS);
+        final OkHttpClient ok = new OkHttpClient();
+
+        final TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(
+                    java.security.cert.X509Certificate[] chain,
+                    String authType) throws CertificateException
+            {
+            }
+
+            @Override
+            public void checkServerTrusted(
+                    java.security.cert.X509Certificate[] chain,
+                    String authType) throws CertificateException {
+            }
+
+            @Override
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+        } };
+
+
+        final SSLContext sslContext;
+        try {
+            sslContext = SSLContext.getInstance("SSL");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+        } catch (KeyManagementException e) {
+            throw new RuntimeException(e);
+        }
+        // Create an ssl socket factory with our all-trusting manager
+        final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+        ok.setSslSocketFactory(sslSocketFactory);
         // build up a RestAdapter that will automatically handle authentication for us
         RestAdapter.Builder builder = new RestAdapter.Builder().setEndpoint(endpoint).setClient(new OkClient(ok));
         builder.setRequestInterceptor(requestFacade -> {
@@ -105,12 +169,74 @@ public class RabbitStatsReporter
         }
     }
 
+    /**
+     * Get statistics for all RabbitMQ queues whose names match the supplied queueNameRegex regular expression.
+     * @param queueNameRegex A regular expression describing the pattern of queue names to match
+     * @return a list of statistics for the requested queue names
+     * @throws ScalerException if the statistics cannot be acquired
+     */
+    public List<QueueStats> getStatsForAllQueuesMatching(final String queueNameRegex)
+            throws ScalerException
+    {
+        final List<QueueStats> queueStatsList = new ArrayList<>();
+
+        int currentPage = 1;
+        int pageSize = 100;
+
+        while (true) {
+            // Get next page of queues
+            final PagedQueues pagedQueues = rabbitApi.getPagedQueues(vhost, queueNameRegex, currentPage, pageSize);
+
+            // Read the queue stats for each queue in this page of queues
+            for (final PagedQueues.Item item : pagedQueues.getItems()) {
+
+                double publishRate;
+                double consumeRate;
+
+                final PagedQueues.MessageStats messageStats = item.getMessageStats();
+
+                if (messageStats != null) {
+                    final PagedQueues.Rate publishDetails = messageStats.getPublishDetails();
+                    publishRate = publishDetails == null ? 0.0 : publishDetails.getRate();
+
+                    final PagedQueues.Rate deliverGetDetails = messageStats.getDeliverGetDetails();
+                    consumeRate = deliverGetDetails == null ? 0.0 : deliverGetDetails.getRate();
+                } else {
+                    // this queue hasn't had any messages yet
+                    publishRate = 0.0;
+                    consumeRate = 0.0;
+                }
+
+                // Add the stats for this queue to the list
+                queueStatsList.add(new QueueStats(item.getMessagesReady(), publishRate, consumeRate));
+            }
+
+            // If we've reached the last page of queues, stop
+            if (pagedQueues.getPage() == pagedQueues.getPageCount()) {
+                break;
+            } else {
+                // Else get the next page of queues
+                currentPage++;
+            }
+        }
+
+        return queueStatsList;
+    }
 
     public interface RabbitManagementApi
     {
         @GET("/api/queues/{vhost}/{queue}")
         Response getQueueStatus(@Path("vhost") final String vhost, @Path("queue") final String queueName)
             throws ScalerException;
+
+        // The `use_regex` query param only works if pagination is used as well.
+        // See: https://groups.google.com/g/rabbitmq-users/c/Lgad24orwog/m/E_zoUtB3BQAJ
+        @GET("/api/queues/{vhost}?use_regex=true")
+        PagedQueues getPagedQueues(@Path("vhost") final String vhost,
+                                   @Query(value = "name", encodeValue = true) final String nameRegex,
+                                   @Query(value = "page", encodeValue = false) final int page,
+                                   @Query(value = "page_size", encodeValue = false) final int pageSize)
+                throws ScalerException;
     }
 
 
@@ -124,7 +250,7 @@ public class RabbitStatsReporter
             }
 
             return new ScalerException("Failed to contact RabbitMQ management API using url " + retrofitError.getUrl() 
-                + ". Queue may not yet have been created or RabbitMQ could be unavailable, will retry.", retrofitError);
+                + ". RabbitMQ could be unavailable, will retry.", retrofitError);
         }
     }
 }

@@ -73,6 +73,9 @@ public class RabbitWorkloadAnalyserConfiguration
     @NotNull
     private int memoryQueryRequestFrequency;
 
+    @NotNull
+    @Size(min = 1)
+    private String stagingQueueIndicator = "»";
 
     public RabbitWorkloadAnalyserConfiguration() { }
 
@@ -144,5 +147,15 @@ public class RabbitWorkloadAnalyserConfiguration
     public int getMemoryQueryRequestFrequency()
     {
         return memoryQueryRequestFrequency;
+    }
+
+    public String getStagingQueueIndicator()
+    {
+        return stagingQueueIndicator;
+    }
+
+    public void setStagingQueueIndicator(final String stagingQueueIndicator)
+    {
+        this.stagingQueueIndicator = stagingQueueIndicator;
     }
 }

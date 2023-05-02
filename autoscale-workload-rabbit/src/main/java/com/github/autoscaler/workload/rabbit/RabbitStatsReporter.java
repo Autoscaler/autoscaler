@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -67,7 +66,7 @@ public class RabbitStatsReporter
     {
         final RabbitStatsReporter rsr = new RabbitStatsReporter("https://larry-cent01.swinfra.net:15672", "darwin_user", "nextgen", "/");
 
-        final List<QueueStats> statsForAllQueuesMatching = rsr.getStatsForAllQueuesMatching("^dataprocessing-entity-extract-in».+$");
+        final List<StagingQueueStats> statsForAllQueuesMatching = rsr.getStagingQueueStats("^dataprocessing-entity-extract-in».+$");
 
         System.out.println(statsForAllQueuesMatching);
 
@@ -170,22 +169,22 @@ public class RabbitStatsReporter
     }
 
     /**
-     * Get statistics for all RabbitMQ queues whose names match the supplied queueNameRegex regular expression.
-     * @param queueNameRegex A regular expression describing the pattern of queue names to match
-     * @return a list of statistics for the requested queue names
+     * Get statistics for all RabbitMQ staging queues whose names match the supplied stagingQueueNameRegex regular expression.
+     * @param stagingQueueNameRegex A regular expression describing the pattern of staging queue names to match
+     * @return a list of statistics for the requested staging queues
      * @throws ScalerException if the statistics cannot be acquired
      */
-    public List<QueueStats> getStatsForAllQueuesMatching(final String queueNameRegex)
+    public List<StagingQueueStats> getStagingQueueStats(final String stagingQueueNameRegex)
             throws ScalerException
     {
-        final List<QueueStats> queueStatsList = new ArrayList<>();
+        final List<StagingQueueStats> stagingQueueStatsList = new ArrayList<>();
 
         int currentPage = 1;
         int pageSize = 100;
 
         while (true) {
             // Get next page of queues
-            final PagedQueues pagedQueues = rabbitApi.getPagedQueues(vhost, queueNameRegex, currentPage, pageSize);
+            final PagedQueues pagedQueues = rabbitApi.getPagedQueues(vhost, stagingQueueNameRegex, currentPage, pageSize);
 
             // Read the queue stats for each queue in this page of queues
             for (final PagedQueues.Item item : pagedQueues.getItems()) {
@@ -208,7 +207,7 @@ public class RabbitStatsReporter
                 }
 
                 // Add the stats for this queue to the list
-                queueStatsList.add(new QueueStats(item.getMessagesReady(), publishRate, consumeRate));
+                stagingQueueStatsList.add(new StagingQueueStats(item.getName(), item.getMessagesReady()));
             }
 
             // If we've reached the last page of queues, stop
@@ -220,7 +219,7 @@ public class RabbitStatsReporter
             }
         }
 
-        return queueStatsList;
+        return stagingQueueStatsList;
     }
 
     public interface RabbitManagementApi

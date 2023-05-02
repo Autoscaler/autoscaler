@@ -24,5 +24,6 @@
             scalingDelay: getenv("CAF_AUTOSCALER_SCALING_DELAY") || 10,
             backlogGoal: getenv("CAF_AUTOSCALER_BACKLOG_GOAL") || 300
         }
-    }
+    },
+    stagingQueueIndicator: getenv("CAF_AUTOSCALER_STAGING_QUEUE_INDICATOR") || "»"
 });

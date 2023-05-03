@@ -8,5 +8,5 @@
             "backlogGoal": "300"
         }
     },
-    stagingQueueIndicator: getenv("CAF_AUTOSCALER_STAGING_QUEUE_INDICATOR") || "»"
+    "stagingQueueIndicator": "»"
 }

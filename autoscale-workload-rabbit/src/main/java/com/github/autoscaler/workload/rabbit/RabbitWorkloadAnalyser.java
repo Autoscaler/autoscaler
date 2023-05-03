@@ -42,12 +42,13 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     private final RabbitSystemResourceMonitor rabbitResourceMonitor;
     private final EvictingQueue<QueueStats> targetQueueStatsQueue;
     private final EvictingQueue<List<StagingQueueStats>> stagingQueuesStatsQueue;
+    private final String stagingQueueNameRegex;
     private static final int MAX_SCALE = 5;
     private static final Logger LOG = LoggerFactory.getLogger(RabbitWorkloadAnalyser.class);
 
 
     public RabbitWorkloadAnalyser(final String scalingTarget, final RabbitStatsReporter reporter, final RabbitWorkloadProfile profile,
-                                  final RabbitSystemResourceMonitor rabbitResourceMonitor)
+                                  final RabbitSystemResourceMonitor rabbitResourceMonitor, final String stagingQueueIndicator)
     {
         this.scalingTarget = Objects.requireNonNull(scalingTarget);
         this.rabbitStats = Objects.requireNonNull(reporter);
@@ -55,6 +56,9 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
         this.targetQueueStatsQueue = EvictingQueue.create(profile.getScalingDelay());
         this.stagingQueuesStatsQueue = EvictingQueue.create(profile.getScalingDelay());
         this.rabbitResourceMonitor = rabbitResourceMonitor;
+        this.stagingQueueNameRegex = stagingQueueIndicator != null
+                ? String.format("^%s%s.+$", scalingTarget, stagingQueueIndicator)
+                : null;
     }
 
     /**
@@ -96,7 +100,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
             final QueueStats targetQueueStats = rabbitStats.getQueueStats(scalingTarget);
             LOG.debug("Stats for target queue {}: {}", scalingTarget, targetQueueStats);
 
-            final List<StagingQueueStats> stagingQueuesStats = rabbitStats.getStagingQueueStats(scalingTarget);
+            final List<StagingQueueStats> stagingQueuesStats = rabbitStats.getStagingQueueStats(stagingQueueNameRegex);
             LOG.debug("Stats for staging queues: {}", stagingQueuesStats);
 
             final int messagesInTargetQueue = targetQueueStats.getMessages();
@@ -125,7 +129,6 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
         }
         return ScalingAction.NO_ACTION;
     }
-
 
     private int getWorkersNeeded(final long messagesInTargetQueueAndStagingQueues, final int backlogGoal, final InstanceInfo instanceInfo)
     {
@@ -176,5 +179,4 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
             + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
             + "RabbitMQ has used " + percentageMem + "% of its high watermark memory allowance.\n";
     }
-
 }

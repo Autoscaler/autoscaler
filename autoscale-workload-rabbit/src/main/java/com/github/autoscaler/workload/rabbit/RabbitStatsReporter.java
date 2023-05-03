@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -177,6 +178,10 @@ public class RabbitStatsReporter
     public List<StagingQueueStats> getStagingQueueStats(final String stagingQueueNameRegex)
             throws ScalerException
     {
+        if (stagingQueueNameRegex == null) {
+            return Collections.emptyList();
+        }
+
         final List<StagingQueueStats> stagingQueueStatsList = new ArrayList<>();
 
         int currentPage = 1;
@@ -189,6 +194,7 @@ public class RabbitStatsReporter
             // Read the queue stats for each queue in this page of queues
             for (final PagedQueues.Item item : pagedQueues.getItems()) {
 
+                // TODO don't need consume rate?
                 double publishRate;
                 double consumeRate;
 

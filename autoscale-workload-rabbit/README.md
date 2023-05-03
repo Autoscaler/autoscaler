@@ -28,6 +28,12 @@
   Note there *must* be a profile named "default"  
  - memoryQueryRequestFrequency: The number of seconds that the service should wait between issuing requests to check rabbitmq's
   current memory consumption. 
+ - stagingQueueIndicator: A string that is used to identify queues that are
+  staging queues. If this is provided, queue names that follow the naming pattern
+  `"^" + scalingTarget + stagingQueueIndicator + ".+$"` will be considered staging
+  queues and the statistics for these staging queues will be taken into account
+  alongside the statistics for the target queue (scalingTarget) when making
+  a scaling decision.
 
 
 ## Usage

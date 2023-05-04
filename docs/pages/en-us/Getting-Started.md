@@ -44,7 +44,7 @@ The [RabbitWorkloadAnalyserConfiguration](https://github.com/Autoscaler/autoscal
 `rabbitManagementPassword`: The RabbitMQ management user's password, which is used for basic HTTP authentication. This configuration parameter is assumed to be encrypted (if you are using a Cipher module). <br>
 `vhost`: The RabbitMQ vhost that contains the queues. <br>
 `profiles`: Map of profile name to RabbitWorkloadProfile objects, which represents different scaling profiles. **Note:** there *must* be a profile named "default".
-`stagingQueueIndicator`: A string that is used to identify queues that are staging queues. If this is provided, queue names that follow the naming pattern `"^" + scalingTarget + stagingQueueIndicator + ".+$"` will be considered staging queues and the statistics for these staging queues will be taken into account alongside the statistics for the target queue (scalingTarget) when making a scaling decision.
+`stagingQueueIndicator`: Optional. A string that is used to identify queues that are staging queues. If this is provided, queue names that follow the naming pattern `"^" + scalingTarget + stagingQueueIndicator + ".+$"` will be considered staging queues and the statistics for these staging queues will be taken into account alongside the statistics for the target queue (scalingTarget) when making a scaling decision.
 
 ### Example Worker
 

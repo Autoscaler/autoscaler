@@ -61,6 +61,7 @@ public class RabbitStatsReporter
     private static final String RMQ_PUBLISH_DETAILS = "publish_details";
     private static final String RMQ_RATE = "rate";
     private static final int RMQ_TIMEOUT = 10;
+    private static final int PAGE_SIZE = 100;
 
     // add main method
     public static void main(String[] args) throws ScalerException
@@ -185,35 +186,17 @@ public class RabbitStatsReporter
         final List<StagingQueueStats> stagingQueueStatsList = new ArrayList<>();
 
         int currentPage = 1;
-        int pageSize = 100;
 
         while (true) {
             // Get next page of queues
-            final PagedQueues pagedQueues = rabbitApi.getPagedQueues(vhost, stagingQueueNameRegex, currentPage, pageSize);
+            final PagedQueues pagedQueues = rabbitApi.getPagedQueues(vhost, stagingQueueNameRegex, currentPage, PAGE_SIZE);
 
             // Read the queue stats for each queue in this page of queues
             for (final PagedQueues.Item item : pagedQueues.getItems()) {
 
-                // TODO don't need consume rate?
-                double publishRate;
-                double consumeRate;
-
-                final PagedQueues.MessageStats messageStats = item.getMessageStats();
-
-                if (messageStats != null) {
-                    final PagedQueues.Rate publishDetails = messageStats.getPublishDetails();
-                    publishRate = publishDetails == null ? 0.0 : publishDetails.getRate();
-
-                    final PagedQueues.Rate deliverGetDetails = messageStats.getDeliverGetDetails();
-                    consumeRate = deliverGetDetails == null ? 0.0 : deliverGetDetails.getRate();
-                } else {
-                    // this queue hasn't had any messages yet
-                    publishRate = 0.0;
-                    consumeRate = 0.0;
-                }
-
                 // Add the stats for this queue to the list
-                stagingQueueStatsList.add(new StagingQueueStats(item.getName(), item.getMessagesReady()));
+                final StagingQueueStats stagingQueueStats = new StagingQueueStats(item.getName(), item.getMessagesReady());
+                stagingQueueStatsList.add(stagingQueueStats);
             }
 
             // If we've reached the last page of queues, stop

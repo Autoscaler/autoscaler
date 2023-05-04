@@ -16,6 +16,8 @@
 package com.github.autoscaler.workload.rabbit;
 
 
+import static java.util.stream.Collectors.toList;
+
 import com.github.autoscaler.api.InstanceInfo;
 import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.ScalingAction;
@@ -101,11 +103,17 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
             LOG.debug("Stats for target queue {}: {}", scalingTarget, targetQueueStats);
 
             final List<StagingQueueStats> stagingQueuesStats = rabbitStats.getStagingQueueStats(stagingQueueNameRegex);
-            LOG.debug("Stats for staging queues: {}", stagingQueuesStats);
+            final List<String> stagingQueueNames = stagingQueuesStats.stream().map(StagingQueueStats::getName).collect(toList());
+            LOG.debug("Stats for staging queues {}: {}", stagingQueueNames, stagingQueuesStats);
 
             final int messagesInTargetQueue = targetQueueStats.getMessages();
             final int messagesInStagingQueues = stagingQueuesStats.stream().mapToInt(StagingQueueStats::getMessages).sum();
             final int messagesInTargetQueueAndStagingQueues = messagesInTargetQueue + messagesInStagingQueues;
+
+            LOG.debug("Messages in target queue {}: {}. Messages in staging queues {}: {}. " +
+                            "The combined total of the messages in these queues: {} will be used to determine the scaling action.",
+                    scalingTarget, messagesInTargetQueue, stagingQueueNames, messagesInStagingQueues,
+                    messagesInTargetQueueAndStagingQueues);
 
             // if we have any messages and no instances, immediately trigger scale up
             if ( messagesInTargetQueueAndStagingQueues > 0 && instanceInfo.getTotalRunningAndStageInstances() == 0 ) {

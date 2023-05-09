@@ -60,7 +60,11 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
         this.defaultProfile = config.getProfiles().get(RabbitWorkloadAnalyserConfiguration.DEFAULT_PROFILE_NAME);
         this.objectMapper = new ObjectMapper();
         this.nodeStatusEndpoint = config.getRabbitManagementEndpoint() + "/api/nodes/";
-        this.stagingQueueIndicator = config.getStagingQueueIndicator();
+        final String stagingQueueIndicatorFromConfig = config.getStagingQueueIndicator();
+        if (stagingQueueIndicatorFromConfig != null && stagingQueueIndicatorFromConfig.isEmpty()) {
+            throw new RuntimeException("Providing a staging queue indicator is optional, but if provided, it cannot be empty");
+        }
+        this.stagingQueueIndicator = stagingQueueIndicatorFromConfig;
     }
 
     @Override

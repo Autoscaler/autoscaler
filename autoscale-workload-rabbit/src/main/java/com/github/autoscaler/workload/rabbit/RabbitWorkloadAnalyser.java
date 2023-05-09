@@ -166,6 +166,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
                         "Average consumption rate of target queue: {}. " +
                         "Average publishing rate of target queue: {}. " +
                         "Number of instances currently running: {}. " +
+                        "Backlog goal: {}. " +
                         scalingTarget,
                 stagingQueueNames,
                 messagesInTargetQueue,
@@ -176,7 +177,8 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
                 targetQueueAndStagingQueuesAvgMsgs,
                 consume,
                 publish,
-                instancesRunning);
+                instancesRunning,
+                backlogGoal);
 
         // if we have some consumption rate, figure out how many workers we need to meet the goal given
         if ( Double.compare(consume, 0.0) > 0 ) {

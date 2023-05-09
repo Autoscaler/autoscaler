@@ -130,7 +130,7 @@ public class RabbitWorkloadAnalyserTest
         // 2. There is 1 instance running
         // 3. The consumption rate for the target queue is 1.0 message per second
         // 4. The backlog goal is 1 second (i.e. we want to complete the current backlog of 2 messages in 1 second)
-        // 5. To process the 2 messages and hit the backlog goal of 1 second, we need 2 instances
+        // 5. To process the 2 messages and hit the backlog goal of 1 second, we need 2 instances 
         Assert.assertEquals(ScalingOperation.SCALE_UP, analyser.analyseWorkload(info).getOperation());
     }
 

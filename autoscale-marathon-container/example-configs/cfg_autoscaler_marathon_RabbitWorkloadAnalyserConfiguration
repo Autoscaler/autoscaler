@@ -7,6 +7,5 @@
             "scalingDelay": 10,
             "backlogGoal": 10
         }
-    },
-    "stagingQueueIndicator": "»"
+    }
 }

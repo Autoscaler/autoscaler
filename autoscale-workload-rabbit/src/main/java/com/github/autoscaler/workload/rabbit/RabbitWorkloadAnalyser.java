@@ -157,9 +157,9 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
 
         LOG.debug("Target queue: {}. " +
                         "Staging queues: {}." +
-                        "Messages in target queue: {}. " +
-                        "Messages in staging queues: {}. " +
-                        "Messages in target queue and staging queues: {}. " +
+                        "Current number of messages in target queue: {}. " +
+                        "Current number of messages in staging queues: {}. " +
+                        "Current number of messages in target queue and staging queues: {}. " +
                         "Average number of messages in target queue: {}. " +
                         "Average number of messages in staging queues: {}. " +
                         "Average number of messages in target queue and staging queues: {}. " +

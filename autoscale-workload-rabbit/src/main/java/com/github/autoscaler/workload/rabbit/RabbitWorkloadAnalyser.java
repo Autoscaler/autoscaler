@@ -104,7 +104,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
 
             final List<StagingQueueStats> stagingQueuesStats = rabbitStats.getStagingQueueStats(stagingQueueNameRegex);
             final List<String> stagingQueueNames = stagingQueuesStats.stream().map(StagingQueueStats::getName).collect(toList());
-            LOG.debug("Stats for staging queues {}: {}", stagingQueueNames, stagingQueuesStats);
+            LOG.debug("Stats for staging queues: {}", stagingQueuesStats);
 
             final int messagesInTargetQueue = targetQueueStats.getMessages();
             final int messagesInStagingQueues = stagingQueuesStats.stream().mapToInt(StagingQueueStats::getMessages).sum();

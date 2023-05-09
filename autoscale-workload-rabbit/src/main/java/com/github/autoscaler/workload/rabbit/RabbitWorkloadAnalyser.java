@@ -166,8 +166,8 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
                         "Average consumption rate of target queue: {}. " +
                         "Average publishing rate of target queue: {}. " +
                         "Number of instances currently running: {}. " +
-                        "Backlog goal: {}. " +
-                        scalingTarget,
+                        "Backlog goal: {}. ",
+                scalingTarget,
                 stagingQueueNames,
                 messagesInTargetQueue,
                 messagesInStagingQueues,

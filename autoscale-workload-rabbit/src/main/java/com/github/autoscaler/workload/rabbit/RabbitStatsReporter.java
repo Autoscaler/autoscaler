@@ -39,6 +39,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * A RabbitStatsReporter is an object that actually makes HTTP calls to a RabbitMQ management server,
@@ -56,6 +59,7 @@ public class RabbitStatsReporter
     private static final String RMQ_RATE = "rate";
     private static final int RMQ_TIMEOUT = 10;
     private static final int PAGE_SIZE = 100;
+    private static final Logger LOG = LoggerFactory.getLogger(RabbitStatsReporter.class);
 
     public RabbitStatsReporter(final String endpoint, final String user, final String pass, final String vhost)
     {
@@ -127,9 +131,14 @@ public class RabbitStatsReporter
         int currentPage = 1;
 
         while (true) {
+
+            LOG.debug("Getting page {} of queues matching regex {}", currentPage, stagingQueueNameRegex);
+
             // Get next page of queues
             final PagedQueues pagedQueues = rabbitApi.getPagedQueues(
                     vhost, stagingQueueNameRegex, currentPage, PAGE_SIZE, "name,messages_ready");
+
+            LOG.debug("Got page {} of queues matching regex {}: {}", currentPage, stagingQueueNameRegex, pagedQueues);
 
             // Read the queue stats for each queue in this page of queues
             for (final PagedQueues.Item item : pagedQueues.getItems()) {

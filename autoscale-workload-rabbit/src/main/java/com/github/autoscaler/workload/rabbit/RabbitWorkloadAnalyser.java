@@ -180,9 +180,27 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
                 instancesRunning,
                 backlogGoal);
 
+
+
         // if we have some consumption rate, figure out how many workers we need to meet the goal given
         if ( Double.compare(consume, 0.0) > 0 ) {
             double perWorkerEstimate = consume / instancesRunning;
+
+            // TODO START TEMP LOG FOR TESTING PURPOSES (REMOVE!)
+            long numInstancesConsideringStagingQueues =
+                    Math.round((double)messagesInTargetQueueAndStagingQueues / backlogGoal / perWorkerEstimate);
+
+            long numInstancesNOTConsideringStagingQueues =
+                    Math.round((double)messagesInTargetQueue / backlogGoal / perWorkerEstimate);
+
+            if (numInstancesConsideringStagingQueues > numInstancesNOTConsideringStagingQueues) {
+                LOG.info("RORY scaling UP because of messages in staging queues!");
+            }
+            // TODO END TEMP LOG FOR TESTING PURPOSES (REMOVE!)
+
+
+
+
             // if the average of messages over time is greater than zero, then we need at minimum one worker
             return (int) Math.max(
                     Double.compare(0.0, targetQueueAndStagingQueuesAvgMsgs) == 0 ? 0 : 1,

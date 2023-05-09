@@ -128,7 +128,8 @@ public class RabbitStatsReporter
 
         while (true) {
             // Get next page of queues
-            final PagedQueues pagedQueues = rabbitApi.getPagedQueues(vhost, stagingQueueNameRegex, currentPage, PAGE_SIZE);
+            final PagedQueues pagedQueues = rabbitApi.getPagedQueues(
+                    vhost, stagingQueueNameRegex, currentPage, PAGE_SIZE, "name,messages_ready");
 
             // Read the queue stats for each queue in this page of queues
             for (final PagedQueues.Item item : pagedQueues.getItems()) {
@@ -162,7 +163,8 @@ public class RabbitStatsReporter
         PagedQueues getPagedQueues(@Path("vhost") final String vhost,
                                    @Query(value = "name", encodeValue = true) final String nameRegex,
                                    @Query(value = "page", encodeValue = false) final int page,
-                                   @Query(value = "page_size", encodeValue = false) final int pageSize)
+                                   @Query(value = "page_size", encodeValue = false) final int pageSize,
+                                   @Query(value = "columns", encodeValue = true) final String columnsCsvString)
                 throws ScalerException;
     }
 

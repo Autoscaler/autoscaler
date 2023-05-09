@@ -149,7 +149,8 @@ public class RabbitStatsReporter
             }
 
             // If we've reached the last page of queues, stop
-            if (pagedQueues.getPage() == pagedQueues.getPageCount()) {
+            // Using >= rather than == because if there are no queues (items) in the response, page = 1 and page_count = 0
+            if (pagedQueues.getPage() >= pagedQueues.getPageCount()) {
                 break;
             } else {
                 // Else get the next page of queues

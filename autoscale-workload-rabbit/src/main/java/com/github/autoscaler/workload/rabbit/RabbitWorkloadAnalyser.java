@@ -156,7 +156,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
         final int instancesRunning = instanceInfo.getInstancesRunning();
 
         LOG.debug("Target queue: {}. " +
-                        "Staging queues: {}." +
+                        "Staging queues: {}. " +
                         "Current number of messages in target queue: {}. " +
                         "Current number of messages in staging queues: {}. " +
                         "Current number of messages in target queue and staging queues: {}. " +

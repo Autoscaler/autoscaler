@@ -29,13 +29,6 @@ import retrofit.client.Response;
 import retrofit.http.GET;
 import retrofit.http.Path;
 import retrofit.http.Query;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -44,6 +37,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -52,7 +46,7 @@ import java.util.Objects;
  */
 public class RabbitStatsReporter
 {
-    public final RabbitManagementApi rabbitApi;
+    private final RabbitManagementApi rabbitApi;
     private final ObjectMapper mapper = new ObjectMapper();
     private final String vhost;
     private static final String RMQ_MESSAGES_READY = "messages_ready";
@@ -63,68 +57,13 @@ public class RabbitStatsReporter
     private static final int RMQ_TIMEOUT = 10;
     private static final int PAGE_SIZE = 100;
 
-    // add main method
-    public static void main(String[] args) throws ScalerException
-    {
-        final RabbitStatsReporter rsr = new RabbitStatsReporter("https://larry-cent01.swinfra.net:15672", "darwin_user", "nextgen", "/");
-
-        final List<StagingQueueStats> statsForAllQueuesMatching = rsr.getStagingQueueStats("^dataprocessing-entity-extract-in».+$");
-
-        System.out.println(statsForAllQueuesMatching);
-
-        final PagedQueues pagedQueues1 = rsr.rabbitApi.getPagedQueues("/", "^dataprocessing-entity-extract-in(?>».*)?$", 1, 2);
-        System.out.println(pagedQueues1);
-
-        final PagedQueues pagedQueues2 = rsr.rabbitApi.getPagedQueues("/", "^dataprocessing-entity-extract-in(?>».*)?$", 2, 2);
-        System.out.println(pagedQueues2);
-
-        final PagedQueues pagedQueues3 = rsr.rabbitApi.getPagedQueues("/", "^dataprocessing-entity-extract-in(?>».*)?$", 3, 2);
-        System.out.println(pagedQueues3);
-    }
-
-
     public RabbitStatsReporter(final String endpoint, final String user, final String pass, final String vhost)
     {
         this.vhost = Objects.requireNonNull(vhost);
         String credentials = user + ":" + pass;
-        final OkHttpClient ok = new OkHttpClient();
-
-        final TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(
-                    java.security.cert.X509Certificate[] chain,
-                    String authType) throws CertificateException
-            {
-            }
-
-            @Override
-            public void checkServerTrusted(
-                    java.security.cert.X509Certificate[] chain,
-                    String authType) throws CertificateException {
-            }
-
-            @Override
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-        } };
-
-
-        final SSLContext sslContext;
-        try {
-            sslContext = SSLContext.getInstance("SSL");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-        } catch (KeyManagementException e) {
-            throw new RuntimeException(e);
-        }
-        // Create an ssl socket factory with our all-trusting manager
-        final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-
-        ok.setSslSocketFactory(sslSocketFactory);
+        OkHttpClient ok = new OkHttpClient();
+        ok.setReadTimeout(RMQ_TIMEOUT, TimeUnit.SECONDS);
+        ok.setConnectTimeout(RMQ_TIMEOUT, TimeUnit.SECONDS);
         // build up a RestAdapter that will automatically handle authentication for us
         RestAdapter.Builder builder = new RestAdapter.Builder().setEndpoint(endpoint).setClient(new OkClient(ok));
         builder.setRequestInterceptor(requestFacade -> {

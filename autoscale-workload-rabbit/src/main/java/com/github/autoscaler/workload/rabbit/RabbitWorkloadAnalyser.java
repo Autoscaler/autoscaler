@@ -180,8 +180,6 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
                 instancesRunning,
                 backlogGoal);
 
-
-
         // if we have some consumption rate, figure out how many workers we need to meet the goal given
         if ( Double.compare(consume, 0.0) > 0 ) {
             double perWorkerEstimate = consume / instancesRunning;

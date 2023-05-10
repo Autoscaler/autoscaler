@@ -185,7 +185,6 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
         // if we have some consumption rate, figure out how many workers we need to meet the goal given
         if ( Double.compare(consume, 0.0) > 0 ) {
             double perWorkerEstimate = consume / instancesRunning;
-
             // if the average of messages over time is greater than zero, then we need at minimum one worker
             return (int) Math.max(
                     Double.compare(0.0, targetQueueAndStagingQueuesAvgMsgs) == 0 ? 0 : 1,

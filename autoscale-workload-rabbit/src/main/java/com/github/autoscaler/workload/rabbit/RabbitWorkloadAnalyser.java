@@ -187,19 +187,20 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
             double perWorkerEstimate = consume / instancesRunning;
 
             // TODO START TEMP LOG FOR TESTING PURPOSES (REMOVE!)
-            long numInstancesConsideringStagingQueues =
-                    Math.round((double)messagesInTargetQueueAndStagingQueues / backlogGoal / perWorkerEstimate);
-
-            long numInstancesNOTConsideringStagingQueues =
+            long numInstancesConsideringTargetQueueOnly =
                     Math.round((double)messagesInTargetQueue / backlogGoal / perWorkerEstimate);
 
-            if (numInstancesConsideringStagingQueues > numInstancesNOTConsideringStagingQueues) {
-                LOG.info("RORY scaling UP because of messages in staging queues!");
+            long numInstancesConsideringTargetQueueAndStagingQueues =
+                    Math.round((double)messagesInTargetQueueAndStagingQueues / backlogGoal / perWorkerEstimate);
+
+            if (numInstancesConsideringTargetQueueAndStagingQueues > numInstancesConsideringTargetQueueOnly) {
+                LOG.info("RORY scaling UP because of messages in staging queues! " +
+                                "numInstancesConsideringTargetQueueOnly: {}" +
+                                "numInstancesConsideringTargetQueueAndStagingQueues: {}",
+                        numInstancesConsideringTargetQueueOnly,
+                        numInstancesConsideringTargetQueueAndStagingQueues);
             }
             // TODO END TEMP LOG FOR TESTING PURPOSES (REMOVE!)
-
-
-
 
             // if the average of messages over time is greater than zero, then we need at minimum one worker
             return (int) Math.max(

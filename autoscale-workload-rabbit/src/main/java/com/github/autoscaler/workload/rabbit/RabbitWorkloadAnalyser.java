@@ -17,6 +17,7 @@ package com.github.autoscaler.workload.rabbit;
 
 
 import com.github.autoscaler.api.InstanceInfo;
+import com.github.autoscaler.api.ResourceUtilisation;
 import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.ScalingAction;
 import com.github.autoscaler.api.ScalingOperation;
@@ -55,16 +56,17 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     }
 
     /**
-     * This method will determine and return the percentage of the high watermark memory allowance being utilised at present by RabbitMQ
+     * This method will determine and return the percentage of memory and disk space being utilised at present by RabbitMQ
      *
      * @return The percentage being utilised
      */
     @Override
-    public double getCurrentMemoryLoad() throws ScalerException
+    public ResourceUtilisation getCurrentResourceUtilisation() throws ScalerException
     {
-        final double memoryConsumption = rabbitResourceMonitor.getCurrentMemoryComsumption();
-        LOG.debug("Current memory consumption {}% of total available memory.", memoryConsumption);
-        return memoryConsumption;
+        final ResourceUtilisation resourceUtilisation = rabbitResourceMonitor.getCurrentResourceUtilisation();
+        LOG.debug("Current memory consumption {}% of total available memory.",
+                resourceUtilisation.getMemoryUtilisationPercentage());
+        return resourceUtilisation;
     }
 
 

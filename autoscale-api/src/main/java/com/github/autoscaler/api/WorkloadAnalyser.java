@@ -33,12 +33,13 @@ public interface WorkloadAnalyser
         throws ScalerException;
 
     /**
-     * This method will determine and return the percentage of the memory allowance being utilised at present.
+     * This method will determine and return the percentage of resources being utilised at present.
      *
-     * @return The percentage being utilised
-     * @throws ScalerException if it fails to determine memory utilisation due to not being able to connect to messaging platform's api.
+     * @return The percentage of each resource being utilised
+     * @throws ScalerException if it fails to determine resource utilisation due to not being able to connect to messaging
+     * platform's api.
      */
-    double getCurrentMemoryLoad() throws ScalerException;
+    ResourceUtilisation getCurrentResourceUtilisation() throws ScalerException;
 
     /**
      * This method will return the content to send in an email when reporting an issue with the messaging platform.
@@ -47,4 +48,6 @@ public interface WorkloadAnalyser
      * @return The email body
      */
     String getMemoryOverloadWarning(String percentageMem);
+
+    // TODO RORY disk
 }

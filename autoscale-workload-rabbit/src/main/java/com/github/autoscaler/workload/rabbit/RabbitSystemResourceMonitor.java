@@ -17,6 +17,7 @@ package com.github.autoscaler.workload.rabbit;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.autoscaler.api.ResourceUtilisation;
 import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.workload.rabbit.RabbitManagementApiFactory.RabbitManagementApi;
 import java.io.IOException;
@@ -29,17 +30,17 @@ public final class RabbitSystemResourceMonitor
     private final RabbitManagementApi rabbitManagementApi;
     private final ObjectMapper mapper = new ObjectMapper();
     private volatile long lastTime;
-    private final int memoryQueryRequestFrequency;
+    private final int resourceQueryRequestFrequency;
 
     public RabbitSystemResourceMonitor(final RabbitManagementApi rabbitManagementApi,
-                                       final int memoryQueryRequestFrequency)
+                                       final int resourceQueryRequestFrequency)
     {
         this.rabbitManagementApi = rabbitManagementApi;
         this.lastTime = 0;
-        this.memoryQueryRequestFrequency = memoryQueryRequestFrequency;
+        this.resourceQueryRequestFrequency = resourceQueryRequestFrequency;
     }
 
-    public double getCurrentMemoryComsumption() throws ScalerException
+    public ResourceUtilisation getCurrentResourceUtilisation() throws ScalerException
     {
         if (shouldIssueRequest()) {
             try {
@@ -64,7 +65,7 @@ public final class RabbitSystemResourceMonitor
                 throw new ScalerException("Unable to map response to status request.", ex);
             }
         }
-        return memoryAllocated;
+        return new ResourceUtilisation(memoryAllocated);
     }
 
     private boolean shouldIssueRequest()
@@ -72,6 +73,6 @@ public final class RabbitSystemResourceMonitor
         if (lastTime == 0) {
             return true;
         }
-        return (System.currentTimeMillis() - lastTime) >= (memoryQueryRequestFrequency * 1000);
+        return (System.currentTimeMillis() - lastTime) >= (resourceQueryRequestFrequency* 1000);
     }
 }

@@ -17,6 +17,7 @@ package com.github.autoscaler.core;
 
 
 import com.github.autoscaler.api.InstanceInfo;
+import com.github.autoscaler.api.ResourceUtilisation;
 import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.ScalingAction;
 import com.github.autoscaler.api.ServiceScaler;
@@ -43,13 +44,14 @@ public class ScalerThreadTest
         InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.anyInt())).then(returnsSecondArg());
+        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.any())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;
         ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0,
             new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0));
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_UP);
         t.run();
         Mockito.verify(scaler, Mockito.times(1)).scaleUp(SERVICE_REF, 1);
@@ -65,13 +67,14 @@ public class ScalerThreadTest
         InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.anyInt())).then(returnsSecondArg());
+        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.any())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;
         ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, 
             new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0));
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_DOWN);
         t.run();
         Mockito.verify(scaler, Mockito.times(1)).scaleDown(SERVICE_REF, 1);
@@ -87,7 +90,7 @@ public class ScalerThreadTest
         InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.anyInt())).then(returnsSecondArg());
+        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.any())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;
@@ -108,7 +111,7 @@ public class ScalerThreadTest
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF))
             .thenThrow(new RuntimeException("network error"));
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.anyInt())).then(returnsSecondArg());
+        Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.any())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;

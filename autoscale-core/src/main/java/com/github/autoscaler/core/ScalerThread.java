@@ -17,6 +17,7 @@ package com.github.autoscaler.core;
 
 import com.github.autoscaler.api.InstanceInfo;
 import com.github.autoscaler.api.QueueNotFoundException;
+import com.github.autoscaler.api.ResourceUtilisation;
 import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.ScalingAction;
 import com.github.autoscaler.api.ScalingOperation;
@@ -129,10 +130,11 @@ public class ScalerThread implements Runnable
     private void handleAnalysis()
     {
         try {
-            final int currentMemoryLimitStage = establishMemLimitReached(analyser.getCurrentMemoryLoad());
+            final ResourceUtilisation resourceUtilisation = analyser.getCurrentResourceUtilisation();
+            final ResourceLimitStagesReached resourceLimitStagesReached = establishResourceLimitStagesReached(resourceUtilisation);
             InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
             final int shutdownPriority = instances.getShutdownPriority();
-            if (handleMemoryLoadIssues(instances, currentMemoryLimitStage, shutdownPriority)) {
+            if (handleResourceLimitReached(instances, resourceUtilisation, resourceLimitStagesReached, shutdownPriority)) {
                 return;
             }
             governor.recordInstances(serviceRef, instances);
@@ -141,7 +143,7 @@ public class ScalerThread implements Runnable
             action = analyser.analyseWorkload(instances);
             LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
                      action.getOperation(), serviceRef, action.getAmount());
-            action = governor.govern(serviceRef, action, currentMemoryLimitStage);
+            action = governor.govern(serviceRef, action, resourceLimitStagesReached);
             LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
                      action.getOperation(), serviceRef, action.getAmount());
             if (action.getAmount() == 0) {
@@ -252,46 +254,55 @@ public class ScalerThread implements Runnable
         scaleDown(1);
     }
 
-    private boolean handleMemoryLoadIssues(final InstanceInfo instances, final double currentMemoryLoadLimit, final int shutdownPriority)
+    private boolean handleResourceLimitReached(
+            final InstanceInfo instances,
+            final ResourceUtilisation resourceUtilisation,
+            final ResourceLimitStagesReached resourceLimitStagesReached,
+            final int shutdownPriority)
         throws ScalerException
     {
         if (shutdownPriority == -1) {
             return false;
         }
 
-        handleAlerterDispatch(currentMemoryLoadLimit);
+        handleAlerterDispatch(resourceUtilisation, resourceLimitStagesReached);
 
-        if (currentMemoryLoadLimit == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
+        // TODO
+
+        if (resourceLimitStagesReached.getMemoryLimitStageReached() == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
             scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
-        } else if (currentMemoryLoadLimit == 2 && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
+        } else if (resourceLimitStagesReached.getMemoryLimitStageReached() == 2 && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
             scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
-        } else if (currentMemoryLoadLimit == 3 && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
+        } else if (resourceLimitStagesReached.getMemoryLimitStageReached() == 3 && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
             scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
         }
         return false;
     }
 
-    private void handleAlerterDispatch(final double memLoad) throws ScalerException
+    private void handleAlerterDispatch(final ResourceUtilisation resourceUtilisation, final ResourceLimitStagesReached resourceLimitStagesReached)
+            throws ScalerException
     {
-        if (memLoad > resourceConfig.getAlertDispatchThreshold()) {
-            final String emailBody = analyser.getMemoryOverloadWarning(df.format(memLoad));
+        if (resourceLimitStagesReached.getMemoryLimitStageReached() > resourceConfig.getAlertDispatchThreshold()) { // TODO
+            final String emailBody = analyser.getMemoryOverloadWarning(df.format(resourceUtilisation.getMemoryUtilisationPercentage()));
             alertDispatcher.dispatchAlert(emailBody);
         }
+
+        // TODO RORY disk
     }
-    
-    private int establishMemLimitReached(final double currentMemoryLoad)
+
+    private ResourceLimitStagesReached establishResourceLimitStagesReached(final ResourceUtilisation resourceUtilisation)
     {
-        if (currentMemoryLoad >= resourceConfig.getResourceLimitThree()) {
-            return 3;
-        } else if (currentMemoryLoad >= resourceConfig.getResourceLimitTwo()) {
-            return 2;
-        } else if (currentMemoryLoad >= resourceConfig.getResourceLimitOne()) {
-            return 1;
+        if (resourceUtilisation.getMemoryUtilisationPercentage() >= resourceConfig.getResourceLimitThree()) {
+            return new ResourceLimitStagesReached(3, 0);
+        } else if (resourceUtilisation.getMemoryUtilisationPercentage() >= resourceConfig.getResourceLimitTwo()) {
+            return new ResourceLimitStagesReached(2, 0);
+        } else if (resourceUtilisation.getMemoryUtilisationPercentage() >= resourceConfig.getResourceLimitOne()) {
+            return new ResourceLimitStagesReached(1, 0);
         }
-        return 0;
+        return new ResourceLimitStagesReached(0, 0);
     }
 
     private boolean isShouldBackoff()

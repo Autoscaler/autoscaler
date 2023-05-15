@@ -28,12 +28,19 @@ import retrofit.client.OkClient;
 import retrofit.client.Response;
 import retrofit.http.GET;
 import retrofit.http.Path;
+import retrofit.http.Query;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -51,7 +58,8 @@ public class RabbitStatsReporter
     private static final String RMQ_PUBLISH_DETAILS = "publish_details";
     private static final String RMQ_RATE = "rate";
     private static final int RMQ_TIMEOUT = 10;
-
+    private static final int PAGE_SIZE = 100;
+    private static final Logger LOG = LoggerFactory.getLogger(RabbitStatsReporter.class);
 
     public RabbitStatsReporter(final String endpoint, final String user, final String pass, final String vhost)
     {
@@ -105,12 +113,78 @@ public class RabbitStatsReporter
         }
     }
 
+    /**
+     * Get statistics for all RabbitMQ staging queues whose names match the supplied stagingQueueNameRegex regular expression.
+     * @param stagingQueueNameRegex A regular expression describing the pattern of staging queue names to match
+     * @return a list of statistics for the requested staging queues
+     * @throws ScalerException if the statistics cannot be acquired
+     */
+    public List<StagingQueueStats> getStagingQueueStats(final String stagingQueueNameRegex)
+            throws ScalerException
+    {
+        if (stagingQueueNameRegex == null) {
+            return Collections.emptyList();
+        }
+
+        final List<StagingQueueStats> stagingQueueStatsList = new ArrayList<>();
+
+        int currentPage = 1;
+
+        while (true) {
+
+            LOG.debug("Getting page {} of queues matching regex {}", currentPage, stagingQueueNameRegex);
+
+            // Get next page of queues
+            final PagedQueues pagedQueues = rabbitApi.getPagedQueues(
+                    vhost, stagingQueueNameRegex, currentPage, PAGE_SIZE, "name,messages_ready,message_stats");
+
+            LOG.debug("Got page {} of queues matching regex {}: {}", currentPage, stagingQueueNameRegex, pagedQueues);
+
+            // Read the queue stats for each queue in this page of queues
+            for (final PagedQueues.Item item : pagedQueues.getItems()) {
+
+                final double publishRate;
+                final PagedQueues.MessageStats messageStats = item.getMessageStats();
+                if (messageStats != null) {
+                    final PagedQueues.Rate publishDetails = messageStats.getPublishDetails();
+                    publishRate = publishDetails != null ? publishDetails.getRate() : 0.0;
+                } else {
+                    publishRate = 0.0;
+                }
+
+                // Add the stats for this queue to the list
+                final StagingQueueStats stagingQueueStats = new StagingQueueStats(item.getName(), item.getMessagesReady(), publishRate);
+                stagingQueueStatsList.add(stagingQueueStats);
+            }
+
+            // If we've reached the last page of queues, stop
+            // Using >= rather than == because if there are no queues (items) in the response, page = 1 and page_count = 0
+            if (pagedQueues.getPage() >= pagedQueues.getPageCount()) {
+                break;
+            } else {
+                // Else get the next page of queues
+                currentPage++;
+            }
+        }
+
+        return stagingQueueStatsList;
+    }
 
     public interface RabbitManagementApi
     {
         @GET("/api/queues/{vhost}/{queue}")
         Response getQueueStatus(@Path("vhost") final String vhost, @Path("queue") final String queueName)
             throws ScalerException;
+
+        // The `use_regex` query param only works if pagination is used as well.
+        // See: https://groups.google.com/g/rabbitmq-users/c/Lgad24orwog/m/E_zoUtB3BQAJ
+        @GET("/api/queues/{vhost}?use_regex=true")
+        PagedQueues getPagedQueues(@Path("vhost") final String vhost,
+                                   @Query(value = "name", encodeValue = true) final String nameRegex,
+                                   @Query(value = "page", encodeValue = false) final int page,
+                                   @Query(value = "page_size", encodeValue = false) final int pageSize,
+                                   @Query(value = "columns", encodeValue = true) final String columnsCsvString)
+                throws ScalerException;
     }
 
 
@@ -124,7 +198,7 @@ public class RabbitStatsReporter
             }
 
             return new ScalerException("Failed to contact RabbitMQ management API using url " + retrofitError.getUrl() 
-                + ". Queue may not yet have been created or RabbitMQ could be unavailable, will retry.", retrofitError);
+                + ". RabbitMQ could be unavailable, will retry.", retrofitError);
         }
     }
 }

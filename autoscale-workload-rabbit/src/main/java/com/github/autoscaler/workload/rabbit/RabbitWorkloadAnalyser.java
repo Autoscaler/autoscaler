@@ -143,8 +143,13 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
             final InstanceInfo instanceInfo,
             final List<String> stagingQueueNames)
     {
-        double consume = targetQueueStatsQueue.stream().mapToDouble(QueueStats::getConsumeRate).average().getAsDouble();
-        double publish = targetQueueStatsQueue.stream().mapToDouble(QueueStats::getPublishRate).average().getAsDouble();
+        double targetQueueAvgConsumeRate = targetQueueStatsQueue.stream().mapToDouble(QueueStats::getConsumeRate).average().getAsDouble();
+        double stagingQueuesAvgPublishRate = stagingQueuesStatsQueue
+                .stream()
+                .flatMap(List::stream)
+                .mapToDouble(StagingQueueStats::getPublishRate)
+                .average()
+                .orElse(0.0);
         double targetQueueAvgMsgs = targetQueueStatsQueue.stream().mapToDouble(QueueStats::getMessages).average().getAsDouble();
         double stagingQueuesAvgMsgs = stagingQueuesStatsQueue
                 .stream()
@@ -164,7 +169,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
                         "Average number of messages in staging queues: {}. " +
                         "Average number of messages in target queue and staging queues: {}. " +
                         "Average consumption rate of target queue: {}. " +
-                        "Average publishing rate of target queue: {}. " +
+                        "Average publishing rate of staging queues: {}. " +
                         "Number of instances currently running: {}. " +
                         "Backlog goal: {}. ",
                 scalingTarget,
@@ -175,22 +180,22 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
                 targetQueueAvgMsgs,
                 stagingQueuesAvgMsgs,
                 targetQueueAndStagingQueuesAvgMsgs,
-                consume,
-                publish,
+                targetQueueAvgConsumeRate,
+                stagingQueuesAvgPublishRate,
                 instancesRunning,
                 backlogGoal);
 
         // if we have some consumption rate, figure out how many workers we need to meet the goal given
-        if ( Double.compare(consume, 0.0) > 0 ) {
-            double perWorkerEstimate = consume / instancesRunning;
+        if ( Double.compare(targetQueueAvgConsumeRate, 0.0) > 0 ) {
+            double perWorkerEstimate = targetQueueAvgConsumeRate / instancesRunning;
             // if the average of messages over time is greater than zero, then we need at minimum one worker
             return (int) Math.max(
                     Double.compare(0.0, targetQueueAndStagingQueuesAvgMsgs) == 0 ? 0 : 1,
                     Math.round((double)messagesInTargetQueueAndStagingQueues / backlogGoal / perWorkerEstimate));
-        } else if ( Double.compare(0.0, consume) == 0 &&
-                Double.compare(0.0, publish) == 0 &&
+        } else if ( Double.compare(0.0, targetQueueAvgConsumeRate) == 0 &&
+                Double.compare(0.0, stagingQueuesAvgPublishRate) == 0 &&
                 Double.compare(0.0, targetQueueAndStagingQueuesAvgMsgs) == 0 ) {
-            // if we have no consumption rate, no publish rate, and no messages then we don't need any workers
+            // if we have no target queue consumption rate, no staging queues publish rate, and no messages then we don't need any workers
             return 0;
         } else {
             // otherwise we have no consumption rate but stuff to do - since we have no idea about rate yet, just stay the same

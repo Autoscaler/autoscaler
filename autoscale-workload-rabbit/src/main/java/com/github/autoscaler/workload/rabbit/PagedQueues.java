@@ -52,6 +52,7 @@ public class PagedQueues
     {
         private String name;
         private int messages_ready;
+        private MessageStats message_stats;
 
         public String getName()
         {
@@ -63,12 +64,54 @@ public class PagedQueues
             return messages_ready;
         }
 
+        public MessageStats getMessageStats()
+        {
+            return message_stats;
+        }
+
         @Override
         public String toString()
         {
             return MoreObjects.toStringHelper(this)
                     .add("name", name)
                     .add("messages_ready", messages_ready)
+                    .add("message_stats", message_stats)
+                    .toString();
+        }
+    }
+
+    public static class MessageStats
+    {
+        private Rate publish_details;
+
+        public Rate getPublishDetails()
+        {
+            return publish_details;
+        }
+
+        @Override
+        public String toString()
+        {
+            return MoreObjects.toStringHelper(this)
+                    .add("publish_details", publish_details)
+                    .toString();
+        }
+    }
+
+    public static class Rate
+    {
+        private double rate;
+
+        public double getRate()
+        {
+            return rate;
+        }
+
+        @Override
+        public String toString()
+        {
+            return MoreObjects.toStringHelper(this)
+                    .add("rate", rate)
                     .toString();
         }
     }

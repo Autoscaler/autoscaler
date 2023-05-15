@@ -65,8 +65,8 @@ public class RabbitWorkloadAnalyserTest
         final String stagingQueue1Name = SCALING_TARGET + STAGING_QUEUE_INDICATOR + "staging-queue-1";
         final String stagingQueue2Name = SCALING_TARGET + STAGING_QUEUE_INDICATOR + "staging-queue-2";
         Mockito.when(stats.getStagingQueueStats(anyString())).thenReturn(Lists.newArrayList(
-                new StagingQueueStats(stagingQueue1Name, 0),
-                new StagingQueueStats(stagingQueue2Name, 1)));
+                new StagingQueueStats(stagingQueue1Name, 0, 0.0),
+                new StagingQueueStats(stagingQueue2Name, 1, 0.0)));
 
         RabbitSystemResourceMonitor monitor = Mockito.mock(RabbitSystemResourceMonitor.class);
         Mockito.when(monitor.getCurrentMemoryComsumption()).thenReturn(15.00);
@@ -112,8 +112,8 @@ public class RabbitWorkloadAnalyserTest
         final String stagingQueue1Name = SCALING_TARGET + STAGING_QUEUE_INDICATOR + "staging-queue-1";
         final String stagingQueue2Name = SCALING_TARGET + STAGING_QUEUE_INDICATOR + "staging-queue-2";
         Mockito.when(stats.getStagingQueueStats(anyString())).thenReturn(Lists.newArrayList(
-                new StagingQueueStats(stagingQueue1Name, 1),
-                new StagingQueueStats(stagingQueue2Name, 1)));
+                new StagingQueueStats(stagingQueue1Name, 1, 0.0),
+                new StagingQueueStats(stagingQueue2Name, 1, 0.0)));
 
         RabbitSystemResourceMonitor monitor = Mockito.mock(RabbitSystemResourceMonitor.class);
         Mockito.when(monitor.getCurrentMemoryComsumption()).thenReturn(15.00);
@@ -181,8 +181,8 @@ public class RabbitWorkloadAnalyserTest
         final String stagingQueue1Name = SCALING_TARGET + STAGING_QUEUE_INDICATOR + "staging-queue-1";
         final String stagingQueue2Name = SCALING_TARGET + STAGING_QUEUE_INDICATOR + "staging-queue-2";
         Mockito.when(stats.getStagingQueueStats(anyString())).thenReturn(Lists.newArrayList(
-                new StagingQueueStats(stagingQueue1Name, 0),
-                new StagingQueueStats(stagingQueue2Name, 1)));
+                new StagingQueueStats(stagingQueue1Name, 0, 0.0),
+                new StagingQueueStats(stagingQueue2Name, 1, 0.0)));
 
         RabbitSystemResourceMonitor monitor = Mockito.mock(RabbitSystemResourceMonitor.class);
         Mockito.when(monitor.getCurrentMemoryComsumption()).thenReturn(15.00);
@@ -256,22 +256,22 @@ public class RabbitWorkloadAnalyserTest
         // Consumption rate is 1.0 messages per second
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(1, 4.0, 1.0));
         Mockito.when(stats.getStagingQueueStats(anyString())).thenReturn(Lists.newArrayList(
-                new StagingQueueStats(stagingQueue1Name, 1),
-                new StagingQueueStats(stagingQueue2Name, 1)));
+                new StagingQueueStats(stagingQueue1Name, 1, 0.0),
+                new StagingQueueStats(stagingQueue2Name, 1, 0.0)));
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
 
         // Consumption rate is 4.0 messages per second
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(1, 1.0, 4.0));
         Mockito.when(stats.getStagingQueueStats(anyString())).thenReturn(Lists.newArrayList(
-                new StagingQueueStats(stagingQueue1Name, 1),
-                new StagingQueueStats(stagingQueue2Name, 1)));
+                new StagingQueueStats(stagingQueue1Name, 1, 0.0),
+                new StagingQueueStats(stagingQueue2Name, 1, 0.0)));
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
 
         // Consumption rate is 1.0 messages per second
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(1, 4.0, 1.0));
         Mockito.when(stats.getStagingQueueStats(anyString())).thenReturn(Lists.newArrayList(
-                new StagingQueueStats(stagingQueue1Name, 1),
-                new StagingQueueStats(stagingQueue2Name, 1)));
+                new StagingQueueStats(stagingQueue1Name, 1, 0.0),
+                new StagingQueueStats(stagingQueue2Name, 1, 0.0)));
 
         // We should scale up because:
         // 1. There is a backlog of 3 messages (1 message on the target queue, and 1 message on each staging queue)
@@ -319,22 +319,22 @@ public class RabbitWorkloadAnalyserTest
         // Consumption rate is 3.0 messages per second
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(0, 1.0, 3.0));
         Mockito.when(stats.getStagingQueueStats(SCALING_TARGET)).thenReturn(Lists.newArrayList(
-                new StagingQueueStats(stagingQueue1Name, 0),
-                new StagingQueueStats(stagingQueue2Name, 1)));
+                new StagingQueueStats(stagingQueue1Name, 0, 0.0),
+                new StagingQueueStats(stagingQueue2Name, 1, 0.0)));
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
 
         // Consumption rate is 2.0 messages per second
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(0, 4.0, 2.0));
         Mockito.when(stats.getStagingQueueStats(SCALING_TARGET)).thenReturn(Lists.newArrayList(
-                new StagingQueueStats(stagingQueue1Name, 0),
-                new StagingQueueStats(stagingQueue2Name, 1)));
+                new StagingQueueStats(stagingQueue1Name, 0, 0.0),
+                new StagingQueueStats(stagingQueue2Name, 1, 0.0)));
         Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
 
         // Consumption rate is 1.0 messages per second
         Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(0, 1.0, 1.0));
         Mockito.when(stats.getStagingQueueStats(SCALING_TARGET)).thenReturn(Lists.newArrayList(
-                new StagingQueueStats(stagingQueue1Name, 0),
-                new StagingQueueStats(stagingQueue2Name, 1)));
+                new StagingQueueStats(stagingQueue1Name, 0, 0.0),
+                new StagingQueueStats(stagingQueue2Name, 1, 0.0)));
 
         // We should scale down because:
         // 1. There is a backlog of 1 message (on staging queue 2)

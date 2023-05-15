@@ -136,15 +136,24 @@ public class RabbitStatsReporter
 
             // Get next page of queues
             final PagedQueues pagedQueues = rabbitApi.getPagedQueues(
-                    vhost, stagingQueueNameRegex, currentPage, PAGE_SIZE, "name,messages_ready");
+                    vhost, stagingQueueNameRegex, currentPage, PAGE_SIZE, "name,messages_ready,message_stats");
 
             LOG.debug("Got page {} of queues matching regex {}: {}", currentPage, stagingQueueNameRegex, pagedQueues);
 
             // Read the queue stats for each queue in this page of queues
             for (final PagedQueues.Item item : pagedQueues.getItems()) {
 
+                final double publishRate;
+                final PagedQueues.MessageStats messageStats = item.getMessageStats();
+                if (messageStats != null) {
+                    final PagedQueues.Rate publishDetails = messageStats.getPublishDetails();
+                    publishRate = publishDetails != null ? publishDetails.getRate() : 0.0;
+                } else {
+                    publishRate = 0.0;
+                }
+
                 // Add the stats for this queue to the list
-                final StagingQueueStats stagingQueueStats = new StagingQueueStats(item.getName(), item.getMessagesReady());
+                final StagingQueueStats stagingQueueStats = new StagingQueueStats(item.getName(), item.getMessagesReady(), publishRate);
                 stagingQueueStatsList.add(stagingQueueStats);
             }
 

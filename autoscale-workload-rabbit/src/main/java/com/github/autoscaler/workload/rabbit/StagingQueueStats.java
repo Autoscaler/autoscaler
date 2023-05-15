@@ -24,11 +24,13 @@ public class StagingQueueStats
 {
     private String name;
     private final int messages;
+    private final double publishRate;
 
-    public StagingQueueStats(final String name, final int messages)
+    public StagingQueueStats(final String name, final int messages, final double publishRate)
     {
         this.name = name;
         this.messages = messages;
+        this.publishRate = publishRate;
     }
 
     public String getName()
@@ -41,12 +43,18 @@ public class StagingQueueStats
         return messages;
     }
 
+    public double getPublishRate()
+    {
+        return publishRate;
+    }
+
     @Override
     public String toString()
     {
         return MoreObjects.toStringHelper(this)
                 .add("name", name)
                 .add("messages", messages)
+                .add("publishRate", publishRate)
                 .toString();
     }
 }

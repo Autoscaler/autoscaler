@@ -25,9 +25,15 @@
  - vhost: the RabbitMQ vhost that contains the queues
  - profiles: map of profile name to `RabbitWorkloadProfile` objects, which
   represent different scaling profiles for this implementation (see below).
-  Note there *must* be a profile named "default"  
+  Note there *must* be a profile named "default"
  - resourceQueryRequestFrequency: The number of seconds that the service should wait between issuing requests to check rabbitmq's
-  current memory and disk consumption. 
+  current resource consumption.
+ - stagingQueueIndicator: Optional. A string that is used to identify queues that are
+  staging queues. If this is provided, queue names that follow the naming pattern
+  `"^" + scalingTarget + stagingQueueIndicator + ".+$"` will be considered staging
+  queues and the statistics for these staging queues will be taken into account
+  alongside the statistics for the target queue (scalingTarget) when making
+  a scaling decision.
 
 
 ## Usage

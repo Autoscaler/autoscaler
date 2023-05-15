@@ -41,6 +41,7 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
     private final RabbitWorkloadProfile defaultProfile;
     private final ObjectMapper objectMapper;
     private final String nodeStatusEndpoint;
+    private final String stagingQueueIndicator;
     private static final Logger LOG = LoggerFactory.getLogger(RabbitWorkloadAnalyserFactory.class);
 
     public RabbitWorkloadAnalyserFactory(final RabbitWorkloadAnalyserConfiguration config)
@@ -59,6 +60,11 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
         this.defaultProfile = config.getProfiles().get(RabbitWorkloadAnalyserConfiguration.DEFAULT_PROFILE_NAME);
         this.objectMapper = new ObjectMapper();
         this.nodeStatusEndpoint = config.getRabbitManagementEndpoint() + "/api/nodes/";
+        final String stagingQueueIndicatorFromConfig = config.getStagingQueueIndicator();
+        if (stagingQueueIndicatorFromConfig != null && stagingQueueIndicatorFromConfig.isEmpty()) {
+            throw new RuntimeException("Providing a staging queue indicator is optional, but if provided, it cannot be empty");
+        }
+        this.stagingQueueIndicator = stagingQueueIndicatorFromConfig;
     }
 
     @Override
@@ -70,7 +76,7 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
         } else {
             profile = config.getProfiles().get(scalingProfile);
         }
-        return new RabbitWorkloadAnalyser(scalingTarget, provider, profile, rabbitResourceMonitor);
+        return new RabbitWorkloadAnalyser(scalingTarget, provider, profile, rabbitResourceMonitor, stagingQueueIndicator);
     }
 
     @Override

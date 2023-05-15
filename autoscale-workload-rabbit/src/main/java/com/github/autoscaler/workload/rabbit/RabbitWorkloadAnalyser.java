@@ -16,6 +16,8 @@
 package com.github.autoscaler.workload.rabbit;
 
 
+import static java.util.stream.Collectors.toList;
+
 import com.github.autoscaler.api.InstanceInfo;
 import com.github.autoscaler.api.ResourceUtilisation;
 import com.github.autoscaler.api.ScalerException;
@@ -26,6 +28,7 @@ import com.google.common.collect.EvictingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Objects;
 
 
@@ -40,19 +43,25 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     private final String scalingTarget;
     private final RabbitStatsReporter rabbitStats;
     private final RabbitSystemResourceMonitor rabbitResourceMonitor;
-    private final EvictingQueue<QueueStats> statsQueue;
+    private final EvictingQueue<QueueStats> targetQueueStatsQueue;
+    private final EvictingQueue<List<StagingQueueStats>> stagingQueuesStatsQueue;
+    private final String stagingQueueNameRegex;
     private static final int MAX_SCALE = 5;
     private static final Logger LOG = LoggerFactory.getLogger(RabbitWorkloadAnalyser.class);
 
 
     public RabbitWorkloadAnalyser(final String scalingTarget, final RabbitStatsReporter reporter, final RabbitWorkloadProfile profile,
-                                  final RabbitSystemResourceMonitor rabbitResourceMonitor)
+                                  final RabbitSystemResourceMonitor rabbitResourceMonitor, final String stagingQueueIndicator)
     {
         this.scalingTarget = Objects.requireNonNull(scalingTarget);
         this.rabbitStats = Objects.requireNonNull(reporter);
         this.profile = Objects.requireNonNull(profile);
-        this.statsQueue = EvictingQueue.create(profile.getScalingDelay());
+        this.targetQueueStatsQueue = EvictingQueue.create(profile.getScalingDelay());
+        this.stagingQueuesStatsQueue = EvictingQueue.create(profile.getScalingDelay());
         this.rabbitResourceMonitor = rabbitResourceMonitor;
+        this.stagingQueueNameRegex = stagingQueueIndicator != null
+                ? String.format("^%s%s.+$", scalingTarget, stagingQueueIndicator)
+                : null;
     }
 
     /**
@@ -92,18 +101,30 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     {
 
         if ( instanceInfo.getInstancesStaging() == 0 ) {
-            QueueStats stats = rabbitStats.getQueueStats(scalingTarget);
-            LOG.debug("Stats for target {}: {}", scalingTarget, stats);
+            final QueueStats targetQueueStats = rabbitStats.getQueueStats(scalingTarget);
+            LOG.debug("Stats for target queue {}: {}", scalingTarget, targetQueueStats);
+
+            final List<StagingQueueStats> stagingQueuesStats = rabbitStats.getStagingQueueStats(stagingQueueNameRegex);
+            final List<String> stagingQueueNames = stagingQueuesStats.stream().map(StagingQueueStats::getName).collect(toList());
+            LOG.debug("Stats for staging queues: {}", stagingQueuesStats);
+
+            final int messagesInTargetQueue = targetQueueStats.getMessages();
+            final int messagesInStagingQueues = stagingQueuesStats.stream().mapToInt(StagingQueueStats::getMessages).sum();
+            final long messagesInTargetQueueAndStagingQueues = messagesInTargetQueue + messagesInStagingQueues;
+
             // if we have any messages and no instances, immediately trigger scale up
-            if ( stats.getMessages() > 0 && instanceInfo.getTotalRunningAndStageInstances() == 0 ) {
+            if ( messagesInTargetQueueAndStagingQueues > 0 && instanceInfo.getTotalRunningAndStageInstances() == 0 ) {
                 return ScalingAction.SCALE_UP;
             }
-            statsQueue.add(stats);
+            targetQueueStatsQueue.add(targetQueueStats);
+            stagingQueuesStatsQueue.add(stagingQueuesStats);
             counter++;
             // don't scale every time to avoid erratic behaviour, average and analyse over a period defined by the ScalingDelay
             if ( counter >= profile.getScalingDelay() ) {
                 counter = 0;
-                int workersNeeded = getWorkersNeeded(stats.getMessages(), profile.getBacklogGoal(), instanceInfo);
+                int workersNeeded = getWorkersNeeded(
+                        messagesInTargetQueue, messagesInStagingQueues, messagesInTargetQueueAndStagingQueues, profile.getBacklogGoal(),
+                        instanceInfo, stagingQueueNames);
                 LOG.debug("Workers needed to meet backlog goal: {}", workersNeeded);
                 if ( workersNeeded > instanceInfo.getTotalRunningAndStageInstances() ) {
                     int scale = Math.min(MAX_SCALE, workersNeeded - instanceInfo.getTotalRunningAndStageInstances());
@@ -116,19 +137,67 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
         return ScalingAction.NO_ACTION;
     }
 
-
-    private int getWorkersNeeded(final long messages, final int backlogGoal, final InstanceInfo instanceInfo)
+    private int getWorkersNeeded(
+            final int messagesInTargetQueue,
+            final int messagesInStagingQueues,
+            final long messagesInTargetQueueAndStagingQueues,
+            final int backlogGoal,
+            final InstanceInfo instanceInfo,
+            final List<String> stagingQueueNames)
     {
-        double consume = statsQueue.stream().mapToDouble(QueueStats::getConsumeRate).average().getAsDouble();
-        double publish = statsQueue.stream().mapToDouble(QueueStats::getPublishRate).average().getAsDouble();
-        double avgMsgs = statsQueue.stream().mapToDouble(QueueStats::getMessages).average().getAsDouble();
+        double targetQueueAvgConsumeRate = targetQueueStatsQueue.stream().mapToDouble(QueueStats::getConsumeRate).average().getAsDouble();
+        double stagingQueuesAvgPublishRate = stagingQueuesStatsQueue
+                .stream()
+                .flatMap(List::stream)
+                .mapToDouble(StagingQueueStats::getPublishRate)
+                .average()
+                .orElse(0.0);
+        double targetQueueAvgMsgs = targetQueueStatsQueue.stream().mapToDouble(QueueStats::getMessages).average().getAsDouble();
+        double stagingQueuesAvgMsgs = stagingQueuesStatsQueue
+                .stream()
+                .flatMap(List::stream)
+                .mapToDouble(StagingQueueStats::getMessages)
+                .average()
+                .orElse(0.0);
+        double targetQueueAndStagingQueuesAvgMsgs = targetQueueAvgMsgs + stagingQueuesAvgMsgs;
+        final int instancesRunning = instanceInfo.getInstancesRunning();
+
+        LOG.debug("Target queue: {}. " +
+                        "Staging queues: {}. " +
+                        "Current number of messages in target queue: {}. " +
+                        "Current number of messages in staging queues: {}. " +
+                        "Current number of messages in target queue and staging queues: {}. " +
+                        "Average number of messages in target queue: {}. " +
+                        "Average number of messages in staging queues: {}. " +
+                        "Average number of messages in target queue and staging queues: {}. " +
+                        "Average consumption rate of target queue: {}. " +
+                        "Average publishing rate of staging queues: {}. " +
+                        "Number of instances currently running: {}. " +
+                        "Backlog goal: {}. ",
+                scalingTarget,
+                stagingQueueNames,
+                messagesInTargetQueue,
+                messagesInStagingQueues,
+                messagesInTargetQueueAndStagingQueues,
+                targetQueueAvgMsgs,
+                stagingQueuesAvgMsgs,
+                targetQueueAndStagingQueuesAvgMsgs,
+                targetQueueAvgConsumeRate,
+                stagingQueuesAvgPublishRate,
+                instancesRunning,
+                backlogGoal);
+
         // if we have some consumption rate, figure out how many workers we need to meet the goal given
-        if ( Double.compare(consume, 0.0) > 0 ) {
-            double perWorkerEstimate = consume / instanceInfo.getInstancesRunning();
+        if ( Double.compare(targetQueueAvgConsumeRate, 0.0) > 0 ) {
+            double perWorkerEstimate = targetQueueAvgConsumeRate / instancesRunning;
             // if the average of messages over time is greater than zero, then we need at minimum one worker
-            return (int) Math.max( Double.compare(0.0, avgMsgs) == 0 ? 0 : 1, Math.round((double)messages / backlogGoal / perWorkerEstimate));
-        } else if ( Double.compare(0.0, consume) == 0 && Double.compare(0.0, publish) == 0 && Double.compare(0.0, avgMsgs) == 0 ) {
-            // if we have no consumption rate, no publish rate, and no messages then we don't need any workers
+            return (int) Math.max(
+                    Double.compare(0.0, targetQueueAndStagingQueuesAvgMsgs) == 0 ? 0 : 1,
+                    Math.round((double)messagesInTargetQueueAndStagingQueues / backlogGoal / perWorkerEstimate));
+        } else if ( Double.compare(0.0, targetQueueAvgConsumeRate) == 0 &&
+                Double.compare(0.0, stagingQueuesAvgPublishRate) == 0 &&
+                Double.compare(0.0, targetQueueAndStagingQueuesAvgMsgs) == 0 ) {
+            // if we have no target queue consumption rate, no staging queues publish rate, and no messages then we don't need any workers
             return 0;
         } else {
             // otherwise we have no consumption rate but stuff to do - since we have no idea about rate yet, just stay the same
@@ -154,5 +223,4 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
             + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
             + "RabbitMQ has used " + percentageMem + "% of its high watermark memory allowance.\n";
     }
-
 }

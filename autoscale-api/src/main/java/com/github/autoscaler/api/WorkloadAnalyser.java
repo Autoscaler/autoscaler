@@ -33,9 +33,9 @@ public interface WorkloadAnalyser
         throws ScalerException;
 
     /**
-     * This method will determine and return the percentage of resources being utilised at present.
+     * This method will determine and return the current resource utilisation of RabbitMQ
      *
-     * @return The percentage of each resource being utilised
+     * @return the current resource utilisation
      * @throws ScalerException if it fails to determine resource utilisation due to not being able to connect to messaging
      * platform's api.
      */

@@ -61,21 +61,23 @@ This functionality will only work on services that have the label `autoscale.shu
 
 Configuration supported through the following environment variables:
 
-- `CAF_AUTOSCALER_ALERT_DISPATCH_THRESHOLD`  
-  Default: `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1`  
-  Description: This setting indicates the threshold that can be reached before starting to send out alerts when the messaging platform is beginning to run out of resources.  This value can be set to between 0 - 100 (0%-100%). If this configuration is not set then a message will be dispatched from the stage one alert threshold.  
+- `CAF_AUTOSCALER_MEMORY_USED_PERCENT_ALERT_DISPATCH_THRESHOLD`  
+  Default: `CAF_AUTOSCALER_MESSAGING_MEMORY_USED_PERCENT_LIMIT_STAGE_1`  
+  Description: This setting indicates the percentage of memory that can be used before starting to send out alerts when the 
+  messaging platform is beginning to run out of resources.  This value can be set to between 0 - 100 (0%-100%). If this configuration is not set then a message will be dispatched from the stage one alert threshold.  
 
-- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1`  
+- `CAF_AUTOSCALER_MESSAGING_MEMORY_USED_PERCENT_LIMIT_STAGE_1`  
   Default: `70`  
-  Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 1 action. Stage 1 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD" or 1 if the environment variable is not set.  
+  Description: The percentage of available memory the messaging platform can use before the Autoscaler should take stage 1 action. 
+  Stage 1 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD" or 1 if the environment variable is not set.  
 
-- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_2`  
+- `CAF_AUTOSCALER_MESSAGING_MEMORY_USED_PERCENT_LIMIT_STAGE_2`  
   Default: `80`  
-  Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 2 action. Stage 2 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD" or 3 if the environment variable is not set.  
+  Description: The percentage of available memory the messaging platform can use before the Autoscaler should take stage 2 action. Stage 2 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD" or 3 if the environment variable is not set.  
 
-- `CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_3`  
+- `CAF_AUTOSCALER_MESSAGING_MEMORY_USED_PERCENT_LIMIT_STAGE_3`  
   Default: `90`  
-  Description: The percentage of available resources the messaging platform can use before the Autoscaler should take stage 3 action. Stage 3 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD" or 5 if the environment variable is not set.  
+  Description: The percentage of available memory the messaging platform can use before the Autoscaler should take stage 3 action. Stage 3 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD" or 5 if the environment variable is not set.  
 
 - `CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD`  
   Default: `1`  

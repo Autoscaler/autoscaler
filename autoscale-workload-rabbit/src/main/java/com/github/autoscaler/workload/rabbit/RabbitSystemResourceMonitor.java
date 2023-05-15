@@ -65,7 +65,7 @@ public final class RabbitSystemResourceMonitor
                 throw new ScalerException("Unable to map response to status request.", ex);
             }
         }
-        return new ResourceUtilisation(memoryAllocated);
+        return new ResourceUtilisation(memoryAllocated, 0); // TODO rory
     }
 
     private boolean shouldIssueRequest()

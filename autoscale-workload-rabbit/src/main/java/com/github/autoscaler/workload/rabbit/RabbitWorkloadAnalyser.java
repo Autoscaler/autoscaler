@@ -65,16 +65,19 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     }
 
     /**
-     * This method will determine and return the percentage of memory and disk space being utilised at present by RabbitMQ
+     * This method will determine and return the current resource utilisation of RabbitMQ
      *
-     * @return The percentage being utilised
+     * @return the current resource utilisation
      */
     @Override
     public ResourceUtilisation getCurrentResourceUtilisation() throws ScalerException
     {
         final ResourceUtilisation resourceUtilisation = rabbitResourceMonitor.getCurrentResourceUtilisation();
-        LOG.debug("Current memory consumption {}% of total available memory.",
-                resourceUtilisation.getMemoryUtilisationPercentage());
+
+        LOG.debug("Current memory consumption: {}% of total available memory.", resourceUtilisation.getMemoryUsedPercent());
+
+        LOG.debug("Current disk free: {}MB.", resourceUtilisation.getDiskFreeMb());
+
         return resourceUtilisation;
     }
 

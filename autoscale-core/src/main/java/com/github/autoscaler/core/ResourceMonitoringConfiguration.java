@@ -22,28 +22,28 @@ import javax.validation.constraints.NotNull;
 public final class ResourceMonitoringConfiguration
 {
     /**
-     * What percentage of resource limit can be used before an alert should be sent. Defaults to value of stage one threshold.
+     * What percentage of memory limit can be used before an alert should be sent. Defaults to value of stage one threshold.
      */
     @NotNull
-    private int alertDispatchThreshold;
+    private int memoryAlertDispatchThreshold;
 
     /**
      * Percentage of max memory available to use allowed before triggering resource limit one behaviour. Defaults to 70.
      */
     @NotNull
-    private double resourceLimitOne;
+    private double memoryLimitOne;
 
     /**
      * Percentage of max memory available to use allowed before triggering resource limit two behaviour. Defaults to 80.
      */
     @NotNull
-    private double resourceLimitTwo;
+    private double memoryLimitTwo;
 
     /**
      * Percentage of max memory available to use allowed before triggering resource limit three behaviour. Defaults to 90.
      */
     @NotNull
-    private double resourceLimitThree;
+    private double memoryLimitThree;
 
     /**
      * Shutdown Priority threshold for resource limit one. Defaults to 1.
@@ -64,27 +64,27 @@ public final class ResourceMonitoringConfiguration
     private int resourceLimitThreeShutdownThreshold;
 
     /**
-     * @return the resourceLimitOne
+     * @return the memoryLimitOne
      */
-    public double getResourceLimitOne()
+    public double getMemoryLimitOne()
     {
-        return resourceLimitOne;
+        return memoryLimitOne;
     }
 
     /**
-     * @return the resourceLimitTwo
+     * @return the memoryLimitTwo
      */
-    public double getResourceLimitTwo()
+    public double getMemoryLimitTwo()
     {
-        return resourceLimitTwo;
+        return memoryLimitTwo;
     }
 
     /**
-     * @return the resourceLimitThree
+     * @return the memoryLimitThree
      */
-    public double getResourceLimitThree()
+    public double getMemoryLimitThree()
     {
-        return resourceLimitThree;
+        return memoryLimitThree;
     }
 
     /**
@@ -112,10 +112,10 @@ public final class ResourceMonitoringConfiguration
     }
 
     /**
-     * @return the alertDispatchThreshold
+     * @return the memoryAlertDispatchThreshold
      */
-    public int getAlertDispatchThreshold()
+    public int getMemoryAlertDispatchThreshold()
     {
-        return alertDispatchThreshold;
+        return memoryAlertDispatchThreshold;
     }
 }

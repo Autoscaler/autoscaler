@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 ({
-    resourceLimitOne: getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1") || 70,
-    resourceLimitTwo: getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_2") || 80,
-    resourceLimitThree: getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_3") || 90,
+    memoryLimitOne: getenv("CAF_AUTOSCALER_MESSAGING_MEMORY_USED_PERCENT_LIMIT_STAGE_1") || 70,
+    memoryLimitTwo: getenv("CAF_AUTOSCALER_MESSAGING_MEMORY_USED_PERCENT_LIMIT_STAGE_2") || 80,
+    memoryLimitThree: getenv("CAF_AUTOSCALER_MESSAGING_MEMORY_USED_PERCENT_LIMIT_STAGE_3") || 90,
+    memoryAlertDispatchThreshold: getenv("CAF_AUTOSCALER_MEMORY_USED_PERCENT_ALERT_DISPATCH_THRESHOLD")
+        || getenv("CAF_AUTOSCALER_MESSAGING_MEMORY_USED_PERCENT_LIMIT_STAGE_1")
+        || 70,
     resourceLimitOneShutdownThreshold: getenv("CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD") || 1,
     resourceLimitTwoShutdownThreshold: getenv("CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD") || 3,
     resourceLimitThreeShutdownThreshold: getenv("CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD") || 5,
-    alertDispatchThreshold: getenv("CAF_AUTOSCALER_ALERT_DISPATCH_THRESHOLD") 
-            || getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1")
-            || 70
 });

@@ -17,25 +17,32 @@ package com.github.autoscaler.api;
 
 public final class ResourceUtilisation
 {
-    private final double memoryUtilisationPercentage;
+    private final double memoryUsedPercent;
 
-    // TODO RORY disk
+    private final int diskFreeMb;
 
-    public ResourceUtilisation(final double memoryUtilisationPercentage)
+    public ResourceUtilisation(final double memoryUsedPercent, final int diskFreeMb)
     {
-        this.memoryUtilisationPercentage = memoryUtilisationPercentage;
+        this.memoryUsedPercent = memoryUsedPercent;
+        this.diskFreeMb = diskFreeMb;
     }
 
-    public double getMemoryUtilisationPercentage()
+    public double getMemoryUsedPercent()
     {
-        return memoryUtilisationPercentage;
+        return memoryUsedPercent;
+    }
+
+    public int getDiskFreeMb()
+    {
+        return diskFreeMb;
     }
 
     @Override
     public String toString()
     {
         return "ResourceUtilisation{" +
-                "memoryUtilisationPercentage=" + memoryUtilisationPercentage +
+                "memoryUsedPercent=" + memoryUsedPercent +
+                "diskFreeMb=" + diskFreeMb +
                 '}';
     }
 }

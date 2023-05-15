@@ -98,7 +98,44 @@ public class RabbitWorkloadAnalyserTest
     }
 
     @Test
-    public void testScaleUpWithStagingQueues()
+    public void testScaleUpWithNonEmptyTargetQueueAndEmptyStagingQueues()
+            throws ScalerException
+    {
+        RabbitWorkloadProfile profile = new RabbitWorkloadProfile(3, BACKLOG_GOAL);
+        RabbitStatsReporter stats = Mockito.mock(RabbitStatsReporter.class);
+
+        // Target queue has 1 message on it
+        Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(1, 4.0, 0.5));
+
+        // Staging queue 1 has 0 messages on it
+        // Staging queue 2 has 0 messages on it
+        final String stagingQueue1Name = SCALING_TARGET + STAGING_QUEUE_INDICATOR + "staging-queue-1";
+        final String stagingQueue2Name = SCALING_TARGET + STAGING_QUEUE_INDICATOR + "staging-queue-2";
+        Mockito.when(stats.getStagingQueueStats(anyString())).thenReturn(Lists.newArrayList(
+                new StagingQueueStats(stagingQueue1Name, 0, 0.0),
+                new StagingQueueStats(stagingQueue2Name, 0, 0.0)));
+
+        RabbitSystemResourceMonitor monitor = Mockito.mock(RabbitSystemResourceMonitor.class);
+        Mockito.when(monitor.getCurrentMemoryComsumption()).thenReturn(15.00);
+        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile, monitor, STAGING_QUEUE_INDICATOR);
+
+        // 1 instance running
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), 1, 1);
+
+        Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
+        Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
+
+        // We should scale up because:
+        // 1. There is a backlog of 1 message on the target queue
+        // 2. There is 1 instance running
+        // 3. The consumption rate for the target queue is 0.5 messages per second
+        // 4. The backlog goal is 1 second (i.e. we want to complete the current backlog of 1 message in 1 second)
+        // 5. To process the 1 message and hit the backlog goal of 1 second, we need 2 instances
+        Assert.assertEquals(ScalingOperation.SCALE_UP, analyser.analyseWorkload(info).getOperation());
+    }
+
+    @Test
+    public void testScaleUpWithEmptyTargetQueueAndNonEmptyStagingQueues()
             throws ScalerException
     {
         RabbitWorkloadProfile profile = new RabbitWorkloadProfile(3, BACKLOG_GOAL);
@@ -167,7 +204,44 @@ public class RabbitWorkloadAnalyserTest
     }
 
     @Test
-    public void testScaleDownWithStagingQueues()
+    public void testScaleDownWithNonEmptyTargetQueueAndEmptyStagingQueues()
+            throws ScalerException
+    {
+        RabbitWorkloadProfile profile = new RabbitWorkloadProfile(3, BACKLOG_GOAL);
+        RabbitStatsReporter stats = Mockito.mock(RabbitStatsReporter.class);
+
+        // Target queue has 1 message on it
+        Mockito.when(stats.getQueueStats(SCALING_TARGET)).thenReturn(new QueueStats(1, 0.0, 2.0));
+
+        // Staging queue 1 has 0 messages on it
+        // Staging queue 2 has 0 messages on it
+        final String stagingQueue1Name = SCALING_TARGET + STAGING_QUEUE_INDICATOR + "staging-queue-1";
+        final String stagingQueue2Name = SCALING_TARGET + STAGING_QUEUE_INDICATOR + "staging-queue-2";
+        Mockito.when(stats.getStagingQueueStats(anyString())).thenReturn(Lists.newArrayList(
+                new StagingQueueStats(stagingQueue1Name, 0, 0.0),
+                new StagingQueueStats(stagingQueue2Name, 0, 0.0)));
+
+        RabbitSystemResourceMonitor monitor = Mockito.mock(RabbitSystemResourceMonitor.class);
+        Mockito.when(monitor.getCurrentMemoryComsumption()).thenReturn(15.00);
+        RabbitWorkloadAnalyser analyser = new RabbitWorkloadAnalyser(SCALING_TARGET, stats, profile, monitor, STAGING_QUEUE_INDICATOR);
+
+        // 2 instances running
+        InstanceInfo info = new InstanceInfo(2, 0, new LinkedList<>(), 1, 1);
+
+        Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
+        Assert.assertEquals(ScalingOperation.NONE, analyser.analyseWorkload(info).getOperation());
+
+        // We should scale down because:
+        // 1. There is a backlog of 1 message on the target queue
+        // 2. There are 2 instances running
+        // 3. The consumption rate for the target queue is 2.0 messages per second
+        // 4. The backlog goal is 1 second (i.e. we want to complete the current backlog of 1 message in 1 second)
+        // 5. We only need 1 instance to hit the backlog goal of 1 second because the target queue is consuming 2.0 messages per second
+        Assert.assertEquals(ScalingOperation.SCALE_DOWN, analyser.analyseWorkload(info).getOperation());
+    }
+
+    @Test
+    public void testScaleDownWithEmptyTargetQueueAndNonEmptyStagingQueues()
             throws ScalerException
     {
         RabbitWorkloadProfile profile = new RabbitWorkloadProfile(3, BACKLOG_GOAL);

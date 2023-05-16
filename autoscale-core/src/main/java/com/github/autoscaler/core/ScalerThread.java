@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A ScalerThread is responsible for calling out to a WorkloadAnalyser, taking its recommendation and then acting appropriately,
@@ -131,7 +132,9 @@ public class ScalerThread implements Runnable
     {
         try {
             final ResourceUtilisation resourceUtilisation = analyser.getCurrentResourceUtilisation();
+            LOG.debug("Resource utilisation for service {}: {}", serviceRef, resourceUtilisation);
             final ResourceLimitStageReached resourceLimitStageReached = establishResourceLimitStageReached(resourceUtilisation);
+            LOG.debug("Resource limit stage reached for service {}: {}", serviceRef, resourceLimitStageReached);
             InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
             final int shutdownPriority = instances.getShutdownPriority();
             if (handleResourceLimitReached(instances, resourceUtilisation, resourceLimitStageReached, shutdownPriority)) {
@@ -267,15 +270,17 @@ public class ScalerThread implements Runnable
 
         handleAlerterDispatch(resourceUtilisation, resourceLimitStageReached);
 
-        // TODO
+        final int highestResourceLimitStageReached = Math.max(
+                resourceLimitStageReached.getMemoryLimitStageReached(),
+                resourceLimitStageReached.getDiskLimitStageReached());
 
-        if (resourceLimitStageReached.getMemoryLimitStageReached() == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
+        if (highestResourceLimitStageReached == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
             scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
-        } else if (resourceLimitStageReached.getMemoryLimitStageReached() == 2 && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
+        } else if (highestResourceLimitStageReached == 2 && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
             scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
-        } else if (resourceLimitStageReached.getMemoryLimitStageReached() == 3 && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
+        } else if (highestResourceLimitStageReached == 3 && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
             scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
         }
@@ -307,19 +312,22 @@ public class ScalerThread implements Runnable
             memoryLimitStageReached = 0;
         }
 
-        final int diskFreeMb = resourceUtilisation.getDiskFreeMb();
-
-        final int diskLimitStageReached = 0; // TODO
-
-//        if (diskFreeMb <= resourceConfig.getDiskLimitThree()) {
-//            diskLimitStageReached = 3;
-//        } else if (diskFreeMb <= resourceConfig.getDiskLimitTwo()) {
-//            diskLimitStageReached = 2;
-//        } else if (diskFreeMb <= resourceConfig.getDiskLimitOne()) {
-//            diskLimitStageReached = 1;
-//        } else {
-//            diskLimitStageReached = 0;
-//        }
+        final Optional<Integer> diskFreeMbOpt = resourceUtilisation.getDiskFreeMbOpt();
+        final int diskLimitStageReached;
+        if (diskFreeMbOpt.isPresent()) {
+            final int diskFreeMb = diskFreeMbOpt.get();
+            if (diskFreeMb <= resourceConfig.getDiskLimitThree()) {
+                diskLimitStageReached = 3;
+            } else if (diskFreeMb <= resourceConfig.getDiskLimitTwo()) {
+                diskLimitStageReached = 2;
+            } else if (diskFreeMb <= resourceConfig.getDiskLimitOne()) {
+                diskLimitStageReached = 1;
+            } else {
+                diskLimitStageReached = 0;
+            }
+        } else {
+            diskLimitStageReached = 0;
+        }
 
         return new ResourceLimitStageReached(memoryLimitStageReached, diskLimitStageReached);
     }

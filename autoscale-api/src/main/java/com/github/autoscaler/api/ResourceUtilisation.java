@@ -15,16 +15,18 @@
  */
 package com.github.autoscaler.api;
 
+import java.util.Optional;
+
 public final class ResourceUtilisation
 {
     private final double memoryUsedPercent;
 
-    private final int diskFreeMb;
+    private final Optional<Integer> diskFreeMbOpt;
 
-    public ResourceUtilisation(final double memoryUsedPercent, final int diskFreeMb)
+    public ResourceUtilisation(final double memoryUsedPercent, final Optional<Integer> diskFreeMbOpt)
     {
         this.memoryUsedPercent = memoryUsedPercent;
-        this.diskFreeMb = diskFreeMb;
+        this.diskFreeMbOpt = diskFreeMbOpt;
     }
 
     public double getMemoryUsedPercent()
@@ -32,17 +34,19 @@ public final class ResourceUtilisation
         return memoryUsedPercent;
     }
 
-    public int getDiskFreeMb()
+    public Optional<Integer> getDiskFreeMbOpt()
     {
-        return diskFreeMb;
+        return diskFreeMbOpt;
     }
 
     @Override
     public String toString()
     {
+        final String diskFreeMbString = diskFreeMbOpt.isPresent() ? diskFreeMbOpt.get().toString() : "UNKNOWN";
+
         return "ResourceUtilisation{" +
                 "memoryUsedPercent=" + memoryUsedPercent +
-                "diskFreeMb=" + diskFreeMb +
+                "diskFreeMb=" + diskFreeMbString +
                 '}';
     }
 }

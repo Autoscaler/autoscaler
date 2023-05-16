@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.LinkedList;
+import java.util.Optional;
 
 import static org.mockito.AdditionalAnswers.returnsSecondArg;
 
@@ -51,7 +52,7 @@ public class ScalerThreadTest
         ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0,
             new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, 0));
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(0)));
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_UP);
         t.run();
         Mockito.verify(scaler, Mockito.times(1)).scaleUp(SERVICE_REF, 1);
@@ -74,7 +75,7 @@ public class ScalerThreadTest
         ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, 
             new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, 0));
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(0)));
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_DOWN);
         t.run();
         Mockito.verify(scaler, Mockito.times(1)).scaleDown(SERVICE_REF, 1);

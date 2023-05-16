@@ -72,13 +72,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     @Override
     public ResourceUtilisation getCurrentResourceUtilisation() throws ScalerException
     {
-        final ResourceUtilisation resourceUtilisation = rabbitResourceMonitor.getCurrentResourceUtilisation();
-
-        LOG.debug("Current memory consumption: {}% of total available memory.", resourceUtilisation.getMemoryUsedPercent());
-
-        LOG.debug("Current disk free: {}MB.", resourceUtilisation.getDiskFreeMb());
-
-        return resourceUtilisation;
+        return rabbitResourceMonitor.getCurrentResourceUtilisation();
     }
 
 
@@ -225,5 +219,13 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
         return "To whom it may concern, \n"
             + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
             + "RabbitMQ has used " + percentageMem + "% of its high watermark memory allowance.\n";
+    }
+
+    @Override
+    public String getDiskSpaceLowWarning(final String diskFreeMb)
+    {
+        return "To whom it may concern, \n"
+                + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
+                + "RabbitMQ has only " + diskFreeMb + "MB of disk space free.\n";
     }
 }

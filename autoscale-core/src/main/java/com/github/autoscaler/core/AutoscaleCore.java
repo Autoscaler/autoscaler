@@ -195,7 +195,9 @@ public class AutoscaleCore
         throws ScalerException
     {
         try {
-            return configSource.getConfiguration(type);
+            final T configuration = configSource.getConfiguration(type);
+            LOG.info("Loaded configuration: {}", configuration);
+            return configuration;
         } catch (final ConfigurationException ex) {
             throw new ScalerException("Unable to get configuration.", ex);
         }

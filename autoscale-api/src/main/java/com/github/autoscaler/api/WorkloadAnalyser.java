@@ -42,12 +42,18 @@ public interface WorkloadAnalyser
     ResourceUtilisation getCurrentResourceUtilisation() throws ScalerException;
 
     /**
-     * This method will return the content to send in an email when reporting an issue with the messaging platform.
-     * @param percentageMem The percentage of the messaging platforms memory allows that has been used. This is passed as a string so 
+     * This method will return the content to send in an email when reporting a memory overload issue with the messaging platform.
+     * @param percentageMem The percentage of the messaging platform's allowed memory that has been used. This is passed as a string so
      * that it can be added to the email body.
      * @return The email body
      */
     String getMemoryOverloadWarning(String percentageMem);
 
-    // TODO RORY disk
+    /**
+     * This method will return the content to send in an email when reporting a low disk space issue with the messaging platform.
+     * @param diskFreeMb The amount of disk space (MB) that is remaining on the messaging platform. This is passed as a string so that
+     * it can be added to the email body.
+     * @return The email body
+     */
+    String getDiskSpaceLowWarning(String diskFreeMb);
 }

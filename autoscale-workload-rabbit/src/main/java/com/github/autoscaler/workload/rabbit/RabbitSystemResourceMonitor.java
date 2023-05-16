@@ -22,11 +22,15 @@ import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.workload.rabbit.RabbitManagementApiFactory.RabbitManagementApi;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Optional;
+
 import retrofit.client.Response;
 
 public final class RabbitSystemResourceMonitor
 {
     private volatile double memoryAllocated;
+    private volatile Optional<Integer> diskFreeMbOpt = Optional.empty();
+
     private final RabbitManagementApi rabbitManagementApi;
     private final ObjectMapper mapper = new ObjectMapper();
     private volatile long lastTime;
@@ -48,8 +52,10 @@ public final class RabbitSystemResourceMonitor
                 final JsonNode nodeArray = mapper.readTree(response.getBody().in());
                 final Iterator<JsonNode> iterator = nodeArray.elements();
                 double highestMemUsedInCluster = 0;
+                Optional<Integer> lowestDiskFreeMbInClusterOpt = Optional.empty();
                 while (iterator.hasNext()) {
                     final JsonNode node = iterator.next();
+
                     final JsonNode memLimitNode = node.get("mem_limit");
                     final JsonNode memUsedNode = node.get("mem_used");
                     if (memLimitNode != null && memUsedNode != null) { // These will be null if this node is down
@@ -58,14 +64,27 @@ public final class RabbitSystemResourceMonitor
                         final double memPercentage = ((double) memory_used / memory_limit) * 100;
                         highestMemUsedInCluster = memPercentage > highestMemUsedInCluster ? memPercentage : highestMemUsedInCluster;
                     }
+
+                    final JsonNode diskFreeNode = node.get("disk_free");
+                    if (diskFreeNode != null) {
+                        final long diskFreeBytes = diskFreeNode.asLong();
+                        final int diskFreeMb = (int)(diskFreeBytes / 1024 / 1024);
+                        if (lowestDiskFreeMbInClusterOpt.isPresent()) {
+                            lowestDiskFreeMbInClusterOpt = Optional.of(
+                                    diskFreeMb < lowestDiskFreeMbInClusterOpt.get() ? diskFreeMb : lowestDiskFreeMbInClusterOpt.get());
+                        } else {
+                            lowestDiskFreeMbInClusterOpt = Optional.of(diskFreeMb);
+                        }
+                    }
                 }
                 memoryAllocated =  highestMemUsedInCluster;
+                diskFreeMbOpt = lowestDiskFreeMbInClusterOpt;
                 lastTime = System.currentTimeMillis();
             } catch (final IOException ex) {
                 throw new ScalerException("Unable to map response to status request.", ex);
             }
         }
-        return new ResourceUtilisation(memoryAllocated, 0); // TODO rory
+        return new ResourceUtilisation(memoryAllocated, diskFreeMbOpt);
     }
 
     private boolean shouldIssueRequest()

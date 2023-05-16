@@ -4,6 +4,9 @@
 #### Version Number
 ${version-number}
 
+#### Breaking Changes
+TODO
+
 #### New Features
 693063: Staging queues can now be considered when making a scaling decision.
 - An optional environment variable named `CAF_AUTOSCALER_STAGING_QUEUE_INDICATOR` can now be provided.

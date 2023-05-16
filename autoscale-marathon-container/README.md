@@ -79,6 +79,24 @@ Configuration supported through the following environment variables:
   Default: `90`  
   Description: The percentage of available memory the messaging platform can use before the Autoscaler should take stage 3 action. Stage 3 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD" or 5 if the environment variable is not set.  
 
+- `CAF_AUTOSCALER_DISK_FREE_MB_ALERT_DISPATCH_THRESHOLD`  
+  Default: `CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_1`  
+  Description: This setting indicates the amount of disk space (MB) that can be remaining before starting to send out alerts when the
+  messaging platform is beginning to run out of resources. If this configuration is not set then a message will be dispatched from the stage one alert threshold.
+
+- `CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_1`  
+  Default: `400`  
+  Description: The amount of disk space (MB) that can be remaining on the messaging platform before the Autoscaler should take stage 1 action.
+  Stage 1 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD" or 1 if the environment variable is not set.
+
+- `CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_2`  
+  Default: `200`  
+  Description: The amount of disk space (MB) that can be remaining on the messaging platform before the Autoscaler should take stage 2 action. Stage 2 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD" or 3 if the environment variable is not set.
+
+- `CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_3`  
+  Default: `100`  
+  Description: The amount of disk space (MB) that can be remaining on the messaging platform before the Autoscaler should take stage 3 action. Stage 3 action will involve shutting down any services with a shutdown priority of less than or equal to "CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD" or 5 if the environment variable is not set.
+
 - `CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD`  
   Default: `1`  
   Description: The priority threshold of services to shutdown in the event the messaging platform has used up to its stage 1 resource limit. Any service with a shutdown priority of or less than this value will be shutdown.  

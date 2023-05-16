@@ -22,28 +22,57 @@ import javax.validation.constraints.NotNull;
 public final class ResourceMonitoringConfiguration
 {
     /**
-     * What percentage of memory limit can be used before an alert should be sent. Defaults to value of stage one threshold.
+     * What percentage of available memory the messaging platform can use before an alert should be sent. Defaults to value of stage one
+     * threshold.
      */
     @NotNull
     private int memoryAlertDispatchThreshold;
 
     /**
-     * Percentage of max memory available to use allowed before triggering resource limit one behaviour. Defaults to 70.
+     * The percentage of available memory the messaging platform can use before triggering resource limit one behaviour. Defaults to 70.
      */
     @NotNull
     private double memoryLimitOne;
 
     /**
-     * Percentage of max memory available to use allowed before triggering resource limit two behaviour. Defaults to 80.
+     * The percentage of available memory the messaging platform can use before triggering resource limit two behaviour. Defaults to 80.
      */
     @NotNull
     private double memoryLimitTwo;
 
     /**
-     * Percentage of max memory available to use allowed before triggering resource limit three behaviour. Defaults to 90.
+     * The percentage of available memory the messaging platform can use before triggering resource limit three behaviour. Defaults to 90.
      */
     @NotNull
     private double memoryLimitThree;
+
+    /**
+     * The amount of disk space (MB) that can be remaining on the messaging platform before an alert should be sent. Defaults to value of
+     * stage one threshold.
+     */
+    @NotNull
+    private int diskAlertDispatchThreshold;
+
+    /**
+     * The amount of disk space (MB) that can be remaining on the messaging platform before triggering resource limit one behaviour.
+     * Defaults to 400.
+     */
+    @NotNull
+    private int diskLimitOne;
+
+    /**
+     * The amount of disk space (MB) that can be remaining on the messaging platform before triggering resource limit two behaviour.
+     * Defaults to 200.
+     */
+    @NotNull
+    private int diskLimitTwo;
+
+    /**
+     * The amount of disk space (MB) that can be remaining on the messaging platform before triggering resource limit three behaviour.
+     * Defaults to 100.
+     */
+    @NotNull
+    private int diskLimitThree;
 
     /**
      * Shutdown Priority threshold for resource limit one. Defaults to 1.
@@ -62,6 +91,14 @@ public final class ResourceMonitoringConfiguration
      */
     @NotNull
     private int resourceLimitThreeShutdownThreshold;
+
+    /**
+     * @return the memoryAlertDispatchThreshold
+     */
+    public int getMemoryAlertDispatchThreshold()
+    {
+        return memoryAlertDispatchThreshold;
+    }
 
     /**
      * @return the memoryLimitOne
@@ -88,6 +125,38 @@ public final class ResourceMonitoringConfiguration
     }
 
     /**
+     * @return the diskAlertDispatchThreshold
+     */
+    public int getDiskAlertDispatchThreshold()
+    {
+        return diskAlertDispatchThreshold;
+    }
+
+    /**
+     * @return the diskLimitOne
+     */
+    public int getDiskLimitOne()
+    {
+        return diskLimitOne;
+    }
+
+    /**
+     * @return the diskLimitTwo
+     */
+    public int getDiskLimitTwo()
+    {
+        return diskLimitTwo;
+    }
+
+    /**
+     * @return the diskLimitThree
+     */
+    public int getDiskLimitThree()
+    {
+        return diskLimitThree;
+    }
+
+    /**
      * @return the resourceLimitOneShutdownThreshold
      */
     public int getResourceLimitOneShutdownThreshold()
@@ -111,11 +180,21 @@ public final class ResourceMonitoringConfiguration
         return resourceLimitThreeShutdownThreshold;
     }
 
-    /**
-     * @return the memoryAlertDispatchThreshold
-     */
-    public int getMemoryAlertDispatchThreshold()
+    @Override
+    public String toString()
     {
-        return memoryAlertDispatchThreshold;
+        return "ResourceMonitoringConfiguration{" +
+                "memoryAlertDispatchThreshold=" + memoryAlertDispatchThreshold +
+                ", memoryLimitOne=" + memoryLimitOne +
+                ", memoryLimitTwo=" + memoryLimitTwo +
+                ", memoryLimitThree=" + memoryLimitThree +
+                ", diskAlertDispatchThreshold=" + diskAlertDispatchThreshold +
+                ", diskLimitOne=" + diskLimitOne +
+                ", diskLimitTwo=" + diskLimitTwo +
+                ", diskLimitThree=" + diskLimitThree +
+                ", resourceLimitOneShutdownThreshold=" + resourceLimitOneShutdownThreshold +
+                ", resourceLimitTwoShutdownThreshold=" + resourceLimitTwoShutdownThreshold +
+                ", resourceLimitThreeShutdownThreshold=" + resourceLimitThreeShutdownThreshold +
+                '}';
     }
 }

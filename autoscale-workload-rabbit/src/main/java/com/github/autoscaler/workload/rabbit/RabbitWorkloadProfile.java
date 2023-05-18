@@ -70,4 +70,13 @@ public class RabbitWorkloadProfile
     {
         this.backlogGoal = backlogGoal;
     }
+
+    @Override
+    public String toString()
+    {
+        return "RabbitWorkloadProfile{" +
+                "scalingDelay=" + scalingDelay +
+                ", backlogGoal=" + backlogGoal +
+                '}';
+    }
 }

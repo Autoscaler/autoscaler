@@ -107,7 +107,7 @@ public class GovernorImpl implements Governor {
     }
 
     @Override
-    public ScalingAction govern(String serviceRef, ScalingAction action, final ResourceLimitStageReached resourceLimitStageReached) {
+    public ScalingAction govern(String serviceRef, ScalingAction action, final ResourceLimitStagesReached resourceLimitStagesReached) {
 
         ScalingConfiguration scalingConfiguration = scalingConfigurationMap.getOrDefault(serviceRef, null);
         final AdvancedInstanceInfo lastInstanceInfo = instanceInfoMap.getOrDefault(serviceRef, null);
@@ -119,7 +119,7 @@ public class GovernorImpl implements Governor {
             return action;
         }
         lastInstanceInfo.setDesiredInstances(action);
-        final boolean otherServicesMinimumInstancesMet = otherServicesMinimumInstancesMet(serviceRef, resourceLimitStageReached);
+        final boolean otherServicesMinimumInstancesMet = otherServicesMinimumInstancesMet(serviceRef, resourceLimitStagesReached);
 
         switch(action.getOperation()){
             case NONE: {
@@ -215,7 +215,7 @@ public class GovernorImpl implements Governor {
      * @param serviceRef the service identifier to exclude from the evaluation
      * @return True if other services have met their minimum instance requirement
      */
-    private boolean otherServicesMinimumInstancesMet(String serviceRef, final ResourceLimitStageReached resourceLimitStageReached){
+    private boolean otherServicesMinimumInstancesMet(String serviceRef, final ResourceLimitStagesReached resourceLimitStagesReached){
         for(String key:scalingConfigurationMap.keySet()){
             if(key.equals(serviceRef)){
                 continue;
@@ -228,7 +228,7 @@ public class GovernorImpl implements Governor {
                 return false;
             }
             if(lastInstanceInfo.getTotalRunningAndStageInstances() < scalingConfiguration.getMinInstances()){
-                if(shouldBeScaledDown(resourceLimitStageReached, lastInstanceInfo.getShutdownPriority())){
+                if(shouldBeScaledDown(resourceLimitStagesReached, lastInstanceInfo.getShutdownPriority())){
                    continue;
                 }
                 return false;
@@ -237,15 +237,15 @@ public class GovernorImpl implements Governor {
         return true;
     }
 
-    private boolean shouldBeScaledDown(final ResourceLimitStageReached resourceLimitStageReached, final int shutdownPriority)
+    private boolean shouldBeScaledDown(final ResourceLimitStagesReached resourceLimitStagesReached, final int shutdownPriority)
     {
         if (shutdownPriority == -1) {
             return false;
         }
 
         final int highestResourceLimitStageReached = Math.max(
-                resourceLimitStageReached.getMemoryLimitStageReached(),
-                resourceLimitStageReached.getDiskLimitStageReached());
+                resourceLimitStagesReached.getMemoryLimitStageReached(),
+                resourceLimitStagesReached.getDiskLimitStageReached());
 
         switch (highestResourceLimitStageReached) {
             case 1: {

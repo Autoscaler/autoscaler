@@ -16,6 +16,9 @@
 package com.github.autoscaler.workload.rabbit;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.WorkloadAnalyserFactory;
 import com.github.autoscaler.api.WorkloadAnalyserFactoryProvider;
@@ -24,12 +27,17 @@ import com.hpe.caf.api.ConfigurationSource;
 
 public class RabbitWorkloadAnalyserFactoryProvider implements WorkloadAnalyserFactoryProvider
 {
+    private static final Logger LOG = LoggerFactory.getLogger(RabbitWorkloadAnalyserFactoryProvider.class);
+
     @Override
     public WorkloadAnalyserFactory getWorkloadAnalyserFactory(final ConfigurationSource configurationSource)
             throws ScalerException
     {
         try {
-            return new RabbitWorkloadAnalyserFactory(configurationSource.getConfiguration(RabbitWorkloadAnalyserConfiguration.class));
+            final RabbitWorkloadAnalyserConfiguration configuration =
+                    configurationSource.getConfiguration(RabbitWorkloadAnalyserConfiguration.class);
+            LOG.info("Loaded configuration: {}", configuration);
+            return new RabbitWorkloadAnalyserFactory(configuration);
         } catch (ConfigurationException e) {
             throw new ScalerException("Failed to create a workload analyser factory", e);
         }

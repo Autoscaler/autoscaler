@@ -15,13 +15,13 @@
  */
 package com.github.autoscaler.core;
 
-public final class ResourceLimitStageReached
+public final class ResourceLimitStagesReached
 {
     private final int memoryLimitStageReached;
 
     private final int diskLimitStageReached;
 
-    public ResourceLimitStageReached(final int memoryLimitStageReached, final int diskLimitStageReached)
+    public ResourceLimitStagesReached(final int memoryLimitStageReached, final int diskLimitStageReached)
     {
         this.memoryLimitStageReached = memoryLimitStageReached;
         this.diskLimitStageReached = diskLimitStageReached;
@@ -40,7 +40,7 @@ public final class ResourceLimitStageReached
     @Override
     public String toString()
     {
-        return "ResourceLimitStageReached{" +
+        return "ResourceLimitStagesReached{" +
                 "memoryLimitStageReached=" + memoryLimitStageReached +
                 ", diskLimitStageReached=" + diskLimitStageReached +
                 '}';

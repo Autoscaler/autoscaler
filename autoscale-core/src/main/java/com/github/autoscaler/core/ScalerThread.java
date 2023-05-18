@@ -39,7 +39,8 @@ public class ScalerThread implements Runnable
 {
 
     private final DecimalFormat df = new DecimalFormat("##.00");
-    private final Alerter alertDispatcher;
+    private final Alerter memoryOverloadAlerter;
+    private final Alerter diskSpaceLowAlerter;
     private final WorkloadAnalyser analyser;
     private final ServiceScaler scaler;
     private final int backoffAmount;
@@ -65,14 +66,16 @@ public class ScalerThread implements Runnable
      * @param minInstances the minimum number of instances of the service that must be instantiated
      * @param maxInstances the maximum number of instances of the service that can be instantiated
      * @param backoffAmount the number of analysis runs to skip after a scaling is triggered
-     * @param alertDispatcher dispatcher to send alerts if required
+     * @param memoryOverloadAlerter dispatcher to send memory overload alerts if required
+     * @param diskSpaceLowAlerter dispatcher to send disk space low alerts if required
      */
     public ScalerThread(final Governor governor, final WorkloadAnalyser workloadAnalyser, final ServiceScaler serviceScaler,
                         final String serviceReference, final int minInstances, final int maxInstances, final int backoffAmount,
-                        final Alerter alertDispatcher, final ResourceMonitoringConfiguration resourceConfig)
+                        final Alerter memoryOverloadAlerter, final Alerter diskSpaceLowAlerter,
+                        final ResourceMonitoringConfiguration resourceConfig)
     {
         this(governor, workloadAnalyser, serviceScaler, serviceReference, minInstances, maxInstances, backoffAmount, -1, -1,
-             alertDispatcher, resourceConfig);
+                memoryOverloadAlerter, diskSpaceLowAlerter, resourceConfig);
     }
 
     /**
@@ -87,17 +90,19 @@ public class ScalerThread implements Runnable
      * @param backoffAmount the number of analysis runs to skip after a scaling is triggered
      * @param scaleUpBackoffAmount the number of analysis runs to skip after a scaling up is triggered
      * @param scaleDownBackoffAmount the number of analysis runs to skip after a scaling down is triggered
-     * @param alertDispatcher dispatcher to send alerts if required
+     * @param memoryOverloadAlerter dispatcher to send memory overload alerts if required
+     * @param diskSpaceLowAlerter dispatcher to send disk space low alerts if required
      */
     public ScalerThread(final Governor governor, final WorkloadAnalyser workloadAnalyser, final ServiceScaler serviceScaler,
                         final String serviceReference, final int minInstances, final int maxInstances, final int backoffAmount,
-                        final int scaleUpBackoffAmount, final int scaleDownBackoffAmount, final Alerter alertDispatcher,
-                        final ResourceMonitoringConfiguration resourceConfig)
+                        final int scaleUpBackoffAmount, final int scaleDownBackoffAmount, final Alerter memoryOverloadAlerter,
+                        final Alerter diskSpaceLowAlerter, final ResourceMonitoringConfiguration resourceConfig)
     {
         this.resourceConfig = resourceConfig;
         this.scaleUpBackoffAmount = scaleUpBackoffAmount;
         this.scaleDownBackoffAmount = scaleDownBackoffAmount;
-        this.alertDispatcher = alertDispatcher;
+        this.memoryOverloadAlerter = memoryOverloadAlerter;
+        this.diskSpaceLowAlerter = diskSpaceLowAlerter;
         this.governor = governor;
         this.analyser = Objects.requireNonNull(workloadAnalyser);
         this.scaler = Objects.requireNonNull(serviceScaler);
@@ -133,11 +138,11 @@ public class ScalerThread implements Runnable
         try {
             final ResourceUtilisation resourceUtilisation = analyser.getCurrentResourceUtilisation();
             LOG.debug("Resource utilisation for service {}: {}", serviceRef, resourceUtilisation);
-            final ResourceLimitStageReached resourceLimitStageReached = establishResourceLimitStageReached(resourceUtilisation);
-            LOG.debug("Resource limit stage reached for service {}: {}", serviceRef, resourceLimitStageReached);
+            final ResourceLimitStagesReached resourceLimitStagesReached = establishResourceLimitStagesReached(resourceUtilisation);
+            LOG.debug("Resource limit stages reached for service {}: {}", serviceRef, resourceLimitStagesReached);
             InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
             final int shutdownPriority = instances.getShutdownPriority();
-            if (handleResourceLimitReached(instances, resourceUtilisation, resourceLimitStageReached, shutdownPriority)) {
+            if (handleResourceLimitReached(instances, resourceUtilisation, resourceLimitStagesReached, shutdownPriority)) {
                 return;
             }
             governor.recordInstances(serviceRef, instances);
@@ -146,7 +151,7 @@ public class ScalerThread implements Runnable
             action = analyser.analyseWorkload(instances);
             LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
                      action.getOperation(), serviceRef, action.getAmount());
-            action = governor.govern(serviceRef, action, resourceLimitStageReached);
+            action = governor.govern(serviceRef, action, resourceLimitStagesReached);
             LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
                      action.getOperation(), serviceRef, action.getAmount());
             if (action.getAmount() == 0) {
@@ -260,7 +265,7 @@ public class ScalerThread implements Runnable
     private boolean handleResourceLimitReached(
             final InstanceInfo instances,
             final ResourceUtilisation resourceUtilisation,
-            final ResourceLimitStageReached resourceLimitStageReached,
+            final ResourceLimitStagesReached resourceLimitStagesReached,
             final int shutdownPriority)
         throws ScalerException
     {
@@ -268,37 +273,65 @@ public class ScalerThread implements Runnable
             return false;
         }
 
-        handleAlerterDispatch(resourceUtilisation, resourceLimitStageReached);
+        handleAlerterDispatch(resourceUtilisation);
 
         final int highestResourceLimitStageReached = Math.max(
-                resourceLimitStageReached.getMemoryLimitStageReached(),
-                resourceLimitStageReached.getDiskLimitStageReached());
+                resourceLimitStagesReached.getMemoryLimitStageReached(),
+                resourceLimitStagesReached.getDiskLimitStageReached());
 
         if (highestResourceLimitStageReached == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
+            LOG.debug("Attempting to scale down service {} due to resource limit stage 1 being reached and " +
+                            "shutdownPriority {} <= resourceLimitOneShutdownThreshold {}. The current resource limit stage is " +
+                            "determined by the highest resource limit stage among: {}",
+                    serviceRef,
+                    shutdownPriority,
+                    resourceConfig.getResourceLimitOneShutdownThreshold(),
+                    resourceLimitStagesReached);
+
             scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
         } else if (highestResourceLimitStageReached == 2 && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
+            LOG.debug("Attempting to scale down service {} due to resource limit stage 2 being reached and " +
+                            "shutdownPriority {} <= resourceLimitTwoShutdownThreshold {}. The current resource limit stage is " +
+                            "determined by the highest resource limit stage among: {}",
+                    serviceRef,
+                    shutdownPriority,
+                    resourceConfig.getResourceLimitTwoShutdownThreshold(),
+                    resourceLimitStagesReached);
+
             scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
         } else if (highestResourceLimitStageReached == 3 && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
+            LOG.debug("Attempting to scale down service {} due to resource limit stage 3 being reached and " +
+                            "shutdownPriority {} <= resourceLimitThreeShutdownThreshold {}. The current resource limit stage is " +
+                            "determined by the highest resource limit stage among: {}",
+                    serviceRef,
+                    shutdownPriority,
+                    resourceConfig.getResourceLimitThreeShutdownThreshold(),
+                    resourceLimitStagesReached);
+
             scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
         }
         return false;
     }
 
-    private void handleAlerterDispatch(final ResourceUtilisation resourceUtilisation, final ResourceLimitStageReached resourceLimitStageReached)
-            throws ScalerException
+    private void handleAlerterDispatch(final ResourceUtilisation resourceUtilisation) throws ScalerException
     {
-        if (resourceLimitStageReached.getMemoryLimitStageReached() > resourceConfig.getMemoryAlertDispatchThreshold()) { // TODO
-            final String emailBody = analyser.getMemoryOverloadWarning(df.format(resourceUtilisation.getMemoryUsedPercent()));
-            alertDispatcher.dispatchAlert(emailBody);
+        final double memoryUsedPercent = resourceUtilisation.getMemoryUsedPercent();
+        if (memoryUsedPercent > resourceConfig.getMemoryAlertDispatchThreshold()) {
+            final String memoryOverloadWarningEmailBody = analyser.getMemoryOverloadWarning(df.format(memoryUsedPercent));
+            memoryOverloadAlerter.dispatchAlert(memoryOverloadWarningEmailBody);
         }
 
-        // TODO RORY disk
+        final Optional<Integer> diskFreeMbOpt = resourceUtilisation.getDiskFreeMbOpt();
+        if (diskFreeMbOpt.isPresent() && diskFreeMbOpt.get() < resourceConfig.getDiskAlertDispatchThreshold()) {
+            final String diskLowWarningEmailBody = analyser.getDiskSpaceLowWarning(df.format(diskFreeMbOpt.get()));
+            diskSpaceLowAlerter.dispatchAlert(diskLowWarningEmailBody);
+        }
     }
 
-    private ResourceLimitStageReached establishResourceLimitStageReached(final ResourceUtilisation resourceUtilisation)
+    private ResourceLimitStagesReached establishResourceLimitStagesReached(final ResourceUtilisation resourceUtilisation)
     {
         final double memoryUsedPercent = resourceUtilisation.getMemoryUsedPercent();
         final int memoryLimitStageReached;
@@ -329,7 +362,7 @@ public class ScalerThread implements Runnable
             diskLimitStageReached = 0;
         }
 
-        return new ResourceLimitStageReached(memoryLimitStageReached, diskLimitStageReached);
+        return new ResourceLimitStagesReached(memoryLimitStageReached, diskLimitStageReached);
     }
 
     private boolean isShouldBackoff()

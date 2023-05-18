@@ -50,7 +50,7 @@ public interface WorkloadAnalyser
     String getMemoryOverloadWarning(String percentageMem);
 
     /**
-     * This method will return the content to send in an email when reporting a low disk space issue with the messaging platform.
+     * This method will return the content to send in an email when reporting a disk space low issue with the messaging platform.
      * @param diskFreeMb The amount of disk space (MB) that is remaining on the messaging platform. This is passed as a string so that
      * it can be added to the email body.
      * @return The email body

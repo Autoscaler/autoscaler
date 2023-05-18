@@ -156,4 +156,18 @@ public class RabbitWorkloadAnalyserConfiguration
     {
         this.stagingQueueIndicator = stagingQueueIndicator;
     }
+
+    @Override
+    public String toString()
+    {
+        return "RabbitWorkloadAnalyserConfiguration{" +
+                "rabbitManagementEndpoint=" + rabbitManagementEndpoint +
+                ", rabbitManagementUser=" + rabbitManagementUser +
+                ", rabbitManagementPassword=<HIDDEN>" +
+                ", vhost=" + vhost +
+                ", profiles=" + profiles +
+                ", resourceQueryRequestFrequency=" + resourceQueryRequestFrequency +
+                ", stagingQueueIndicator=" + stagingQueueIndicator +
+                '}';
+    }
 }

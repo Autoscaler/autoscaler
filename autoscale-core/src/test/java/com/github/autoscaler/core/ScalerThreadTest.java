@@ -50,7 +50,8 @@ public class ScalerThreadTest
         int min = 0;
         int max = 5;
         ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0,
-            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
+            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new Alerter(new HashMap<>(),
+                new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
         Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(0)));
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_UP);
@@ -73,7 +74,8 @@ public class ScalerThreadTest
         int min = 0;
         int max = 5;
         ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, 
-            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
+            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new Alerter(new HashMap<>(),
+                new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
         Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(0)));
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_DOWN);
@@ -96,7 +98,8 @@ public class ScalerThreadTest
         int min = 0;
         int max = 5;
         ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0, 
-            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
+            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new Alerter(new HashMap<>(),
+                new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.NO_ACTION);
         t.run();
@@ -117,7 +120,8 @@ public class ScalerThreadTest
         int min = 0;
         int max = 5;
         ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0,
-            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
+            new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new Alerter(new HashMap<>(),
+                new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         // should not throw
         t.run();
         Mockito.verify(scaler, Mockito.times(0)).scaleUp(Mockito.any(), Mockito.anyInt());

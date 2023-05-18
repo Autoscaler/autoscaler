@@ -44,10 +44,10 @@ interface Governor {
      *
      * @param serviceRef the named reference to the service for which the scaling action will be governed
      * @param action the scaling action to review
-     * @param resourceLimitStageReached the current resource limit stages that the message broker has currently reached
+     * @param resourceLimitStagesReached the current resource limit stages that the message broker has currently reached
      * @return a governed ScalingAction that respects the minimum requirements of all services
      */
-    ScalingAction govern(String serviceRef, ScalingAction action, ResourceLimitStageReached resourceLimitStageReached);
+    ScalingAction govern(String serviceRef, ScalingAction action, ResourceLimitStagesReached resourceLimitStagesReached);
 
     /**
      *

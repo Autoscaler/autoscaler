@@ -42,5 +42,11 @@ The following environment variables have been added:
   staging queues and the statistics for these staging queues will be taken into account alongside the statistics for the target queue
   (scalingTarget) when making a scaling decision.
 
+#### Bug Fixes
+709003: An issue preventing memory overload alerts from being dispatched when the message platform was experiencing high memory usage has been fixed.  
+
+709003: An issue preventing instances being scaled down in Kubernetes when the message platform was experiencing high memory usage has been fixed.  
+- This was caused by the Autoscaler attempting to read the `autoscale.shutdownPriority` label instead of the `autoscale.shutdownpriority` label.
+
 #### Known Issues
 - None

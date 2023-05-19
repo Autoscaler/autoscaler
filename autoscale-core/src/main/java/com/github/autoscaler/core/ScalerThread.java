@@ -280,21 +280,6 @@ public class ScalerThread implements Runnable
                 resourceLimitStagesReached.getMemoryLimitStageReached(),
                 resourceLimitStagesReached.getDiskLimitStageReached());
 
-        LOG.debug("Deciding whether to to scale down service {} based on the following info. " +
-                        "Shutdown priority: {}, " +
-                        "Resource limits reached: {}, " +
-                        "Highest resource limit reached: {} " +
-                        "Resource limit stage one shutdown threshold: {} " +
-                        "Resource limit stage two shutdown threshold: {} " +
-                        "Resource limit stage three shutdown threshold: {}",
-                serviceRef,
-                shutdownPriority,
-                resourceLimitStagesReached,
-                highestResourceLimitStageReached,
-                resourceConfig.getResourceLimitOneShutdownThreshold(),
-                resourceConfig.getResourceLimitTwoShutdownThreshold(),
-                resourceConfig.getResourceLimitThreeShutdownThreshold());
-
         if (highestResourceLimitStageReached == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
             LOG.debug("Attempting to scale down service {} due to resource limit stage 1 being reached and " +
                             "shutdownPriority {} <= resourceLimitOneShutdownThreshold {}. The current resource limit stage is " +

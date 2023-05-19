@@ -293,7 +293,7 @@ public class ScalerThread implements Runnable
                 highestResourceLimitStageReached,
                 resourceConfig.getResourceLimitOneShutdownThreshold(),
                 resourceConfig.getResourceLimitTwoShutdownThreshold(),
-                resourceConfig.getResourceLimitThreeShutdownThreshold(),);
+                resourceConfig.getResourceLimitThreeShutdownThreshold());
 
         if (highestResourceLimitStageReached == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
             LOG.debug("Attempting to scale down service {} due to resource limit stage 1 being reached and " +

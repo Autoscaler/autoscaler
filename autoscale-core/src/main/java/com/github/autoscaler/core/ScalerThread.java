@@ -141,6 +141,7 @@ public class ScalerThread implements Runnable
             final ResourceLimitStagesReached resourceLimitStagesReached = establishResourceLimitStagesReached(resourceUtilisation);
             LOG.debug("Resource limit stages reached for service {}: {}", serviceRef, resourceLimitStagesReached);
             InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
+            LOG.debug("Instance info for service {}: {}", serviceRef, instances);
             final int shutdownPriority = instances.getShutdownPriority();
             if (handleResourceLimitReached(instances, resourceUtilisation, resourceLimitStagesReached, shutdownPriority)) {
                 return;
@@ -278,6 +279,21 @@ public class ScalerThread implements Runnable
         final int highestResourceLimitStageReached = Math.max(
                 resourceLimitStagesReached.getMemoryLimitStageReached(),
                 resourceLimitStagesReached.getDiskLimitStageReached());
+
+        LOG.debug("Deciding whether to to scale down service {} based on the following info. " +
+                        "Shutdown priority: {}, " +
+                        "Resource limits reached: {}, " +
+                        "Highest resource limit reached: {} " +
+                        "Resource limit stage one shutdown threshold: {} " +
+                        "Resource limit stage two shutdown threshold: {} " +
+                        "Resource limit stage three shutdown threshold: {}",
+                serviceRef,
+                shutdownPriority,
+                resourceLimitStagesReached,
+                highestResourceLimitStageReached,
+                resourceConfig.getResourceLimitOneShutdownThreshold(),
+                resourceConfig.getResourceLimitTwoShutdownThreshold(),
+                resourceConfig.getResourceLimitThreeShutdownThreshold(),);
 
         if (highestResourceLimitStageReached == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
             LOG.debug("Attempting to scale down service {} due to resource limit stage 1 being reached and " +

@@ -319,13 +319,13 @@ public class ScalerThread implements Runnable
     private void handleAlerterDispatch(final ResourceUtilisation resourceUtilisation) throws ScalerException
     {
         final double memoryUsedPercent = resourceUtilisation.getMemoryUsedPercent();
-        if (memoryUsedPercent > resourceConfig.getMemoryAlertDispatchThreshold()) {
+        if (memoryUsedPercent >= resourceConfig.getMemoryUsedPercentAlertDispatchThreshold()) {
             final String memoryOverloadWarningEmailBody = analyser.getMemoryOverloadWarning(df.format(memoryUsedPercent));
             memoryOverloadAlerter.dispatchAlert(memoryOverloadWarningEmailBody);
         }
 
         final Optional<Integer> diskFreeMbOpt = resourceUtilisation.getDiskFreeMbOpt();
-        if (diskFreeMbOpt.isPresent() && diskFreeMbOpt.get() < resourceConfig.getDiskAlertDispatchThreshold()) {
+        if (diskFreeMbOpt.isPresent() && diskFreeMbOpt.get() <= resourceConfig.getDiskFreeMbAlertDispatchThreshold()) {
             final String diskLowWarningEmailBody = analyser.getDiskSpaceLowWarning(df.format(diskFreeMbOpt.get()));
             diskSpaceLowAlerter.dispatchAlert(diskLowWarningEmailBody);
         }
@@ -335,11 +335,11 @@ public class ScalerThread implements Runnable
     {
         final double memoryUsedPercent = resourceUtilisation.getMemoryUsedPercent();
         final int memoryLimitStageReached;
-        if (memoryUsedPercent >= resourceConfig.getMemoryLimitThree()) {
+        if (memoryUsedPercent >= resourceConfig.getMemoryUsedPercentLimitStageThree()) {
             memoryLimitStageReached = 3;
-        } else if (memoryUsedPercent >= resourceConfig.getMemoryLimitTwo()) {
+        } else if (memoryUsedPercent >= resourceConfig.getMemoryUsedPercentLimitStageTwo()) {
             memoryLimitStageReached = 2;
-        } else if (memoryUsedPercent >= resourceConfig.getMemoryLimitOne()) {
+        } else if (memoryUsedPercent >= resourceConfig.getMemoryUsedPercentLimitStageOne()) {
             memoryLimitStageReached = 1;
         } else {
             memoryLimitStageReached = 0;
@@ -349,11 +349,11 @@ public class ScalerThread implements Runnable
         final int diskLimitStageReached;
         if (diskFreeMbOpt.isPresent()) {
             final int diskFreeMb = diskFreeMbOpt.get();
-            if (diskFreeMb <= resourceConfig.getDiskLimitThree()) {
+            if (diskFreeMb <= resourceConfig.getDiskFreeMbLimitStageThree()) {
                 diskLimitStageReached = 3;
-            } else if (diskFreeMb <= resourceConfig.getDiskLimitTwo()) {
+            } else if (diskFreeMb <= resourceConfig.getDiskFreeMbLimitStageTwo()) {
                 diskLimitStageReached = 2;
-            } else if (diskFreeMb <= resourceConfig.getDiskLimitOne()) {
+            } else if (diskFreeMb <= resourceConfig.getDiskFreeMbLimitStageOne()) {
                 diskLimitStageReached = 1;
             } else {
                 diskLimitStageReached = 0;

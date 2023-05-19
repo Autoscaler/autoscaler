@@ -17,21 +17,21 @@ The following environment variables have been renamed:
 The following environment variables have been added:
 
 - `CAF_AUTOSCALER_DISK_FREE_MB_ALERT_DISPATCH_THRESHOLD`
-  - The amount of disk space (MB) that can be remaining before starting to send out alerts when the messaging platform is beginning to run out of resources.
+  - The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to dispatch alerts indicating that the messaging platform is running out of disk space.
   - If this is not set then a message will be dispatched from the `CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_1` value, or 400 if `CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_1` is not set.
 
 - `CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_1`
-  - The amount of disk space (MB) that can be remaining on the messaging platform before the Autoscaler should take stage 1 action.
+  - The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to take stage 1 action.
   - Stage 1 action will involve shutting down any services with a shutdown priority of less than or equal to `CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD` or 1 if the environment variable is not set.
   - Default value is 400
 
 - `CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_2`
-  - The amount of disk space (MB) that can be remaining on the messaging platform before the Autoscaler should take stage 2 action.
+  - The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to take stage 2 action.
   - Stage 2 action will involve shutting down any services with a shutdown priority of less than or equal to `CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD` or 3 if the environment variable is not set.
   - Default value is 200
 
 - `CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_3`
-  - The amount of disk space (MB) that can be remaining on the messaging platform before the Autoscaler should take stage 3 action.
+  - The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to take stage 3 action.
   - Stage 3 action will involve shutting down any services with a shutdown priority of less than or equal to `CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD` or 5 if the environment variable is not set.
   - Default value is 100
 

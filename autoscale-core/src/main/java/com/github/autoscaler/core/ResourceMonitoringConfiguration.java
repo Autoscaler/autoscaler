@@ -22,53 +22,56 @@ import javax.validation.constraints.NotNull;
 public final class ResourceMonitoringConfiguration
 {
     /**
-     * What percentage of available memory the messaging platform can use before an alert should be sent. Defaults to value of stage one
-     * threshold.
+     * The percentage of available memory used by the messaging platform that will trigger the Autoscaler to dispatch alerts indicating
+     * that the messaging platform is running out of memory. Defaults to value of stage one threshold.
      */
     @NotNull
     private int memoryUsedPercentAlertDispatchThreshold;
 
     /**
-     * The percentage of available memory the messaging platform can use before triggering resource limit one behaviour. Defaults to 70.
+     * The percentage of available memory used by the messaging platform that will trigger the Autoscaler to take stage 1 action.
+     * Defaults to 70.
      */
     @NotNull
     private double memoryUsedPercentLimitStageOne;
 
     /**
-     * The percentage of available memory the messaging platform can use before triggering resource limit two behaviour. Defaults to 80.
+     * The percentage of available memory used by the messaging platform that will trigger the Autoscaler to take stage 2 action.
+     * Defaults to 80.
      */
     @NotNull
     private double memoryUsedPercentLimitStageTwo;
 
     /**
-     * The percentage of available memory the messaging platform can use before triggering resource limit three behaviour. Defaults to 90.
+     * The percentage of available memory used by the messaging platform that will trigger the Autoscaler to take stage 1 action.
+     * Defaults to 90.
      */
     @NotNull
     private double memoryUsedPercentLimitStageThree;
 
     /**
-     * The amount of disk space (MB) that can be remaining on the messaging platform before an alert should be sent. Defaults to value of
-     * stage one threshold.
+     * The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to dispatch alerts indicating
+     * that the messaging platform is running out of disk space. Defaults to value of stage one threshold.
      */
     @NotNull
     private int diskFreeMbAlertDispatchThreshold;
 
     /**
-     * The amount of disk space (MB) that can be remaining on the messaging platform before triggering resource limit one behaviour.
+     * The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to take stage 1 action.
      * Defaults to 400.
      */
     @NotNull
     private int diskFreeMbLimitStageOne;
 
     /**
-     * The amount of disk space (MB) that can be remaining on the messaging platform before triggering resource limit two behaviour.
+     * The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to take stage 2 action.
      * Defaults to 200.
      */
     @NotNull
     private int diskFreeMbLimitStageTwo;
 
     /**
-     * The amount of disk space (MB) that can be remaining on the messaging platform before triggering resource limit three behaviour.
+     * The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to take stage 3 action.
      * Defaults to 100.
      */
     @NotNull

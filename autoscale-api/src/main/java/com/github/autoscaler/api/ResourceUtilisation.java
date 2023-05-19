@@ -46,7 +46,7 @@ public final class ResourceUtilisation
 
         return "ResourceUtilisation{" +
                 "memoryUsedPercent=" + memoryUsedPercent +
-                "diskFreeMb=" + diskFreeMbString +
+                ", diskFreeMb=" + diskFreeMbString +
                 '}';
     }
 }

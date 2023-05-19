@@ -37,7 +37,7 @@ public final class ScalingConfiguration
     public static final String KEY_BACKOFF_AMOUNT = "autoscale.backoff";
     public static final String KEY_SCALE_DOWN_BACKOFF_AMOUNT = "autoscale.scaledownbackoff";
     public static final String KEY_SCALE_UP_BACKOFF_AMOUNT = "autoscale.scaleupbackoff";
-    public static final String KEY_SHUTDOWN_PRIORITY = "autoscale.shutdownPriority";
+    public static final String KEY_SHUTDOWN_PRIORITY = "autoscale.shutdownpriority";
     public static final String KEY_GROUP_ID = "autoscale.groupid";
     /**
      * The unique id of the service

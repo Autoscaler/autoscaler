@@ -22,28 +22,60 @@ import javax.validation.constraints.NotNull;
 public final class ResourceMonitoringConfiguration
 {
     /**
-     * What percentage of resource limit can be used before an alert should be sent. Defaults to value of stage one threshold.
+     * The percentage of available memory used by the messaging platform that will trigger the Autoscaler to dispatch alerts indicating
+     * that the messaging platform is running out of memory. Defaults to value of stage one threshold.
      */
     @NotNull
-    private int alertDispatchThreshold;
+    private int memoryUsedPercentAlertDispatchThreshold;
 
     /**
-     * Percentage of max memory available to use allowed before triggering resource limit one behaviour. Defaults to 70.
+     * The percentage of available memory used by the messaging platform that will trigger the Autoscaler to take stage 1 action.
+     * Defaults to 70.
      */
     @NotNull
-    private double resourceLimitOne;
+    private double memoryUsedPercentLimitStageOne;
 
     /**
-     * Percentage of max memory available to use allowed before triggering resource limit two behaviour. Defaults to 80.
+     * The percentage of available memory used by the messaging platform that will trigger the Autoscaler to take stage 2 action.
+     * Defaults to 80.
      */
     @NotNull
-    private double resourceLimitTwo;
+    private double memoryUsedPercentLimitStageTwo;
 
     /**
-     * Percentage of max memory available to use allowed before triggering resource limit three behaviour. Defaults to 90.
+     * The percentage of available memory used by the messaging platform that will trigger the Autoscaler to take stage 1 action.
+     * Defaults to 90.
      */
     @NotNull
-    private double resourceLimitThree;
+    private double memoryUsedPercentLimitStageThree;
+
+    /**
+     * The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to dispatch alerts indicating
+     * that the messaging platform is running out of disk space. Defaults to value of stage one threshold.
+     */
+    @NotNull
+    private int diskFreeMbAlertDispatchThreshold;
+
+    /**
+     * The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to take stage 1 action.
+     * Defaults to 400.
+     */
+    @NotNull
+    private int diskFreeMbLimitStageOne;
+
+    /**
+     * The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to take stage 2 action.
+     * Defaults to 200.
+     */
+    @NotNull
+    private int diskFreeMbLimitStageTwo;
+
+    /**
+     * The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to take stage 3 action.
+     * Defaults to 100.
+     */
+    @NotNull
+    private int diskFreeMbLimitStageThree;
 
     /**
      * Shutdown Priority threshold for resource limit one. Defaults to 1.
@@ -64,27 +96,67 @@ public final class ResourceMonitoringConfiguration
     private int resourceLimitThreeShutdownThreshold;
 
     /**
-     * @return the resourceLimitOne
+     * @return the memoryUsedPercentAlertDispatchThreshold
      */
-    public double getResourceLimitOne()
+    public int getMemoryUsedPercentAlertDispatchThreshold()
     {
-        return resourceLimitOne;
+        return memoryUsedPercentAlertDispatchThreshold;
     }
 
     /**
-     * @return the resourceLimitTwo
+     * @return the memoryUsedPercentLimitStageOne
      */
-    public double getResourceLimitTwo()
+    public double getMemoryUsedPercentLimitStageOne()
     {
-        return resourceLimitTwo;
+        return memoryUsedPercentLimitStageOne;
     }
 
     /**
-     * @return the resourceLimitThree
+     * @return the memoryUsedPercentLimitStageTwo
      */
-    public double getResourceLimitThree()
+    public double getMemoryUsedPercentLimitStageTwo()
     {
-        return resourceLimitThree;
+        return memoryUsedPercentLimitStageTwo;
+    }
+
+    /**
+     * @return the memoryUsedPercentLimitStageThree
+     */
+    public double getMemoryUsedPercentLimitStageThree()
+    {
+        return memoryUsedPercentLimitStageThree;
+    }
+
+    /**
+     * @return the diskFreeMbAlertDispatchThreshold
+     */
+    public int getDiskFreeMbAlertDispatchThreshold()
+    {
+        return diskFreeMbAlertDispatchThreshold;
+    }
+
+    /**
+     * @return the diskFreeMbLimitStageOne
+     */
+    public int getDiskFreeMbLimitStageOne()
+    {
+        return diskFreeMbLimitStageOne;
+    }
+
+    /**
+     * @return the diskFreeMbLimitStageTwo
+     */
+    public int getDiskFreeMbLimitStageTwo()
+    {
+        return diskFreeMbLimitStageTwo;
+    }
+
+    /**
+     * @return the diskFreeMbLimitStageThree
+     */
+    public int getDiskFreeMbLimitStageThree()
+    {
+        return diskFreeMbLimitStageThree;
     }
 
     /**
@@ -111,11 +183,21 @@ public final class ResourceMonitoringConfiguration
         return resourceLimitThreeShutdownThreshold;
     }
 
-    /**
-     * @return the alertDispatchThreshold
-     */
-    public int getAlertDispatchThreshold()
+    @Override
+    public String toString()
     {
-        return alertDispatchThreshold;
+        return "ResourceMonitoringConfiguration{" +
+                "memoryUsedPercentAlertDispatchThreshold=" + memoryUsedPercentAlertDispatchThreshold +
+                ", memoryUsedPercentLimitStageOne=" + memoryUsedPercentLimitStageOne +
+                ", memoryUsedPercentLimitStageTwo=" + memoryUsedPercentLimitStageTwo +
+                ", memoryUsedPercentLimitStageThree=" + memoryUsedPercentLimitStageThree +
+                ", diskFreeMbAlertDispatchThreshold=" + diskFreeMbAlertDispatchThreshold +
+                ", diskFreeMbLimitStageOne=" + diskFreeMbLimitStageOne +
+                ", diskFreeMbLimitStageTwo=" + diskFreeMbLimitStageTwo +
+                ", diskFreeMbLimitStageThree=" + diskFreeMbLimitStageThree +
+                ", resourceLimitOneShutdownThreshold=" + resourceLimitOneShutdownThreshold +
+                ", resourceLimitTwoShutdownThreshold=" + resourceLimitTwoShutdownThreshold +
+                ", resourceLimitThreeShutdownThreshold=" + resourceLimitThreeShutdownThreshold +
+                '}';
     }
 }

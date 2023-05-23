@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 ({
-    resourceLimitOne: getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1") || 70,
-    resourceLimitTwo: getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_2") || 80,
-    resourceLimitThree: getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_3") || 90,
+    memoryUsedPercentLimitStageOne: getenv("CAF_AUTOSCALER_MESSAGING_MEMORY_USED_PERCENT_LIMIT_STAGE_1") || 70,
+    memoryUsedPercentLimitStageTwo: getenv("CAF_AUTOSCALER_MESSAGING_MEMORY_USED_PERCENT_LIMIT_STAGE_2") || 80,
+    memoryUsedPercentLimitStageThree: getenv("CAF_AUTOSCALER_MESSAGING_MEMORY_USED_PERCENT_LIMIT_STAGE_3") || 90,
+    memoryUsedPercentAlertDispatchThreshold: getenv("CAF_AUTOSCALER_MEMORY_USED_PERCENT_ALERT_DISPATCH_THRESHOLD")
+        || getenv("CAF_AUTOSCALER_MESSAGING_MEMORY_USED_PERCENT_LIMIT_STAGE_1")
+        || 70,
+    diskFreeMbLimitStageOne: getenv("CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_1") || 400,
+    diskFreeMbLimitStageTwo: getenv("CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_2") || 200,
+    diskFreeMbLimitStageThree: getenv("CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_3") || 100,
+    diskFreeMbAlertDispatchThreshold: getenv("CAF_AUTOSCALER_DISK_FREE_MB_ALERT_DISPATCH_THRESHOLD")
+        || getenv("CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_1")
+        || 400,
     resourceLimitOneShutdownThreshold: getenv("CAF_AUTOSCALER_MESSAGING_STAGE_1_SHUTDOWN_THRESHOLD") || 1,
     resourceLimitTwoShutdownThreshold: getenv("CAF_AUTOSCALER_MESSAGING_STAGE_2_SHUTDOWN_THRESHOLD") || 3,
     resourceLimitThreeShutdownThreshold: getenv("CAF_AUTOSCALER_MESSAGING_STAGE_3_SHUTDOWN_THRESHOLD") || 5,
-    alertDispatchThreshold: getenv("CAF_AUTOSCALER_ALERT_DISPATCH_THRESHOLD") 
-            || getenv("CAF_AUTOSCALER_MESSAGING_RESOURCE_LIMIT_STAGE_1")
-            || 70
 });

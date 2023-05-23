@@ -63,7 +63,8 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 1);
 
-        final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceOne.getId(), scalingAction, 0);
+        final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceOne.getId(), scalingAction,
+                new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
         Assert.assertEquals(3, governedAction.getAmount());
         Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
@@ -91,7 +92,8 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 1);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, 0);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
+                new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
         Assert.assertEquals(1, governedAction.getAmount());
         Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
@@ -119,7 +121,8 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 10);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, 0);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
+                new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
         Assert.assertEquals(140, governedAction.getAmount());
         Assert.assertEquals(SCALE_DOWN, governedAction.getOperation().toString());
@@ -147,7 +150,8 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_DOWN, 1);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, 0);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
+                new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
         Assert.assertEquals(1, governedAction.getAmount());
         Assert.assertEquals(SCALE_DOWN, governedAction.getOperation().toString());
@@ -175,7 +179,8 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_DOWN, 1);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, 0);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
+                new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
         Assert.assertEquals(0, governedAction.getAmount());
         Assert.assertEquals(NONE, governedAction.getOperation().toString());
@@ -202,7 +207,8 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.NONE, 0);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, 0);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
+                new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
         Assert.assertEquals(0, governedAction.getAmount());
         Assert.assertEquals(NONE, governedAction.getOperation().toString());
@@ -230,7 +236,8 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.NONE, 0);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, 0);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
+                new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
         Assert.assertEquals(1, governedAction.getAmount());
         Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
@@ -259,7 +266,8 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.NONE, 0);
 
-        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction, 0);
+        final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
+                new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
         Assert.assertEquals(1, governedAction.getAmount());
         Assert.assertEquals(SCALE_DOWN, governedAction.getOperation().toString());
@@ -304,7 +312,7 @@ public class GovernorImplTest {
         }
 
         ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 100);
-        ScalingAction governedAction = governor.govern("service1", scalingAction, 0);
+        ScalingAction governedAction = governor.govern("service1", scalingAction, new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
         Assert.assertEquals(ScalingOperation.SCALE_DOWN, governedAction.getOperation());
         Assert.assertTrue(governedAction.getAmount()>0);
         service1CurrentInstances = service1CurrentInstances - governedAction.getAmount();
@@ -315,7 +323,8 @@ public class GovernorImplTest {
 
             //The service still wishes to scale up
             scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 100);
-            governedAction = governor.govern("service1", scalingAction, 0);
+            governedAction = governor.govern("service1", scalingAction,
+                    new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
             service1CurrentInstances = service1CurrentInstances - governedAction.getAmount();
 
             System.out.println(String.format("Current instances %d", service1CurrentInstances));
@@ -355,17 +364,18 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 3);
 
-        final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceOne.getId(), scalingAction, 1);
+        final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceOne.getId(), scalingAction,
+                new ResourceLimitStagesReached(ResourceLimitStage.STAGE_1, ResourceLimitStage.NO_STAGE));
 
         Assert.assertEquals(3, governedAction.getAmount());
         Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
     }
-    
+
     /**
-     * Test that a scale up is allowed when other services have been scaled down because of the message broker memory backoff.
+     * Test that a scale up is allowed when other services have been scaled down because of the message broker memory high backoff.
      */
     @Test
-    public void testScalingWhenBackPressureBackOffInProgressMaxInstanceProtection() {
+    public void testScalingWhenMemoryLimitReachedAndBackPressureBackOffInProgressMaxInstanceProtection() {
         final Governor governor = new GovernorImpl(1, 3, 5);
         final ScalingConfiguration scalingConfigurationForServiceOne = new ScalingConfiguration();
         scalingConfigurationForServiceOne.setBackoffAmount(1000);
@@ -394,7 +404,89 @@ public class GovernorImplTest {
 
         final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 3);
 
-        final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceTwo.getId(), scalingAction, 1);
+        final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceTwo.getId(), scalingAction,
+                new ResourceLimitStagesReached(ResourceLimitStage.STAGE_1, ResourceLimitStage.NO_STAGE));
+
+        Assert.assertEquals(2, governedAction.getAmount());
+        Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
+    }
+
+    /**
+     * Test that a scale up is allowed when other services have been scaled down because of the message broker disk space low backoff.
+     */
+    @Test
+    public void testScalingWhenDiskLimitReachedAndBackPressureBackOffInProgressMaxInstanceProtection() {
+        final Governor governor = new GovernorImpl(1, 3, 5);
+        final ScalingConfiguration scalingConfigurationForServiceOne = new ScalingConfiguration();
+        scalingConfigurationForServiceOne.setBackoffAmount(1000);
+        scalingConfigurationForServiceOne.setId("service1");
+        scalingConfigurationForServiceOne.setInterval(1000);
+        scalingConfigurationForServiceOne.setMaxInstances(10);
+        scalingConfigurationForServiceOne.setMinInstances(1);
+        scalingConfigurationForServiceOne.setScalingProfile("scalingprofile");
+        scalingConfigurationForServiceOne.setScalingTarget("scalingtarget");
+        final ScalingConfiguration scalingConfigurationForServiceTwo = new ScalingConfiguration();
+        scalingConfigurationForServiceTwo.setBackoffAmount(1000);
+        scalingConfigurationForServiceTwo.setId("service2");
+        scalingConfigurationForServiceTwo.setInterval(1000);
+        scalingConfigurationForServiceTwo.setMaxInstances(3);
+        scalingConfigurationForServiceTwo.setMinInstances(1);
+        scalingConfigurationForServiceTwo.setScalingProfile("scalingprofile");
+        scalingConfigurationForServiceTwo.setScalingTarget("scalingtarget");
+
+        governor.register(scalingConfigurationForServiceOne);
+        governor.register(scalingConfigurationForServiceTwo);
+
+        final InstanceInfo firstServiceInstanceInfo = new InstanceInfo(0, 0, Collections.emptyList(), 1, 0);
+        governor.recordInstances(scalingConfigurationForServiceOne.getId(), firstServiceInstanceInfo);
+        final InstanceInfo secondServiceInstanceInfo = new InstanceInfo(1, 0, Collections.emptyList());
+        governor.recordInstances(scalingConfigurationForServiceTwo.getId(), secondServiceInstanceInfo);
+
+        final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 3);
+
+        final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceTwo.getId(), scalingAction,
+                new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.STAGE_1));
+
+        Assert.assertEquals(2, governedAction.getAmount());
+        Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
+    }
+
+    /**
+     * Test that a scale up is allowed when other services have been scaled down because of the message broker memory high and
+     * disk space low backoff.
+     */
+    @Test
+    public void testScalingWhenMemoryAndDiskLimitReachedAndBackPressureBackOffInProgressMaxInstanceProtection() {
+        final Governor governor = new GovernorImpl(1, 3, 5);
+        final ScalingConfiguration scalingConfigurationForServiceOne = new ScalingConfiguration();
+        scalingConfigurationForServiceOne.setBackoffAmount(1000);
+        scalingConfigurationForServiceOne.setId("service1");
+        scalingConfigurationForServiceOne.setInterval(1000);
+        scalingConfigurationForServiceOne.setMaxInstances(10);
+        scalingConfigurationForServiceOne.setMinInstances(1);
+        scalingConfigurationForServiceOne.setScalingProfile("scalingprofile");
+        scalingConfigurationForServiceOne.setScalingTarget("scalingtarget");
+        final ScalingConfiguration scalingConfigurationForServiceTwo = new ScalingConfiguration();
+        scalingConfigurationForServiceTwo.setBackoffAmount(1000);
+        scalingConfigurationForServiceTwo.setId("service2");
+        scalingConfigurationForServiceTwo.setInterval(1000);
+        scalingConfigurationForServiceTwo.setMaxInstances(3);
+        scalingConfigurationForServiceTwo.setMinInstances(1);
+        scalingConfigurationForServiceTwo.setScalingProfile("scalingprofile");
+        scalingConfigurationForServiceTwo.setScalingTarget("scalingtarget");
+
+        governor.register(scalingConfigurationForServiceOne);
+        governor.register(scalingConfigurationForServiceTwo);
+
+        final InstanceInfo firstServiceInstanceInfo = new InstanceInfo(0, 0, Collections.emptyList(), 1, 0);
+        governor.recordInstances(scalingConfigurationForServiceOne.getId(), firstServiceInstanceInfo);
+        final InstanceInfo secondServiceInstanceInfo = new InstanceInfo(1, 0, Collections.emptyList());
+        governor.recordInstances(scalingConfigurationForServiceTwo.getId(), secondServiceInstanceInfo);
+
+        final ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 3);
+
+        final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceTwo.getId(), scalingAction,
+                new ResourceLimitStagesReached(ResourceLimitStage.STAGE_1, ResourceLimitStage.STAGE_1));
 
         Assert.assertEquals(2, governedAction.getAmount());
         Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());

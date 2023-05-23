@@ -50,4 +50,13 @@ public final class AlertDispatchConfiguration
     {
         return alertDispatchFrequency;
     }
+
+    @Override
+    public String toString()
+    {
+        return "AlertDispatchConfiguration{" +
+                "disableAlertDispatch=" + disableAlertDispatch +
+                ", alertDispatchFrequency=" + alertDispatchFrequency +
+                '}';
+    }
 }

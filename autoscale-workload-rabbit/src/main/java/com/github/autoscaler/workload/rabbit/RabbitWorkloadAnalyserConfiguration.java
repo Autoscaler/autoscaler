@@ -71,7 +71,7 @@ public class RabbitWorkloadAnalyserConfiguration
     private Map<String, RabbitWorkloadProfile> profiles;
 
     @NotNull
-    private int memoryQueryRequestFrequency;
+    private int resourceQueryRequestFrequency;
 
     private String stagingQueueIndicator;
 
@@ -137,14 +137,14 @@ public class RabbitWorkloadAnalyserConfiguration
         this.profiles = profiles;
     }
 
-    public void setMemoryQueryRequestFrequency(final int memoryQueryRequestFrequency)
+    public void setResourceQueryRequestFrequency(final int resourceQueryRequestFrequency)
     {
-        this.memoryQueryRequestFrequency = memoryQueryRequestFrequency;
+        this.resourceQueryRequestFrequency = resourceQueryRequestFrequency;
     }
 
-    public int getMemoryQueryRequestFrequency()
+    public int getResourceQueryRequestFrequency()
     {
-        return memoryQueryRequestFrequency;
+        return resourceQueryRequestFrequency;
     }
 
     public String getStagingQueueIndicator()
@@ -155,5 +155,19 @@ public class RabbitWorkloadAnalyserConfiguration
     public void setStagingQueueIndicator(final String stagingQueueIndicator)
     {
         this.stagingQueueIndicator = stagingQueueIndicator;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "RabbitWorkloadAnalyserConfiguration{" +
+                "rabbitManagementEndpoint=" + rabbitManagementEndpoint +
+                ", rabbitManagementUser=" + rabbitManagementUser +
+                ", rabbitManagementPassword=<HIDDEN>" +
+                ", vhost=" + vhost +
+                ", profiles=" + profiles +
+                ", resourceQueryRequestFrequency=" + resourceQueryRequestFrequency +
+                ", stagingQueueIndicator=" + stagingQueueIndicator +
+                '}';
     }
 }

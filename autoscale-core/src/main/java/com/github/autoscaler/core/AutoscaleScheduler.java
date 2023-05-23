@@ -110,10 +110,11 @@ public class AutoscaleScheduler implements HealthReporter
             Map<String, ScalingConfiguration> acquiredMap = acquired.stream().collect(toMap(ScalingConfiguration::getId, c -> c));
             getServicesToCancel(scheduledServices.keySet(), acquiredMap).forEach(this::cancel);
             int delay = 0;
-            final Alerter alerter = new Alerter(alertDispatchers, alertConfig);
+            final Alerter memoryOverloadAlerter = new Alerter(alertDispatchers, alertConfig);
+            final Alerter diskSpaceLowAlerter = new Alerter(alertDispatchers, alertConfig);
             for ( ScalingConfiguration s : getServicesToSchedule(scheduledServices, acquiredMap) ) {
                 try {
-                    scheduleOrReschedule(s, getAnalyser(s), INITIAL_SCALING_DELAY + delay++, alerter);
+                    scheduleOrReschedule(s, getAnalyser(s), INITIAL_SCALING_DELAY + delay++, memoryOverloadAlerter, diskSpaceLowAlerter);
                 } catch (ScalerException e) {
                     LOG.error("Failed to schedule service {}", s.getId(), e);
                     cancel(s.getId());
@@ -189,7 +190,7 @@ public class AutoscaleScheduler implements HealthReporter
      * @param initialDelay the initial delay before the scheduled thread kicks off
      */
     private void scheduleOrReschedule(final ScalingConfiguration config, final WorkloadAnalyser analyser, final int initialDelay,
-                                      final Alerter alerter)
+                                      final Alerter memoryOverloadAlerter, final Alerter diskSpaceLowAlerter)
     {
         LOG.debug("Scheduling service {}", config.getId());
         // if we're already monitoring this service (ie. we're updating it), cancel the current ScalerThread
@@ -202,7 +203,8 @@ public class AutoscaleScheduler implements HealthReporter
                                                                                    config.getBackoffAmount(),
                                                                                    config.getScaleUpBackoffAmount(),
                                                                                    config.getScaleDownBackoffAmount(),
-                                                                                   alerter,
+                                                                                   memoryOverloadAlerter,
+                                                                                   diskSpaceLowAlerter,
                                                                                    resourceConfig);
         governor.registerListener(config.getId(), scalerThread);
         final ScheduledFuture future = scheduler.scheduleWithFixedDelay(scalerThread, initialDelay, config.getInterval(),

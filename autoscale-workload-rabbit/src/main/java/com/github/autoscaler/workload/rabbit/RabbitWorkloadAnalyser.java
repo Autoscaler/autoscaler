@@ -19,6 +19,7 @@ package com.github.autoscaler.workload.rabbit;
 import static java.util.stream.Collectors.toList;
 
 import com.github.autoscaler.api.InstanceInfo;
+import com.github.autoscaler.api.ResourceUtilisation;
 import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.ScalingAction;
 import com.github.autoscaler.api.ScalingOperation;
@@ -64,16 +65,14 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     }
 
     /**
-     * This method will determine and return the percentage of the high watermark memory allowance being utilised at present by RabbitMQ
+     * This method will determine and return the current resource utilisation of RabbitMQ
      *
-     * @return The percentage being utilised
+     * @return the current resource utilisation
      */
     @Override
-    public double getCurrentMemoryLoad() throws ScalerException
+    public ResourceUtilisation getCurrentResourceUtilisation() throws ScalerException
     {
-        final double memoryConsumption = rabbitResourceMonitor.getCurrentMemoryComsumption();
-        LOG.debug("Current memory consumption {}% of total available memory.", memoryConsumption);
-        return memoryConsumption;
+        return rabbitResourceMonitor.getCurrentResourceUtilisation();
     }
 
 
@@ -220,5 +219,13 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
         return "To whom it may concern, \n"
             + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
             + "RabbitMQ has used " + percentageMem + "% of its high watermark memory allowance.\n";
+    }
+
+    @Override
+    public String getDiskSpaceLowWarning(final String diskFreeMb)
+    {
+        return "To whom it may concern, \n"
+                + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
+                + "RabbitMQ has only " + diskFreeMb + "MB of disk space free.\n";
     }
 }

@@ -50,7 +50,7 @@ public final class Alerter
         if (alertDispatchDisabled) {
             return;
         }
-        LOG.debug("Attempting to dispatch alert....");
+        LOG.debug("Attempting to dispatch alert containing message body: {}....", messageBody);
         if (dispatchApproved()) {
             synchronized (messageDispatchLock) {
                 if (dispatchApproved()) {

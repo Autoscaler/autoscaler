@@ -243,18 +243,18 @@ public class GovernorImpl implements Governor {
             return false;
         }
 
-        final int highestResourceLimitStageReached = Math.max(
+        final ResourceLimitStage highestResourceLimitStageReached = ResourceLimitStage.max(
                 resourceLimitStagesReached.getMemoryLimitStageReached(),
                 resourceLimitStagesReached.getDiskLimitStageReached());
 
         switch (highestResourceLimitStageReached) {
-            case 1: {
+            case STAGE_1: {
                 return shutdownPriority <= stageOneShutdownPriorityLimit;
             }
-            case 2: {
+            case STAGE_2: {
                 return shutdownPriority <= stageTwoShutdownPriorityLimit;
             }
-            case 3: {
+            case STAGE_3: {
                 return shutdownPriority <= stageThreeShutdownPriorityLimit;
             }
             default: {

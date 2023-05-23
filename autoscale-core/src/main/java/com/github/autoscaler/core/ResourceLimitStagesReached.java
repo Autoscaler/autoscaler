@@ -17,22 +17,22 @@ package com.github.autoscaler.core;
 
 public final class ResourceLimitStagesReached
 {
-    private final int memoryLimitStageReached;
+    private final ResourceLimitStage memoryLimitStageReached;
 
-    private final int diskLimitStageReached;
+    private final ResourceLimitStage diskLimitStageReached;
 
-    public ResourceLimitStagesReached(final int memoryLimitStageReached, final int diskLimitStageReached)
+    public ResourceLimitStagesReached(final ResourceLimitStage memoryLimitStageReached, final ResourceLimitStage diskLimitStageReached)
     {
         this.memoryLimitStageReached = memoryLimitStageReached;
         this.diskLimitStageReached = diskLimitStageReached;
     }
 
-    public int getMemoryLimitStageReached()
+    public ResourceLimitStage getMemoryLimitStageReached()
     {
         return memoryLimitStageReached;
     }
 
-    public int getDiskLimitStageReached()
+    public ResourceLimitStage getDiskLimitStageReached()
     {
         return diskLimitStageReached;
     }

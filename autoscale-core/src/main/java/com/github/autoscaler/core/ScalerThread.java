@@ -276,12 +276,13 @@ public class ScalerThread implements Runnable
 
         handleAlerterDispatch(resourceUtilisation);
 
-        final int highestResourceLimitStageReached = Math.max(
+        final ResourceLimitStage highestResourceLimitStageReached = ResourceLimitStage.max(
                 resourceLimitStagesReached.getMemoryLimitStageReached(),
                 resourceLimitStagesReached.getDiskLimitStageReached());
 
-        if (highestResourceLimitStageReached == 1 && shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
-            LOG.debug("Attempting to scale down service {} due to resource limit stage 1 being reached and " +
+        if (highestResourceLimitStageReached == ResourceLimitStage.STAGE_1 &&
+                shutdownPriority <= resourceConfig.getResourceLimitOneShutdownThreshold()) {
+            LOG.warn("Attempting to scale down service {} due to resource limit stage 1 being reached and " +
                             "shutdownPriority {} <= resourceLimitOneShutdownThreshold {}. The current resource limit stage is " +
                             "determined by the highest resource limit stage among: {}",
                     serviceRef,
@@ -291,8 +292,9 @@ public class ScalerThread implements Runnable
 
             scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
-        } else if (highestResourceLimitStageReached == 2 && shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
-            LOG.debug("Attempting to scale down service {} due to resource limit stage 2 being reached and " +
+        } else if (highestResourceLimitStageReached == ResourceLimitStage.STAGE_2 &&
+                shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
+            LOG.warn("Attempting to scale down service {} due to resource limit stage 2 being reached and " +
                             "shutdownPriority {} <= resourceLimitTwoShutdownThreshold {}. The current resource limit stage is " +
                             "determined by the highest resource limit stage among: {}",
                     serviceRef,
@@ -302,8 +304,9 @@ public class ScalerThread implements Runnable
 
             scaleDown(instances.getTotalRunningAndStageInstances());
             return true;
-        } else if (highestResourceLimitStageReached == 3 && shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
-            LOG.debug("Attempting to scale down service {} due to resource limit stage 3 being reached and " +
+        } else if (highestResourceLimitStageReached == ResourceLimitStage.STAGE_3 &&
+                shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
+            LOG.warn("Attempting to scale down service {} due to resource limit stage 3 being reached and " +
                             "shutdownPriority {} <= resourceLimitThreeShutdownThreshold {}. The current resource limit stage is " +
                             "determined by the highest resource limit stage among: {}",
                     serviceRef,
@@ -335,32 +338,32 @@ public class ScalerThread implements Runnable
     private ResourceLimitStagesReached establishResourceLimitStagesReached(final ResourceUtilisation resourceUtilisation)
     {
         final double memoryUsedPercent = resourceUtilisation.getMemoryUsedPercent();
-        final int memoryLimitStageReached;
+        final ResourceLimitStage memoryLimitStageReached;
         if (memoryUsedPercent >= resourceConfig.getMemoryUsedPercentLimitStageThree()) {
-            memoryLimitStageReached = 3;
+            memoryLimitStageReached = ResourceLimitStage.STAGE_3;
         } else if (memoryUsedPercent >= resourceConfig.getMemoryUsedPercentLimitStageTwo()) {
-            memoryLimitStageReached = 2;
+            memoryLimitStageReached = ResourceLimitStage.STAGE_2;
         } else if (memoryUsedPercent >= resourceConfig.getMemoryUsedPercentLimitStageOne()) {
-            memoryLimitStageReached = 1;
+            memoryLimitStageReached = ResourceLimitStage.STAGE_1;
         } else {
-            memoryLimitStageReached = 0;
+            memoryLimitStageReached = ResourceLimitStage.NO_STAGE;
         }
 
         final Optional<Integer> diskFreeMbOpt = resourceUtilisation.getDiskFreeMbOpt();
-        final int diskLimitStageReached;
+        final ResourceLimitStage diskLimitStageReached;
         if (diskFreeMbOpt.isPresent()) {
             final int diskFreeMb = diskFreeMbOpt.get();
             if (diskFreeMb <= resourceConfig.getDiskFreeMbLimitStageThree()) {
-                diskLimitStageReached = 3;
+                diskLimitStageReached = ResourceLimitStage.STAGE_3;
             } else if (diskFreeMb <= resourceConfig.getDiskFreeMbLimitStageTwo()) {
-                diskLimitStageReached = 2;
+                diskLimitStageReached = ResourceLimitStage.STAGE_2;
             } else if (diskFreeMb <= resourceConfig.getDiskFreeMbLimitStageOne()) {
-                diskLimitStageReached = 1;
+                diskLimitStageReached = ResourceLimitStage.STAGE_1;
             } else {
-                diskLimitStageReached = 0;
+                diskLimitStageReached = ResourceLimitStage.NO_STAGE;
             }
         } else {
-            diskLimitStageReached = 0;
+            diskLimitStageReached = ResourceLimitStage.NO_STAGE;
         }
 
         return new ResourceLimitStagesReached(memoryLimitStageReached, diskLimitStageReached);

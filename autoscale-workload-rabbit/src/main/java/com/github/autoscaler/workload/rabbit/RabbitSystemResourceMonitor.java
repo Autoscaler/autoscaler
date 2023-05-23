@@ -92,6 +92,6 @@ public final class RabbitSystemResourceMonitor
         if (lastTime == 0) {
             return true;
         }
-        return (System.currentTimeMillis() - lastTime) >= (resourceQueryRequestFrequency* 1000);
+        return (System.currentTimeMillis() - lastTime) >= (resourceQueryRequestFrequency * 1000);
     }
 }

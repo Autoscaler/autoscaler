@@ -82,7 +82,7 @@ Configuration supported through the following environment variables:
 
 - `CAF_AUTOSCALER_DISK_FREE_MB_ALERT_DISPATCH_THRESHOLD`  
   Default: `CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_1`  
-  Description: The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to dispatch alerts indicating that the messages platform is running out of disk space. If this configuration is not set then a message will be dispatched from the stage one alert threshold.
+  Description: The amount of disk space (MB) remaining on the messaging platform that will trigger the Autoscaler to dispatch alerts indicating that the messaging platform is running out of disk space. If this configuration is not set then a message will be dispatched from the stage one alert threshold.
 
 - `CAF_AUTOSCALER_MESSAGING_DISK_FREE_MB_LIMIT_STAGE_1`  
   Default: `400`  

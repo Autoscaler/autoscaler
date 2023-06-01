@@ -1,9 +1,0 @@
-- dockerRepositoryId: autoscaler/prereleases
-  imageName: autoscale-dockerswarm-rabbit
-  tag: "2.0.0-914"
-- dockerRepositoryId: autoscaler/prereleases
-  imageName: autoscale-kubernetes-rabbit
-  tag: "2.0.0-914"
-- dockerRepositoryId: autoscaler/prereleases
-  imageName: autoscale-marathon-rabbit
-  tag: "2.0.0-914"

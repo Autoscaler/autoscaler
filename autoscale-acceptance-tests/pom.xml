@@ -59,7 +59,7 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>0.26.1</version>
+                <version>0.43.4</version>
                 <executions>
                     <execution>
                         <id>start</id>
@@ -81,7 +81,7 @@
                     <verbose>true</verbose>
                     <watchInterval>500</watchInterval>
                     <logDate>default</logDate>
-                    <autoPull>on</autoPull>
+                    <containerNamePattern>%a-%t</containerNamePattern>
                     <images>
                         
                         <image>

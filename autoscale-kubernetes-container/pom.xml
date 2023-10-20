@@ -195,12 +195,6 @@
                     </images>
                 </configuration>
             </plugin>
-
-            <!-- Exclude the test and example configuration files when checking license headers -->
-            <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-            </plugin>
         </plugins>
     </build>
 

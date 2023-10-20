@@ -192,10 +192,14 @@
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration>
-                    <excludes combine.children="append">
-                        <exclude>example-configs/**</exclude>
-                        <exclude>src/test/resources/cfg_caf_autoscaler_autoscaler_RabbitWorkloadAnalyserConfiguration</exclude>
-                    </excludes>
+                    <licenseSets>
+                        <licenseSet>
+                            <excludes combine.children="append">
+                                <exclude>example-configs/**</exclude>
+                                <exclude>src/test/resources/cfg_caf_autoscaler_autoscaler_RabbitWorkloadAnalyserConfiguration</exclude>
+                            </excludes>
+                        </licenseSet>
+                    </licenseSets>
                 </configuration>
             </plugin>
         </plugins>

@@ -36,7 +36,7 @@ public class DockerSwarmAutoscaleConfigurationTest
         DockerSwarmAutoscaleConfiguration autoscaleConfiguration = new DockerSwarmAutoscaleConfiguration();
 
         autoscaleConfiguration.setEndpoint("http://TestEndpoint:8081");
-        autoscaleConfiguration.setTimeoutInSecs(new Long(10));
+        autoscaleConfiguration.setTimeoutInSecs(Long.valueOf(10));
         autoscaleConfiguration.setStackId("AnyOldStack");
         autoscaleConfiguration.setMaximumInstances(24);
         autoscaleConfiguration.setTlsVerify(true);

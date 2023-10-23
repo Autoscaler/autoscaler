@@ -62,7 +62,7 @@ public class HttpClientSupportTest {
     {
         DockerSwarmAutoscaleConfiguration config = new DockerSwarmAutoscaleConfiguration();
         config.setEndpoint("http://192.168.56.10:2375");
-        config.setTimeoutInSecs(new Long(10));
+        config.setTimeoutInSecs(Long.valueOf(10));
         return config;
     }
 

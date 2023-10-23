@@ -19,7 +19,7 @@ import com.hpe.caf.codec.JsonCodec;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * DockerSwarm configuration class - unit testing only.

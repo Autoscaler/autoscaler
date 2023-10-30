@@ -16,7 +16,7 @@
 package com.github.autoscaler.core;
 
 
-import io.dropwizard.Configuration;
+import io.dropwizard.core.Configuration;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

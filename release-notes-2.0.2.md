@@ -4,8 +4,8 @@ ${version-number}
 #### New Features
 - None
 
-#### Bug Fixes
-- Dependency updates only in this release.
+#### Patch Fixes Included
+- This release incldes OS package updates only.
 
 #### Known Issues
 - None

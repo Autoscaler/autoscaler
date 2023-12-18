@@ -25,15 +25,15 @@ import org.glassfish.jersey.client.ClientProperties;
 
 final class RabbitManagementApiFactory
 {
-    private static final int READ_TIMEOUT_SECONDS = 10;
-    private static final int CONNECT_TIMEOUT_SECONDS = 10;
+    private static final int READ_TIMEOUT_MILLISECONDS = 10000;
+    private static final int CONNECT_TIMEOUT_MILLISECONDS = 10000;
 
     public static RabbitManagementApi create(final String endpoint, final String user, final String password)
     {
 
         final Client client = ClientBuilder.newClient();
-        client.property(ClientProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT_SECONDS);
-        client.property(ClientProperties.READ_TIMEOUT, READ_TIMEOUT_SECONDS);
+        client.property(ClientProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT_MILLISECONDS);
+        client.property(ClientProperties.READ_TIMEOUT, READ_TIMEOUT_MILLISECONDS);
         final String credentials = user + ":" + password;
         final String authorizationHeaderValue
             = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));

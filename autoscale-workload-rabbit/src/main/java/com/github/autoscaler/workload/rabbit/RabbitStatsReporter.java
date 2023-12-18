@@ -52,7 +52,7 @@ public class RabbitStatsReporter
     private static final String RMQ_DELIVER_DETAILS = "deliver_get_details";
     private static final String RMQ_PUBLISH_DETAILS = "publish_details";
     private static final String RMQ_RATE = "rate";
-    private static final int RMQ_TIMEOUT = 10;
+    private static final int RMQ_TIMEOUT_MILLISECONDS = 10000;
     private static final int PAGE_SIZE = 100;
     private static final Logger LOG = LoggerFactory.getLogger(RabbitStatsReporter.class);
 
@@ -61,8 +61,8 @@ public class RabbitStatsReporter
         this.vhost = Objects.requireNonNull(vhost);
 
         final Client client = ClientBuilder.newClient();
-        client.property(ClientProperties.CONNECT_TIMEOUT, RMQ_TIMEOUT);
-        client.property(ClientProperties.READ_TIMEOUT, RMQ_TIMEOUT);
+        client.property(ClientProperties.CONNECT_TIMEOUT, RMQ_TIMEOUT_MILLISECONDS);
+        client.property(ClientProperties.READ_TIMEOUT, RMQ_TIMEOUT_MILLISECONDS);
         final String credentials = user + ":" + pass;
         final String authorizationHeaderValue
             = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));

@@ -15,6 +15,8 @@
  */
 package com.github.autoscaler.workload.rabbit;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Optional;
 
 import org.junit.Assert;
@@ -23,9 +25,7 @@ import org.mockito.Mockito;
 
 import com.github.autoscaler.api.ResourceUtilisation;
 
-import retrofit.client.Response;
-import retrofit.mime.TypedInput;
-import retrofit.mime.TypedString;
+import javax.ws.rs.core.Response;
 
 public class RabbitSystemResourceMonitorTest {
 
@@ -36,13 +36,13 @@ public class RabbitSystemResourceMonitorTest {
                 "{\"mem_limit\": 100000000, \"mem_used\": 50000000, \"disk_free\": 107374182400}," +  // Highest memory used in cluster
                 "{\"mem_limit\": 200000000, \"mem_used\": 0, \"disk_free\": 104857600}" +             // Lowest disk space free in cluster
                 "]";
-        final TypedInput typedInput = new TypedString(responseBody);
+        final InputStream responseStream = new ByteArrayInputStream(responseBody.getBytes());
 
         final Response mockResponse = Mockito.mock(Response.class);
-        Mockito.when(mockResponse.getBody()).thenReturn(typedInput);
+        Mockito.when(mockResponse.readEntity(InputStream.class)).thenReturn(responseStream);
 
-        RabbitManagementApiFactory.RabbitManagementApi mockRabbitManagementApi =
-                Mockito.mock(RabbitManagementApiFactory.RabbitManagementApi.class);
+        RabbitManagementApi mockRabbitManagementApi =
+                Mockito.mock(RabbitManagementApi.class);
         Mockito.when(mockRabbitManagementApi.getNodeStatus()).thenReturn(mockResponse);
 
         // Act
@@ -61,13 +61,13 @@ public class RabbitSystemResourceMonitorTest {
     public void testHandlesMissingPropertiesInRabbitMqResponse() throws Exception {
         // Arrange
         final String responseBody = "[{}]"; // No properties in response, this can happen if the node is down
-        final TypedInput typedInput = new TypedString(responseBody);
+        final InputStream responseStream = new ByteArrayInputStream(responseBody.getBytes());
 
         final Response mockResponse = Mockito.mock(Response.class);
-        Mockito.when(mockResponse.getBody()).thenReturn(typedInput);
+        Mockito.when(mockResponse.readEntity(InputStream.class)).thenReturn(responseStream);
 
-        RabbitManagementApiFactory.RabbitManagementApi mockRabbitManagementApi =
-                Mockito.mock(RabbitManagementApiFactory.RabbitManagementApi.class);
+        RabbitManagementApi mockRabbitManagementApi =
+                Mockito.mock(RabbitManagementApi.class);
         Mockito.when(mockRabbitManagementApi.getNodeStatus()).thenReturn(mockResponse);
 
         // Act

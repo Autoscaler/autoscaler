@@ -21,16 +21,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.WorkloadAnalyser;
 import com.github.autoscaler.api.WorkloadAnalyserFactory;
-import com.github.autoscaler.workload.rabbit.RabbitManagementApiFactory.RabbitManagementApi;
 import com.hpe.caf.api.HealthResult;
 import com.hpe.caf.api.HealthStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Objects;
-import retrofit.client.Response;
+
+import javax.ws.rs.core.Response;
 
 public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
 {
@@ -100,7 +101,7 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
     private boolean atLeastOneNodeRunning() throws ScalerException, IOException
     {
         final Response nodeStatusResponse = rabbitManagementApi.getNodeStatus();
-        final JsonNode nodeArray = objectMapper.readTree(nodeStatusResponse.getBody().in());
+        final JsonNode nodeArray = objectMapper.readTree(nodeStatusResponse.readEntity(InputStream.class));
         final Iterator<JsonNode> iterator = nodeArray.elements();
         while (iterator.hasNext()) {
             final JsonNode jsonNode = iterator.next();

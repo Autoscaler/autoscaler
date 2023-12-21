@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Open Text.
+ * Copyright 2015-2024 Open Text.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,27 +18,22 @@ package com.github.autoscaler.workload.rabbit;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.autoscaler.api.QueueNotFoundException;
 import com.github.autoscaler.api.ScalerException;
-import com.squareup.okhttp.OkHttpClient;
-import retrofit.ErrorHandler;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.OkClient;
-import retrofit.client.Response;
-import retrofit.http.GET;
-import retrofit.http.Path;
-import retrofit.http.Query;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,27 +52,21 @@ public class RabbitStatsReporter
     private static final String RMQ_DELIVER_DETAILS = "deliver_get_details";
     private static final String RMQ_PUBLISH_DETAILS = "publish_details";
     private static final String RMQ_RATE = "rate";
-    private static final int RMQ_TIMEOUT = 10;
+    private static final int RMQ_TIMEOUT_MILLISECONDS = 10000;
     private static final int PAGE_SIZE = 100;
     private static final Logger LOG = LoggerFactory.getLogger(RabbitStatsReporter.class);
 
     public RabbitStatsReporter(final String endpoint, final String user, final String pass, final String vhost)
     {
         this.vhost = Objects.requireNonNull(vhost);
-        String credentials = user + ":" + pass;
-        OkHttpClient ok = new OkHttpClient();
-        ok.setReadTimeout(RMQ_TIMEOUT, TimeUnit.SECONDS);
-        ok.setConnectTimeout(RMQ_TIMEOUT, TimeUnit.SECONDS);
-        // build up a RestAdapter that will automatically handle authentication for us
-        RestAdapter.Builder builder = new RestAdapter.Builder().setEndpoint(endpoint).setClient(new OkClient(ok));
-        builder.setRequestInterceptor(requestFacade -> {
-            String str = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
-            requestFacade.addHeader("Accept", "application/json");
-            requestFacade.addHeader("Authorization", str);
-        });
-        builder.setErrorHandler(new RabbitApiErrorHandler());
-        RestAdapter adapter = builder.build();
-        rabbitApi = adapter.create(RabbitManagementApi.class);
+
+        final Client client = ClientBuilder.newClient();
+        client.property(ClientProperties.CONNECT_TIMEOUT, RMQ_TIMEOUT_MILLISECONDS);
+        client.property(ClientProperties.READ_TIMEOUT, RMQ_TIMEOUT_MILLISECONDS);
+        final String credentials = user + ":" + pass;
+        final String authorizationHeaderValue
+            = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+        rabbitApi = new RabbitManagementApi(client, endpoint, authorizationHeaderValue);
     }
 
 
@@ -92,7 +81,7 @@ public class RabbitStatsReporter
     {
         try {
             Response res = rabbitApi.getQueueStatus(vhost, queueReference);
-            JsonNode root = mapper.readTree(res.getBody().in());
+            JsonNode root = mapper.readTree(res.readEntity(InputStream.class));
             int msgs = root.get(RMQ_MESSAGES_READY).asInt();
             JsonNode stats = root.get(RMQ_MESSAGE_STATS);
             double pubrate;
@@ -170,35 +159,4 @@ public class RabbitStatsReporter
         return stagingQueueStatsList;
     }
 
-    public interface RabbitManagementApi
-    {
-        @GET("/api/queues/{vhost}/{queue}")
-        Response getQueueStatus(@Path("vhost") final String vhost, @Path("queue") final String queueName)
-            throws ScalerException;
-
-        // The `use_regex` query param only works if pagination is used as well.
-        // See: https://groups.google.com/g/rabbitmq-users/c/Lgad24orwog/m/E_zoUtB3BQAJ
-        @GET("/api/queues/{vhost}?use_regex=true")
-        PagedQueues getPagedQueues(@Path("vhost") final String vhost,
-                                   @Query(value = "name", encodeValue = true) final String nameRegex,
-                                   @Query(value = "page", encodeValue = false) final int page,
-                                   @Query(value = "page_size", encodeValue = false) final int pageSize,
-                                   @Query(value = "columns", encodeValue = true) final String columnsCsvString)
-                throws ScalerException;
-    }
-
-
-    private static class RabbitApiErrorHandler implements ErrorHandler
-    {
-        @Override
-        public Throwable handleError(final RetrofitError retrofitError)
-        {
-            if (retrofitError.getResponse().getStatus() == 404) {
-                return new QueueNotFoundException(retrofitError.getUrl());
-            }
-
-            return new ScalerException("Failed to contact RabbitMQ management API using url " + retrofitError.getUrl() 
-                + ". RabbitMQ could be unavailable, will retry.", retrofitError);
-        }
-    }
 }

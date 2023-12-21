@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Open Text.
+ * Copyright 2015-2024 Open Text.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.autoscaler.api.ResourceUtilisation;
 import com.github.autoscaler.api.ScalerException;
-import com.github.autoscaler.workload.rabbit.RabbitManagementApiFactory.RabbitManagementApi;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Optional;
 
-import retrofit.client.Response;
+import javax.ws.rs.core.Response;
 
 public final class RabbitSystemResourceMonitor
 {
@@ -49,7 +50,7 @@ public final class RabbitSystemResourceMonitor
         if (shouldIssueRequest()) {
             try {
                 final Response response = rabbitManagementApi.getNodeStatus();
-                final JsonNode nodeArray = mapper.readTree(response.getBody().in());
+                final JsonNode nodeArray = mapper.readTree(response.readEntity(InputStream.class));
                 final Iterator<JsonNode> iterator = nodeArray.elements();
                 double highestMemUsedInCluster = 0;
                 Optional<Integer> lowestDiskFreeMbInClusterOpt = Optional.empty();

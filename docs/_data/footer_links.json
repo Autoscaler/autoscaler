@@ -8,7 +8,7 @@
         }
     }],
     "feedback_url": "https://github.com/Autoscaler/autoscaler/issues",
-    "copyright": "© 2015-2023 Open Text.",
+    "copyright": "© 2015-2024 Open Text.",
     "footer_logo": "assets/img/autoscaler-logo.png",
     "footer_columns": [{
     "title": {

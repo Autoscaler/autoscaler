@@ -32,6 +32,7 @@ final class RabbitManagementApiFactory
     {
 
         final Client client = ClientBuilder.newClient();
+        client.register(JacksonConfigurator.class);
         client.property(ClientProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT_MILLISECONDS);
         client.property(ClientProperties.READ_TIMEOUT, READ_TIMEOUT_MILLISECONDS);
         final String credentials = user + ":" + password;

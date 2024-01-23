@@ -22,18 +22,13 @@ import com.github.autoscaler.api.ScalerException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
-import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +47,6 @@ public class RabbitStatsReporter
     private static final String RMQ_DELIVER_DETAILS = "deliver_get_details";
     private static final String RMQ_PUBLISH_DETAILS = "publish_details";
     private static final String RMQ_RATE = "rate";
-    private static final int RMQ_TIMEOUT_MILLISECONDS = 10000;
     private static final int PAGE_SIZE = 100;
     private static final Logger LOG = LoggerFactory.getLogger(RabbitStatsReporter.class);
 
@@ -60,13 +54,7 @@ public class RabbitStatsReporter
     {
         this.vhost = Objects.requireNonNull(vhost);
 
-        final Client client = ClientBuilder.newClient();
-        client.property(ClientProperties.CONNECT_TIMEOUT, RMQ_TIMEOUT_MILLISECONDS);
-        client.property(ClientProperties.READ_TIMEOUT, RMQ_TIMEOUT_MILLISECONDS);
-        final String credentials = user + ":" + pass;
-        final String authorizationHeaderValue
-            = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
-        rabbitApi = new RabbitManagementApi(client, endpoint, authorizationHeaderValue);
+        rabbitApi = RabbitManagementApiFactory.create(endpoint, user, pass);
     }
 
 

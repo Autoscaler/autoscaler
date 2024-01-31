@@ -26,4 +26,9 @@ then
 fi
 
 cd /maven
-java $CAF_AUTOSCALER_JAVA_OPTS -cp "*" com.github.autoscaler.core.AutoscaleApplication server scaler.yaml
+java $CAF_AUTOSCALER_JAVA_OPTS \
+    -Dpolyglot.engine.WarnInterpreterOnly=false \
+    -cp "*" \
+    com.github.autoscaler.core.AutoscaleApplication \
+    server \
+    scaler.yaml

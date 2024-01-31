@@ -37,7 +37,12 @@ import static org.mockito.AdditionalAnswers.returnsSecondArg;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ResourceMonitoringConfiguration.class, Alerter.class })
-@PowerMockIgnore({"jdk.internal.reflect.*", "javax.net.ssl.*"})
+@PowerMockIgnore({
+    "com.sun.org.apache.xerces.*",
+    "javax.management.*",
+    "javax.xml.*",
+    "org.xml.*",
+})
 public class ScalerThreadTest
 {
     private final static String SERVICE_REF = "unitTest";
@@ -126,7 +131,7 @@ public class ScalerThreadTest
 
         t.run();
 
-        Mockito.verify(memoryOverloadAlerter, Mockito.times(1)).dispatchAlert(Mockito.anyString());
+        Mockito.verify(memoryOverloadAlerter, Mockito.times(1)).dispatchAlert(Mockito.any());
         Mockito.verify(scaler, Mockito.times(1)).scaleDown(SERVICE_REF, 1);
     }
 
@@ -166,7 +171,7 @@ public class ScalerThreadTest
 
         t.run();
 
-        Mockito.verify(diskSpaceLowAlerter, Mockito.times(1)).dispatchAlert(Mockito.anyString());
+        Mockito.verify(diskSpaceLowAlerter, Mockito.times(1)).dispatchAlert(Mockito.any());
         Mockito.verify(scaler, Mockito.times(1)).scaleDown(SERVICE_REF, 1);
     }
 

@@ -63,7 +63,7 @@ public class K8sHealthCheckTest {
         final AuthorizationV1Api authApi = PowerMockito.mock(AuthorizationV1Api.class);
         PowerMockito.whenNew(AuthorizationV1Api.class)
                 .withNoArguments().thenReturn(authApi);
-        when(authApi.createSelfSubjectAccessReview(body, "All", null, "true")).thenReturn(review);
+        when(authApi.createSelfSubjectAccessReview(body, "All", null, null, "true")).thenReturn(review);
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
         final List<String> mockNamespaces = Collections.singletonList("private");
@@ -92,7 +92,7 @@ public class K8sHealthCheckTest {
         final AuthorizationV1Api authApi = PowerMockito.mock(AuthorizationV1Api.class);
         PowerMockito.whenNew(AuthorizationV1Api.class)
                 .withNoArguments().thenReturn(authApi);
-        when(authApi.createSelfSubjectAccessReview(body, "All", null, "true")).thenReturn(review);
+        when(authApi.createSelfSubjectAccessReview(body, "All", null, null, "true")).thenReturn(review);
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
         final List<String> mockNamespaces = Collections.singletonList("private");
@@ -127,7 +127,7 @@ public class K8sHealthCheckTest {
         final AuthorizationV1Api authApi = PowerMockito.mock(AuthorizationV1Api.class);
         PowerMockito.whenNew(AuthorizationV1Api.class)
                 .withNoArguments().thenReturn(authApi);
-        when(authApi.createSelfSubjectAccessReview(body, "All", null, "true")).thenReturn(review);
+        when(authApi.createSelfSubjectAccessReview(body, "All", null, null, "true")).thenReturn(review);
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
         final List<String> mockNamespaces = Collections.singletonList("private");
@@ -164,7 +164,7 @@ public class K8sHealthCheckTest {
         final AuthorizationV1Api authApi = PowerMockito.mock(AuthorizationV1Api.class);
         PowerMockito.whenNew(AuthorizationV1Api.class)
                 .withNoArguments().thenReturn(authApi);
-        when(authApi.createSelfSubjectAccessReview(body, "All", null, "true")).thenReturn(review);
+        when(authApi.createSelfSubjectAccessReview(body, "All", null, null, "true")).thenReturn(review);
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
         final List<String> mockNamespaces = Collections.emptyList();

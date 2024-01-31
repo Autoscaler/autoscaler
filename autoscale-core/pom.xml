@@ -85,6 +85,10 @@
             <artifactId>caf-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -92,10 +96,15 @@
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
+        <!--
+            This is for compatibility with Hibernate Validator 8.
+            dropwizard-validation and jersey-bean-validation are referencing org.glassfish:jakarta.el so that has been excluded.
+            This can probably be removed when DropWizard is updated to use Hibernate Validator 8.
+        -->
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <scope>test</scope>
+            <groupId>org.glassfish.expressly</groupId>
+            <artifactId>expressly</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -105,9 +114,6 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <!-- Overriding parent version so mockito is compatible with powermock
-            https://github.com/mockito/mockito/issues/2568 -->
-            <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -117,7 +123,7 @@
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
+            <artifactId>powermock-api-mockito2</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -126,5 +132,20 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- Workaround https://github.com/powermock/powermock/issues/1094 -->
+                    <argLine>
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                    </argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

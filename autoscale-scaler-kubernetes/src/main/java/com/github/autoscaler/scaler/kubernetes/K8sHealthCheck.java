@@ -65,7 +65,7 @@ final class K8sHealthCheck
     {
         final List<String> namespaces = config.getNamespacesArray();
 
-        if(namespaces.size() > 0) {
+        if(!namespaces.isEmpty()) {
             for (final String namespace: namespaces) {
 
                 final V1ResourceAttributes resourceAttributes = new V1ResourceAttributes();
@@ -82,9 +82,14 @@ final class K8sHealthCheck
                 body.setKind("SelfSubjectAccessReview");
                 body.setSpec(spec);
 
+                final String dryRun = "All";
+                final String fieldManager = null;
+                final String fieldValidation = null;
+                final String pretty = "true";
+
                 final V1SelfSubjectAccessReview review;
                 try {
-                    review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, "All", null, "true");
+                    review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, dryRun, fieldManager, fieldValidation, pretty);
                 } catch (final ApiException e) {
                     throw new RuntimeException(e);
                 }

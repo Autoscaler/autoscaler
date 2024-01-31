@@ -101,7 +101,7 @@ public class K8sServiceScaler implements ServiceScaler
             int running = v1Deployment.getSpec().getReplicas();
             int staging = 0;
             if (appName != null) {
-                final KubectlGet kubectlGet = Kubectl.get(V1Pod.class)
+                final KubectlGet<V1Pod> kubectlGet = Kubectl.get(V1Pod.class)
                     .namespace(deploymentId.namespace);
                 final ListOptions listOptions = new ListOptions();
                 listOptions.setLabelSelector(String.format("app=%s", appName));
@@ -119,7 +119,7 @@ public class K8sServiceScaler implements ServiceScaler
             final InstanceInfo instanceInfo = new InstanceInfo(
                 running,
                 staging,
-                Collections.EMPTY_LIST,
+                Collections.emptyList(),
                 shutdownPriority,
                 running + staging);
             

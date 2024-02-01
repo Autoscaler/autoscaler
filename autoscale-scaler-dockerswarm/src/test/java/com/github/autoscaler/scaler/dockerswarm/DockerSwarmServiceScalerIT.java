@@ -30,7 +30,7 @@ import java.util.LinkedList;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -174,7 +174,7 @@ public class DockerSwarmServiceScalerIT
     {
         DockerSwarmAutoscaleConfiguration config = new DockerSwarmAutoscaleConfiguration();
         config.setEndpoint("http://192.168.56.10:2375");
-        config.setTimeoutInSecs(new Long(10));
+        config.setTimeoutInSecs(Long.valueOf(10));
         config.setMaximumInstances(10);
         return config;
     }

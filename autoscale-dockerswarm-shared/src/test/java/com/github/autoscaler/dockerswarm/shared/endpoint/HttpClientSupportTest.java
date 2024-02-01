@@ -25,7 +25,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * Unit tests for the HttpClientSupport class.
@@ -62,7 +62,7 @@ public class HttpClientSupportTest {
     {
         DockerSwarmAutoscaleConfiguration config = new DockerSwarmAutoscaleConfiguration();
         config.setEndpoint("http://192.168.56.10:2375");
-        config.setTimeoutInSecs(new Long(10));
+        config.setTimeoutInSecs(Long.valueOf(10));
         return config;
     }
 

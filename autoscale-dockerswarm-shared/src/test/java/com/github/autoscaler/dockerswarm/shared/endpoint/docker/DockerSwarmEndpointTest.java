@@ -19,6 +19,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -30,7 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
@@ -48,7 +49,7 @@ public class DockerSwarmEndpointTest
         // DockerSwarm dockerClient = buildDockerSwarmClient();
         
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("jsonServicesResponse.json");) {
-            String jsonContent = IOUtils.toString(is);
+            final String jsonContent = IOUtils.toString(is, StandardCharsets.UTF_8);
             DocumentContext documentContext = JsonPath.parse(jsonContent);
             Mockito.when(dockerClient.getServices()).thenReturn(documentContext);
             
@@ -63,7 +64,7 @@ public class DockerSwarmEndpointTest
         Assert.assertNotNull(document);
         ArrayList<Object> listOfServiceObjects = document.json();
 
-        Assert.assertTrue(listOfServiceObjects.size() > 0);
+        Assert.assertFalse(listOfServiceObjects.isEmpty());
 
         // get ID field
         Object firstItem = listOfServiceObjects.get(0);
@@ -74,7 +75,7 @@ public class DockerSwarmEndpointTest
 
         // Try getting all ids.
         LinkedList<String> allIds = document.read("$..ID", LinkedList.class);
-        Assert.assertTrue(allIds.size() > 0);
+        Assert.assertFalse(allIds.isEmpty());
         Assert.assertEquals("Service IDs match", "1go9020n17eyhufay1nbponlu", allIds.stream().findFirst().get());    
     }
 }

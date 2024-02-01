@@ -57,11 +57,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -101,7 +96,6 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>${fabric8.docker.maven.version}</version>
                 <executions>
                     <execution>
                         <id>start</id>
@@ -123,7 +117,7 @@
                     <verbose>true</verbose>
                     <watchInterval>500</watchInterval>
                     <logDate>default</logDate>
-                    <autoPull>on</autoPull>
+                    <containerNamePattern>%a-%t</containerNamePattern>
                     <images>
                         
                         <image>
@@ -337,12 +331,6 @@
             </plugin>
         </plugins>
     </build>
-    
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
 
     <profiles>
         <profile>

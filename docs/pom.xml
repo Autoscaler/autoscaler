@@ -43,7 +43,6 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>${fabric8.docker.maven.version}</version>
                 <executions>
                     <execution>
                         <id>docker-compile</id>
@@ -62,6 +61,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <containerNamePattern>%a-%t</containerNamePattern>
                     <images>
                         <!-- Used to provide the source code to the compiler -->
                         <image>
@@ -151,7 +151,6 @@
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
-                <version>1.3.0</version>
                 <executions>
                     <execution>
                         <id>download-target-file</id>
@@ -174,9 +173,13 @@
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration>
-                    <includes>
-                        <include>pom.xml</include>
-                    </includes>
+                    <licenseSets>
+                        <licenseSet>
+                            <includes>
+                                <include>pom.xml</include>
+                            </includes>
+                        </licenseSet>
+                    </licenseSets>
                 </configuration>
             </plugin>
         </plugins>

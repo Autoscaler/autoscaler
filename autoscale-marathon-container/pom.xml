@@ -109,7 +109,6 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>${fabric8.docker.maven.version}</version>
                 <executions>
                     <execution>
                         <id>start</id>
@@ -135,6 +134,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <containerNamePattern>%a-%t</containerNamePattern>
                     <watchInterval>500</watchInterval>
                     <logDate>default</logDate>
                     <verbose>true</verbose>
@@ -192,10 +192,14 @@
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration>
-                    <excludes combine.children="append">
-                        <exclude>example-configs/**</exclude>
-                        <exclude>src/test/resources/cfg_caf_autoscaler_autoscaler_RabbitWorkloadAnalyserConfiguration</exclude>
-                    </excludes>
+                    <licenseSets>
+                        <licenseSet>
+                            <excludes combine.children="append">
+                                <exclude>example-configs/**</exclude>
+                                <exclude>src/test/resources/cfg_caf_autoscaler_autoscaler_RabbitWorkloadAnalyserConfiguration</exclude>
+                            </excludes>
+                        </licenseSet>
+                    </licenseSets>
                 </configuration>
             </plugin>
         </plugins>

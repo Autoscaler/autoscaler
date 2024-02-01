@@ -22,6 +22,7 @@ import mesosphere.marathon.client.Marathon;
 import mesosphere.marathon.client.MarathonException;
 import mesosphere.marathon.client.model.v2.Group;
 import mesosphere.marathon.client.model.v2.VersionedApp;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -119,7 +120,7 @@ public class MarathonServiceSourceTest
         Set<ScalingConfiguration> services = marathonServiceSource.getServices();
 
         Assert.assertEquals(2, services.size());
-        Assert.assertThat(services, Matchers.containsInAnyOrder(
+        MatcherAssert.assertThat(services, Matchers.containsInAnyOrder(
                 hasProperty("id", is(app1.getId())),
                 hasProperty("id", is(app2.getId()))
         ));

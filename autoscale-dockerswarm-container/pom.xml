@@ -95,9 +95,9 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>${fabric8.docker.maven.version}</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <containerNamePattern>%a-%t</containerNamePattern>
                     <watchInterval>500</watchInterval>
                     <logDate>default</logDate>
                     <verbose>true</verbose>
@@ -154,7 +154,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
                 <executions>
                     <execution>
                         <id>process-config-files</id>
@@ -196,9 +195,13 @@
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration>
-                    <excludes combine.children="append">
-                        <exclude>src/main/deployment/**</exclude>
-                    </excludes>
+                    <licenseSets>
+                        <licenseSet>
+                            <excludes combine.children="append">
+                                <exclude>src/main/deployment/**</exclude>
+                            </excludes>
+                        </licenseSet>
+                    </licenseSets>
                 </configuration>
             </plugin>
         </plugins>

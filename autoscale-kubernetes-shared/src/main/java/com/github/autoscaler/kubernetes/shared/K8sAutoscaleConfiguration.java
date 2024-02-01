@@ -17,8 +17,8 @@ package com.github.autoscaler.kubernetes.shared;
 
 import static java.util.stream.Collectors.toList;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.stream.Stream;
 

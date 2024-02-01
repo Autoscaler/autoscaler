@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Optional;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 public final class RabbitSystemResourceMonitor
 {

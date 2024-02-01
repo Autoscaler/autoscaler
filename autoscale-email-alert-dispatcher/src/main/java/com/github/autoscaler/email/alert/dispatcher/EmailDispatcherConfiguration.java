@@ -15,7 +15,7 @@
  */
 package com.github.autoscaler.email.alert.dispatcher;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public final class EmailDispatcherConfiguration
 {

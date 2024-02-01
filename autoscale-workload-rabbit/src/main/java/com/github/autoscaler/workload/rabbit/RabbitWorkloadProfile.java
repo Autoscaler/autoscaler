@@ -16,7 +16,7 @@
 package com.github.autoscaler.workload.rabbit;
 
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 
 
 /**

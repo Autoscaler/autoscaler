@@ -82,14 +82,14 @@ final class K8sHealthCheck
                 body.setKind("SelfSubjectAccessReview");
                 body.setSpec(spec);
 
-                final String dryRun = "All";
-                final String fieldManager = null;
-                final String fieldValidation = null;
-                final String pretty = "true";
-
                 final V1SelfSubjectAccessReview review;
                 try {
-                    review = new AuthorizationV1Api().createSelfSubjectAccessReview(body, dryRun, fieldManager, fieldValidation, pretty);
+                    review = new AuthorizationV1Api().createSelfSubjectAccessReview(body)
+                        .dryRun("All")
+                        .fieldManager(null)
+                        .fieldValidation(null)
+                        .pretty("true")
+                        .execute();
                 } catch (final ApiException e) {
                     throw new RuntimeException(e);
                 }

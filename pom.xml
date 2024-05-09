@@ -1186,7 +1186,7 @@
                         <image>
                             <repository>${dockerHubPublic}/library/rabbitmq</repository>
                             <tag>3.7.5-management</tag>
-                            <digest>sha256:c51d1c73d02843c3abdaffddc72c15456a66affd158646d7031f59f24649e49b</digest>
+                            <digest>sha256:b986e661e6e906b62d64f7625fa136f99c95dee13ae27c7640cdff756e44d29e</digest>
                             <latestTag>management</latestTag>
                         </image>
                         <image>

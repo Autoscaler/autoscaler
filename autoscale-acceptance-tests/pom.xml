@@ -122,7 +122,7 @@
                         
                         <image>
                             <alias>zookeeper</alias>
-                            <name>${dockerHubPublic}/library/zookeeper:3.5</name>
+                            <name>${projectDockerRegistry}/library/zookeeper</name>
                             <run>
                                 <ports>
                                     <port>${zookeeper.port}:2181</port>
@@ -144,7 +144,7 @@
                         
                         <image>
                             <alias>mesos-master</alias>
-                            <name>${dockerHubPublic}/mesosphere/mesos-master:1.5.0</name>
+                            <name>${dockerHubPublic}/mesosphere/mesos-master</name>
                             <run>
                                 <ports>
                                     <port>${mesos.port}:5050</port>
@@ -175,7 +175,7 @@
                         
                         <image>
                             <alias>mesos-agent</alias>
-                            <name>${dockerHubPublic}/mesosphere/mesos-agent:1.6.2</name>
+                            <name>${projectDockerRegistry}/mesosphere/mesos-agent</name>
                             <run>
                                 <ports>
                                     <port>${mesos.agent.port}:5051</port>
@@ -216,7 +216,7 @@
                         
                         <image>
                             <alias>marathon</alias>
-                            <name>${dockerHubPublic}/mesosphere/marathon:v1.6.352</name>
+                            <name>${projectDockerRegistry}/mesosphere/marathon</name>
                             <run>
                                 <ports>
                                     <port>${marathon.port}:8080</port>
@@ -243,7 +243,7 @@
                         
                         <image>
                             <alias>rabbitmq</alias>
-                            <name>${dockerHubPublic}/library/rabbitmq:3.7.5-management</name>
+                            <name>${projectDockerRegistry}/library/rabbitmq</name>
                             <run>
                                 <ports>
                                     <port>${rabbitmq.nodePort}:5672</port>

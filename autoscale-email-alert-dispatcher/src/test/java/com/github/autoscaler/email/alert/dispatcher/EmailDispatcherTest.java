@@ -15,7 +15,6 @@
  */
 package com.github.autoscaler.email.alert.dispatcher;
 
-import com.github.autoscaler.api.ScalerException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;

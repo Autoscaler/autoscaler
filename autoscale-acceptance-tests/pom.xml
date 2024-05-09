@@ -144,7 +144,7 @@
                         
                         <image>
                             <alias>mesos-master</alias>
-                            <name>${dockerHubPublic}/mesosphere/mesos-master</name>
+                            <name>${projectDockerRegistry}/mesosphere/mesos-master</name>
                             <run>
                                 <ports>
                                     <port>${mesos.port}:5050</port>

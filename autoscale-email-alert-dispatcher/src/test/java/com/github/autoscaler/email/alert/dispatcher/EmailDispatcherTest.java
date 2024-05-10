@@ -32,8 +32,8 @@ public class EmailDispatcherTest {
         try {
             EmailDispatcher emailDispatcher = new EmailDispatcher(emailDispatcherConfiguration);
             emailDispatcher.dispatch("hello, this is a test email");
-        } catch (Exception e) {
-            Assert.fail("Error while trying to dispatch mail.");
+        } catch (final Exception e) {
+            Assert.fail("Error while trying to dispatch mail: " + e);
         }
     }
 }

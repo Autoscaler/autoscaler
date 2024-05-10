@@ -44,7 +44,7 @@
         <dockerAutoscalerOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerAutoscalerOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
         <projectDockerRegistry>autoscaler-${project.version}.project-registries.local</projectDockerRegistry>
-        <docker.base.java.image>${projectDockerRegistry}/cafapi/opensuse-jre17</docker.base.java.image>        
+        <docker.base.java.image>${projectDockerRegistry}/cafapi/opensuse-jre17</docker.base.java.image>
     </properties>
 
     <licenses>

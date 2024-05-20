@@ -74,23 +74,23 @@ final class K8sHealthCheck
                 resourceAttributes.setVerb("patch");
                 resourceAttributes.setNamespace(namespace);
 
-                final V1SelfSubjectAccessReviewSpec spec = new V1SelfSubjectAccessReviewSpec();
+                final V1SelfSubjectAccessReviewSpec spec = V1SelfSubjectAccessReviewSpecFactory.createSelfSubjectAccessReviewSpec();
                 spec.setResourceAttributes(resourceAttributes);
 
-                final V1SelfSubjectAccessReview body = new V1SelfSubjectAccessReview();
+                final V1SelfSubjectAccessReview body = V1SelfSubjectAccessReviewFactory.createSelfSubjectAccessReview();
                 body.setApiVersion("authorization.k8s.io/v1");
                 body.setKind("SelfSubjectAccessReview");
                 body.setSpec(spec);
 
                 final V1SelfSubjectAccessReview review;
                 try {
-                    review = new AuthorizationV1Api().createSelfSubjectAccessReview(body)
+                    review = AuthorizationV1ApiFactory.createAuthorizationV1Api().createSelfSubjectAccessReview(body)
                         .dryRun("All")
                         .fieldManager(null)
                         .fieldValidation(null)
                         .pretty("true")
                         .execute();
-                } catch (final ApiException e) {
+                } catch (final Exception e) {
                     throw new RuntimeException(e);
                 }
 

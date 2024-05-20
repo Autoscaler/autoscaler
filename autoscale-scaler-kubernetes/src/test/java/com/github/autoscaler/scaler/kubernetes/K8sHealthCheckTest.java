@@ -26,28 +26,25 @@ import io.kubernetes.client.openapi.models.*;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ Kubectl.class, K8sHealthCheck.class })
-@PowerMockIgnore({"jdk.internal.reflect.*", "javax.net.ssl.*"})
+@RunWith(MockitoJUnitRunner.class)
 public class K8sHealthCheckTest {
 
     @Test
     public void testHealthCheck_ReturnHealthy() throws Exception {
         final KubectlVersion version = Mockito.mock(KubectlVersion.class);
         final VersionInfo info = Mockito.mock(VersionInfo.class);
-        PowerMockito.mockStatic(Kubectl.class);
+        final MockedStatic<Kubectl> kubectlMockedStatic = Mockito.mockStatic(Kubectl.class);
         when(Kubectl.version()).thenReturn(version);
         when(Kubectl.version().execute()).thenReturn(info);
 
@@ -56,15 +53,16 @@ public class K8sHealthCheckTest {
         final V1SelfSubjectAccessReview review = new V1SelfSubjectAccessReview();
         review.setStatus(status);
 
-        final V1SelfSubjectAccessReview body = PowerMockito.mock(V1SelfSubjectAccessReview.class);
-        PowerMockito.whenNew(V1SelfSubjectAccessReview.class)
-                .withNoArguments().thenReturn(body);
+        final V1SelfSubjectAccessReview body = Mockito.mock(V1SelfSubjectAccessReview.class);
+        final MockedStatic<V1SelfSubjectAccessReviewFactory> v1SelfSubjectAccessReviewFactory =
+                Mockito.mockStatic(V1SelfSubjectAccessReviewFactory.class);
+        when(V1SelfSubjectAccessReviewFactory.createSelfSubjectAccessReview()).thenReturn(body);
 
-        final AuthorizationV1Api authApi = PowerMockito.mock(AuthorizationV1Api.class);
-        PowerMockito.whenNew(AuthorizationV1Api.class)
-                .withNoArguments().thenReturn(authApi);
+        final AuthorizationV1Api authApi = Mockito.mock(AuthorizationV1Api.class);
+        final MockedStatic<AuthorizationV1ApiFactory> authorizationV1ApiFactoryMockedStatic = Mockito.mockStatic(AuthorizationV1ApiFactory.class);
+        when(AuthorizationV1ApiFactory.createAuthorizationV1Api()).thenReturn(authApi);
         final AuthorizationV1Api.APIcreateSelfSubjectAccessReviewRequest requestBuilder
-            = PowerMockito.mock(AuthorizationV1Api.APIcreateSelfSubjectAccessReviewRequest.class);
+            = Mockito.mock(AuthorizationV1Api.APIcreateSelfSubjectAccessReviewRequest.class);
         when(authApi.createSelfSubjectAccessReview(body)).thenReturn(requestBuilder);
         when(requestBuilder.dryRun("All")).thenReturn(requestBuilder);
         when(requestBuilder.fieldManager(null)).thenReturn(requestBuilder);
@@ -78,18 +76,21 @@ public class K8sHealthCheckTest {
         final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 
         assertEquals(HealthResult.RESULT_HEALTHY, serviceScaler.healthCheck());
+
+        kubectlMockedStatic.close();
+        authorizationV1ApiFactoryMockedStatic.close();
     }
 
     @Test
     public void testHealthCheck_ReturnUnhealthyConnectionError() throws Exception {
         final KubectlVersion version = Mockito.mock(KubectlVersion.class);
-        PowerMockito.mockStatic(Kubectl.class);
-        when(Kubectl.version()).thenReturn(version);
-        when(Kubectl.version().execute()).thenThrow(new KubectlException("Error connecting to Kubernetes"));
+        final MockedStatic<Kubectl> kubectlMockedStatic = Mockito.mockStatic(Kubectl.class);
+        lenient().when(Kubectl.version()).thenReturn(version);
+        lenient().when(Kubectl.version().execute()).thenThrow(new KubectlException("Error connecting to Kubernetes"));
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
         final List<String> mockNamespaces = Collections.singletonList("private");
-        when(config.getNamespacesArray()).thenReturn(mockNamespaces);
+        lenient().when(config.getNamespacesArray()).thenReturn(mockNamespaces);
         final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 
         final HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY,
@@ -98,13 +99,14 @@ public class K8sHealthCheckTest {
 
         assertEquals(expectedResult.getStatus(), actualResult.getStatus());
         assertEquals(expectedResult.getMessage(), actualResult.getMessage());
+        kubectlMockedStatic.close();
     }
 
     @Test
     public void testHealthCheck_ReturnUnhealthyPermissionError() throws Exception {
         final KubectlVersion version = Mockito.mock(KubectlVersion.class);
         final VersionInfo info = Mockito.mock(VersionInfo.class);
-        PowerMockito.mockStatic(Kubectl.class);
+        final MockedStatic<Kubectl> kubectlMockedStatic = Mockito.mockStatic(Kubectl.class);
         when(Kubectl.version()).thenReturn(version);
         when(Kubectl.version().execute()).thenReturn(info);
 
@@ -113,15 +115,16 @@ public class K8sHealthCheckTest {
         final V1SelfSubjectAccessReview review = new V1SelfSubjectAccessReview();
         review.setStatus(status);
 
-        final V1SelfSubjectAccessReview body = PowerMockito.mock(V1SelfSubjectAccessReview.class);
-        PowerMockito.whenNew(V1SelfSubjectAccessReview.class)
-                .withNoArguments().thenReturn(body);
+        final V1SelfSubjectAccessReview body = Mockito.mock(V1SelfSubjectAccessReview.class);
+        final MockedStatic<V1SelfSubjectAccessReviewFactory> v1SelfSubjectAccessReviewFactoryMockedStatic =
+                Mockito.mockStatic(V1SelfSubjectAccessReviewFactory.class);
+        when(V1SelfSubjectAccessReviewFactory.createSelfSubjectAccessReview()).thenReturn(body);
 
-        final AuthorizationV1Api authApi = PowerMockito.mock(AuthorizationV1Api.class);
-        PowerMockito.whenNew(AuthorizationV1Api.class)
-                .withNoArguments().thenReturn(authApi);
+        final AuthorizationV1Api authApi = Mockito.mock(AuthorizationV1Api.class);
+        final MockedStatic<AuthorizationV1ApiFactory> authorizationV1ApiFactoryMockedStatic = Mockito.mockStatic(AuthorizationV1ApiFactory.class);
+        when(AuthorizationV1ApiFactory.createAuthorizationV1Api()).thenReturn(authApi);
         final AuthorizationV1Api.APIcreateSelfSubjectAccessReviewRequest requestBuilder
-            = PowerMockito.mock(AuthorizationV1Api.APIcreateSelfSubjectAccessReviewRequest.class);
+            = Mockito.mock(AuthorizationV1Api.APIcreateSelfSubjectAccessReviewRequest.class);
         when(authApi.createSelfSubjectAccessReview(body)).thenReturn(requestBuilder);
         when(requestBuilder.dryRun("All")).thenReturn(requestBuilder);
         when(requestBuilder.fieldManager(null)).thenReturn(requestBuilder);
@@ -141,6 +144,10 @@ public class K8sHealthCheckTest {
 
         assertEquals(expectedResult.getStatus(), actualResult.getStatus());
         assertEquals(expectedResult.getMessage(), actualResult.getMessage());
+
+        kubectlMockedStatic.close();
+        v1SelfSubjectAccessReviewFactoryMockedStatic.close();
+        authorizationV1ApiFactoryMockedStatic.close();
     }
 
     @Test
@@ -148,7 +155,7 @@ public class K8sHealthCheckTest {
     {
         final KubectlVersion version = Mockito.mock(KubectlVersion.class);
         final VersionInfo info = Mockito.mock(VersionInfo.class);
-        PowerMockito.mockStatic(Kubectl.class);
+        final MockedStatic<Kubectl> kubectlMockedStatic = Mockito.mockStatic(Kubectl.class);
         when(Kubectl.version()).thenReturn(version);
         when(Kubectl.version().execute()).thenReturn(info);
 
@@ -162,5 +169,7 @@ public class K8sHealthCheckTest {
 
         assertEquals(expectedResult.getStatus(), actualResult.getStatus());
         assertEquals(expectedResult.getMessage(), actualResult.getMessage());
+
+        kubectlMockedStatic.close();
     }
 }

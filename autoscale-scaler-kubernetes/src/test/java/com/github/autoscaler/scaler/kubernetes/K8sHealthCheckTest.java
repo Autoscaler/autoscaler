@@ -54,7 +54,7 @@ public class K8sHealthCheckTest {
         review.setStatus(status);
 
         final V1SelfSubjectAccessReview body = Mockito.mock(V1SelfSubjectAccessReview.class);
-        final MockedStatic<V1SelfSubjectAccessReviewFactory> v1SelfSubjectAccessReviewFactory =
+        final MockedStatic<V1SelfSubjectAccessReviewFactory> v1SelfSubjectAccessReviewFactoryMockedStatic =
                 Mockito.mockStatic(V1SelfSubjectAccessReviewFactory.class);
         when(V1SelfSubjectAccessReviewFactory.createSelfSubjectAccessReview()).thenReturn(body);
 
@@ -79,6 +79,7 @@ public class K8sHealthCheckTest {
 
         kubectlMockedStatic.close();
         authorizationV1ApiFactoryMockedStatic.close();
+        v1SelfSubjectAccessReviewFactoryMockedStatic.close();
     }
 
     @Test
@@ -121,7 +122,8 @@ public class K8sHealthCheckTest {
         when(V1SelfSubjectAccessReviewFactory.createSelfSubjectAccessReview()).thenReturn(body);
 
         final AuthorizationV1Api authApi = Mockito.mock(AuthorizationV1Api.class);
-        final MockedStatic<AuthorizationV1ApiFactory> authorizationV1ApiFactoryMockedStatic = Mockito.mockStatic(AuthorizationV1ApiFactory.class);
+        final MockedStatic<AuthorizationV1ApiFactory> authorizationV1ApiFactoryMockedStatic =
+                Mockito.mockStatic(AuthorizationV1ApiFactory.class);
         when(AuthorizationV1ApiFactory.createAuthorizationV1Api()).thenReturn(authApi);
         final AuthorizationV1Api.APIcreateSelfSubjectAccessReviewRequest requestBuilder
             = Mockito.mock(AuthorizationV1Api.APIcreateSelfSubjectAccessReviewRequest.class);

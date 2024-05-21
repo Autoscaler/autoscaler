@@ -1209,13 +1209,11 @@
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/mesosphere/mesos-agent</repository>
-                            <tag>1.6.2</tag>
-                            <digest>sha256:7134151615447bb5b7cd9b45f7f12bd6714b222b044334d89a2313f8989a5cb3</digest>
+                            <tag>1.7.1</tag>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/mesosphere/mesos-master</repository>
-                            <tag>1.5.0</tag>
-                            <digest>sha256:87f83879ceef4ba185b37989c6a797bc5dcc8bd5594a6fec042f1e2c09db7b60</digest>
+                            <tag>1.7.1</tag>
                         </image>
                     </imageManagement>
                 </configuration>

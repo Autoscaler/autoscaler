@@ -114,7 +114,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-core</artifactId>
-                <version>1.12.719</version>
+                <version>1.12.727</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -125,12 +125,12 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-sts</artifactId>
-                <version>1.12.719</version>
+                <version>1.12.727</version>
             </dependency>
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>jmespath-java</artifactId>
-                <version>1.12.719</version>
+                <version>1.12.727</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml</groupId>
@@ -370,7 +370,7 @@
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
-                <version>2.10.1</version>
+                <version>2.11.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.errorprone</groupId>
@@ -450,12 +450,12 @@
             <dependency>
                 <groupId>com.nimbusds</groupId>
                 <artifactId>nimbus-jose-jwt</artifactId>
-                <version>9.39</version>
+                <version>9.39.1</version>
             </dependency>
             <dependency>
                 <groupId>com.nimbusds</groupId>
                 <artifactId>oauth2-oidc-sdk</artifactId>
-                <version>11.10.1</version>
+                <version>11.12</version>
             </dependency>
             <dependency>
                 <groupId>com.rabbitmq</groupId>
@@ -717,12 +717,12 @@
             <dependency>
                 <groupId>jakarta.validation</groupId>
                 <artifactId>jakarta.validation-api</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.0</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>
                 <artifactId>jakarta.ws.rs-api</artifactId>
-                <version>3.1.0</version>
+                <version>4.0.0</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.xml.bind</groupId>
@@ -833,37 +833,37 @@
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-http</artifactId>
-                <version>11.0.20</version>
+                <version>11.0.21</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-io</artifactId>
-                <version>11.0.20</version>
+                <version>11.0.21</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-security</artifactId>
-                <version>11.0.20</version>
+                <version>11.0.21</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
-                <version>11.0.20</version>
+                <version>11.0.21</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-servlet</artifactId>
-                <version>11.0.20</version>
+                <version>11.0.21</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-servlets</artifactId>
-                <version>11.0.20</version>
+                <version>11.0.21</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-util</artifactId>
-                <version>11.0.20</version>
+                <version>11.0.21</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty.toolchain.setuid</groupId>
@@ -1055,7 +1055,7 @@
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-stdlib</artifactId>
-                <version>1.9.24</version>
+                <version>2.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.jvnet</groupId>
@@ -1160,39 +1160,35 @@
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>
-                            <tag>1.36.1</tag>
-                            <digest>sha256:5eef5ed34e1e1ff0a4ae850395cbf665c4de6b4b83a32a0bc7bcb998e24e7bbb</digest>
+                            <tag>latest</tag>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/httpd</repository>
-                            <tag>2.4.59-bookworm</tag>
-                            <digest>sha256:36c8c79f900108f0f09fd4148ad35ade57cba0dc19d13f3d15be24ce94e6a639</digest>
+                            <tag>2.4</tag>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/rabbitmq</repository>
-                            <tag>3.7.5-management</tag>
-                            <digest>sha256:b986e661e6e906b62d64f7625fa136f99c95dee13ae27c7640cdff756e44d29e</digest>
+                            <tag>3.13.2-management</tag>
+                            <digest>sha256:eee9afbc17c32424ba6309dfd2d9efc9b9b1863ffe231b3d2be2815758b0d649</digest>
                             <latestTag>management</latestTag>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/zookeeper</repository>
-                            <tag>3.5.10</tag>
-                            <digest>sha256:abf67ca6ebb02a8ba0a81683a13210d18eebc6282c1d8b1c686bf3397e01bb57</digest>
+                            <tag>3.9.2-jre-17</tag>
+                            <digest>sha256:e9a4fd7748598e7eac08cab3d28d7b2e6f092d5ec6509af3821b100924ceecb4</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/mesosphere/marathon</repository>
-                            <tag>v1.6.352</tag>
-                            <digest>sha256:15dfaa0b94ea7b36cbb9a70d55ad390b036facb2ffe5478f5c3b431632eed474</digest>
+                            <tag>v1.8.218</tag>
+                            <digest>sha256:cb6d117953e58ba7695977bb727ae929dfca1d52bf14cfb5a3fee057ec2d0033</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/mesosphere/mesos-agent</repository>
-                            <tag>1.6.2</tag>
-                            <digest>sha256:7134151615447bb5b7cd9b45f7f12bd6714b222b044334d89a2313f8989a5cb3</digest>
+                            <tag>1.7.1</tag>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/mesosphere/mesos-master</repository>
-                            <tag>1.5.0</tag>
-                            <digest>sha256:87f83879ceef4ba185b37989c6a797bc5dcc8bd5594a6fec042f1e2c09db7b60</digest>
+                            <tag>1.7.1</tag>
                         </image>
                     </imageManagement>
                 </configuration>

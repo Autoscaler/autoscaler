@@ -74,7 +74,7 @@ final class K8sHealthCheck
                 resourceAttributes.setVerb("patch");
                 resourceAttributes.setNamespace(namespace);
 
-                final V1SelfSubjectAccessReviewSpec spec = new V1SelfSubjectAccessReviewSpec();;
+                final V1SelfSubjectAccessReviewSpec spec = new V1SelfSubjectAccessReviewSpec();
                 spec.setResourceAttributes(resourceAttributes);
 
                 final V1SelfSubjectAccessReview body = new V1SelfSubjectAccessReview();

@@ -94,23 +94,14 @@ public class ScalerThreadTest
         InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), 5, 1);
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.lenient().when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.any())).then(returnsSecondArg());
         Alerter memoryOverloadAlerter = Mockito.mock(Alerter.class);
 
         // Set the current memory used to 90% to reach the stage 3 limit, which should cause a scale down operation
         Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(90, Optional.empty()));
 
         final ResourceMonitoringConfiguration mockResourceMonitoringConfiguration = Mockito.mock(ResourceMonitoringConfiguration.class);
-        Mockito.lenient().when(mockResourceMonitoringConfiguration.getMemoryUsedPercentLimitStageOne()).thenReturn(70.0);
-        Mockito.lenient().when(mockResourceMonitoringConfiguration.getMemoryUsedPercentLimitStageTwo()).thenReturn(80.0);
         Mockito.when(mockResourceMonitoringConfiguration.getMemoryUsedPercentLimitStageThree()).thenReturn(90.0);
         Mockito.when(mockResourceMonitoringConfiguration.getMemoryUsedPercentAlertDispatchThreshold()).thenReturn(70);
-        Mockito.lenient().when(mockResourceMonitoringConfiguration.getDiskFreeMbLimitStageOne()).thenReturn(400);
-        Mockito.lenient().when(mockResourceMonitoringConfiguration.getDiskFreeMbLimitStageTwo()).thenReturn(200);
-        Mockito.lenient().when(mockResourceMonitoringConfiguration.getDiskFreeMbLimitStageThree()).thenReturn(100);
-        Mockito.lenient().when(mockResourceMonitoringConfiguration.getDiskFreeMbAlertDispatchThreshold()).thenReturn(400);
-        Mockito.lenient().when(mockResourceMonitoringConfiguration.getResourceLimitOneShutdownThreshold()).thenReturn(1);
-        Mockito.lenient().when(mockResourceMonitoringConfiguration.getResourceLimitTwoShutdownThreshold()).thenReturn(3);
         Mockito.when(mockResourceMonitoringConfiguration.getResourceLimitThreeShutdownThreshold()).thenReturn(5);
 
         int min = 0;
@@ -150,8 +141,6 @@ public class ScalerThreadTest
         Mockito.when(mockResourceMonitoringConfiguration.getDiskFreeMbLimitStageThree()).thenReturn(100);
         Mockito.when(mockResourceMonitoringConfiguration.getDiskFreeMbAlertDispatchThreshold()).thenReturn(400);
         Mockito.when(mockResourceMonitoringConfiguration.getResourceLimitOneShutdownThreshold()).thenReturn(1);
-        Mockito.lenient().when(mockResourceMonitoringConfiguration.getResourceLimitTwoShutdownThreshold()).thenReturn(3);
-        Mockito.lenient().when(mockResourceMonitoringConfiguration.getResourceLimitThreeShutdownThreshold()).thenReturn(5);
 
         int min = 0;
         int max = 5;
@@ -172,9 +161,7 @@ public class ScalerThreadTest
         WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
         ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
         InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
-        Mockito.lenient().when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.lenient().when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.any())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;
@@ -182,7 +169,6 @@ public class ScalerThreadTest
             new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new Alerter(new HashMap<>(),
                 new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
-        Mockito.lenient().when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.NO_ACTION);
         t.run();
         Mockito.verify(scaler, Mockito.times(0)).scaleUp(Mockito.any(), Mockito.anyInt());
         Mockito.verify(scaler, Mockito.times(0)).scaleDown(Mockito.any(), Mockito.anyInt());
@@ -193,10 +179,7 @@ public class ScalerThreadTest
         WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
         ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
         InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>());
-        Mockito.lenient().when(scaler.getInstanceInfo(SERVICE_REF))
-            .thenThrow(new RuntimeException("network error"));
         Governor governor = Mockito.mock(Governor.class);
-        Mockito.lenient().when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.any())).then(returnsSecondArg());
 
         int min = 0;
         int max = 5;

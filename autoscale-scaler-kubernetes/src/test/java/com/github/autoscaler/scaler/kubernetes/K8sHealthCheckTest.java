@@ -135,7 +135,8 @@ public class K8sHealthCheckTest {
             when(config.getNamespacesArray()).thenReturn(mockNamespaces);
             final K8sServiceScaler serviceScaler = new K8sServiceScaler(config);
 
-            final String expectedMessage = String.format("Error: Kubernetes Service Account does not have correct permissions: %s", StringUtils.normalizeSpace(review.toString()));
+            final String expectedMessage = String.format("Error: Kubernetes Service Account does not have correct permissions: %s",
+                    StringUtils.normalizeSpace(review.toString()));
 
             final HealthResult expectedResult = new HealthResult(HealthStatus.UNHEALTHY, expectedMessage);
             final HealthResult actualResult = serviceScaler.healthCheck();

@@ -22,15 +22,15 @@ import java.util.Collection;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Unit tests for the HttpClientSupport class.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class HttpClientSupportTest {
     
     @Test
@@ -53,7 +53,7 @@ public class HttpClientSupportTest {
         
         URIBuilder uri = HttpClientSupport.buildURI(requestTemplate, config.getEndpoint());
         
-        Assert.assertFalse("Should have no {} in path.", uri.toString().contains("{"));
+        assertFalse(uri.toString().contains("{"), "Should have no {} in path.");
 
     }
     

@@ -17,8 +17,9 @@ package com.github.autoscaler.core;
 
 
 import com.github.autoscaler.api.ScalingConfiguration;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -47,8 +48,8 @@ public class ServiceValidatorTest
         in.add(sc1);
         in.add(sc2);
         Set<ScalingConfiguration> out = validator.getValidatedServices(in);
-        Assert.assertTrue(out.contains(sc2));
-        Assert.assertTrue(out.contains(sc1));
+        assertTrue(out.contains(sc2));
+        assertTrue(out.contains(sc1));
     }
 
 
@@ -61,7 +62,7 @@ public class ServiceValidatorTest
         Set<ScalingConfiguration> in = new HashSet<>();
         in.add(sc1);
         Set<ScalingConfiguration> out = validator.getValidatedServices(in);
-        Assert.assertFalse(out.contains(sc1));
+        assertFalse(out.contains(sc1));
     }
 
 
@@ -74,7 +75,7 @@ public class ServiceValidatorTest
         Set<ScalingConfiguration> in = new HashSet<>();
         in.add(sc1);
         Set<ScalingConfiguration> out = validator.getValidatedServices(in);
-        Assert.assertFalse(out.contains(sc1));
+        assertFalse(out.contains(sc1));
     }
 
 
@@ -88,7 +89,7 @@ public class ServiceValidatorTest
         Set<ScalingConfiguration> in = new HashSet<>();
         in.add(sc1);
         Set<ScalingConfiguration> out = validator.getValidatedServices(in);
-        Assert.assertFalse(out.contains(sc1));
+        assertFalse(out.contains(sc1));
     }
 
 
@@ -109,7 +110,7 @@ public class ServiceValidatorTest
         Set<ScalingConfiguration> in = new HashSet<>();
         in.add(sc1);
         Set<ScalingConfiguration> out = validator.getValidatedServices(in);
-        Assert.assertFalse(out.contains(sc1));
-        Assert.assertFalse(out.contains(sc2));
+        assertFalse(out.contains(sc1));
+        assertFalse(out.contains(sc2));
     }
 }

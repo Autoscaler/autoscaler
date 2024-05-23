@@ -24,15 +24,16 @@ import java.util.concurrent.TimeoutException;
 
 import jakarta.ws.rs.core.Response;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.autoscaler.api.ScalerException;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
 
 public final class RabbitManagementApiIT {
     private final RabbitManagementApi rabbitManagementApi;
@@ -66,11 +67,11 @@ public final class RabbitManagementApiIT {
             final JsonNode jsonNode = iterator.next();
             final JsonNode runningJsonNode = jsonNode.get("running");
             if (runningJsonNode != null && runningJsonNode.asBoolean()) {
-                Assert.assertEquals("Found running node", true, runningJsonNode.asBoolean());
+                assertEquals(true, runningJsonNode.asBoolean(), "Found running node");
                 return;
             }
         }
-        Assert.fail("No running nodes");
+        fail("No running nodes");
     }
 
     @Test
@@ -82,7 +83,7 @@ public final class RabbitManagementApiIT {
         final int pageSize = 10;
         final String columnsCsvString = "name,messages_ready,message_stats";
         final PagedQueues pQueues = rabbitManagementApi.getPagedQueues("/", nameRegex, page, pageSize, columnsCsvString);
-        Assert.assertTrue("Queues not found", pQueues.getItems().length > 0);
+        assertTrue(pQueues.getItems().length > 0, "Queues not found");
     }
 
     private void createQueue(final String targetQueueName) throws TimeoutException, IOException {

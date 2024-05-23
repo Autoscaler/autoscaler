@@ -15,8 +15,8 @@
  */
 package com.github.autoscaler.kubernetes.shared;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,8 +33,8 @@ public class K8sAutoscaleConfigurationTest
         k8SAutoscaleConfiguration.setMaximumInstances(maxInstances);
         k8SAutoscaleConfiguration.setNamespaces(namespaces);
         k8SAutoscaleConfiguration.setGroupId(groupId);
-        Assert.assertEquals(maxInstances, k8SAutoscaleConfiguration.getMaximumInstances());
-        Assert.assertEquals(namespacesArray, k8SAutoscaleConfiguration.getNamespacesArray());
-        Assert.assertEquals(groupId, k8SAutoscaleConfiguration.getGroupId());
+        assertEquals(maxInstances, k8SAutoscaleConfiguration.getMaximumInstances());
+        assertEquals(namespacesArray, k8SAutoscaleConfiguration.getNamespacesArray());
+        assertEquals(groupId, k8SAutoscaleConfiguration.getGroupId());
     }
 }

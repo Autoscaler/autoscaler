@@ -24,8 +24,9 @@ import mesosphere.marathon.client.model.v2.Group;
 import mesosphere.marathon.client.model.v2.VersionedApp;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.net.MalformedURLException;
@@ -76,15 +77,15 @@ public class MarathonServiceSourceTest
         Mockito.when(marathon.getGroup(GROUP)).thenReturn(group);
         MarathonServiceSource source = new MarathonServiceSource(marathon, GROUP, new URL("http://localhost:8080"));
         Set<ScalingConfiguration> res = source.getServices();
-        Assert.assertEquals(1, res.size());
-        Assert.assertEquals(APP_ID, res.iterator().next().getId());
-        Assert.assertEquals(METRIC, res.iterator().next().getWorkloadMetric());
-        Assert.assertEquals(TARGET, res.iterator().next().getScalingTarget());
-        Assert.assertEquals(PROFILE, res.iterator().next().getScalingProfile());
-        Assert.assertEquals(INTERVAL, res.iterator().next().getInterval());
-        Assert.assertEquals(MAX, res.iterator().next().getMaxInstances());
-        Assert.assertEquals(MIN, res.iterator().next().getMinInstances());
-        Assert.assertEquals(BACKOFF, res.iterator().next().getBackoffAmount());
+        assertEquals(1, res.size());
+        assertEquals(APP_ID, res.iterator().next().getId());
+        assertEquals(METRIC, res.iterator().next().getWorkloadMetric());
+        assertEquals(TARGET, res.iterator().next().getScalingTarget());
+        assertEquals(PROFILE, res.iterator().next().getScalingProfile());
+        assertEquals(INTERVAL, res.iterator().next().getInterval());
+        assertEquals(MAX, res.iterator().next().getMaxInstances());
+        assertEquals(MIN, res.iterator().next().getMinInstances());
+        assertEquals(BACKOFF, res.iterator().next().getBackoffAmount());
     }
 
     /**
@@ -119,20 +120,21 @@ public class MarathonServiceSourceTest
         MarathonServiceSource marathonServiceSource = new MarathonServiceSource(marathon, "/group1,/group2", new URL("http://notneeded.com"));
         Set<ScalingConfiguration> services = marathonServiceSource.getServices();
 
-        Assert.assertEquals(2, services.size());
+        assertEquals(2, services.size());
         MatcherAssert.assertThat(services, Matchers.containsInAnyOrder(
                 hasProperty("id", is(app1.getId())),
                 hasProperty("id", is(app2.getId()))
         ));
     }
 
-    @Test(expected = ScalerException.class)
+    @Test
+    @SuppressWarnings("ThrowableResultIgnored")
     public void getServicesExceptionTest()
         throws MarathonException, MalformedURLException, ScalerException
     {
         Marathon marathon = Mockito.mock(Marathon.class);
         Mockito.when(marathon.getGroup(GROUP)).thenThrow(MarathonException.class);
         MarathonServiceSource source = new MarathonServiceSource(marathon, GROUP, new URL("http://localhost:8080"));
-        source.getServices();
+        Assertions.assertThrows(ScalerException.class, source::getServices);
     }
 }

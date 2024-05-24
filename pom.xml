@@ -114,7 +114,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-core</artifactId>
-                <version>1.12.727</version>
+                <version>1.12.729</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -125,12 +125,12 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-sts</artifactId>
-                <version>1.12.727</version>
+                <version>1.12.729</version>
             </dependency>
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>jmespath-java</artifactId>
-                <version>1.12.727</version>
+                <version>1.12.729</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml</groupId>
@@ -400,7 +400,7 @@
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
-                <version>4.26.1</version>
+                <version>4.27.0</version>
             </dependency>
             <dependency>
                 <groupId>com.helger</groupId>
@@ -742,12 +742,12 @@
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>1.14.15</version>
+                <version>1.14.16</version>
             </dependency>
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy-agent</artifactId>
-                <version>1.14.15</version>
+                <version>1.14.16</version>
             </dependency>
             <dependency>
                 <groupId>net.oauth.core</groupId>
@@ -767,7 +767,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
-                <version>1.26.1</version>
+                <version>1.26.2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -903,32 +903,32 @@
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
                 <artifactId>jersey-container-servlet</artifactId>
-                <version>3.0.13</version>
+                <version>3.0.14</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
                 <artifactId>jersey-container-servlet-core</artifactId>
-                <version>3.0.13</version>
+                <version>3.0.14</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
-                <version>3.0.13</version>
+                <version>3.0.14</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-common</artifactId>
-                <version>3.0.13</version>
+                <version>3.0.14</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-server</artifactId>
-                <version>3.0.13</version>
+                <version>3.0.14</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.ext</groupId>
                 <artifactId>jersey-bean-validation</artifactId>
-                <version>3.0.13</version>
+                <version>3.0.14</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.glassfish</groupId>
@@ -939,22 +939,22 @@
             <dependency>
                 <groupId>org.glassfish.jersey.ext</groupId>
                 <artifactId>jersey-entity-filtering</artifactId>
-                <version>3.0.13</version>
+                <version>3.0.14</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.ext</groupId>
                 <artifactId>jersey-metainf-services</artifactId>
-                <version>3.0.13</version>
+                <version>3.0.14</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
                 <artifactId>jersey-hk2</artifactId>
-                <version>3.0.13</version>
+                <version>3.0.14</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-json-jackson</artifactId>
-                <version>3.0.13</version>
+                <version>3.0.14</version>
             </dependency>
             <dependency>
                 <groupId>org.graalvm.js</groupId>
@@ -1065,12 +1065,12 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>3.12.4</version>
+                <version>5.12.0</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-inline</artifactId>
-                <version>2.13.0</version>
+                <version>5.2.0</version>
             </dependency>
             <dependency>
                 <groupId>org.objenesis</groupId>

@@ -43,7 +43,7 @@
         <dockerHubOrganization>autoscaler</dockerHubOrganization>
         <dockerAutoscalerOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerAutoscalerOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
-        <docker.base.java.image>${dockerHubPublic}/cafapi/opensuse-jre17:1</docker.base.java.image>
+        <docker.base.java.image>${dockerHubPublic}/cafapi/opensuse-jre17:4</docker.base.java.image>
     </properties>
 
     <licenses>

@@ -22,8 +22,9 @@ import com.hpe.caf.cipher.NullCipher;
 import com.hpe.caf.codec.JsonCodec;
 import com.hpe.caf.config.file.FileConfigurationSource;
 import com.hpe.caf.naming.ServicePath;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.nio.file.Path;
@@ -53,8 +54,8 @@ public class RabbitWorkloadAnalyserConfigurationTest {
         
         RabbitWorkloadAnalyserConfiguration deserialized = jsonCodec.deserialise(serialized, RabbitWorkloadAnalyserConfiguration.class);
 
-        Assert.assertEquals(rabbitWorkloadAnalyserConfiguration.getRabbitManagementEndpoint(), deserialized.getRabbitManagementEndpoint());
-        Assert.assertEquals(1, deserialized.getProfiles().size());
+        assertEquals(rabbitWorkloadAnalyserConfiguration.getRabbitManagementEndpoint(), deserialized.getRabbitManagementEndpoint());
+        assertEquals(1, deserialized.getProfiles().size());
 
     }
 
@@ -78,17 +79,19 @@ public class RabbitWorkloadAnalyserConfigurationTest {
 
         RabbitWorkloadAnalyserConfiguration rabbitWorkloadAnalyserConfiguration = fileConfigurationSource.getConfiguration(RabbitWorkloadAnalyserConfiguration.class);
 
-        Assert.assertNotNull("Configuration passed back should not be null", rabbitWorkloadAnalyserConfiguration);
+        assertNotNull(rabbitWorkloadAnalyserConfiguration, "Configuration passed back should not be null");
 
-        Assert.assertEquals("Expected Rabbit Endpoint should match endpoint read in","http://localhost:15672", rabbitWorkloadAnalyserConfiguration.getRabbitManagementEndpoint());
-        Assert.assertEquals("Expected Rabbit User should match user read in","guest", rabbitWorkloadAnalyserConfiguration.getRabbitManagementUser());
-        Assert.assertEquals("Expected Rabbit User Password should match user password read in","guest", rabbitWorkloadAnalyserConfiguration.getRabbitManagementPassword());
+        assertEquals("Expected Rabbit Endpoint should match endpoint read in","http://localhost:15672", rabbitWorkloadAnalyserConfiguration.getRabbitManagementEndpoint());
+        assertEquals("Expected Rabbit User should match user read in","guest", rabbitWorkloadAnalyserConfiguration.getRabbitManagementUser());
+        assertEquals("Expected Rabbit User Password should match user password read in","guest", rabbitWorkloadAnalyserConfiguration.getRabbitManagementPassword());
 
         int actualScalingDeplay = rabbitWorkloadAnalyserConfiguration.getProfiles().get("default").getScalingDelay();
         int actualBacklogGoal = rabbitWorkloadAnalyserConfiguration.getProfiles().get("default").getBacklogGoal();
 
-        Assert.assertEquals("Expected scaling delay should match default Rabbit Workload Profile scaling delay read in", 10, actualScalingDeplay);
-        Assert.assertEquals("Expected backlog goal should match default Rabbit Workload Profile backlog goal read in", 300, actualBacklogGoal);
+        assertEquals(10, actualScalingDeplay,
+                "Expected scaling delay should match default Rabbit Workload Profile scaling delay read in");
+        assertEquals(300, actualBacklogGoal,
+                "Expected backlog goal should match default Rabbit Workload Profile backlog goal read in");
 
     }
 }

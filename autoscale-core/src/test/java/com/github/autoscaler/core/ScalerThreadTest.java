@@ -23,17 +23,18 @@ import com.github.autoscaler.api.ScalingAction;
 import com.github.autoscaler.api.ServiceScaler;
 import com.github.autoscaler.api.WorkloadAnalyser;
 import java.util.HashMap;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.LinkedList;
 import java.util.Optional;
 
 import static org.mockito.AdditionalAnswers.returnsSecondArg;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ScalerThreadTest
 {
     private final static String SERVICE_REF = "unitTest";

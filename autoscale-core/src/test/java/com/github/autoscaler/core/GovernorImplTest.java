@@ -19,8 +19,9 @@ import com.github.autoscaler.api.InstanceInfo;
 import com.github.autoscaler.api.ScalingAction;
 import com.github.autoscaler.api.ScalingConfiguration;
 import com.github.autoscaler.api.ScalingOperation;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
@@ -66,8 +67,8 @@ public class GovernorImplTest {
         final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceOne.getId(), scalingAction,
                 new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
-        Assert.assertEquals(3, governedAction.getAmount());
-        Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
+        assertEquals(3, governedAction.getAmount());
+        assertEquals(SCALE_UP, governedAction.getOperation().toString());
     }
 
     /**
@@ -95,8 +96,8 @@ public class GovernorImplTest {
         final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
                 new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
-        Assert.assertEquals(1, governedAction.getAmount());
-        Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
+        assertEquals(1, governedAction.getAmount());
+        assertEquals(SCALE_UP, governedAction.getOperation().toString());
     }
 
     /**
@@ -124,8 +125,8 @@ public class GovernorImplTest {
         final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
                 new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
-        Assert.assertEquals(140, governedAction.getAmount());
-        Assert.assertEquals(SCALE_DOWN, governedAction.getOperation().toString());
+        assertEquals(140, governedAction.getAmount());
+        assertEquals(SCALE_DOWN, governedAction.getOperation().toString());
     }
 
     /**
@@ -153,8 +154,8 @@ public class GovernorImplTest {
         final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
                 new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
-        Assert.assertEquals(1, governedAction.getAmount());
-        Assert.assertEquals(SCALE_DOWN, governedAction.getOperation().toString());
+        assertEquals(1, governedAction.getAmount());
+        assertEquals(SCALE_DOWN, governedAction.getOperation().toString());
     }
 
     /**
@@ -182,8 +183,8 @@ public class GovernorImplTest {
         final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
                 new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
-        Assert.assertEquals(0, governedAction.getAmount());
-        Assert.assertEquals(NONE, governedAction.getOperation().toString());
+        assertEquals(0, governedAction.getAmount());
+        assertEquals(NONE, governedAction.getOperation().toString());
     }
     /**
      * Tests that if a service is above its minimum and below its maximum instances that a NONE action is respected
@@ -210,8 +211,8 @@ public class GovernorImplTest {
         final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
                 new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
-        Assert.assertEquals(0, governedAction.getAmount());
-        Assert.assertEquals(NONE, governedAction.getOperation().toString());
+        assertEquals(0, governedAction.getAmount());
+        assertEquals(NONE, governedAction.getOperation().toString());
     }
 
     /**
@@ -239,8 +240,8 @@ public class GovernorImplTest {
         final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
                 new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
-        Assert.assertEquals(1, governedAction.getAmount());
-        Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
+        assertEquals(1, governedAction.getAmount());
+        assertEquals(SCALE_UP, governedAction.getOperation().toString());
     }
 
     /**
@@ -269,8 +270,8 @@ public class GovernorImplTest {
         final ScalingAction governedAction = governor.govern(scalingConfiguration.getId(), scalingAction,
                 new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
 
-        Assert.assertEquals(1, governedAction.getAmount());
-        Assert.assertEquals(SCALE_DOWN, governedAction.getOperation().toString());
+        assertEquals(1, governedAction.getAmount());
+        assertEquals(SCALE_DOWN, governedAction.getOperation().toString());
     }
 
     /**
@@ -313,8 +314,8 @@ public class GovernorImplTest {
 
         ScalingAction scalingAction = new ScalingAction(ScalingOperation.SCALE_UP, 100);
         ScalingAction governedAction = governor.govern("service1", scalingAction, new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE));
-        Assert.assertEquals(ScalingOperation.SCALE_DOWN, governedAction.getOperation());
-        Assert.assertTrue(governedAction.getAmount()>0);
+        assertEquals(ScalingOperation.SCALE_DOWN, governedAction.getOperation());
+        assertTrue(governedAction.getAmount()>0);
         service1CurrentInstances = service1CurrentInstances - governedAction.getAmount();
 
         while(governedAction.getOperation()==ScalingOperation.SCALE_DOWN){
@@ -367,8 +368,8 @@ public class GovernorImplTest {
         final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceOne.getId(), scalingAction,
                 new ResourceLimitStagesReached(ResourceLimitStage.STAGE_1, ResourceLimitStage.NO_STAGE));
 
-        Assert.assertEquals(3, governedAction.getAmount());
-        Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
+        assertEquals(3, governedAction.getAmount());
+        assertEquals(SCALE_UP, governedAction.getOperation().toString());
     }
 
     /**
@@ -407,8 +408,8 @@ public class GovernorImplTest {
         final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceTwo.getId(), scalingAction,
                 new ResourceLimitStagesReached(ResourceLimitStage.STAGE_1, ResourceLimitStage.NO_STAGE));
 
-        Assert.assertEquals(2, governedAction.getAmount());
-        Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
+        assertEquals(2, governedAction.getAmount());
+        assertEquals(SCALE_UP, governedAction.getOperation().toString());
     }
 
     /**
@@ -447,8 +448,8 @@ public class GovernorImplTest {
         final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceTwo.getId(), scalingAction,
                 new ResourceLimitStagesReached(ResourceLimitStage.NO_STAGE, ResourceLimitStage.STAGE_1));
 
-        Assert.assertEquals(2, governedAction.getAmount());
-        Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
+        assertEquals(2, governedAction.getAmount());
+        assertEquals(SCALE_UP, governedAction.getOperation().toString());
     }
 
     /**
@@ -488,7 +489,7 @@ public class GovernorImplTest {
         final ScalingAction governedAction = governor.govern(scalingConfigurationForServiceTwo.getId(), scalingAction,
                 new ResourceLimitStagesReached(ResourceLimitStage.STAGE_1, ResourceLimitStage.STAGE_1));
 
-        Assert.assertEquals(2, governedAction.getAmount());
-        Assert.assertEquals(SCALE_UP, governedAction.getOperation().toString());
+        assertEquals(2, governedAction.getAmount());
+        assertEquals(SCALE_UP, governedAction.getOperation().toString());
     }
 }

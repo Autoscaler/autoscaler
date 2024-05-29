@@ -27,10 +27,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Trevor Getty <trevor.getty@microfocus.com>
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DockerSwarmServiceScalerIT
 {
 
@@ -55,21 +59,21 @@ public class DockerSwarmServiceScalerIT
         DocumentContext document = dockerClient.getServices();
 
         // a general list of objects. 
-        Assert.assertNotNull(document);
+        assertNotNull(document);
         ArrayList<LinkedHashMap> listOfServiceObjects = document.json();
 
-        Assert.assertTrue(listOfServiceObjects.size() > 0);
+        assertTrue(listOfServiceObjects.size() > 0);
 
         // get ID field
         Object firstItem = listOfServiceObjects.get(0);
         if (LinkedHashMap.class.isInstance(firstItem)) {
             String idOfFirstEntry = ((LinkedHashMap) firstItem).get("ID").toString();
-            Assert.assertTrue(idOfFirstEntry != null && !idOfFirstEntry.isEmpty());
+            assertTrue(idOfFirstEntry != null && !idOfFirstEntry.isEmpty());
         }
 
         // Try getting all ids.
         LinkedList<String> allIds = document.read("$..ID");
-        Assert.assertTrue(allIds.size() > 0);
+        assertTrue(allIds.size() > 0);
     }
 
     @Test
@@ -81,18 +85,18 @@ public class DockerSwarmServiceScalerIT
 
         DockerSwarmServiceScaler scaler = new DockerSwarmServiceScaler(dockerClient, config, new URL(
                                                                        config.getEndpoint()));
-        Assert.assertNotNull(scaler);
+        assertNotNull(scaler);
 
         final String serviceReference = getValidServiceId(dockerClient);
 
         InstanceInfo serviceInformation = scaler.getInstanceInfo(serviceReference);
 
         // check instance info for a runnin element.
-        Assert.assertTrue("Total instances > 0", serviceInformation.getTotalRunningAndStageInstances() > 0);
-        Assert.assertEquals("Staged instances == 0", 0, serviceInformation.getInstancesStaging());
-        Assert.assertEquals("Instances Running == total for docker all the time.", serviceInformation.getTotalRunningAndStageInstances(),
-                            serviceInformation.getInstancesRunning());
-        Assert.assertTrue("No hosts map for docker swarm scaler", serviceInformation.getHosts().isEmpty());
+        assertTrue(serviceInformation.getTotalRunningAndStageInstances() > 0, "Total instances > 0");
+        assertEquals(0, serviceInformation.getInstancesStaging(), "Staged instances == 0");
+        assertEquals(serviceInformation.getTotalRunningAndStageInstances(), serviceInformation.getInstancesRunning(),
+                "Instances Running == total for docker all the time.");
+        assertTrue(serviceInformation.getHosts().isEmpty(), "No hosts map for docker swarm scaler");
     }
 
     @Test
@@ -104,7 +108,7 @@ public class DockerSwarmServiceScalerIT
 
         DockerSwarmServiceScaler scaler = new DockerSwarmServiceScaler(dockerClient, config, new URL(
                                                                        config.getEndpoint()));
-        Assert.assertNotNull(scaler);
+        assertNotNull(scaler);
 
         final String serviceReference = getValidServiceId(dockerClient);
 
@@ -118,8 +122,10 @@ public class DockerSwarmServiceScalerIT
         InstanceInfo serviceInformationNow = scaler.getInstanceInfo(serviceReference);
         
         // check instance info for a runnin element.
-        Assert.assertTrue("Total instances should have at least 1 running app", serviceInformationNow.getTotalRunningAndStageInstances() > 0);
-        Assert.assertEquals("Total instances should now match updated value.", expectedAmount, serviceInformationNow.getTotalRunningAndStageInstances());
+        assertTrue(serviceInformationNow.getTotalRunningAndStageInstances() > 0,
+                "Total instances should have at least 1 running app");
+        assertEquals(expectedAmount, serviceInformationNow.getTotalRunningAndStageInstances(),
+                "Total instances should now match updated value.");
     }
     
     @Test
@@ -131,7 +137,7 @@ public class DockerSwarmServiceScalerIT
 
         DockerSwarmServiceScaler scaler = new DockerSwarmServiceScaler(dockerClient, config, new URL(
                                                                        config.getEndpoint()));
-        Assert.assertNotNull(scaler);
+        assertNotNull(scaler);
 
         final String serviceReference = getValidServiceId(dockerClient);
 
@@ -145,7 +151,8 @@ public class DockerSwarmServiceScalerIT
         InstanceInfo serviceInformationNow = scaler.getInstanceInfo(serviceReference);
         
         // check instance info for a runnin element.
-        Assert.assertEquals("Total instances should now match updated value.", expectedAmount, serviceInformationNow.getTotalRunningAndStageInstances());
+        assertEquals(expectedAmount, serviceInformationNow.getTotalRunningAndStageInstances(),
+                "Total instances should now match updated value.");
     }
 
     private String getValidServiceId(DockerSwarm dockerClient) throws HttpClientException
@@ -155,10 +162,10 @@ public class DockerSwarmServiceScalerIT
          */
         DocumentContext document = dockerClient.getServices();
         // a general list of objects. 
-        Assert.assertNotNull(document);
+        assertNotNull(document);
         // Try getting all ids.
         LinkedList<String> allIds = document.read("$..ID");
-        Assert.assertTrue("Must have some valid ids", !allIds.isEmpty());
+        assertFalse(allIds.isEmpty(), "Must have some valid ids");
         final String serviceReference = allIds.get(0);
         return serviceReference;
     }

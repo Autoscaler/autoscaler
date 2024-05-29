@@ -25,22 +25,26 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.Before;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  *
  * @author Trevor Getty <trevor.getty@microfocus.com>
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DeveloperEndpointIT
 {
     private DockerSwarmAutoscaleConfiguration config;
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         this.config = buildConfiguration();
@@ -54,22 +58,22 @@ public class DeveloperEndpointIT
         DocumentContext document = dockerClient.getServices();
 
         // a general list of objects. 
-        Assert.assertNotNull(document);        
+        assertNotNull(document);
         ArrayList<LinkedHashMap> listOfServiceObjects = document.json();
 
-        Assert.assertTrue(listOfServiceObjects.size() > 0);
+        assertTrue(listOfServiceObjects.size() > 0);
 
         // get ID field, using direct properties, and then a JSONPath query, for illustration
         Object firstItem = listOfServiceObjects.get(0);
         if (LinkedHashMap.class.isInstance(firstItem)) {
             String idOfFirstEntry = ((LinkedHashMap) firstItem).get("ID").toString();
-            Assert.assertTrue(idOfFirstEntry != null && !idOfFirstEntry.isEmpty());
+            assertTrue(idOfFirstEntry != null && !idOfFirstEntry.isEmpty());
         }
 
         // Try getting all ids.
         LinkedList<String> allIds = document.read("$..ID");
 
-        Assert.assertTrue(allIds.size() > 0);
+        assertTrue(allIds.size() > 0);
         //Assert.assertTrue("Object list item, contains a field called ID", (LinkedHashMap)().containsKey("ID"));    
     }
 
@@ -86,17 +90,17 @@ public class DeveloperEndpointIT
         DocumentContext document = dockerClient.getServicesFiltered(filterByLabel);
 
         // a general list of objects. 
-        Assert.assertNotNull(document);
+        assertNotNull(document);
 
         ArrayList<LinkedHashMap> listOfServiceObjects = document.json();
 
-        Assert.assertTrue(listOfServiceObjects.size() > 0);
+        assertTrue(listOfServiceObjects.size() > 0);
 
         // get ID field
         Object firstItem = listOfServiceObjects.get(0);
         if (LinkedHashMap.class.isInstance(firstItem)) {
             String idOfFirstEntry = ((LinkedHashMap) firstItem).get("ID").toString();
-            Assert.assertTrue(idOfFirstEntry != null && !idOfFirstEntry.isEmpty());
+            assertTrue(idOfFirstEntry != null && !idOfFirstEntry.isEmpty());
         }
 
         // Try getting all ids.
@@ -104,8 +108,8 @@ public class DeveloperEndpointIT
 
 //        tryGetMePaths(document, "$..Spec.TaskTemplate.ContainerSpec.Labels");
 //        tryQuery(document, "$..Spec.TaskTemplate.ContainerSpec.Labels");
-        Assert.assertTrue(allIds.size() > 0);
-        Assert.assertEquals("expect jobservicedemo to contain a filtered list of 6 elements", 6, allIds.size());
+        assertTrue(allIds.size() > 0);
+        assertEquals(6, allIds.size(), "expect jobservicedemo to contain a filtered list of 6 elements");
         //Assert.assertTrue("Object list item, contains a field called ID", (LinkedHashMap)().containsKey("ID"));    
 
     }
@@ -121,7 +125,7 @@ public class DeveloperEndpointIT
         final DocumentContext document = dockerClient.getServicesFiltered(filterByLabel);
 
         // a general list of objects. 
-        Assert.assertNotNull(document);
+        assertNotNull(document);
 
         // Try getting all ids.
         final LinkedList<String> allIds = document.read("$..ID");
@@ -135,13 +139,13 @@ public class DeveloperEndpointIT
         final DocumentContext singleServiceDocument = dockerClient.getService(findThisId);
 
         // a general list of objects. 
-        Assert.assertNotNull(singleServiceDocument);
+        assertNotNull(singleServiceDocument);
 
         // Try getting all ids.
         final LinkedList<String> queryIds = singleServiceDocument.read("$..ID");
 
-        Assert.assertEquals("Should have only 1 service returned by this id", 1, queryIds.size());
-        Assert.assertEquals("Service ids must match.", findThisId, queryIds.get(0));
+        assertEquals(1, queryIds.size(), "Should have only 1 service returned by this id");
+        assertEquals(findThisId, queryIds.get(0), "Service ids must match.");
     }
 
     private void tryGetMePaths(DocumentContext document, final String queryString)

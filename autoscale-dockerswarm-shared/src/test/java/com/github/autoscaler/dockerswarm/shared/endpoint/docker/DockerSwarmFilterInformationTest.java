@@ -17,11 +17,11 @@ package com.github.autoscaler.dockerswarm.shared.endpoint.docker;
 
 import static com.github.autoscaler.dockerswarm.shared.endpoint.docker.DockerSwarmFilters.buildServiceFilter;
 import com.github.autoscaler.dockerswarm.shared.utils.StringUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  *
@@ -72,7 +72,7 @@ public class DockerSwarmFilterInformationTest
             System.out.println("Difference in strings is: " + difference);
         }
         
-        Assert.assertEquals(assertMessage, expectedString, actualString);
+        assertEquals(expectedString, actualString, assertMessage);
     }
 
 }

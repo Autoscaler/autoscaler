@@ -26,18 +26,21 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  *
  * @author Trevor Getty <trevor.getty@microfocus.com>
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DockerSwarmEndpointTest
 {
     @Mock
@@ -61,21 +64,21 @@ public class DockerSwarmEndpointTest
         DocumentContext document = dockerClient.getServices();
 
         // a general list of objects. 
-        Assert.assertNotNull(document);
+        assertNotNull(document);
         ArrayList<Object> listOfServiceObjects = document.json();
 
-        Assert.assertFalse(listOfServiceObjects.isEmpty());
+        assertFalse(listOfServiceObjects.isEmpty());
 
         // get ID field
         Object firstItem = listOfServiceObjects.get(0);
         if (LinkedHashMap.class.isInstance(firstItem)) {
             String idOfFirstEntry = ((LinkedHashMap) firstItem).get("ID").toString();
-            Assert.assertTrue(idOfFirstEntry != null && !idOfFirstEntry.isEmpty());
+            assertTrue(idOfFirstEntry != null && !idOfFirstEntry.isEmpty());
         }
 
         // Try getting all ids.
         LinkedList<String> allIds = document.read("$..ID", LinkedList.class);
-        Assert.assertFalse(allIds.isEmpty());
-        Assert.assertEquals("Service IDs match", "1go9020n17eyhufay1nbponlu", allIds.stream().findFirst().get());    
+        assertFalse(allIds.isEmpty());
+        assertEquals( "1go9020n17eyhufay1nbponlu", allIds.stream().findFirst().get(), "Service IDs match");
     }
 }

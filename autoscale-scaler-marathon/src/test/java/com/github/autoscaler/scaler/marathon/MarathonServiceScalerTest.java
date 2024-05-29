@@ -23,8 +23,10 @@ import mesosphere.marathon.client.MarathonException;
 import mesosphere.marathon.client.model.v2.GetAppResponse;
 import mesosphere.marathon.client.model.v2.Task;
 import mesosphere.marathon.client.model.v2.VersionedApp;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.net.MalformedURLException;
@@ -59,7 +61,8 @@ public class MarathonServiceScalerTest
     }
 
 
-    @Test(expected = ScalerException.class)
+    @Test
+    @SuppressWarnings("ThrowableResultIgnored")
     public void scaleUpExceptionTest()
         throws MarathonException, MalformedURLException, ScalerException
     {
@@ -68,7 +71,7 @@ public class MarathonServiceScalerTest
         URL url = new URL("http://localhost:8080");
         AppInstancePatcher appInstancePatcher = Mockito.mock(AppInstancePatcher.class);
         MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url, appInstancePatcher);
-        scaler.scaleUp(SERVICE, 1);
+        Assertions.assertThrows(ScalerException.class, () -> scaler.scaleUp(SERVICE, 1));
     }
 
 
@@ -92,7 +95,8 @@ public class MarathonServiceScalerTest
     }
 
 
-    @Test(expected = ScalerException.class)
+    @Test
+    @SuppressWarnings("ThrowableResultIgnored")
     public void scaleDownExceptionTest()
         throws MarathonException, MalformedURLException, ScalerException
     {
@@ -101,7 +105,7 @@ public class MarathonServiceScalerTest
         URL url = new URL("http://localhost:8080");
         AppInstancePatcher appInstancePatcher = Mockito.mock(AppInstancePatcher.class);
         MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url, appInstancePatcher);
-        scaler.scaleDown(SERVICE, 1);
+        Assertions.assertThrows(ScalerException.class, () -> scaler.scaleDown(SERVICE, 1));
     }
 
 
@@ -169,15 +173,16 @@ public class MarathonServiceScalerTest
         AppInstancePatcher appInstancePatcher = Mockito.mock(AppInstancePatcher.class);
         MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url, appInstancePatcher);
         InstanceInfo info = scaler.getInstanceInfo(SERVICE);
-        Assert.assertEquals(1, info.getInstancesRunning());
-        Assert.assertEquals(0, info.getInstancesStaging());
-        Assert.assertEquals(1, info.getTotalRunningAndStageInstances());
-        Assert.assertEquals(host1, info.getHosts().iterator().next().getHost());
-        Assert.assertTrue(info.getHosts().iterator().next().getPorts().containsAll(ports1));
+        assertEquals(1, info.getInstancesRunning());
+        assertEquals(0, info.getInstancesStaging());
+        assertEquals(1, info.getTotalRunningAndStageInstances());
+        assertEquals(host1, info.getHosts().iterator().next().getHost());
+        assertTrue(info.getHosts().iterator().next().getPorts().containsAll(ports1));
     }
 
 
-    @Test(expected = ScalerException.class)
+    @Test
+    @SuppressWarnings("ThrowableResultIgnored")
     public void getInstanceInfoExceptionTest()
         throws MarathonException, ScalerException, MalformedURLException
     {
@@ -186,6 +191,6 @@ public class MarathonServiceScalerTest
         URL url = new URL("http://localhost:8080");
         AppInstancePatcher appInstancePatcher = Mockito.mock(AppInstancePatcher.class);
         MarathonServiceScaler scaler = new MarathonServiceScaler(marathon, 100, url, appInstancePatcher);
-        scaler.getInstanceInfo(SERVICE);
+        Assertions.assertThrows(ScalerException.class, () -> scaler.getInstanceInfo(SERVICE));
     }
 }

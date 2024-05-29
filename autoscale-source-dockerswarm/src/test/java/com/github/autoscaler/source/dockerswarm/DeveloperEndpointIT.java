@@ -23,16 +23,20 @@ import com.github.autoscaler.dockerswarm.shared.endpoint.docker.DockerSwarmClien
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  *
  * @author Trevor Getty <trevor.getty@microfocus.com>
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DeveloperEndpointIT
 {
     // Change items here to match your env, until we get a real docker swarm set of integration tests
@@ -57,14 +61,14 @@ public class DeveloperEndpointIT
         Set<ScalingConfiguration> scalingItems = source.getServices();
 
         // a general list of objects. 
-        Assert.assertNotNull(scalingItems);
-        Assert.assertTrue(scalingItems.size() > 0);
+        assertNotNull(scalingItems);
+        assertTrue(scalingItems.size() > 0);
 
         // get ID field
         for (ScalingConfiguration scaledItem : scalingItems) {
 
-            Assert.assertTrue(!scaledItem.getId().isEmpty());
-            Assert.assertTrue(scaledItem.getInterval() == 30);
+            assertFalse(scaledItem.getId().isEmpty());
+            assertEquals(30, scaledItem.getInterval());
 
         }
     }

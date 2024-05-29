@@ -1191,11 +1191,22 @@
                         <image>
                             <repository>${dockerHubPublic}/mesosphere/mesos-agent</repository>
                             <tag>1.7.1</tag>
+                            <latestTag>1.7.1</latestTag><!--added this because img not have 'latest' tag-->
+                            <digest>sha256:e64aa03195317fe55d88a6aaff4c9fb89cc28cf93824a156ed358a9867f0d055</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/mesosphere/mesos-master</repository>
                             <tag>1.7.1</tag>
+                            <latestTag>1.7.1</latestTag>
+                            <digest>sha256:35d83f54bec00ae18d2a7022e92d75ef768bcf83d2dab013319c2abc9893ca9c</digest>
                         </image>
+                        <ignoreVersions>
+                            <ignoreVersion>
+                                <type>regex</type>
+                                <version>(?!1\.7\.1$).*</version>
+                                <images>(?i).*mesosphere/mesos-.*</images>
+                            </ignoreVersion>
+                        </ignoreVersions>
                     </imageManagement>
                 </configuration>
             </plugin>

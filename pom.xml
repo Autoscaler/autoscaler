@@ -43,7 +43,7 @@
         <dockerHubOrganization>autoscaler</dockerHubOrganization>
         <dockerAutoscalerOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerAutoscalerOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
-        <docker.base.java.image>${dockerHubPublic}/cafapi/opensuse-jre17:1</docker.base.java.image>
+        <docker.base.java.image>${dockerHubPublic}/cafapi/opensuse-jre17:4</docker.base.java.image>
     </properties>
 
     <licenses>
@@ -807,17 +807,17 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk18on</artifactId>
-                <version>1.77</version>
+                <version>1.78.1</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk18on</artifactId>
-                <version>1.77</version>
+                <version>1.78.1</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcutil-jdk18on</artifactId>
-                <version>1.77</version>
+                <version>1.78.1</version>
             </dependency>
             <dependency>
                 <groupId>org.checkerframework</groupId>

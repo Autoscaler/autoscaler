@@ -1204,7 +1204,9 @@
                             <ignoreVersion>
                                 <type>regex</type>
                                 <version>(?!1\.7\.1$).*</version>
-                                <images>(?i).*mesosphere/mesos-.*</images>
+                                <images>
+                                    <image>(?i).*mesosphere/mesos-.*</image>
+                                </images>
                             </ignoreVersion>
                         </ignoreVersions>
                     </imageManagement>

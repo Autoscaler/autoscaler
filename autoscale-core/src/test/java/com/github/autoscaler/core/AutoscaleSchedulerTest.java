@@ -23,8 +23,10 @@ import com.github.autoscaler.api.WorkloadAnalyser;
 import com.github.autoscaler.api.WorkloadAnalyserFactory;
 import com.hpe.caf.api.HealthResult;
 import com.hpe.caf.api.HealthStatus;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.HashMap;
@@ -62,8 +64,8 @@ public class AutoscaleSchedulerTest
                                           new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
         autoscale.updateServices(out);
         Map<String, ScheduledScalingService> ret = autoscale.getScheduledServices();
-        Assert.assertTrue(ret.containsKey(APP_ID_A));
-        Assert.assertTrue(ret.containsKey(APP_ID_B));
+        assertTrue(ret.containsKey(APP_ID_A));
+        assertTrue(ret.containsKey(APP_ID_B));
         Mockito.verify(scheduler, Mockito.times(2)).scheduleWithFixedDelay(Mockito.any(), Mockito.anyLong(), Mockito.anyLong(), Mockito.any());
     }
 
@@ -86,14 +88,14 @@ public class AutoscaleSchedulerTest
                                           new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
         autoscale.updateServices(out);
         Map<String, ScheduledScalingService> ret = autoscale.getScheduledServices();
-        Assert.assertTrue(ret.containsKey(APP_ID_A));
-        Assert.assertTrue(ret.containsKey(APP_ID_B));
+        assertTrue(ret.containsKey(APP_ID_A));
+        assertTrue(ret.containsKey(APP_ID_B));
         Set<ScalingConfiguration> out2 = new HashSet<>();
         out2.add(getConfigA());
         Mockito.when(validator.getValidatedServices(Mockito.any())).thenReturn(out2);
         autoscale.updateServices(out2);
-        Assert.assertTrue(ret.containsKey(APP_ID_A));
-        Assert.assertFalse(ret.containsKey(APP_ID_B));
+        assertTrue(ret.containsKey(APP_ID_A));
+        assertFalse(ret.containsKey(APP_ID_B));
         Mockito.verify(scheduler, Mockito.times(2)).scheduleWithFixedDelay(Mockito.any(), Mockito.anyLong(), Mockito.anyLong(), Mockito.any());
     }
 
@@ -116,19 +118,19 @@ public class AutoscaleSchedulerTest
                                           new ResourceMonitoringConfiguration(), new AlertDispatchConfiguration());
         autoscale.updateServices(out);
         Map<String, ScheduledScalingService> ret = autoscale.getScheduledServices();
-        Assert.assertTrue(ret.containsKey(APP_ID_A));
-        Assert.assertTrue(ret.containsKey(APP_ID_B));
-        Assert.assertEquals(getConfigA(), ret.get(APP_ID_A).getConfig());
-        Assert.assertEquals(getConfigB(), ret.get(APP_ID_B).getConfig());
+        assertTrue(ret.containsKey(APP_ID_A));
+        assertTrue(ret.containsKey(APP_ID_B));
+        assertEquals(getConfigA(), ret.get(APP_ID_A).getConfig());
+        assertEquals(getConfigB(), ret.get(APP_ID_B).getConfig());
         Set<ScalingConfiguration> out2 = new HashSet<>();
         out2.add(getConfigA());
         out2.add(getConfigC());
         Mockito.when(validator.getValidatedServices(Mockito.any())).thenReturn(out2);
         autoscale.updateServices(out2);
-        Assert.assertTrue(ret.containsKey(APP_ID_A));
-        Assert.assertTrue(ret.containsKey(APP_ID_B));
-        Assert.assertEquals(getConfigA(), ret.get(APP_ID_A).getConfig());
-        Assert.assertEquals(getConfigC(), ret.get(APP_ID_B).getConfig());
+        assertTrue(ret.containsKey(APP_ID_A));
+        assertTrue(ret.containsKey(APP_ID_B));
+        assertEquals(getConfigA(), ret.get(APP_ID_A).getConfig());
+        assertEquals(getConfigC(), ret.get(APP_ID_B).getConfig());
         Mockito.verify(scheduler, Mockito.times(3)).scheduleWithFixedDelay(Mockito.any(), Mockito.anyLong(), Mockito.anyLong(), Mockito.any());
     }
 
@@ -145,7 +147,7 @@ public class AutoscaleSchedulerTest
             new AlertDispatchConfiguration());
 
         final HealthResult res = autoscaleScheduler.healthCheck();
-        Assert.assertEquals("should be healthy", HealthStatus.HEALTHY, res.getStatus());
+        assertEquals(HealthStatus.HEALTHY, res.getStatus(), "should be healthy");
     }
 
 
@@ -168,7 +170,7 @@ public class AutoscaleSchedulerTest
         autoscaleScheduler.updateServices(services);
 
         final HealthResult res = autoscaleScheduler.healthCheck();
-        Assert.assertEquals("should be healthy", HealthStatus.HEALTHY, res.getStatus());
+        assertEquals(HealthStatus.HEALTHY, res.getStatus(), "should be healthy");
     }
 
 
@@ -198,7 +200,7 @@ public class AutoscaleSchedulerTest
         autoscaleScheduler.updateServices(services);
 
         final HealthResult res = autoscaleScheduler.healthCheck();
-        Assert.assertEquals("should be unhealthy", HealthStatus.UNHEALTHY, res.getStatus());
+        assertEquals(HealthStatus.UNHEALTHY, res.getStatus(), "should be unhealthy");
     }
 
 

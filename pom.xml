@@ -114,7 +114,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-core</artifactId>
-                <version>1.12.730</version>
+                <version>1.12.727</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -125,12 +125,12 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-sts</artifactId>
-                <version>1.12.730</version>
+                <version>1.12.727</version>
             </dependency>
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>jmespath-java</artifactId>
-                <version>1.12.730</version>
+                <version>1.12.727</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml</groupId>
@@ -400,7 +400,7 @@
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
-                <version>4.27.0</version>
+                <version>4.26.1</version>
             </dependency>
             <dependency>
                 <groupId>com.helger</groupId>
@@ -735,19 +735,14 @@
                 <version>2.12.7</version>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.13.2</version>
-            </dependency>
-            <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>1.14.16</version>
+                <version>1.14.15</version>
             </dependency>
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy-agent</artifactId>
-                <version>1.14.16</version>
+                <version>1.14.15</version>
             </dependency>
             <dependency>
                 <groupId>net.oauth.core</groupId>
@@ -767,7 +762,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
-                <version>1.26.2</version>
+                <version>1.26.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -903,32 +898,32 @@
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
                 <artifactId>jersey-container-servlet</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.13</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
                 <artifactId>jersey-container-servlet-core</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.13</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.13</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-common</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.13</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-server</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.13</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.ext</groupId>
                 <artifactId>jersey-bean-validation</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.13</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.glassfish</groupId>
@@ -939,22 +934,22 @@
             <dependency>
                 <groupId>org.glassfish.jersey.ext</groupId>
                 <artifactId>jersey-entity-filtering</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.13</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.ext</groupId>
                 <artifactId>jersey-metainf-services</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.13</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
                 <artifactId>jersey-hk2</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.13</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-json-jackson</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.13</version>
             </dependency>
             <dependency>
                 <groupId>org.graalvm.js</groupId>
@@ -1058,6 +1053,12 @@
                 <version>2.0.0</version>
             </dependency>
             <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.10.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.jvnet</groupId>
                 <artifactId>animal-sniffer-annotation</artifactId>
                 <version>1.0</version>
@@ -1065,12 +1066,17 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>5.12.0</version>
+                <version>3.12.4</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-inline</artifactId>
-                <version>5.2.0</version>
+                <version>2.13.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>3.12.4</version>
             </dependency>
             <dependency>
                 <groupId>org.objenesis</groupId>
@@ -1185,12 +1191,25 @@
                         <image>
                             <repository>${dockerHubPublic}/mesosphere/mesos-agent</repository>
                             <tag>1.7.1</tag>
+                            <latestTag>1.7.1</latestTag>
+                            <digest>sha256:e64aa03195317fe55d88a6aaff4c9fb89cc28cf93824a156ed358a9867f0d055</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/mesosphere/mesos-master</repository>
                             <tag>1.7.1</tag>
+                            <latestTag>1.7.1</latestTag>
+                            <digest>sha256:35d83f54bec00ae18d2a7022e92d75ef768bcf83d2dab013319c2abc9893ca9c</digest>
                         </image>
                     </imageManagement>
+                    <ignoreVersions>
+                        <ignoreVersion>
+                            <type>regex</type>
+                            <version>(?!1\.7\.1$).*</version>
+                            <images>
+                                <image>(?i).*mesosphere/mesos-.*</image>
+                            </images>
+                        </ignoreVersion>
+                    </ignoreVersions>
                 </configuration>
             </plugin>
         </plugins>

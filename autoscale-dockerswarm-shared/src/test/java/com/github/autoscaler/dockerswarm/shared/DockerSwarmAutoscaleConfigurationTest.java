@@ -16,15 +16,15 @@
 package com.github.autoscaler.dockerswarm.shared;
 
 import com.hpe.caf.codec.JsonCodec;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * DockerSwarm configuration class - unit testing only.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DockerSwarmAutoscaleConfigurationTest
 {
     /**
@@ -48,11 +48,11 @@ public class DockerSwarmAutoscaleConfigurationTest
 
         DockerSwarmAutoscaleConfiguration deserialized = jsonCodec.deserialise(serialized, DockerSwarmAutoscaleConfiguration.class);
 
-        Assert.assertEquals(autoscaleConfiguration.getEndpoint(), deserialized.getEndpoint());
-        Assert.assertEquals(autoscaleConfiguration.getTimeoutInSecs(), deserialized.getTimeoutInSecs());
-        Assert.assertEquals(autoscaleConfiguration.getMaximumInstances(), deserialized.getMaximumInstances());
-        Assert.assertEquals(autoscaleConfiguration.getStackId(), deserialized.getStackId());
-        Assert.assertEquals(autoscaleConfiguration.getTlsVerify(), deserialized.getTlsVerify());
-        Assert.assertEquals(autoscaleConfiguration.getCertificatePath(), deserialized.getCertificatePath());
+        assertEquals(autoscaleConfiguration.getEndpoint(), deserialized.getEndpoint());
+        assertEquals(autoscaleConfiguration.getTimeoutInSecs(), deserialized.getTimeoutInSecs());
+        assertEquals(autoscaleConfiguration.getMaximumInstances(), deserialized.getMaximumInstances());
+        assertEquals(autoscaleConfiguration.getStackId(), deserialized.getStackId());
+        assertEquals(autoscaleConfiguration.getTlsVerify(), deserialized.getTlsVerify());
+        assertEquals(autoscaleConfiguration.getCertificatePath(), deserialized.getCertificatePath());
     }
 }

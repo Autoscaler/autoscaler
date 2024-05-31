@@ -15,8 +15,8 @@
  */
 package com.github.autoscaler.email.alert.dispatcher;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +33,7 @@ public class EmailDispatcherTest {
             EmailDispatcher emailDispatcher = new EmailDispatcher(emailDispatcherConfiguration);
             emailDispatcher.dispatch("hello, this is a test email");
         } catch (final Exception e) {
-            Assert.fail("Error while trying to dispatch mail: " + e);
+            fail("Error while trying to dispatch mail: " + e);
         }
     }
 }

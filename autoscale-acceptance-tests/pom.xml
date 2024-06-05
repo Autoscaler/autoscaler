@@ -168,7 +168,7 @@
                                     <time>30000</time>
                                 </wait>
                                 <log>
-                                    <enabled>true</enabled>
+                                    <enabled>false</enabled>
                                 </log>
                             </run>
                         </image>

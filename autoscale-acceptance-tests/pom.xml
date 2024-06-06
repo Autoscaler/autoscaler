@@ -114,7 +114,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <verbose>true</verbose>
+                    <verbose>false</verbose>
                     <watchInterval>500</watchInterval>
                     <logDate>default</logDate>
                     <containerNamePattern>%a-%t</containerNamePattern>
@@ -168,7 +168,7 @@
                                     <time>30000</time>
                                 </wait>
                                 <log>
-                                    <enabled>true</enabled>
+                                    <enabled>false</enabled>
                                 </log>
                             </run>
                         </image>
@@ -209,7 +209,7 @@
                                     <time>30000</time>
                                 </wait>
                                 <log>
-                                    <enabled>true</enabled>
+                                    <enabled>false</enabled>
                                 </log>
                             </run>
                         </image>
@@ -236,7 +236,7 @@
                                     <time>120000</time>
                                 </wait>
                                 <log>
-                                    <enabled>true</enabled>
+                                    <enabled>false</enabled>
                                 </log>
                             </run>
                         </image>

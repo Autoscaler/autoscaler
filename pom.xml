@@ -1181,7 +1181,6 @@
                         <image>
                             <repository>${dockerHubPublic}/library/zookeeper</repository>
                             <tag>3.9.2-jre-17</tag>
-                            <digest>sha256:e9a4fd7748598e7eac08cab3d28d7b2e6f092d5ec6509af3821b100924ceecb4</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/mesosphere/marathon</repository>

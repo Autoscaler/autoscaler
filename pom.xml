@@ -77,13 +77,9 @@
         <module>docs</module>
         <module>autoscale-api</module>
         <module>autoscale-core</module>
-        <module>autoscale-dockerswarm-shared</module>
-        <module>autoscale-dockerswarm-container</module>
         <module>autoscale-kubernetes-container</module>
         <module>autoscale-kubernetes-shared</module>
-        <module>autoscale-scaler-dockerswarm</module>
         <module>autoscale-scaler-kubernetes</module>
-        <module>autoscale-source-dockerswarm</module>
         <module>autoscale-source-kubernetes</module>
         <module>autoscale-workload-rabbit</module>
         <module>autoscale-acceptance-tests</module>
@@ -215,11 +211,6 @@
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
-                <artifactId>autoscale-dockerswarm-shared</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-email-alert-dispatcher</artifactId>
                 <version>2.2.0-SNAPSHOT</version>
             </dependency>
@@ -230,17 +221,7 @@
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
-                <artifactId>autoscale-scaler-dockerswarm</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-scaler-kubernetes</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.autoscaler</groupId>
-                <artifactId>autoscale-source-dockerswarm</artifactId>
                 <version>2.2.0-SNAPSHOT</version>
             </dependency>
             <dependency>

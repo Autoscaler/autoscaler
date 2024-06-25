@@ -246,7 +246,6 @@
                 <mesos.agent.port>5051</mesos.agent.port>
                 <rabbitmq.nodePort>5672</rabbitmq.nodePort>
                 <rabbitmq.managementPort>15672</rabbitmq.managementPort>
-                <swarm.scaler.port>28086</swarm.scaler.port>
                 <zookeeper.port>2181</zookeeper.port>
             </properties>
         </profile>

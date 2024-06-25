@@ -29,6 +29,7 @@ import io.kubernetes.client.openapi.models.V1DeploymentSpec;
 import io.kubernetes.client.openapi.models.V1PodStatus;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import org.apache.commons.compress.utils.Lists;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -42,6 +43,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 public class K8sServiceScalerTest {
 
@@ -53,7 +55,7 @@ public class K8sServiceScalerTest {
     private static final String PROFILE = "default";
     private static final String INTERVAL = "30";
     private static final String MAX = "4";
-    private static final String MIN = "1";
+    private static final String MIN = "0";
     private static final String BACKOFF = "10";
     private static final String SHUTDOWN_PRIORITY = "10";
     private static final int REPLICAS = 3;
@@ -105,6 +107,51 @@ public class K8sServiceScalerTest {
     }
 
     @Test
+    @SuppressWarnings("ThrowableResultIgnored")
+    public void scaleUpExceptionTest()
+            throws ScalerException, KubectlException
+    {
+
+        final V1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
+                WORKER_CLASSIFICATION_NAME,
+                NAMESPACE,
+                MIN,
+                MAX,
+                WORKER_CLASSIFICATION_TARGET,
+                GROUPID,
+                INTERVAL,
+                BACKOFF,
+                PROFILE,
+                WORKER_CLASSIFICATION_TARGET,
+                METRIC,
+                SHUTDOWN_PRIORITY,
+                REPLICAS,
+                WORKER_CLASSIFICATION_NAME);
+
+        final List<V1Deployment> deployments = Lists.newArrayList();
+        deployments.add(classificationWorkerDeployment);
+
+        try (MockedStatic<Kubectl> kubectlStaticMock = Mockito.mockStatic(Kubectl.class)) {
+
+            setupMocks(kubectlStaticMock, classificationWorkerDeployment);
+
+            final KubectlScale<V1Deployment> scaleMock = mock(KubectlScale.class);
+
+            when(Kubectl.scale(V1Deployment.class)).thenReturn(scaleMock);
+            when(scaleMock.namespace(any())).thenReturn(scaleMock);
+            when(scaleMock.namespace(any()).name(any())).thenReturn(scaleMock);
+            when(scaleMock.namespace(any()).name(any()).replicas(anyInt())).thenReturn(scaleMock);
+            when(scaleMock.execute()).thenThrow(KubectlException.class);
+
+            final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
+            K8sServiceScaler scaler = new K8sServiceScaler(config);
+            when(config.getMaximumInstances()).thenReturn(Integer.valueOf(MAX));
+
+            Assertions.assertThrows(ScalerException.class, () -> scaler.scaleUp("private:classification-worker", 1));
+        }
+    }
+
+    @Test
     public void scaleDownTest()
             throws ScalerException, KubectlException
     {
@@ -151,6 +198,142 @@ public class K8sServiceScalerTest {
     }
 
     @Test
+    @SuppressWarnings("ThrowableResultIgnored")
+    public void scaleDownExceptionTest()
+            throws ScalerException, KubectlException
+    {
+
+        final V1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
+                WORKER_CLASSIFICATION_NAME,
+                NAMESPACE,
+                MIN,
+                MAX,
+                WORKER_CLASSIFICATION_TARGET,
+                GROUPID,
+                INTERVAL,
+                BACKOFF,
+                PROFILE,
+                WORKER_CLASSIFICATION_TARGET,
+                METRIC,
+                SHUTDOWN_PRIORITY,
+                REPLICAS,
+                WORKER_CLASSIFICATION_NAME);
+
+        final List<V1Deployment> deployments = Lists.newArrayList();
+        deployments.add(classificationWorkerDeployment);
+
+        try (MockedStatic<Kubectl> kubectlStaticMock = Mockito.mockStatic(Kubectl.class)) {
+
+            setupMocks(kubectlStaticMock, classificationWorkerDeployment);
+
+            final KubectlScale<V1Deployment> scaleMock = mock(KubectlScale.class);
+
+            when(Kubectl.scale(V1Deployment.class)).thenReturn(scaleMock);
+            when(scaleMock.namespace(any())).thenReturn(scaleMock);
+            when(scaleMock.namespace(any()).name(any())).thenReturn(scaleMock);
+            when(scaleMock.namespace(any()).name(any()).replicas(anyInt())).thenReturn(scaleMock);
+            when(scaleMock.execute()).thenThrow(KubectlException.class);
+
+            final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
+            K8sServiceScaler scaler = new K8sServiceScaler(config);
+            when(config.getMaximumInstances()).thenReturn(Integer.valueOf(MAX));
+
+            Assertions.assertThrows(ScalerException.class, () -> scaler.scaleDown("private:classification-worker", 1));
+        }
+    }
+
+    @Test
+    public void scaleUpMaxTest()
+            throws ScalerException, KubectlException
+    {
+
+        final V1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
+                WORKER_CLASSIFICATION_NAME,
+                NAMESPACE,
+                MIN,
+                MAX,
+                WORKER_CLASSIFICATION_TARGET,
+                GROUPID,
+                INTERVAL,
+                BACKOFF,
+                PROFILE,
+                WORKER_CLASSIFICATION_TARGET,
+                METRIC,
+                SHUTDOWN_PRIORITY,
+                Integer.parseInt(MAX),
+                WORKER_CLASSIFICATION_NAME);
+
+        final List<V1Deployment> deployments = Lists.newArrayList();
+        deployments.add(classificationWorkerDeployment);
+
+        try (MockedStatic<Kubectl> kubectlStaticMock = Mockito.mockStatic(Kubectl.class)) {
+
+            setupMocks(kubectlStaticMock, classificationWorkerDeployment);
+
+            final KubectlScale<V1Deployment> scaleMock = mock(KubectlScale.class);
+
+            when(Kubectl.scale(V1Deployment.class)).thenReturn(scaleMock);
+            when(scaleMock.namespace(any())).thenReturn(scaleMock);
+            when(scaleMock.namespace(any()).name(any())).thenReturn(scaleMock);
+            when(scaleMock.namespace(any()).name(any()).replicas(anyInt())).thenReturn(scaleMock);
+
+            final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
+            K8sServiceScaler scaler = new K8sServiceScaler(config);
+            when(config.getMaximumInstances()).thenReturn(Integer.valueOf(MAX));
+
+            scaler.scaleUp("private:classification-worker", 1);
+
+            Mockito.verify(scaleMock, times(0)).replicas(anyInt());
+        }
+    }
+
+    @Test
+    public void scaleDownMinTest()
+            throws ScalerException, KubectlException
+    {
+
+        final V1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
+                WORKER_CLASSIFICATION_NAME,
+                NAMESPACE,
+                MIN,
+                MAX,
+                WORKER_CLASSIFICATION_TARGET,
+                GROUPID,
+                INTERVAL,
+                BACKOFF,
+                PROFILE,
+                WORKER_CLASSIFICATION_TARGET,
+                METRIC,
+                SHUTDOWN_PRIORITY,
+                Integer.parseInt(MIN),
+                WORKER_CLASSIFICATION_NAME);
+
+        final List<V1Deployment> deployments = Lists.newArrayList();
+        deployments.add(classificationWorkerDeployment);
+
+        try (MockedStatic<Kubectl> kubectlStaticMock = Mockito.mockStatic(Kubectl.class)) {
+
+            setupMocks(kubectlStaticMock, classificationWorkerDeployment);
+
+            final KubectlScale<V1Deployment> scaleMock = mock(KubectlScale.class);
+
+            when(Kubectl.scale(V1Deployment.class)).thenReturn(scaleMock);
+            when(scaleMock.namespace(any())).thenReturn(scaleMock);
+            when(scaleMock.namespace(any()).name(any())).thenReturn(scaleMock);
+            when(scaleMock.namespace(any()).name(any()).replicas(anyInt())).thenReturn(scaleMock);
+
+            final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
+            K8sServiceScaler scaler = new K8sServiceScaler(config);
+            when(config.getMaximumInstances()).thenReturn(Integer.valueOf(MAX));
+
+            scaler.scaleDown("private:classification-worker", 1);
+
+            Mockito.verify(scaleMock, times(0)).replicas(anyInt());
+        }
+    }
+
+
+    @Test
     public void getInstanceInfoTest() throws ScalerException, KubectlException
     {
         final V1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
@@ -195,6 +378,45 @@ public class K8sServiceScalerTest {
             assertEquals(Integer.valueOf(2), dpInstanceInfo.getInstancesRunning());
             assertEquals(Integer.valueOf(1), dpInstanceInfo.getInstancesStaging());
             assertEquals(Integer.valueOf(SHUTDOWN_PRIORITY), dpInstanceInfo.getShutdownPriority());
+        }
+    }
+
+    @Test
+    public void getInstanceInfoExceptionTest() throws ScalerException, KubectlException
+    {
+        final V1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
+                WORKER_CLASSIFICATION_NAME,
+                NAMESPACE,
+                MIN,
+                MAX,
+                WORKER_CLASSIFICATION_TARGET,
+                GROUPID,
+                INTERVAL,
+                BACKOFF,
+                PROFILE,
+                WORKER_CLASSIFICATION_TARGET,
+                METRIC,
+                SHUTDOWN_PRIORITY,
+                REPLICAS,
+                WORKER_CLASSIFICATION_NAME);
+
+        final List<V1Deployment> deployments = Lists.newArrayList();
+        deployments.add(classificationWorkerDeployment);
+        try (MockedStatic<Kubectl> kubectlStaticMock = Mockito.mockStatic(Kubectl.class)) {
+
+            setupMocks(kubectlStaticMock, classificationWorkerDeployment);
+
+            final KubectlGet<V1Pod> getPodMock = mock(KubectlGet.class);
+            kubectlStaticMock.when(() -> Kubectl.get(eq(V1Pod.class)))
+                    .thenReturn(getPodMock);
+            when(getPodMock.namespace(any())).thenReturn(getPodMock);
+
+            when(getPodMock.execute()).thenThrow(KubectlException.class);
+
+            final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
+            K8sServiceScaler scaler = new K8sServiceScaler(config);
+
+            Assertions.assertThrows(ScalerException.class, () -> scaler.getInstanceInfo("private:worker-classification"));
         }
     }
 

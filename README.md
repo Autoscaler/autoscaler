@@ -4,14 +4,14 @@ The [Autoscaler](https://github.com/Autoscaler/autoscaler) service provides on-d
 
 The Autoscaler is an extensible framework, which allows you to provide your own modules to retrieve services to scale, metrics to make scaling decisions and instigate a scaling action. 
 
-The Autoscaler service provides a source for Marathon that identifies services to scale using Marathon labels. A RabbitMQ workload analyzer retrieves details of RabbitMQ queues to make scaling decisions. A Marathon application scaler issues commands to the Marathon REST API to scale up and down a service.
+The Autoscaler service provides a source for Kubernetes that identifies services to scale using Kubernetes labels. A RabbitMQ workload analyzer retrieves details of RabbitMQ queues to make scaling decisions. A Kubernetes application scaler issues commands to the Kubernetes REST API to scale up and down a service.
 
 Manifest of the components which make up the AutoScaler:
 
 * autoscale-container
-* autoscale-marathon-shared
+* autoscale-kubernetes-shared
 * autoscale-workload-rabbit
-* autoscale-scaler-marathon
-* autoscale-source-marathon
+* autoscale-scaler-kubernetes
+* autoscale-source-kubernetes
 * autoscale-core
 * autoscale-api

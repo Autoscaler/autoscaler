@@ -26,7 +26,7 @@ To achieve these goals, an Autoscaler needs the following:
 Ideally, services may have different ways to measure their workload and different profiles representing a varying "quality of service" assigned to them.
 
 ## Autoscale Application
-The Worker Autoscaler automatically scales workers which pass messages asynchronously using RabbitMQ, and which are orchestrated using the Mesos Marathon platform. However fundamentally the Autoscaler is built on a broader Autoscaler Framework, and the module which monitors RabbitMQ can be swapped out for a module which monitors a different messaging system.  Similarly if an alternative orchestration platform is being used instead of Marathon, then an appropriate implementation can be supplied to replace the Marathon implementation.
+The Worker Autoscaler automatically scales workers which pass messages asynchronously using RabbitMQ, and which are orchestrated using the kubernetes platform. However fundamentally the Autoscaler is built on a broader Autoscaler Framework, and the module which monitors RabbitMQ can be swapped out for a module which monitors a different messaging system.  Similarly if an alternative orchestration platform is being used instead of kubernetes, then an appropriate implementation can be supplied to replace the kubernetes implementation.
 
 The `autoscale-core` module contains the core autoscaling application code.  It is responsible for acquiring a collection of services to monitor from a `ServiceSource`, validating them and scheduling `WorkloadAnalyser` runs periodically to get scaling recommendations. The application can trigger scaling via a `ServiceScaler` if the analyzer recommends an action be taken and constraints of the `ScalingConfiguration` allow it.
 

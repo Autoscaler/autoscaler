@@ -97,7 +97,7 @@ public class K8sServiceScalerTest {
             when(scaleMock.namespace(any()).name(any()).replicas(anyInt()).execute()).thenReturn(classificationWorkerDeployment);
 
             final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-            K8sServiceScaler scaler = new K8sServiceScaler(config);
+            final K8sServiceScaler scaler = new K8sServiceScaler(config);
             when(config.getMaximumInstances()).thenReturn(Integer.valueOf(MAX));
 
             scaler.scaleUp("private:classification-worker", 1);
@@ -144,7 +144,7 @@ public class K8sServiceScalerTest {
             when(scaleMock.execute()).thenThrow(KubectlException.class);
 
             final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-            K8sServiceScaler scaler = new K8sServiceScaler(config);
+            final K8sServiceScaler scaler = new K8sServiceScaler(config);
             when(config.getMaximumInstances()).thenReturn(Integer.valueOf(MAX));
 
             Assertions.assertThrows(ScalerException.class, () -> scaler.scaleUp("private:classification-worker", 1));
@@ -188,7 +188,7 @@ public class K8sServiceScalerTest {
             when(scaleMock.namespace(any()).name(any()).replicas(anyInt()).execute()).thenReturn(classificationWorkerDeployment);
 
             final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-            K8sServiceScaler scaler = new K8sServiceScaler(config);
+            final K8sServiceScaler scaler = new K8sServiceScaler(config);
             when(config.getMaximumInstances()).thenReturn(Integer.valueOf(MAX));
 
             scaler.scaleDown("private:classification-worker", 1);
@@ -235,7 +235,7 @@ public class K8sServiceScalerTest {
             when(scaleMock.execute()).thenThrow(KubectlException.class);
 
             final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-            K8sServiceScaler scaler = new K8sServiceScaler(config);
+            final K8sServiceScaler scaler = new K8sServiceScaler(config);
             when(config.getMaximumInstances()).thenReturn(Integer.valueOf(MAX));
 
             Assertions.assertThrows(ScalerException.class, () -> scaler.scaleDown("private:classification-worker", 1));
@@ -278,7 +278,7 @@ public class K8sServiceScalerTest {
             when(scaleMock.namespace(any()).name(any()).replicas(anyInt())).thenReturn(scaleMock);
 
             final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-            K8sServiceScaler scaler = new K8sServiceScaler(config);
+            final K8sServiceScaler scaler = new K8sServiceScaler(config);
             when(config.getMaximumInstances()).thenReturn(Integer.valueOf(MAX));
 
             scaler.scaleUp("private:classification-worker", 1);
@@ -323,7 +323,7 @@ public class K8sServiceScalerTest {
             when(scaleMock.namespace(any()).name(any()).replicas(anyInt())).thenReturn(scaleMock);
 
             final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-            K8sServiceScaler scaler = new K8sServiceScaler(config);
+            final K8sServiceScaler scaler = new K8sServiceScaler(config);
             when(config.getMaximumInstances()).thenReturn(Integer.valueOf(MAX));
 
             scaler.scaleDown("private:classification-worker", 1);
@@ -371,7 +371,7 @@ public class K8sServiceScalerTest {
             when(getPodMock.execute()).thenReturn(pods);
 
             final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-            K8sServiceScaler scaler = new K8sServiceScaler(config);
+            final K8sServiceScaler scaler = new K8sServiceScaler(config);
             final InstanceInfo dpInstanceInfo = scaler.getInstanceInfo("private:worker-classification");
 
             assertEquals(Integer.valueOf(REPLICAS), dpInstanceInfo.getInstances());
@@ -414,7 +414,7 @@ public class K8sServiceScalerTest {
             when(getPodMock.execute()).thenThrow(KubectlException.class);
 
             final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
-            K8sServiceScaler scaler = new K8sServiceScaler(config);
+            final K8sServiceScaler scaler = new K8sServiceScaler(config);
 
             Assertions.assertThrows(ScalerException.class, () -> scaler.getInstanceInfo("private:worker-classification"));
         }

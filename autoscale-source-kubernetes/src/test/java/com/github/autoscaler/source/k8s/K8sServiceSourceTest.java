@@ -56,6 +56,7 @@ public class K8sServiceSourceTest {
     private static final String MIN = "1";
     private static final String BACKOFF = "10";
     private static final String SHUTDOWN_PRIORITY = "10";
+    private static final int REPLICAS = 3;
 
     @Test
     public void getServicesTest()
@@ -74,7 +75,8 @@ public class K8sServiceSourceTest {
                 WORKER_CLASSIFICATION_TARGET,
                 METRIC,
                 SHUTDOWN_PRIORITY,
-                3);
+                REPLICAS,
+                WORKER_CLASSIFICATION_NAME);
 
         final List<V1Deployment> deployments = Lists.newArrayList();
         deployments.add(classificationWorkerDeployment);
@@ -95,7 +97,7 @@ public class K8sServiceSourceTest {
             when(getMock.namespace(any())).thenReturn(getMock);
 
             final K8sServiceSource source = new K8sServiceSource(config);
-            Set<ScalingConfiguration> services = source.getServices();
+            final Set<ScalingConfiguration> services = source.getServices();
 
             assertEquals(1, services.size());
 
@@ -126,7 +128,8 @@ public class K8sServiceSourceTest {
                 WORKER_CLASSIFICATION_TARGET,
                 METRIC,
                 SHUTDOWN_PRIORITY,
-                3);
+                REPLICAS,
+                WORKER_CLASSIFICATION_NAME);
 
         final V1Deployment entityextractWorkerDeployment = createDeploymentWithLabels(
                 WORKER_ENTITYEXTRACT_NAME,
@@ -138,10 +141,11 @@ public class K8sServiceSourceTest {
                 INTERVAL,
                 BACKOFF,
                 PROFILE,
-                WORKER_CLASSIFICATION_TARGET,
+                WORKER_ENTITYEXTRACT_TARGET,
                 METRIC,
                 SHUTDOWN_PRIORITY,
-                3);
+                REPLICAS,
+                WORKER_ENTITYEXTRACT_NAME);
 
         final List<V1Deployment> deployments = Lists.newArrayList();
         deployments.add(classificationWorkerDeployment);
@@ -163,7 +167,7 @@ public class K8sServiceSourceTest {
             when(getMock.namespace(any())).thenReturn(getMock);
 
             final K8sServiceSource source = new K8sServiceSource(config);
-            Set<ScalingConfiguration> services = source.getServices();
+            final Set<ScalingConfiguration> services = source.getServices();
 
             assertEquals(2, services.size());
         }
@@ -205,7 +209,8 @@ public class K8sServiceSourceTest {
             final String autoscaleScalingTarget,
             final String autoscaleMetric,
             final String autoscaleShutdownPriority,
-            final int replicas)
+            final int replicas,
+            final String podName)
     {
         final V1Deployment deployment = new V1Deployment();
 
@@ -223,6 +228,7 @@ public class K8sServiceSourceTest {
                 .put("autoscale.scalingtarget", autoscaleScalingTarget)
                 .put("autoscale.metric", autoscaleMetric)
                 .put("autoscale.shutdownpriority", autoscaleShutdownPriority)
+                .put("app", podName)
                 .build());
         deployment.setSpec(new V1DeploymentSpec());
         deployment.getSpec().setReplicas(replicas);

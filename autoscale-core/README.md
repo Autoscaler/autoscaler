@@ -53,8 +53,10 @@
  
 ### Configuration
 
- To start `autoscale-core`, you are required to set `caf.appname` to an appropriate
- value to specify the namespace/grouping for the particular autoscaler instance.
+ No environment variables are required to be set to start `autoscale-core`, if
+ you are running on the Kubernetes platform. If you are not, you will need to set
+ `caf.appname` to an appropriate value to specify the namespace/grouping for
+ the particular autoscaler instance.
 
  The following configuration can (optionally) be set in the yaml file:
 

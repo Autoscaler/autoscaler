@@ -23,7 +23,7 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-aggregator</artifactId>
-    <version>2.2.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Autoscaler</name>
@@ -73,22 +73,13 @@
     </developers>
 
     <modules>
-        <module>deploy</module>
         <module>docs</module>
         <module>autoscale-api</module>
         <module>autoscale-core</module>
-        <module>autoscale-dockerswarm-shared</module>
-        <module>autoscale-dockerswarm-container</module>
         <module>autoscale-kubernetes-container</module>
         <module>autoscale-kubernetes-shared</module>
-        <module>autoscale-marathon-shared</module>
-        <module>autoscale-marathon-container</module>
-        <module>autoscale-scaler-dockerswarm</module>
         <module>autoscale-scaler-kubernetes</module>
-        <module>autoscale-scaler-marathon</module>
-        <module>autoscale-source-dockerswarm</module>
         <module>autoscale-source-kubernetes</module>
-        <module>autoscale-source-marathon</module>
         <module>autoscale-workload-rabbit</module>
         <module>autoscale-acceptance-tests</module>
         <module>autoscale-email-alert-dispatcher</module>
@@ -210,67 +201,37 @@
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-api</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>3.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-core</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.autoscaler</groupId>
-                <artifactId>autoscale-dockerswarm-shared</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>3.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-email-alert-dispatcher</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>3.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-kubernetes-shared</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.autoscaler</groupId>
-                <artifactId>autoscale-marathon-shared</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.autoscaler</groupId>
-                <artifactId>autoscale-scaler-dockerswarm</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>3.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-scaler-kubernetes</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.autoscaler</groupId>
-                <artifactId>autoscale-scaler-marathon</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.autoscaler</groupId>
-                <artifactId>autoscale-source-dockerswarm</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>3.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-source-kubernetes</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.autoscaler</groupId>
-                <artifactId>autoscale-source-marathon</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>3.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-workload-rabbit</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>3.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
@@ -411,11 +372,6 @@
                 <groupId>com.jayway.jsonpath</groupId>
                 <artifactId>json-path</artifactId>
                 <version>2.9.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.mesosphere</groupId>
-                <artifactId>marathon-client</artifactId>
-                <version>0.6.3</version>
             </dependency>
             <dependency>
                 <groupId>com.microsoft.azure</groupId>
@@ -1188,11 +1144,6 @@
                         <image>
                             <repository>${dockerHubPublic}/library/zookeeper</repository>
                             <tag>3.9.2-jre-17</tag>
-                        </image>
-                        <image>
-                            <repository>${dockerHubPublic}/mesosphere/marathon</repository>
-                            <tag>v1.8.218</tag>
-                            <digest>sha256:cb6d117953e58ba7695977bb727ae929dfca1d52bf14cfb5a3fee057ec2d0033</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/mesosphere/mesos-agent</repository>

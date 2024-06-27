@@ -110,7 +110,7 @@ public class InstanceInfo
     }
     
     /**
-     * @return the number of instances of this application that are registered against this app in marathon, this will include all 
+     * @return the number of instances of this application that are registered against this app in kubernetes, this will include all
      * instances running, staging and waiting.
      */
     public int getInstances()

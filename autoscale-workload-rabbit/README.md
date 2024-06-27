@@ -12,7 +12,7 @@
 ## Configuration
 
  The configuration source for this module is
- [RabbitWorkloadAnalyserConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/autoscale-container/example-configs/cfg_autoscaler_marathon_RabbitWorkloadAnalyserConfiguration). The following configuration options are
+ [RabbitWorkloadAnalyserConfiguration](https://github.com/Autoscaler/autoscaler/blob/develop/autoscale-container/example-configs/cfg_autoscaler_kubernetes_RabbitWorkloadAnalyserConfiguration). The following configuration options are
  present:
 
  - rabbitManagementEndpoint: a valid URL that is the HTTP endpoint of the

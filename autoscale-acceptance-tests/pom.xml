@@ -27,7 +27,7 @@
     <parent>
         <groupId>com.github.autoscaler</groupId>
         <artifactId>autoscale-aggregator</artifactId>
-        <version>2.2.0-SNAPSHOT</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -213,34 +213,7 @@
                                 </log>
                             </run>
                         </image>
-                        
-                        <image>
-                            <alias>marathon</alias>
-                            <name>${projectDockerRegistry}/mesosphere/marathon</name>
-                            <run>
-                                <ports>
-                                    <port>${marathon.port}:8080</port>
-                                </ports>
-                                <privileged>true</privileged>
-                                <env>
-                                    <MARATHON_MASTER>local</MARATHON_MASTER>
-                                    <MARATHON_ZK>zk://zookeeper:2181/marathon</MARATHON_ZK>
-                                </env>
-                                <links>
-                                    <link>zookeeper</link>
-                                </links>
-                                <wait>
-                                    <http>
-                                        <url>http://${docker.host.address}:${marathon.port}</url>
-                                    </http>
-                                    <time>120000</time>
-                                </wait>
-                                <log>
-                                    <enabled>false</enabled>
-                                </log>
-                            </run>
-                        </image>
-                        
+
                         <image>
                             <alias>rabbitmq</alias>
                             <name>${projectDockerRegistry}/library/rabbitmq</name>
@@ -259,73 +232,6 @@
                                 </log>
                             </run>
                         </image>
-                        
-                        <image>
-                            <alias>swarm-autoscale-container</alias>
-                            <name>${dockerAutoscalerOrg}autoscale-dockerswarm-rabbit${dockerProjectVersion}</name>
-                            <run>
-                                <ports>
-                                    <port>${swarm.scaler.port}:8081</port>
-                                </ports>
-                                <env>
-                                    <DOCKER_HOST>http://${docker.host.address}:2375</DOCKER_HOST>
-                                    <CAF_AUTOSCALER_DOCKER_SWARM_STACK>autoscalerdemo</CAF_AUTOSCALER_DOCKER_SWARM_STACK>
-                                    <CAF_RABBITMQ_MGMT_URL>http://rabbitmq:15672</CAF_RABBITMQ_MGMT_URL>
-                                    <CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>
-                                    <CAF_RABBITMQ_MGMT_PASSWORD>guest</CAF_RABBITMQ_MGMT_PASSWORD>
-                                </env>
-                                <links>
-                                    <link>marathon</link>
-                                    <link>rabbitmq</link>
-                                </links>
-                                <wait>
-                                    <healthy>true</healthy>
-                                    <time>60000</time>
-                                    <shutdown>500</shutdown>
-                                </wait>
-                                <log>
-                                    <enabled>true</enabled>
-                                </log>
-                            </run>
-                        </image>
-                        
-                        <image>
-                            <alias>marathon-autoscale-container</alias>
-                            <name>${dockerAutoscalerOrg}autoscale-marathon-rabbit${dockerProjectVersion}</name>
-                            <run>
-                                <ports>
-                                    <port>${marathon.scaler.port}:8081</port>
-                                </ports>
-                                <env>
-                                    <CAF_MARATHON_URL>http://marathon:8080</CAF_MARATHON_URL>
-                                    <CAF_AUTOSCALER_BACKLOG_GOAL>300</CAF_AUTOSCALER_BACKLOG_GOAL>
-                                    <CAF_AUTOSCALER_MARATHON_GROUP>/</CAF_AUTOSCALER_MARATHON_GROUP>
-                                    <CAF_AUTOSCALER_MAXIMUM_INSTANCES>4</CAF_AUTOSCALER_MAXIMUM_INSTANCES>
-                                    <CAF_AUTOSCALER_SCALING_DELAY>10</CAF_AUTOSCALER_SCALING_DELAY>
-                                    <CAF_LOG_LEVEL>INFO</CAF_LOG_LEVEL>
-                                    <CAF_RABBITMQ_MGMT_URL>http://rabbitmq:15672</CAF_RABBITMQ_MGMT_URL>
-                                    <CAF_AUTOSCALER_SMTP_HOST>testhost</CAF_AUTOSCALER_SMTP_HOST>
-                                    <CAF_AUTOSCALER_SMTP_PORT>testPort</CAF_AUTOSCALER_SMTP_PORT>
-                                    <CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO>noone@nothing.com</CAF_AUTOSCALER_SMTP_EMAIL_ADDRESS_TO>
-                                    <CAF_AUTOSCALER_ALERT_DISABLED>true</CAF_AUTOSCALER_ALERT_DISABLED>
-                                    <CAF_RABBITMQ_MGMT_USERNAME>guest</CAF_RABBITMQ_MGMT_USERNAME>
-                                    <CAF_RABBITMQ_MGMT_PASSWORD>guest</CAF_RABBITMQ_MGMT_PASSWORD>
-                                </env>
-                                <links>
-                                    <link>marathon</link>
-                                    <link>rabbitmq</link>
-                                </links>
-                                <wait>
-                                    <healthy>true</healthy>
-                                    <time>60000</time>
-                                    <shutdown>500</shutdown>
-                                </wait>
-                                <log>
-                                    <enabled>true</enabled>
-                                </log>
-                            </run>
-                        </image>
-                        
                     </images>
                 </configuration>
             </plugin>
@@ -336,13 +242,10 @@
         <profile>
             <id>use-default-fixed-ports</id>
             <properties>
-                <marathon.port>31080</marathon.port>
-                <marathon.scaler.port>28087</marathon.scaler.port>
                 <mesos.port>5050</mesos.port>
                 <mesos.agent.port>5051</mesos.agent.port>
                 <rabbitmq.nodePort>5672</rabbitmq.nodePort>
                 <rabbitmq.managementPort>15672</rabbitmq.managementPort>
-                <swarm.scaler.port>28086</swarm.scaler.port>
                 <zookeeper.port>2181</zookeeper.port>
             </properties>
         </profile>

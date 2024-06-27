@@ -4,7 +4,6 @@
 **/target/
 /target/
 .idea/
-.project
 .settings/
 .classpath
 **/test-output/

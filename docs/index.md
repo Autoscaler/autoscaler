@@ -19,7 +19,7 @@ features:
           subtitle: Pluggable support for monitoring workloads, scaling decisions and scaling commands allows the Autoscaler to be used in many different environments.
         - image: assets/img/ready-to-go-icon.png
           title: Ready to go
-          subtitle: Out of the box support for the Worker Framework, RabbitMQ and Marathon makes it easy to start scaling today!
+          subtitle: Out of the box support for the Worker Framework, RabbitMQ and Kubernetes makes it easy to start scaling today!
 
 social:
     title: Get Involved

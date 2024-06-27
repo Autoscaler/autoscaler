@@ -31,7 +31,7 @@ The pipes represent asynchronous message queues on RabbitMQ.
 
 ### Framework
 
-The `autoscale-core` is built on an extensible framework that can be used to build different Worker Autoscalers.  The Worker Autoscaler is packaged with plugins for RabbitMQ and Marathon but due to the extensible nature of the framework, additional plugins can be written for alternative queuing and container orchestration tools.
+The `autoscale-core` is built on an extensible framework that can be used to build different Worker Autoscalers.  The Worker Autoscaler is packaged with plugins for RabbitMQ and Kubernetes but due to the extensible nature of the framework, additional plugins can be written for alternative queuing and container orchestration tools.
 
 
 ### Configuration

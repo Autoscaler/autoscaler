@@ -1,6 +1,6 @@
 # AutoScaler
 
-The [Autoscaler](https://github.com/Autoscaler/autoscaler) service provides on-demand scaling of services, allowing you to efficiently dedicate resources where they are needed most in your Mesos cluster, and minimizing costs and ensuring user satisfaction. 
+The [Autoscaler](https://github.com/Autoscaler/autoscaler) service provides on-demand scaling of services, allowing you to efficiently dedicate resources where they are needed most in your Kubernetes cluster, and minimizing costs and ensuring user satisfaction. 
 
 The Autoscaler is an extensible framework, which allows you to provide your own modules to retrieve services to scale, metrics to make scaling decisions and instigate a scaling action. 
 

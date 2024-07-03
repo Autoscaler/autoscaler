@@ -9,7 +9,7 @@ button:
 
 features:
     title: About Autoscaler
-    subtitle: The Autoscaler service provides on-demand scaling of services, allowing you to efficiently dedicate resources where they are needed most in your Mesos cluster and minimizing costs and ensuring user satisfaction.
+    subtitle: The Autoscaler service provides on-demand scaling of services, allowing you to efficiently dedicate resources where they are needed most in your Kubernetes cluster and minimizing costs and ensuring user satisfaction.
     feature_list:
         - image: assets/img/elastic-scaling-icon.png
           title: Elastic Scaling

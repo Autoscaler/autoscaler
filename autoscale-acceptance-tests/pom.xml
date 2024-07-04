@@ -141,78 +141,6 @@
                                 </log>
                             </run>
                         </image>
-                        
-                        <image>
-                            <alias>mesos-master</alias>
-                            <name>${projectDockerRegistry}/mesosphere/mesos-master</name>
-                            <run>
-                                <ports>
-                                    <port>${mesos.port}:5050</port>
-                                </ports>
-                                <privileged>true</privileged>
-                                <env>
-                                    <MESOS_ZK>zk://zookeeper:2181/mesos</MESOS_ZK>
-                                    <MESOS_LOG_DIR>/var/log/mesos</MESOS_LOG_DIR>
-                                    <MESOS_WORK_DIR>/var/tmp/mesos</MESOS_WORK_DIR>
-                                </env>
-                                <links>
-                                    <link>zookeeper</link>
-                                </links>
-                                <wait>
-                                    <tcp>
-                                        <mode>mapped</mode>
-                                        <ports>
-                                            <port>5050</port>
-                                        </ports>
-                                    </tcp>
-                                    <time>30000</time>
-                                </wait>
-                                <log>
-                                    <enabled>false</enabled>
-                                </log>
-                            </run>
-                        </image>
-                        
-                        <image>
-                            <alias>mesos-agent</alias>
-                            <name>${projectDockerRegistry}/mesosphere/mesos-agent</name>
-                            <run>
-                                <ports>
-                                    <port>${mesos.agent.port}:5051</port>
-                                </ports>
-                                <privileged>true</privileged>
-                                <env>
-                                    <MESOS_MASTER>zk://zookeeper:2181/mesos</MESOS_MASTER>
-                                    <MESOS_SYSTEMD_ENABLE_SUPPORT>false</MESOS_SYSTEMD_ENABLE_SUPPORT>
-                                    <MESOS_LOG_DIR>/var/log/mesos</MESOS_LOG_DIR>
-                                    <MESOS_WORK_DIR>/var/tmp/mesos</MESOS_WORK_DIR>
-                                </env>
-                                <volumes>
-                                    <bind>
-                                        <volume>/var/run/docker.sock:/run/docker.sock</volume>
-                                        <volume>/usr/bin/docker:/usr/bin/docker</volume>
-                                        <volume>/cgroup:/cgroup</volume>
-                                        <volume>/sys:/sys:ro</volume>
-                                    </bind>
-                                </volumes>
-                                <links>
-                                    <link>zookeeper</link>
-                                    <link>mesos-master</link>
-                                </links>
-                                <wait>
-                                    <tcp>
-                                        <mode>mapped</mode>
-                                        <ports>
-                                            <port>5051</port>
-                                        </ports>
-                                    </tcp>
-                                    <time>30000</time>
-                                </wait>
-                                <log>
-                                    <enabled>false</enabled>
-                                </log>
-                            </run>
-                        </image>
 
                         <image>
                             <alias>rabbitmq</alias>
@@ -242,8 +170,6 @@
         <profile>
             <id>use-default-fixed-ports</id>
             <properties>
-                <mesos.port>5050</mesos.port>
-                <mesos.agent.port>5051</mesos.agent.port>
                 <rabbitmq.nodePort>5672</rabbitmq.nodePort>
                 <rabbitmq.managementPort>15672</rabbitmq.managementPort>
                 <zookeeper.port>2181</zookeeper.port>

@@ -8,5 +8,6 @@ ${version-number}
   - Support for Marathon and Docker Swarm have been removed.
 
 #### New Features
+- US929026: Updated to run on Java 21.
 
 #### Known Issues

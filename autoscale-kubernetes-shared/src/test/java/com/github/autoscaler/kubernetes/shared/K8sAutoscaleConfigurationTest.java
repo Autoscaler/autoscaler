@@ -16,6 +16,7 @@
 package com.github.autoscaler.kubernetes.shared;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import com.hpe.caf.codec.JsonCodec;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -36,5 +37,25 @@ public class K8sAutoscaleConfigurationTest
         assertEquals(maxInstances, k8SAutoscaleConfiguration.getMaximumInstances());
         assertEquals(namespacesArray, k8SAutoscaleConfiguration.getNamespacesArray());
         assertEquals(groupId, k8SAutoscaleConfiguration.getGroupId());
+    }
+
+    @Test
+    public void deserializeTest() throws Exception
+    {
+        K8sAutoscaleConfiguration autoscaleConfiguration = new K8sAutoscaleConfiguration();
+
+        autoscaleConfiguration.setNamespaces("private");
+        autoscaleConfiguration.setGroupId("managed-queue-workers");
+        autoscaleConfiguration.setMaximumInstances(4);
+
+        JsonCodec jsonCodec = new JsonCodec();
+
+        byte[] serialized = jsonCodec.serialise(autoscaleConfiguration);
+
+        K8sAutoscaleConfiguration deserialized = jsonCodec.deserialise(serialized, K8sAutoscaleConfiguration.class);
+
+        assertEquals(autoscaleConfiguration.getNamespacesArray(), deserialized.getNamespacesArray());
+        assertEquals(autoscaleConfiguration.getGroupId(), deserialized.getGroupId());
+        assertEquals(autoscaleConfiguration.getMaximumInstances(), deserialized.getMaximumInstances());
     }
 }

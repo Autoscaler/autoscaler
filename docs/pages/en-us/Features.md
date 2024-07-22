@@ -19,4 +19,4 @@ Easily scale up and down Workers based on key metrics and also allocate resource
 With many customers in many timezones, a single application may experience rapidly fluctuating load demands. The problem is not simply scaling up to meet the demand, but scaling back down to better optimize the use of resources. Plug-in support for monitoring workloads, scaling decisions and scaling commands allows the Autoscaler to be used in a variety of environments.
 
 ## Ready to go
-Out of the box support for the Worker Framework, RabbitMQ and Marathon makes it easy to start scaling today. Autoscaler provides out of the box scaling for all your Workers!
+Out of the box support for the Worker Framework, RabbitMQ and Kubernetes makes it easy to start scaling today. Autoscaler provides out of the box scaling for all your Workers!

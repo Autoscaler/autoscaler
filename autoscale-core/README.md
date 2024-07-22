@@ -54,7 +54,7 @@
 ### Configuration
 
  No environment variables are required to be set to start `autoscale-core`, if
- you are running on the Marathon platform. If you are not, you will need to set
+ you are running on the Kubernetes platform. If you are not, you will need to set
  `caf.appname` to an appropriate value to specify the namespace/grouping for
  the particular autoscaler instance.
 
@@ -245,8 +245,8 @@ Description: This will determine how long in minutes the autoscaler will wait be
  
  - [autoscale-core](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-core)
  - [caf-api](https://github.com/CAFapi/caf-common/tree/develop/caf-api)
- - An implementation of ServiceSource (i.e. [autoscale-source-marathon](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-source-marathon))
- - An implementation of ServiceScaler (i.e. [autoscale-scaler-marathon](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-scaler-marathon))
+ - An implementation of ServiceSource (i.e. [autoscale-source-kubernetes](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-source-kubernetes))
+ - An implementation of ServiceScaler (i.e. [autoscale-scaler-kubernetes](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-scaler-kubernetes))
  - An implementation of WorkloadAnalyser (i.e. [autoscale-workload-rabbit](https://github.com/Autoscaler/autoscaler/tree/develop/autoscale-workload-rabbit))
  - An implementation of Codec (i.e. [codec-json](https://github.com/CAFapi/caf-common/tree/develop/codec-json))
  - An implementation of Cipher (optional) (i.e. [cipher-null](https://github.com/CAFapi/caf-common/tree/develop/cipher-null))

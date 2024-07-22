@@ -1,5 +1,0 @@
-{
-    "endpoint": "http://192.168.56.10:8080",
-    "maximumInstances": "4",
-    "groupId": "demo"
-}

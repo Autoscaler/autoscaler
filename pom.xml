@@ -104,7 +104,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-core</artifactId>
-                <version>1.12.762</version>
+                <version>1.12.767</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -115,12 +115,12 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-sts</artifactId>
-                <version>1.12.762</version>
+                <version>1.12.767</version>
             </dependency>
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>jmespath-java</artifactId>
-                <version>1.12.762</version>
+                <version>1.12.767</version>
             </dependency>
             <dependency>
                 <groupId>com.bucket4j</groupId>
@@ -355,7 +355,7 @@
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
-                <version>4.27.2</version>
+                <version>4.27.3</version>
             </dependency>
             <dependency>
                 <groupId>com.helger</groupId>
@@ -526,12 +526,12 @@
             <dependency>
                 <groupId>io.kubernetes</groupId>
                 <artifactId>client-java</artifactId>
-                <version>21.0.0</version>
+                <version>21.0.1</version>
             </dependency>
             <dependency>
                 <groupId>io.kubernetes</groupId>
                 <artifactId>client-java-api</artifactId>
-                <version>21.0.0</version>
+                <version>21.0.1</version>
                 <exclusions>
                     <exclusion>
                         <groupId>javax.annotation</groupId>
@@ -542,17 +542,17 @@
             <dependency>
                 <groupId>io.kubernetes</groupId>
                 <artifactId>client-java-api-fluent</artifactId>
-                <version>21.0.0</version>
+                <version>21.0.1</version>
             </dependency>
             <dependency>
                 <groupId>io.kubernetes</groupId>
                 <artifactId>client-java-extended</artifactId>
-                <version>21.0.0</version>
+                <version>21.0.1</version>
             </dependency>
             <dependency>
                 <groupId>io.kubernetes</groupId>
                 <artifactId>client-java-proto</artifactId>
-                <version>21.0.0</version>
+                <version>21.0.1</version>
             </dependency>
             <dependency>
                 <groupId>io.prometheus</groupId>
@@ -803,32 +803,32 @@
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
                 <artifactId>jersey-container-servlet</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.15</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
                 <artifactId>jersey-container-servlet-core</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.15</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.15</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-common</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.15</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-server</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.15</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.ext</groupId>
                 <artifactId>jersey-bean-validation</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.15</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.glassfish</groupId>
@@ -839,22 +839,22 @@
             <dependency>
                 <groupId>org.glassfish.jersey.ext</groupId>
                 <artifactId>jersey-entity-filtering</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.15</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.ext</groupId>
                 <artifactId>jersey-metainf-services</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.15</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
                 <artifactId>jersey-hk2</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.15</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-json-jackson</artifactId>
-                <version>3.0.14</version>
+                <version>3.0.15</version>
             </dependency>
             <dependency>
                 <groupId>org.graalvm.js</groupId>

@@ -16,15 +16,15 @@
 package com.github.autoscaler.scaler.kubernetes;
 
 import com.github.autoscaler.kubernetes.shared.K8sAutoscaleConfiguration;
+import com.github.cafapi.kubernetes.client.api.AuthorizationV1Api;
+import com.github.cafapi.kubernetes.client.api.VersionApi;
+import com.github.cafapi.kubernetes.client.client.ApiClient;
+import com.github.cafapi.kubernetes.client.client.ApiException;
+import com.github.cafapi.kubernetes.client.model.IoK8sApiAuthorizationV1ResourceAttributes;
+import com.github.cafapi.kubernetes.client.model.IoK8sApiAuthorizationV1SelfSubjectAccessReview;
+import com.github.cafapi.kubernetes.client.model.IoK8sApiAuthorizationV1SelfSubjectAccessReviewSpec;
 import com.hpe.caf.api.HealthResult;
 import com.hpe.caf.api.HealthStatus;
-import io.kubernetes.client.extended.kubectl.Kubectl;
-import io.kubernetes.client.extended.kubectl.exception.KubectlException;
-import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.apis.AuthorizationV1Api;
-import io.kubernetes.client.openapi.models.V1ResourceAttributes;
-import io.kubernetes.client.openapi.models.V1SelfSubjectAccessReviewSpec;
-import io.kubernetes.client.openapi.models.V1SelfSubjectAccessReview;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,61 +35,59 @@ final class K8sHealthCheck
 {
     private static final Logger LOG = LoggerFactory.getLogger(K8sHealthCheck.class);
 
-    private K8sHealthCheck()
+    public static HealthResult healthCheck(final K8sAutoscaleConfiguration config, final ApiClient apiClient)
     {
-
-    }
-
-    public static HealthResult healthCheck(final K8sAutoscaleConfiguration config)
-    {
-        final HealthResult connectionHealthResult = checkConnection();
+        final HealthResult connectionHealthResult = checkConnection(apiClient);
         if (connectionHealthResult == HealthResult.RESULT_HEALTHY) {
-            return checkPermissions(config);
+            return checkPermissions(config, apiClient);
         } else {
             return connectionHealthResult;
         }
     }
 
-    private static HealthResult checkConnection()
+    private static HealthResult checkConnection(final ApiClient apiClient)
     {
         try {
-            Kubectl.version().execute();
+            new VersionApi(apiClient).getCodeVersion().execute();
             return HealthResult.RESULT_HEALTHY;
-        } catch (KubectlException e) {
+        } catch (final ApiException e) {
             LOG.warn("Connection failure to kubernetes", e);
             return new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to Kubernetes");
         }
     }
 
-    private static HealthResult checkPermissions(final K8sAutoscaleConfiguration config)
+    private static HealthResult checkPermissions(final K8sAutoscaleConfiguration config, final ApiClient apiClient)
     {
         final List<String> namespaces = config.getNamespacesArray();
 
         if(!namespaces.isEmpty()) {
             for (final String namespace: namespaces) {
 
-                final V1ResourceAttributes resourceAttributes = new V1ResourceAttributes();
+                final IoK8sApiAuthorizationV1ResourceAttributes resourceAttributes = new IoK8sApiAuthorizationV1ResourceAttributes();
                 resourceAttributes.setGroup("apps");
                 resourceAttributes.setResource("deployments");
                 resourceAttributes.setVerb("patch");
                 resourceAttributes.setNamespace(namespace);
 
-                final V1SelfSubjectAccessReviewSpec spec = new V1SelfSubjectAccessReviewSpec();
+                final IoK8sApiAuthorizationV1SelfSubjectAccessReviewSpec spec = new IoK8sApiAuthorizationV1SelfSubjectAccessReviewSpec();
                 spec.setResourceAttributes(resourceAttributes);
 
-                final V1SelfSubjectAccessReview body = new V1SelfSubjectAccessReview();
+                final IoK8sApiAuthorizationV1SelfSubjectAccessReview body = new IoK8sApiAuthorizationV1SelfSubjectAccessReview();
                 body.setApiVersion("authorization.k8s.io/v1");
                 body.setKind("SelfSubjectAccessReview");
                 body.setSpec(spec);
 
-                final V1SelfSubjectAccessReview review;
+                final IoK8sApiAuthorizationV1SelfSubjectAccessReview review;
                 try {
-                    review = new AuthorizationV1Api().createSelfSubjectAccessReview(body)
-                        .dryRun("All")
-                        .fieldManager(null)
-                        .fieldValidation(null)
-                        .pretty("true")
-                        .execute();
+                    final AuthorizationV1Api.APIcreateAuthorizationV1SelfSubjectAccessReviewRequest request =
+                            new AuthorizationV1Api(apiClient).createAuthorizationV1SelfSubjectAccessReview();
+
+                    request.dryRun("All");
+                    request.fieldManager(null);
+                    request.fieldValidation(null);
+                    request.pretty("true");
+
+                    review = request.execute();
                 } catch (final ApiException e) {
                     throw new RuntimeException(e);
                 }

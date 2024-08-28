@@ -191,6 +191,7 @@ metadata:
   name: "autoscaler-role"
 rules:
 - apiGroups:
+  - ""
   - "apps"
   resources:
   - "deployments"

@@ -19,12 +19,14 @@ import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.ScalingConfiguration;
 import com.github.autoscaler.api.ServiceSource;
 import com.github.autoscaler.kubernetes.shared.K8sAutoscaleConfiguration;
+import com.github.cafapi.kubernetes.client.api.AppsV1Api;
+import com.github.cafapi.kubernetes.client.api.VersionApi;
+import com.github.cafapi.kubernetes.client.client.ApiClient;
+import com.github.cafapi.kubernetes.client.client.ApiException;
+import com.github.cafapi.kubernetes.client.model.IoK8sApiAppsV1Deployment;
+import com.github.cafapi.kubernetes.client.model.IoK8sApimachineryPkgApisMetaV1ObjectMeta;
 import com.hpe.caf.api.HealthResult;
 import com.hpe.caf.api.HealthStatus;
-import io.kubernetes.client.extended.kubectl.Kubectl;
-import io.kubernetes.client.extended.kubectl.exception.KubectlException;
-import io.kubernetes.client.openapi.models.V1Deployment;
-import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +42,59 @@ public class K8sServiceSource implements ServiceSource
     
     private final K8sAutoscaleConfiguration config;
 
-    public K8sServiceSource(final K8sAutoscaleConfiguration config)
+    private final AppsV1Api appsV1Api;
+
+    private final VersionApi versionApi;
+
+    public K8sServiceSource(final K8sAutoscaleConfiguration config, final ApiClient apiClient)
     {
         this.config = Objects.requireNonNull(config);
+        this.appsV1Api = new AppsV1Api(apiClient);
+        this.versionApi = new VersionApi(apiClient);
     }
+
+    //        // Deployments get
+    ////        AppsV1Api appsV1Api = new AppsV1Api(apiClient);
+    ////        final List<IoK8sApiAppsV1Deployment> deploymentList = appsV1Api.listAppsV1NamespacedDeployment(
+    ////                "private").execute().getItems();
+    ////        System.out.println(deploymentList.size());
+    ////        System.out.println(deploymentList);
+    //
+    //        // Deployments patch (scale)
+    //        AppsV1Api appsV1Api = new AppsV1Api(apiClient);
+    //
+    //        ObjectMapper objectMapper = new ObjectMapper();
+    //
+    //        // Create the patch operation
+    //        ObjectNode patchOperation = objectMapper.createObjectNode();
+    //        patchOperation.put("op", "replace");
+    //        patchOperation.put("path", "/spec/replicas");
+    //        patchOperation.put("value", 1);
+    //
+    //        // Create an array with the patch operation
+    //        ArrayNode patchBody = objectMapper.createArrayNode();
+    //        patchBody.add(patchOperation);
+    //
+    //        final AppsV1Api.APIpatchAppsV1NamespacedDeploymentRequest request =
+    //                appsV1Api.patchAppsV1NamespacedDeployment("archivecleanup-worker", "private");
+    //        request.body(patchBody);
+    //       // request.body("[{\"op\":\"replace\",\"path\":\"/spec/replicas\",\"value\":0}]");
+    //        final IoK8sApiAppsV1Deployment result = request.execute();
+    //
+    //        System.out.println(result);
+    //
+    //        // Version
+    ////        VersionApi versionApi = new VersionApi(apiClient);
+    ////        final IoK8sApimachineryPkgVersionInfo r = versionApi.getCodeVersion().execute();
+    ////        System.out.println(r);
+    //
+    //        // Pods
+    ////        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+    ////        final CoreV1Api.APIlistCoreV1NamespacedPodRequest request = coreV1Api.listCoreV1NamespacedPod("private");
+    ////        request.labelSelector("app=archivecleanup-worker");
+    ////        final IoK8sApiCoreV1PodList list = request.execute();
+    ////        System.out.println(list);
+    ////        System.out.println(list.getItems().get(0).getStatus().getPhase());
 
     @Override
     public Set<ScalingConfiguration> getServices()
@@ -53,18 +104,18 @@ public class K8sServiceSource implements ServiceSource
             return getScalingConfiguration();
         } catch (NumberFormatException e) {
             throw new ScalerException("Error parsing Deployment label", e);
-        } catch (KubectlException e) {
+        } catch (ApiException e) {
             throw new ScalerException("Error loading deployments", e);
         }
     }
 
-    private Set<ScalingConfiguration> getScalingConfiguration() throws KubectlException
+    private Set<ScalingConfiguration> getScalingConfiguration() throws ApiException
     {
         final Set<ScalingConfiguration> scalingConfigurations = new HashSet<>();
         for (final String namespace: config.getNamespacesArray()) {
-            scalingConfigurations.addAll(Kubectl.get(V1Deployment.class)
-                .namespace(namespace)
+            scalingConfigurations.addAll(appsV1Api.listAppsV1NamespacedDeployment("private")
                 .execute()
+                .getItems()
                 .stream()
                 .filter(d -> hasMetadata(d) && isLabelledForScaling(d.getMetadata()))
                 .map(d -> mapToScalingConfig(d.getMetadata(), namespace))
@@ -73,14 +124,14 @@ public class K8sServiceSource implements ServiceSource
         return scalingConfigurations;
     }
     
-    private boolean hasMetadata(final V1Deployment v1Deployment) {
+    private boolean hasMetadata(final IoK8sApiAppsV1Deployment v1Deployment) {
         return v1Deployment.getMetadata() != null && 
                v1Deployment.getMetadata().getName() != null &&
                v1Deployment.getMetadata().getLabels() != null;
     }
 
     private ScalingConfiguration mapToScalingConfig(
-        final V1ObjectMeta metadata, 
+        final IoK8sApimachineryPkgApisMetaV1ObjectMeta metadata,
         final String namespace)
     {
         final Map<String, String> labels = metadata.getLabels();
@@ -120,7 +171,7 @@ public class K8sServiceSource implements ServiceSource
      * @param metadata
      * @return
      */
-    private boolean isLabelledForScaling(final V1ObjectMeta metadata)
+    private boolean isLabelledForScaling(final IoK8sApimachineryPkgApisMetaV1ObjectMeta metadata)
     {   
         final Map<String, String> labels = metadata.getLabels();
         final boolean isScaled = config.getGroupId().equalsIgnoreCase(labels.get(ScalingConfiguration.KEY_GROUP_ID));
@@ -132,9 +183,9 @@ public class K8sServiceSource implements ServiceSource
     public HealthResult healthCheck()
     {
         try {
-            Kubectl.version().execute();
+            versionApi.getCodeVersion().execute();
             return HealthResult.RESULT_HEALTHY;
-        } catch (KubectlException e) {
+        } catch (final ApiException e) {
             LOG.warn("Connection failure to kubernetes", e);
             return new HealthResult(HealthStatus.UNHEALTHY, "Cannot connect to Kubernetes");
         }  

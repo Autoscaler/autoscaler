@@ -48,25 +48,12 @@
             <artifactId>autoscale-kubernetes-shared</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.kubernetes</groupId>
-            <artifactId>client-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.kubernetes</groupId>
-            <artifactId>client-java-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.kubernetes</groupId>
-            <artifactId>client-java-extended</artifactId>
+            <groupId>com.github.cafapi.kubernetes</groupId>
+            <artifactId>caf-kubernetes-client</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

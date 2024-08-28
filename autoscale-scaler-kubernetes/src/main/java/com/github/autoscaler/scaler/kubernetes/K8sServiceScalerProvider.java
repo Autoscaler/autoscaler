@@ -19,10 +19,10 @@ import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.ServiceScaler;
 import com.github.autoscaler.api.ServiceScalerProvider;
 import com.github.autoscaler.kubernetes.shared.K8sAutoscaleConfiguration;
+import com.github.cafapi.kubernetes.client.KubernetesClientFactory;
+import com.github.cafapi.kubernetes.client.client.ApiClient;
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
-import io.kubernetes.client.openapi.Configuration;
-import io.kubernetes.client.util.ClientBuilder;
 
 import java.io.IOException;
 
@@ -33,9 +33,9 @@ public class K8sServiceScalerProvider implements ServiceScalerProvider
     {
         try {
             final K8sAutoscaleConfiguration config = configurationSource.getConfiguration(K8sAutoscaleConfiguration.class);
-            Configuration.setDefaultApiClient(ClientBuilder.standard().build());
-            return new K8sServiceScaler(config);
-        } catch (ConfigurationException | IOException e) {
+            final ApiClient apiClient = KubernetesClientFactory.createClientWithCertAndToken();
+            return new K8sServiceScaler(config, apiClient);
+        } catch (Exception e) {
             throw new ScalerException("Failed to create service scaler", e);
         }
     }

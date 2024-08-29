@@ -86,6 +86,7 @@ final class K8sHealthCheck
                     request.fieldManager(null);
                     request.fieldValidation(null);
                     request.pretty("true");
+                    request.body(body);
 
                     review = request.execute();
                 } catch (final ApiException e) {

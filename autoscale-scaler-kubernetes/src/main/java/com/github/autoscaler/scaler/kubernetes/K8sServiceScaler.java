@@ -125,11 +125,13 @@ public class K8sServiceScaler implements ServiceScaler
                         .toList()
                         .size();
 
-                LOG.debug("For deployment named {} in namespace {}; number of pods running: {}, number of pods pending/staging: {}",
+                // TODO change to debug after testing
+                LOG.info("The deployment named {} in namespace {} has {} pod(s) running and {} pod(s) pending/staging",
                         deploymentId.id, deploymentId.namespace, running, staging);
             } else {
-                LOG.warn("Could not find label named 'app' for deployment named {} in namespace {}, so unable to query pods to find the " +
-                                "number in running and pending/staging phases. Falling back to using running: {}, pending/staging: {}",
+                LOG.warn("The deployment named {} in namespace {} does not have a label named 'app', so unable to query pods to find the " +
+                                "number in running and pending/staging phases. Falling back to default values. " +
+                                "Running (defaulting to spec.replicas) : {}. Pending/staging (defaulting to 0): {}",
                         deploymentId.id, deploymentId.namespace, running, staging);
             }
 

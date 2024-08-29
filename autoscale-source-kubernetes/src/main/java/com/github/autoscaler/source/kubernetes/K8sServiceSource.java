@@ -53,49 +53,6 @@ public class K8sServiceSource implements ServiceSource
         this.versionApi = new VersionApi(apiClient);
     }
 
-    //        // Deployments get
-    ////        AppsV1Api appsV1Api = new AppsV1Api(apiClient);
-    ////        final List<IoK8sApiAppsV1Deployment> deploymentList = appsV1Api.listAppsV1NamespacedDeployment(
-    ////                "private").execute().getItems();
-    ////        System.out.println(deploymentList.size());
-    ////        System.out.println(deploymentList);
-    //
-    //        // Deployments patch (scale)
-    //        AppsV1Api appsV1Api = new AppsV1Api(apiClient);
-    //
-    //        ObjectMapper objectMapper = new ObjectMapper();
-    //
-    //        // Create the patch operation
-    //        ObjectNode patchOperation = objectMapper.createObjectNode();
-    //        patchOperation.put("op", "replace");
-    //        patchOperation.put("path", "/spec/replicas");
-    //        patchOperation.put("value", 1);
-    //
-    //        // Create an array with the patch operation
-    //        ArrayNode patchBody = objectMapper.createArrayNode();
-    //        patchBody.add(patchOperation);
-    //
-    //        final AppsV1Api.APIpatchAppsV1NamespacedDeploymentRequest request =
-    //                appsV1Api.patchAppsV1NamespacedDeployment("archivecleanup-worker", "private");
-    //        request.body(patchBody);
-    //       // request.body("[{\"op\":\"replace\",\"path\":\"/spec/replicas\",\"value\":0}]");
-    //        final IoK8sApiAppsV1Deployment result = request.execute();
-    //
-    //        System.out.println(result);
-    //
-    //        // Version
-    ////        VersionApi versionApi = new VersionApi(apiClient);
-    ////        final IoK8sApimachineryPkgVersionInfo r = versionApi.getCodeVersion().execute();
-    ////        System.out.println(r);
-    //
-    //        // Pods
-    ////        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
-    ////        final CoreV1Api.APIlistCoreV1NamespacedPodRequest request = coreV1Api.listCoreV1NamespacedPod("private");
-    ////        request.labelSelector("app=archivecleanup-worker");
-    ////        final IoK8sApiCoreV1PodList list = request.execute();
-    ////        System.out.println(list);
-    ////        System.out.println(list.getItems().get(0).getStatus().getPhase());
-
     @Override
     public Set<ScalingConfiguration> getServices()
         throws ScalerException

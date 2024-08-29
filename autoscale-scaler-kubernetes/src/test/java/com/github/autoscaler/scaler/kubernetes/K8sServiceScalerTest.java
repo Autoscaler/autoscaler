@@ -68,7 +68,6 @@ public class K8sServiceScalerTest {
     @Test
     public void scaleUpTest() throws ScalerException, ApiException
     {
-        // Arrange
         final IoK8sApiAppsV1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
                 WORKER_CLASSIFICATION_NAME,
                 NAMESPACE,
@@ -104,10 +103,8 @@ public class K8sServiceScalerTest {
 
             final K8sServiceScaler scaler = new K8sServiceScaler(configMock, apiClientMock);
 
-            // Act
             scaler.scaleUp("private:classification-worker", 1);
 
-            // Assert
             ArgumentCaptor<ArrayNode> bodyCaptor = ArgumentCaptor.forClass(ArrayNode.class);
             verify(patchRequestMock).body(bodyCaptor.capture());
             ArrayNode capturedBody = bodyCaptor.getValue();
@@ -126,7 +123,6 @@ public class K8sServiceScalerTest {
     @SuppressWarnings("ThrowableResultIgnored")
     public void scaleUpExceptionTest() throws ApiException
     {
-        // Arrange
         final IoK8sApiAppsV1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
                 WORKER_CLASSIFICATION_NAME,
                 NAMESPACE,
@@ -163,7 +159,6 @@ public class K8sServiceScalerTest {
 
             final K8sServiceScaler scaler = new K8sServiceScaler(configMock, apiClientMock);
 
-            // Act & Assert
             Assertions.assertThrows(ScalerException.class, () -> scaler.scaleUp("private:classification-worker", 1));
         }
     }
@@ -171,7 +166,6 @@ public class K8sServiceScalerTest {
     @Test
     public void scaleDownTest() throws ScalerException, ApiException
     {
-        // Arrange
         final IoK8sApiAppsV1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
                 WORKER_CLASSIFICATION_NAME,
                 NAMESPACE,
@@ -207,10 +201,8 @@ public class K8sServiceScalerTest {
 
             final K8sServiceScaler scaler = new K8sServiceScaler(configMock, apiClientMock);
 
-            // Act
             scaler.scaleDown("private:classification-worker", 1);
 
-            // Assert
             ArgumentCaptor<ArrayNode> bodyCaptor = ArgumentCaptor.forClass(ArrayNode.class);
             verify(patchRequestMock).body(bodyCaptor.capture());
             ArrayNode capturedBody = bodyCaptor.getValue();
@@ -229,7 +221,6 @@ public class K8sServiceScalerTest {
     @SuppressWarnings("ThrowableResultIgnored")
     public void scaleDownExceptionTest() throws ApiException
     {
-        // Arrange
         final IoK8sApiAppsV1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
                 WORKER_CLASSIFICATION_NAME,
                 NAMESPACE,
@@ -266,7 +257,6 @@ public class K8sServiceScalerTest {
 
             final K8sServiceScaler scaler = new K8sServiceScaler(configMock, apiClientMock);
 
-            // Act & Assert
             Assertions.assertThrows(ScalerException.class, () -> scaler.scaleDown("private:classification-worker", 1));
         }
     }
@@ -274,7 +264,6 @@ public class K8sServiceScalerTest {
     @Test
     public void scaleUpMaxTest() throws ScalerException, ApiException
     {
-        // Arrange
         final IoK8sApiAppsV1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
                 WORKER_CLASSIFICATION_NAME,
                 NAMESPACE,
@@ -310,10 +299,8 @@ public class K8sServiceScalerTest {
 
             final K8sServiceScaler scaler = new K8sServiceScaler(configMock, apiClientMock);
 
-            // Act
             scaler.scaleUp("private:classification-worker", 1);
 
-            // Assert
             // Verify that no patch request is made when already at max instances
             verify(patchRequestMock, never()).body(any());
             verify(patchRequestMock, never()).execute();
@@ -323,7 +310,6 @@ public class K8sServiceScalerTest {
     @Test
     public void scaleDownMinTest() throws ScalerException, ApiException
     {
-        // Arrange
         final IoK8sApiAppsV1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
                 WORKER_CLASSIFICATION_NAME,
                 NAMESPACE,
@@ -359,10 +345,8 @@ public class K8sServiceScalerTest {
 
             final K8sServiceScaler scaler = new K8sServiceScaler(configMock, apiClientMock);
 
-            // Act
             scaler.scaleDown("private:classification-worker", 1);
 
-            // Assert
             // Verify that no patch request is made when already at min instances
             verify(patchRequestMock, never()).body(any());
             verify(patchRequestMock, never()).execute();
@@ -372,7 +356,6 @@ public class K8sServiceScalerTest {
     @Test
     public void getInstanceInfoTest() throws ScalerException, ApiException
     {
-        // Arrange
         final IoK8sApiAppsV1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
                 WORKER_CLASSIFICATION_NAME,
                 NAMESPACE,
@@ -388,14 +371,6 @@ public class K8sServiceScalerTest {
                 SHUTDOWN_PRIORITY,
                 REPLICAS,
                 WORKER_CLASSIFICATION_NAME);
-
-        IoK8sApiAppsV1DeploymentSpec spec = new IoK8sApiAppsV1DeploymentSpec();
-        IoK8sApimachineryPkgApisMetaV1LabelSelector selector = new IoK8sApimachineryPkgApisMetaV1LabelSelector();
-        Map<String, String> matchLabels = new HashMap<>();
-        matchLabels.put("app", WORKER_CLASSIFICATION_NAME);
-        selector.setMatchLabels(matchLabels);
-        spec.setSelector(selector);
-        classificationWorkerDeployment.setSpec(spec);
 
         final AppsV1Api.APIreadAppsV1NamespacedDeploymentRequest readDeploymentRequestMock =
                 mock(AppsV1Api.APIreadAppsV1NamespacedDeploymentRequest.class);
@@ -414,23 +389,19 @@ public class K8sServiceScalerTest {
         when(listPodRequestMock.execute()).thenReturn(podList);
         when(listPodRequestMock.labelSelector(anyString())).thenReturn(listPodRequestMock);
 
-        try (MockedConstruction<AppsV1Api> appsV1ApiMock = Mockito.mockConstruction(AppsV1Api.class, (mock, context) -> {
-            when(mock.readAppsV1NamespacedDeployment(anyString(), anyString())).thenReturn(readDeploymentRequestMock);
-        });
-             MockedConstruction<CoreV1Api> coreV1ApiMock = Mockito.mockConstruction(CoreV1Api.class, (mock, context) -> {
-                 when(mock.listCoreV1NamespacedPod(anyString())).thenReturn(listPodRequestMock);
-             })
+        try (MockedConstruction<AppsV1Api> appsV1ApiMock = Mockito.mockConstruction(AppsV1Api.class,
+                (mock, context) -> when(mock.readAppsV1NamespacedDeployment(anyString(), anyString())).thenReturn(
+                        readDeploymentRequestMock));
+             MockedConstruction<CoreV1Api> coreV1ApiMock = Mockito.mockConstruction(CoreV1Api.class,
+                 (mock, context) -> when(mock.listCoreV1NamespacedPod(anyString())).thenReturn(
+                         listPodRequestMock))
         ) {
             final ApiClient apiClientMock = mock(ApiClient.class);
-
             final K8sAutoscaleConfiguration configMock = mock(K8sAutoscaleConfiguration.class);
-
             final K8sServiceScaler scaler = new K8sServiceScaler(configMock, apiClientMock);
 
-            // Act
             final InstanceInfo dpInstanceInfo = scaler.getInstanceInfo("private:worker-classification");
 
-            // Assert
             assertEquals(Integer.valueOf(REPLICAS), dpInstanceInfo.getInstances());
             assertEquals(Integer.valueOf(2), dpInstanceInfo.getInstancesRunning());
             assertEquals(Integer.valueOf(1), dpInstanceInfo.getInstancesStaging());
@@ -441,7 +412,6 @@ public class K8sServiceScalerTest {
     @Test
     public void getInstanceInfoExceptionTest() throws ApiException
     {
-        // Arrange
         final IoK8sApiAppsV1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
                 WORKER_CLASSIFICATION_NAME,
                 NAMESPACE,
@@ -457,14 +427,6 @@ public class K8sServiceScalerTest {
                 SHUTDOWN_PRIORITY,
                 REPLICAS,
                 WORKER_CLASSIFICATION_NAME);
-
-        IoK8sApiAppsV1DeploymentSpec spec = new IoK8sApiAppsV1DeploymentSpec();
-        IoK8sApimachineryPkgApisMetaV1LabelSelector selector = new IoK8sApimachineryPkgApisMetaV1LabelSelector();
-        Map<String, String> matchLabels = new HashMap<>();
-        matchLabels.put("app", WORKER_CLASSIFICATION_NAME);
-        selector.setMatchLabels(matchLabels);
-        spec.setSelector(selector);
-        classificationWorkerDeployment.setSpec(spec);
 
         final AppsV1Api.APIreadAppsV1NamespacedDeploymentRequest readDeploymentRequestMock =
                 mock(AppsV1Api.APIreadAppsV1NamespacedDeploymentRequest.class);
@@ -488,7 +450,6 @@ public class K8sServiceScalerTest {
 
             final K8sServiceScaler scaler = new K8sServiceScaler(configMock, apiClientMock);
 
-            // Act & Assert
             Assertions.assertThrows(ScalerException.class, () -> scaler.getInstanceInfo("private:worker-classification"));
         }
     }
@@ -525,10 +486,16 @@ public class K8sServiceScalerTest {
                 .put("autoscale.scalingtarget", autoscaleScalingTarget)
                 .put("autoscale.metric", autoscaleMetric)
                 .put("autoscale.shutdownpriority", autoscaleShutdownPriority)
-                .put("app", podName)
                 .build());
 
-        deployment.setSpec(new IoK8sApiAppsV1DeploymentSpec());
+        final IoK8sApiAppsV1DeploymentSpec spec = new IoK8sApiAppsV1DeploymentSpec();
+        final IoK8sApimachineryPkgApisMetaV1LabelSelector selector = new IoK8sApimachineryPkgApisMetaV1LabelSelector();
+        final Map<String, String> matchLabels = new HashMap<>();
+        matchLabels.put("app", podName);
+        selector.setMatchLabels(matchLabels);
+        spec.setSelector(selector);
+
+        deployment.setSpec(spec);
         deployment.getSpec().setReplicas(replicas);
 
         return deployment;

@@ -35,7 +35,7 @@ public class K8sServiceSourceProvider implements ServiceSourceProvider
             final K8sAutoscaleConfiguration config = configurationSource.getConfiguration(K8sAutoscaleConfiguration.class);
             final ApiClient apiClient = KubernetesClientFactory.createClientWithCertAndToken();
             return new K8sServiceSource(config, apiClient);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new ScalerException("Failed to create service source", e);
         }
     }

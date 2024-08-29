@@ -78,7 +78,7 @@ public class K8sServiceScaler implements ServiceScaler
                 LOG.info("Scaling deployment {} up by {} instances", deploymentId.id, amount);
                 executeScaleRequest(deploymentId.namespace, deploymentId.id, target);
             }
-        } catch (ApiException e) {
+        } catch (final ApiException e) {
             LOG.error("Error scaling up deployment {}", deploymentId.id, e);
             throw new ScalerException("Error scaling up deployment " + deploymentId.id, e);
         }
@@ -97,7 +97,7 @@ public class K8sServiceScaler implements ServiceScaler
                 LOG.info("Scaling deployment {} down by {} instances", deploymentId.id, amount);
                 executeScaleRequest(deploymentId.namespace, deploymentId.id, target);
             }
-        } catch (ApiException e) {
+        } catch (final ApiException e) {
             LOG.error("Error scaling down deployment {}", deploymentId.id, e);
             throw new ScalerException("Error scaling down deployment " + deploymentId.id, e);
         }
@@ -125,8 +125,7 @@ public class K8sServiceScaler implements ServiceScaler
                         .toList()
                         .size();
 
-                // TODO change to debug after testing
-                LOG.info("The deployment named {} in namespace {} has {} pod(s) running and {} pod(s) pending/staging",
+                LOG.debug("The deployment named {} in namespace {} has {} pod(s) running and {} pod(s) pending/staging",
                         deploymentId.id, deploymentId.namespace, running, staging);
             } else {
                 LOG.warn("The deployment named {} in namespace {} does not have a label named 'app', so unable to query pods to find the " +

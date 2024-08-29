@@ -59,9 +59,9 @@ public class K8sServiceSource implements ServiceSource
     {
         try {
             return getScalingConfiguration();
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new ScalerException("Error parsing Deployment label", e);
-        } catch (ApiException e) {
+        } catch (final ApiException e) {
             throw new ScalerException("Error loading deployments", e);
         }
     }

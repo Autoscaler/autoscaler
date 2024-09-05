@@ -25,8 +25,6 @@ import com.github.cafapi.kubernetes.client.client.ApiClient;
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
 
-import java.io.IOException;
-
 public class K8sServiceScalerProvider implements ServiceScalerProvider
 {
     @Override

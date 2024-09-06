@@ -19,28 +19,33 @@ import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.ScalingConfiguration;
 import com.github.autoscaler.kubernetes.shared.K8sAutoscaleConfiguration;
 import com.github.autoscaler.source.kubernetes.K8sServiceSource;
+import com.github.cafapi.kubernetes.client.api.AppsV1Api;
+import com.github.cafapi.kubernetes.client.client.ApiClient;
+import com.github.cafapi.kubernetes.client.client.ApiException;
+import com.github.cafapi.kubernetes.client.model.IoK8sApiAppsV1Deployment;
+import com.github.cafapi.kubernetes.client.model.IoK8sApiAppsV1DeploymentList;
+import com.github.cafapi.kubernetes.client.model.IoK8sApiAppsV1DeploymentSpec;
+import com.github.cafapi.kubernetes.client.model.IoK8sApimachineryPkgApisMetaV1LabelSelector;
+import com.github.cafapi.kubernetes.client.model.IoK8sApimachineryPkgApisMetaV1ObjectMeta;
 import com.google.common.collect.ImmutableMap;
-import io.kubernetes.client.extended.kubectl.Kubectl;
-import io.kubernetes.client.extended.kubectl.KubectlGet;
-import io.kubernetes.client.extended.kubectl.exception.KubectlException;
-import io.kubernetes.client.openapi.models.V1Deployment;
-import io.kubernetes.client.openapi.models.V1DeploymentSpec;
-import io.kubernetes.client.openapi.models.V1ObjectMeta;
-import org.apache.commons.compress.utils.Lists;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
+import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 public class K8sServiceSourceTest {
 
     private static final String WORKER_CLASSIFICATION_NAME = "worker-classification";
@@ -59,10 +64,8 @@ public class K8sServiceSourceTest {
     private static final int REPLICAS = 3;
 
     @Test
-    public void getServicesTest()
-            throws ScalerException {
-
-        final V1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
+    public void getServicesTest() throws ScalerException, ApiException {
+        final IoK8sApiAppsV1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
                 WORKER_CLASSIFICATION_NAME,
                 NAMESPACE,
                 MIN,
@@ -78,8 +81,15 @@ public class K8sServiceSourceTest {
                 REPLICAS,
                 WORKER_CLASSIFICATION_NAME);
 
-        final List<V1Deployment> deployments = Lists.newArrayList();
+        final List<IoK8sApiAppsV1Deployment> deployments = new ArrayList<>();
         deployments.add(classificationWorkerDeployment);
+        final IoK8sApiAppsV1DeploymentList deploymentList = new IoK8sApiAppsV1DeploymentList();
+        deploymentList.setItems(deployments);
+
+        final AppsV1Api.APIlistAppsV1NamespacedDeploymentRequest apilistAppsV1NamespacedDeploymentRequestMock =
+                mock(AppsV1Api.APIlistAppsV1NamespacedDeploymentRequest.class);
+
+        when(apilistAppsV1NamespacedDeploymentRequestMock.execute()).thenReturn(deploymentList);
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
         final String namespaces = "private";
@@ -90,13 +100,12 @@ public class K8sServiceSourceTest {
         when(config.getMaximumInstances()).thenReturn(4);
         when(config.getGroupId()).thenReturn("managed-queue-workers");
 
-        try (MockedStatic<Kubectl> kubectlStaticMock = Mockito.mockStatic(Kubectl.class)) {
-            final KubectlGet<V1Deployment> getMock = mock(KubectlGet.class);
-            kubectlStaticMock.when(() -> Kubectl.get(V1Deployment.class)).thenReturn(getMock);
-            when(getMock.execute()).thenReturn(deployments);
-            when(getMock.namespace(any())).thenReturn(getMock);
+        try (MockedConstruction<AppsV1Api> appsV1ApiMock = Mockito.mockConstruction(AppsV1Api.class, (mock, context) -> {
+            when(mock.listAppsV1NamespacedDeployment("private")).thenReturn(apilistAppsV1NamespacedDeploymentRequestMock);
+        })) {
+            final ApiClient apiClientMock = mock(ApiClient.class);
 
-            final K8sServiceSource source = new K8sServiceSource(config);
+            final K8sServiceSource source = new K8sServiceSource(config, apiClientMock);
             final Set<ScalingConfiguration> services = source.getServices();
 
             assertEquals(1, services.size());
@@ -108,14 +117,12 @@ public class K8sServiceSourceTest {
             assertEquals(Integer.valueOf(BACKOFF), services.iterator().next().getBackoffAmount());
             assertEquals(WORKER_CLASSIFICATION_TARGET, services.iterator().next().getScalingTarget());
             assertEquals(METRIC, services.iterator().next().getWorkloadMetric());
-        } catch (KubectlException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Test
-    public void multipleGroupPathTest() throws ScalerException, KubectlException{
-        final V1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
+    public void multipleGroupPathTest() throws ScalerException, ApiException {
+        final IoK8sApiAppsV1Deployment classificationWorkerDeployment = createDeploymentWithLabels(
                 WORKER_CLASSIFICATION_NAME,
                 NAMESPACE,
                 MIN,
@@ -131,7 +138,7 @@ public class K8sServiceSourceTest {
                 REPLICAS,
                 WORKER_CLASSIFICATION_NAME);
 
-        final V1Deployment entityextractWorkerDeployment = createDeploymentWithLabels(
+        final IoK8sApiAppsV1Deployment entityextractWorkerDeployment = createDeploymentWithLabels(
                 WORKER_ENTITYEXTRACT_NAME,
                 NAMESPACE,
                 MIN,
@@ -147,9 +154,17 @@ public class K8sServiceSourceTest {
                 REPLICAS,
                 WORKER_ENTITYEXTRACT_NAME);
 
-        final List<V1Deployment> deployments = Lists.newArrayList();
+        final List<IoK8sApiAppsV1Deployment> deployments = new ArrayList<>();
         deployments.add(classificationWorkerDeployment);
         deployments.add(entityextractWorkerDeployment);
+
+        final IoK8sApiAppsV1DeploymentList deploymentList = new IoK8sApiAppsV1DeploymentList();
+        deploymentList.setItems(deployments);
+
+        final AppsV1Api.APIlistAppsV1NamespacedDeploymentRequest apilistAppsV1NamespacedDeploymentRequestMock =
+                mock(AppsV1Api.APIlistAppsV1NamespacedDeploymentRequest.class);
+
+        when(apilistAppsV1NamespacedDeploymentRequestMock.execute()).thenReturn(deploymentList);
 
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
         final String namespaces = "private";
@@ -160,13 +175,12 @@ public class K8sServiceSourceTest {
         when(config.getMaximumInstances()).thenReturn(4);
         when(config.getGroupId()).thenReturn("managed-queue-workers");
 
-        try (MockedStatic<Kubectl> kubectlStaticMock = Mockito.mockStatic(Kubectl.class)) {
-            final KubectlGet<V1Deployment> getMock = mock(KubectlGet.class);
-            kubectlStaticMock.when(() -> Kubectl.get(V1Deployment.class)).thenReturn(getMock);
-            when(getMock.execute()).thenReturn(deployments);
-            when(getMock.namespace(any())).thenReturn(getMock);
+        try (MockedConstruction<AppsV1Api> appsV1ApiMock = Mockito.mockConstruction(AppsV1Api.class, (mock, context) -> {
+            when(mock.listAppsV1NamespacedDeployment("private")).thenReturn(apilistAppsV1NamespacedDeploymentRequestMock);
+        })) {
+            final ApiClient apiClientMock = mock(ApiClient.class);
 
-            final K8sServiceSource source = new K8sServiceSource(config);
+            final K8sServiceSource source = new K8sServiceSource(config, apiClientMock);
             final Set<ScalingConfiguration> services = source.getServices();
 
             assertEquals(2, services.size());
@@ -174,8 +188,7 @@ public class K8sServiceSourceTest {
     }
 
     @Test
-    public void getServicesExceptionTest() throws KubectlException {
-
+    public void getServicesExceptionTest() {
         final K8sAutoscaleConfiguration config = Mockito.mock(K8sAutoscaleConfiguration.class);
         final String namespaces = "private";
         final List<String> namespacesArray = Stream.of(namespaces.split(","))
@@ -185,18 +198,17 @@ public class K8sServiceSourceTest {
         when(config.getMaximumInstances()).thenReturn(4);
         when(config.getGroupId()).thenReturn("managed-queue-workers");
 
-        try (MockedStatic<Kubectl> kubectlStaticMock = Mockito.mockStatic(Kubectl.class)) {
-            final KubectlGet<V1Deployment> getMock = mock(KubectlGet.class);
-            kubectlStaticMock.when(() -> Kubectl.get(V1Deployment.class)).thenReturn(getMock);
-            when(getMock.execute()).thenThrow(KubectlException.class);
-            when(getMock.namespace(any())).thenReturn(getMock);
+        try (MockedConstruction<AppsV1Api> appsV1ApiMock = Mockito.mockConstruction(AppsV1Api.class, (mock, context) -> {
+            when(mock.listAppsV1NamespacedDeployment("private")).thenThrow(new ApiException("Test exception"));
+        })) {
+            final ApiClient apiClientMock = mock(ApiClient.class);
 
-            final K8sServiceSource source = new K8sServiceSource(config);
+            final K8sServiceSource source = new K8sServiceSource(config, apiClientMock);
             Assertions.assertThrows(ScalerException.class, source::getServices);
         }
     }
 
-    private static V1Deployment createDeploymentWithLabels(
+    private static IoK8sApiAppsV1Deployment createDeploymentWithLabels(
             final String name,
             final String namespace,
             final String minInstances,
@@ -212,9 +224,9 @@ public class K8sServiceSourceTest {
             final int replicas,
             final String podName)
     {
-        final V1Deployment deployment = new V1Deployment();
+        final IoK8sApiAppsV1Deployment deployment = new IoK8sApiAppsV1Deployment();
 
-        deployment.setMetadata(new V1ObjectMeta());
+        deployment.setMetadata(new IoK8sApimachineryPkgApisMetaV1ObjectMeta());
         deployment.getMetadata().setName(name);
         deployment.getMetadata().setNamespace(namespace);
         deployment.getMetadata().setLabels(ImmutableMap.<String,String>builder()
@@ -228,9 +240,16 @@ public class K8sServiceSourceTest {
                 .put("autoscale.scalingtarget", autoscaleScalingTarget)
                 .put("autoscale.metric", autoscaleMetric)
                 .put("autoscale.shutdownpriority", autoscaleShutdownPriority)
-                .put("app", podName)
                 .build());
-        deployment.setSpec(new V1DeploymentSpec());
+
+        final IoK8sApiAppsV1DeploymentSpec spec = new IoK8sApiAppsV1DeploymentSpec();
+        final IoK8sApimachineryPkgApisMetaV1LabelSelector selector = new IoK8sApimachineryPkgApisMetaV1LabelSelector();
+        final Map<String, String> matchLabels = new HashMap<>();
+        matchLabels.put("app", podName);
+        selector.setMatchLabels(matchLabels);
+        spec.setSelector(selector);
+        deployment.setSpec(spec);
+
         deployment.getSpec().setReplicas(replicas);
 
         return deployment;

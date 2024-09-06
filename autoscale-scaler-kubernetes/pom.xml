@@ -32,6 +32,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.cafapi</groupId>
             <artifactId>caf-api</artifactId>
             <scope>provided</scope>
@@ -43,18 +47,6 @@
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-kubernetes-shared</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.kubernetes</groupId>
-            <artifactId>client-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.kubernetes</groupId>
-            <artifactId>client-java-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.kubernetes</groupId>
-            <artifactId>client-java-extended</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -70,9 +62,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <scope>test</scope>
+            <groupId>com.github.cafapi.kubernetes</groupId>
+            <artifactId>caf-kubernetes-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

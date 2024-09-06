@@ -35,6 +35,11 @@ final class K8sHealthCheck
 {
     private static final Logger LOG = LoggerFactory.getLogger(K8sHealthCheck.class);
 
+    private K8sHealthCheck()
+    {
+
+    }
+
     public static HealthResult healthCheck(final K8sAutoscaleConfiguration config, final ApiClient apiClient)
     {
         final HealthResult connectionHealthResult = checkConnection(apiClient);

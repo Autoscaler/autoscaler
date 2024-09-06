@@ -113,7 +113,7 @@ public class K8sServiceScaler implements ServiceScaler
             int running = getNumberOfReplicas(v1Deployment);
             int staging = 0;
             if (appName != null) {
-                final CoreV1Api.APIlistCoreV1NamespacedPodRequest request = coreV1Api.listCoreV1NamespacedPod("private");
+                final CoreV1Api.APIlistCoreV1NamespacedPodRequest request = coreV1Api.listCoreV1NamespacedPod(deploymentId.namespace);
                 request.labelSelector(String.format("app=%s", appName));
                 final List<IoK8sApiCoreV1Pod> pods = request.execute().getItems();
                 running = pods.stream()

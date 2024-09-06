@@ -19,8 +19,10 @@ import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.ServiceSource;
 import com.github.autoscaler.api.ServiceSourceProvider;
 import com.github.autoscaler.kubernetes.shared.K8sAutoscaleConfiguration;
+import com.github.cafapi.kubernetes.client.FailedToCreateKubernetesClientException;
 import com.github.cafapi.kubernetes.client.KubernetesClientFactory;
 import com.github.cafapi.kubernetes.client.client.ApiClient;
+import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.naming.ServicePath;
 
@@ -35,7 +37,7 @@ public class K8sServiceSourceProvider implements ServiceSourceProvider
             final K8sAutoscaleConfiguration config = configurationSource.getConfiguration(K8sAutoscaleConfiguration.class);
             final ApiClient apiClient = KubernetesClientFactory.createClientWithCertAndToken();
             return new K8sServiceSource(config, apiClient);
-        } catch (final Exception e) {
+        } catch (final ConfigurationException | FailedToCreateKubernetesClientException e) {
             throw new ScalerException("Failed to create service source", e);
         }
     }

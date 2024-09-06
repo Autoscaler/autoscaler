@@ -70,7 +70,7 @@ public class K8sServiceSource implements ServiceSource
     {
         final Set<ScalingConfiguration> scalingConfigurations = new HashSet<>();
         for (final String namespace: config.getNamespacesArray()) {
-            scalingConfigurations.addAll(appsV1Api.listAppsV1NamespacedDeployment("private")
+            scalingConfigurations.addAll(appsV1Api.listAppsV1NamespacedDeployment(namespace)
                 .execute()
                 .getItems()
                 .stream()

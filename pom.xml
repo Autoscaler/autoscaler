@@ -254,7 +254,7 @@
             <dependency>
                 <groupId>com.github.cafapi.kubernetes</groupId>
                 <artifactId>caf-kubernetes-client</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.0-20</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.logging</groupId>

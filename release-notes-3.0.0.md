@@ -1,5 +1,3 @@
-!not-ready-for-release!
-
 #### Version Number
 ${version-number}
 
@@ -20,3 +18,4 @@ ${version-number}
   - This has now been resolved, and the number of `running` and `pending` pods will now be retrieved from the querying the pods.
 
 #### Known Issues
+- None

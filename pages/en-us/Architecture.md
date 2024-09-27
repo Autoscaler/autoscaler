@@ -12,7 +12,7 @@ banner:
 
 # Architecture
 
-The Autoscaler service monitors Marathon microservice message throughput statistics and scales microservice instances up or down according to their configuration. By scaling microservices according to their demand, the Autoscaler enables efficient system resource allocation. The following high-level architecture description explains the relationship of the Autoscaler and its components.
+The Autoscaler service monitors Kubernetes microservice message throughput statistics and scales microservice instances up or down according to their configuration. By scaling microservices according to their demand, the Autoscaler enables efficient system resource allocation. The following high-level architecture description explains the relationship of the Autoscaler and its components.
 
 ## Overview
 
@@ -23,20 +23,20 @@ The figure below illustrates the Worker scaling functionality of the Autoscaler.
 The pipes represent asynchronous message queues on RabbitMQ.
 
 1. Autoscaler is configured via configuration files:
- - `MarathonAutoscalerConfiguration` contains configuration options for the Marathon endpoint and maximum number of overall microservice instances.
+ - `K8sAutoscaleConfiguration` contains configuration options for the Kubernetes endpoint and maximum number of overall microservice instances.
  - `RabbitWorkloadAnalyserConfiguration` contains configuration options for the RabbitMQ Management endpoint, RabbitMQ Management user details and Autoscaler Rabbit Workload Scaling Profiles.
-2. Workers (microservices) are configured with Marathon Labels for Autoscaler use.
+2. Workers (microservices) are configured with Kubernetes Labels for Autoscaler use.
 3. Autoscaler monitors Workers' RabbitMQ input queue's load processing statistics.
 4. Autoscaler increases or decreases the number of Worker instances for an input queue based on input queue statistics and the scaling profile set for the Worker.
 
 ### Framework
 
-The `autoscale-core` is built on an extensible framework that can be used to build different Worker Autoscalers.  The Worker Autoscaler is packaged with plugins for RabbitMQ and Marathon but due to the extensible nature of the framework, additional plugins can be written for alternative queuing and container orchestration tools.
+The `autoscale-core` is built on an extensible framework that can be used to build different Worker Autoscalers.  The Worker Autoscaler is packaged with plugins for RabbitMQ and Kubernetes but due to the extensible nature of the framework, additional plugins can be written for alternative queuing and container orchestration tools.
 
 
 ### Configuration
 
-If you are running on the Marathon platform, no environment variables are required to be set to start the Autoscale Application. If you are not running on the Marathon platform, you will need to set `CAF_APPNAME` to an appropriate value to specify the namespace/grouping for the particular autoscaler instance.  
+If you are running on the Kubernetes platform, no environment variables are required to be set to start the Autoscale Application. If you are not running on the Kubernetes platform, you will need to set `CAF_APPNAME` to an appropriate value to specify the namespace/grouping for the particular autoscaler instance.  
 
 The following configuration can (optionally) be set in the .yaml file:
 * sourceRefreshPeriod (integer), the time in seconds between refreshing the available services to autoscale, defaults to 900
@@ -98,11 +98,3 @@ A service needs to specify various information about how it wants its workload t
 * backoff: the number of workload analysis runs that will be skipped after the analyzer triggers a scaling operation. This can help avoid unusual scaling behavior while the system is in-between states
     
 There are additional scenarios which may mean a service may be ignored by an instance of the Autoscale Application which are outside basic validation. These are the cases where the application owner of the Autoscale instance does not match the appOwner specified in the `ScalingConfiguration` and the case where the workload metric specified is not available to that instance of the Autoscale Application.
-
-### Further Reading
-
-The Getting Started guide, [here](Getting-Started), contains the following information:
-
-- Autoscaler `MarathonAutoscalerConfiguration` configuration file options
-- Autoscaler `RabbitWorkloadAnalyserConfiguration` configuration file options and creating Autoscaler scaling profiles
-- Microservice Autoscaler Marathon labels required for auto-scaling

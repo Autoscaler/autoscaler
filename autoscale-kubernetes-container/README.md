@@ -24,9 +24,13 @@ Configuration of the AutoScaler is supported through the following environment v
     Default: `guest`  
     Used to specify the username used to connect to RabbitMQ.  If `CAF_RABBITMQ_MGMT_USERNAME` is not specified then `CAF_RABBITMQ_USERNAME` will also be checked before falling back to the default.
 
- - `CAF_RABBITMQ_MGMT_PASSWORD`/`CAF_RABBITMQ_MGMT_PASSWORD_FILE`  
+ - `CAF_RABBITMQ_MGMT_PASSWORD` 
     Default: `guest`  
-    Used to specify the password or file containing the password used to connect to RabbitMQ.  If `CAF_RABBITMQ_MGMT_PASSWORD`/`CAF_RABBITMQ_MGMT_PASSWORD_FILE` is not specified then `CAF_RABBITMQ_PASSWORD`/`CAF_RABBITMQ_PASSWORD_FILE` will also be checked before falling back to the default.
+    Used to specify the password used to connect to RabbitMQ.  If `CAF_RABBITMQ_MGMT_PASSWORD` is not specified then `CAF_RABBITMQ_PASSWORD` will also be checked before falling back to the default.
+
+-  `CAF_RABBITMQ_MGMT_PASSWORD_FILE`  
+    Default: None
+    Used to specify the file containing the password used to connect to RabbitMQ.  If `CAF_RABBITMQ_MGMT_PASSWORD_FILE` is not specified then `CAF_RABBITMQ_PASSWORD_FILE` will also be checked before falling back to using a default password of `guest`.
 
  - `CAF_AUTOSCALER_RABBITMQ_RESOURCE_QUERY_FREQ`  
     Default: `10`  

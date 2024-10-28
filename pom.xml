@@ -209,47 +209,47 @@
             <dependency>
                 <groupId>com.github.cafapi</groupId>
                 <artifactId>caf-api</artifactId>
-                <version>3.1.0-596</version>
+                <version>3.2.0-684</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.cipher</groupId>
                 <artifactId>cipher-null</artifactId>
-                <version>3.1.0-596</version>
+                <version>3.2.0-684</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.codec</groupId>
                 <artifactId>codec-json</artifactId>
-                <version>3.1.0-596</version>
+                <version>3.2.0-684</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.config</groupId>
                 <artifactId>config-caf</artifactId>
-                <version>3.1.0-596</version>
+                <version>3.2.0-684</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.config</groupId>
                 <artifactId>config-decoder</artifactId>
-                <version>3.1.0-596</version>
+                <version>3.2.0-684</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.config</groupId>
                 <artifactId>config-file</artifactId>
-                <version>3.1.0-596</version>
+                <version>3.2.0-684</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.config</groupId>
                 <artifactId>config-system</artifactId>
-                <version>3.1.0-596</version>
+                <version>3.2.0-684</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.decoder</groupId>
                 <artifactId>decoder-js</artifactId>
-                <version>3.1.0-596</version>
+                <version>3.2.0-684</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.election</groupId>
                 <artifactId>election-null</artifactId>
-                <version>3.1.0-596</version>
+                <version>3.2.0-684</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.kubernetes</groupId>
@@ -274,17 +274,17 @@
             <dependency>
                 <groupId>com.github.cafapi.util</groupId>
                 <artifactId>util-moduleloader</artifactId>
-                <version>3.1.0-596</version>
+                <version>3.2.0-684</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.util</groupId>
                 <artifactId>util-naming</artifactId>
-                <version>3.1.0-596</version>
+                <version>3.2.0-684</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.util</groupId>
                 <artifactId>util-process-identifier</artifactId>
-                <version>3.1.0-596</version>
+                <version>3.2.0-684</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
@@ -883,8 +883,8 @@
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/oraclelinux-jre21</repository>
-                            <tag>1.0.2</tag>
-                            <digest>sha256:be49c9235ee161d3a72aaa87cc860de95d34b81d11bac8656d8ed41cb2d09da6</digest>
+                            <tag>1.1.0</tag>
+                            <digest>sha256:ed8093edcab86b8d35e3b6db21f7f136d36068cddd67a9ce728661b6266f3eb4</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>

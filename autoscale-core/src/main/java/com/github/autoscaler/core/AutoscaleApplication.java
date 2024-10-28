@@ -24,6 +24,7 @@ import com.github.autoscaler.api.ServiceSource;
 import com.github.autoscaler.api.ServiceSourceProvider;
 import com.github.autoscaler.api.WorkloadAnalyserFactory;
 import com.github.autoscaler.api.WorkloadAnalyserFactoryProvider;
+import com.github.cafapi.util.dropwizard.CafConfigSubstitutor;
 import com.hpe.caf.api.BootstrapConfiguration;
 import com.hpe.caf.api.CafConfigurationDecoderProvider;
 import com.hpe.caf.api.Cipher;
@@ -44,7 +45,6 @@ import com.hpe.caf.election.NullElectionFactoryProvider;
 import com.hpe.caf.naming.ServicePath;
 import com.hpe.caf.util.ModuleLoader;
 import com.hpe.caf.util.ModuleLoaderException;
-import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.core.Application;
 import io.dropwizard.core.setup.Bootstrap;
@@ -130,7 +130,7 @@ public class AutoscaleApplication extends Application<AutoscaleConfiguration>
     public void initialize(Bootstrap<AutoscaleConfiguration> bootstrap)
     {
         bootstrap.setConfigurationSourceProvider(
-            new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(), new EnvironmentVariableSubstitutor(false, true))
+            new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(), new CafConfigSubstitutor(false, true))
         );
     }
 

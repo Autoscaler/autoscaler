@@ -17,7 +17,7 @@
     rabbitManagementEndpoint: getenv("CAF_RABBITMQ_MGMT_URL")
             || ("http://" + (getenv("CAF_RABBITMQ_HOST") || "rabbitmq") + ":" + (getenv("CAF_RABBITMQ_MGMT_PORT") || "15672")),
     rabbitManagementUser: getenv("CAF_RABBITMQ_MGMT_USERNAME") || getenv("CAF_RABBITMQ_USERNAME") || "guest",
-    rabbitManagementPassword: getenv("CAF_RABBITMQ_MGMT_PASSWORD") || getenv("CAF_RABBITMQ_PASSWORD") || "guest",
+    rabbitManagementPassword: getSecret("CAF_RABBITMQ_MGMT_PASSWORD") || getSecret("CAF_RABBITMQ_PASSWORD") || "guest",
     resourceQueryRequestFrequency: getenv("CAF_AUTOSCALER_RABBITMQ_RESOURCE_QUERY_FREQ") || 10,
     profiles: {
         default: {

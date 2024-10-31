@@ -100,16 +100,6 @@
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
-        <!--
-            This is for compatibility with Hibernate Validator 8.
-            dropwizard-validation and jersey-bean-validation are referencing org.glassfish:jakarta.el so that has been excluded.
-            This can probably be removed when DropWizard is updated to use Hibernate Validator 8.
-        -->
-        <dependency>
-            <groupId>org.glassfish.expressly</groupId>
-            <artifactId>expressly</artifactId>
-            <scope>runtime</scope>
-        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

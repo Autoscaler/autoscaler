@@ -19,11 +19,11 @@ import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.ServiceScaler;
 import com.github.autoscaler.api.ServiceScalerProvider;
 import com.github.autoscaler.kubernetes.shared.K8sAutoscaleConfiguration;
+import com.github.cafapi.common.api.ConfigurationException;
+import com.github.cafapi.common.api.ConfigurationSource;
 import com.github.cafapi.kubernetes.client.KubernetesClientFactory;
 import com.github.cafapi.kubernetes.client.FailedToCreateKubernetesClientException;
 import com.github.cafapi.kubernetes.client.client.ApiClient;
-import com.hpe.caf.api.ConfigurationException;
-import com.hpe.caf.api.ConfigurationSource;
 
 public class K8sServiceScalerProvider implements ServiceScalerProvider
 {

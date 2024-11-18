@@ -18,8 +18,8 @@ package com.github.autoscaler.email.alert.dispatcher;
 import com.github.autoscaler.api.AlertDispatcher;
 import com.github.autoscaler.api.AlertDispatcherFactory;
 import com.github.autoscaler.api.ScalerException;
-import com.hpe.caf.api.ConfigurationException;
-import com.hpe.caf.api.ConfigurationSource;
+import com.github.cafapi.common.api.ConfigurationException;
+import com.github.cafapi.common.api.ConfigurationSource;
 
 public class EmailDispatcherFactory implements AlertDispatcherFactory
 {

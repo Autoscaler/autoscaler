@@ -17,9 +17,9 @@ package com.github.autoscaler.core;
 
 
 import com.codahale.metrics.health.HealthCheck;
-import com.hpe.caf.api.HealthReporter;
-import com.hpe.caf.api.HealthResult;
-import com.hpe.caf.api.HealthStatus;
+import com.github.cafapi.common.api.HealthReporter;
+import com.github.cafapi.common.api.HealthResult;
+import com.github.cafapi.common.api.HealthStatus;
 
 import java.util.Objects;
 

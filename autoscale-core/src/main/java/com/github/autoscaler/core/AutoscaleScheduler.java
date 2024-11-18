@@ -22,9 +22,9 @@ import com.github.autoscaler.api.ScalingConfiguration;
 import com.github.autoscaler.api.ServiceScaler;
 import com.github.autoscaler.api.WorkloadAnalyser;
 import com.github.autoscaler.api.WorkloadAnalyserFactory;
-import com.hpe.caf.api.HealthReporter;
-import com.hpe.caf.api.HealthResult;
-import com.hpe.caf.api.HealthStatus;
+import com.github.cafapi.common.api.HealthReporter;
+import com.github.cafapi.common.api.HealthResult;
+import com.github.cafapi.common.api.HealthStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

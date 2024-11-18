@@ -15,11 +15,9 @@
  */
 package com.github.autoscaler.workload.rabbit;
 
-
-import com.hpe.caf.api.Configuration;
-import com.hpe.caf.api.ContainsStringKeys;
-import com.hpe.caf.api.Encrypted;
-
+import com.github.cafapi.common.api.Configuration;
+import com.github.cafapi.common.api.ContainsStringKeys;
+import com.github.cafapi.common.api.Encrypted;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

@@ -52,7 +52,7 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>caf-api</artifactId>
         </dependency>
         <dependency>

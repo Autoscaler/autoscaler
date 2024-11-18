@@ -15,9 +15,7 @@
  */
 package com.github.autoscaler.api;
 
-
-import com.hpe.caf.api.HealthReporter;
-
+import com.github.cafapi.common.api.HealthReporter;
 
 /**
  * Creates WorkloadAnalyser instances for a specific target and profile.

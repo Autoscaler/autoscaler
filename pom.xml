@@ -207,49 +207,49 @@
                 <version>3.1.8</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi</groupId>
+                <groupId>com.github.cafapi.common</groupId>
                 <artifactId>caf-api</artifactId>
-                <version>3.2.0-684</version>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.cipher</groupId>
+                <groupId>com.github.cafapi.common</groupId>
                 <artifactId>cipher-null</artifactId>
-                <version>3.2.0-684</version>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.codec</groupId>
+                <groupId>com.github.cafapi.common</groupId>
                 <artifactId>codec-json</artifactId>
-                <version>3.2.0-684</version>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.config</groupId>
-                <artifactId>config-caf</artifactId>
-                <version>3.2.0-684</version>
+                <groupId>com.github.cafapi.common</groupId>
+                <artifactId>config-source</artifactId>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.config</groupId>
+                <groupId>com.github.cafapi.common</groupId>
                 <artifactId>config-decoder</artifactId>
-                <version>3.2.0-684</version>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.config</groupId>
+                <groupId>com.github.cafapi.common</groupId>
                 <artifactId>config-file</artifactId>
-                <version>3.2.0-684</version>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.config</groupId>
-                <artifactId>config-system</artifactId>
-                <version>3.2.0-684</version>
+                <groupId>com.github.cafapi.common</groupId>
+                <artifactId>bootstrapconfig-system</artifactId>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.decoder</groupId>
+                <groupId>com.github.cafapi.common</groupId>
                 <artifactId>decoder-js</artifactId>
-                <version>3.2.0-684</version>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.election</groupId>
+                <groupId>com.github.cafapi.common</groupId>
                 <artifactId>election-null</artifactId>
-                <version>3.2.0-684</version>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.kubernetes</groupId>
@@ -272,24 +272,24 @@
                 <version>2.1.0-374</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.util</groupId>
+                <groupId>com.github.cafapi.common</groupId>
                 <artifactId>util-moduleloader</artifactId>
-                <version>3.2.0-684</version>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.util</groupId>
+                <groupId>com.github.cafapi.common</groupId>
                 <artifactId>util-naming</artifactId>
-                <version>3.2.0-684</version>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.util</groupId>
+                <groupId>com.github.cafapi.common</groupId>
                 <artifactId>util-process-identifier</artifactId>
-                <version>3.2.0-684</version>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.util</groupId>
+                <groupId>com.github.cafapi.common</groupId>
                 <artifactId>util-secret</artifactId>
-                <version>3.2.0-684</version>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.util.dropwizard</groupId>

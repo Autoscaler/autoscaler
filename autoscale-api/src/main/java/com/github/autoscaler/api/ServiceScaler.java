@@ -15,9 +15,7 @@
  */
 package com.github.autoscaler.api;
 
-
-import com.hpe.caf.api.HealthReporter;
-
+import com.github.cafapi.common.api.HealthReporter;
 
 /**
  * A ServiceScaler is a class that actively triggers or performs the up or

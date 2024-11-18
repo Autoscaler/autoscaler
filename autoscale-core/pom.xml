@@ -40,23 +40,23 @@
             <artifactId>dropwizard-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.config</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>config-decoder</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.config</groupId>
-            <artifactId>config-system</artifactId>
+            <groupId>com.github.cafapi.common</groupId>
+            <artifactId>bootstrapconfig-system</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.cipher</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>cipher-null</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.election</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>election-null</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.util</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>util-moduleloader</artifactId>
         </dependency>
         <dependency>
@@ -73,7 +73,7 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.util</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>util-naming</artifactId>
         </dependency>
         <dependency>
@@ -85,7 +85,7 @@
             <artifactId>dropwizard-configuration</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>caf-api</artifactId>
         </dependency>
         <dependency>

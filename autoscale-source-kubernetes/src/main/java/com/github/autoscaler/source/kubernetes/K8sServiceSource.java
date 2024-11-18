@@ -19,14 +19,14 @@ import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.ScalingConfiguration;
 import com.github.autoscaler.api.ServiceSource;
 import com.github.autoscaler.kubernetes.shared.K8sAutoscaleConfiguration;
+import com.github.cafapi.common.api.HealthResult;
+import com.github.cafapi.common.api.HealthStatus;
 import com.github.cafapi.kubernetes.client.api.AppsV1Api;
 import com.github.cafapi.kubernetes.client.api.VersionApi;
 import com.github.cafapi.kubernetes.client.client.ApiClient;
 import com.github.cafapi.kubernetes.client.client.ApiException;
 import com.github.cafapi.kubernetes.client.model.IoK8sApiAppsV1Deployment;
 import com.github.cafapi.kubernetes.client.model.IoK8sApimachineryPkgApisMetaV1ObjectMeta;
-import com.hpe.caf.api.HealthResult;
-import com.hpe.caf.api.HealthStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -15,7 +15,7 @@
  */
 package com.github.autoscaler.core;
 
-import com.hpe.caf.api.Configuration;
+import com.github.cafapi.common.api.Configuration;
 import jakarta.validation.constraints.NotNull;
 
 @Configuration

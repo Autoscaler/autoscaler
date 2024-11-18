@@ -16,14 +16,14 @@
 package com.github.autoscaler.scaler.kubernetes;
 
 import com.github.autoscaler.kubernetes.shared.K8sAutoscaleConfiguration;
+import com.github.cafapi.common.api.HealthResult;
+import com.github.cafapi.common.api.HealthStatus;
 import com.github.cafapi.kubernetes.client.api.AuthorizationV1Api;
 import com.github.cafapi.kubernetes.client.api.VersionApi;
 import com.github.cafapi.kubernetes.client.client.ApiClient;
 import com.github.cafapi.kubernetes.client.client.ApiException;
 import com.github.cafapi.kubernetes.client.model.IoK8sApiAuthorizationV1SelfSubjectAccessReview;
 import com.github.cafapi.kubernetes.client.model.IoK8sApiAuthorizationV1SubjectAccessReviewStatus;
-import com.hpe.caf.api.HealthResult;
-import com.hpe.caf.api.HealthStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

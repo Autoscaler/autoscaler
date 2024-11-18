@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.github.cafapi.common.api.HealthResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +44,6 @@ import com.github.cafapi.kubernetes.client.model.IoK8sApiCoreV1PodStatus;
 import com.github.cafapi.kubernetes.client.model.IoK8sApiCoreV1PodTemplateSpec;
 import com.github.cafapi.kubernetes.client.model.IoK8sApimachineryPkgApisMetaV1LabelSelector;
 import com.github.cafapi.kubernetes.client.model.IoK8sApimachineryPkgApisMetaV1ObjectMeta;
-import com.hpe.caf.api.HealthResult;
 
 public class K8sServiceScaler implements ServiceScaler
 {

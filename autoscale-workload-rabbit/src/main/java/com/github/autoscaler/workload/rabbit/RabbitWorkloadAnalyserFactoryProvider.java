@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.WorkloadAnalyserFactory;
 import com.github.autoscaler.api.WorkloadAnalyserFactoryProvider;
-import com.hpe.caf.api.ConfigurationException;
-import com.hpe.caf.api.ConfigurationSource;
+import com.github.cafapi.common.api.ConfigurationSource;
+import com.github.cafapi.common.api.ConfigurationException;
 
 public class RabbitWorkloadAnalyserFactoryProvider implements WorkloadAnalyserFactoryProvider
 {

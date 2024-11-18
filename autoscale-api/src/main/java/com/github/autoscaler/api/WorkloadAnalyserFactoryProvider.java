@@ -15,9 +15,7 @@
  */
 package com.github.autoscaler.api;
 
-
-import com.hpe.caf.api.ConfigurationSource;
-
+import com.github.cafapi.common.api.ConfigurationSource;
 
 /**
  * Boilerplate for acquiring a WorkloadAnalyserFactory. It is holds the unique name for the WorkloadAnalyser.

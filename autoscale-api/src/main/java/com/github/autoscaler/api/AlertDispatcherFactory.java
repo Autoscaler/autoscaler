@@ -15,7 +15,7 @@
  */
 package com.github.autoscaler.api;
 
-import com.hpe.caf.api.ConfigurationSource;
+import com.github.cafapi.common.api.ConfigurationSource;
 
 public interface AlertDispatcherFactory
 {

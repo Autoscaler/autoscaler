@@ -48,17 +48,17 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>caf-api</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.config</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>${caf.config.impl}</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.decoder</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>decoder-js</artifactId>
             <scope>runtime</scope>
         </dependency>
@@ -88,7 +88,7 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.codec</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>${caf.codec.impl}</artifactId>
             <scope>runtime</scope>
         </dependency>

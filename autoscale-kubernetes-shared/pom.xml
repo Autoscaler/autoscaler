@@ -41,7 +41,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.codec</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>codec-json</artifactId>
             <scope>test</scope>
         </dependency>

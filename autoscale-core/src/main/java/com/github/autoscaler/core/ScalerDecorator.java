@@ -19,7 +19,7 @@ package com.github.autoscaler.core;
 import com.github.autoscaler.api.InstanceInfo;
 import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.ServiceScaler;
-import com.hpe.caf.api.HealthResult;
+import com.github.cafapi.common.api.HealthResult;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;

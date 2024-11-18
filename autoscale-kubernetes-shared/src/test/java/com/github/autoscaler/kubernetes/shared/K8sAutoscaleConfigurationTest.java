@@ -15,8 +15,8 @@
  */
 package com.github.autoscaler.kubernetes.shared;
 
+import com.github.cafapi.common.codecs.json.JsonCodec;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import com.hpe.caf.codec.JsonCodec;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

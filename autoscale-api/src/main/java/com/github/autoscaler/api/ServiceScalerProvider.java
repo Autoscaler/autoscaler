@@ -15,9 +15,7 @@
  */
 package com.github.autoscaler.api;
 
-
-import com.hpe.caf.api.ConfigurationSource;
-
+import com.github.cafapi.common.api.ConfigurationSource;
 
 /**
  * Provides a method for acquiring a ServiceScaler. Implementations must have a no-arg constructor.

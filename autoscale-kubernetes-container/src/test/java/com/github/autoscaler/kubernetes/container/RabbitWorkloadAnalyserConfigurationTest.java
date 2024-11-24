@@ -17,11 +17,11 @@ package com.github.autoscaler.kubernetes.container;
 
 import com.github.autoscaler.workload.rabbit.RabbitWorkloadAnalyserConfiguration;
 import com.github.autoscaler.workload.rabbit.RabbitWorkloadProfile;
-import com.hpe.caf.api.BootstrapConfiguration;
-import com.hpe.caf.cipher.NullCipher;
-import com.hpe.caf.codec.JsonCodec;
-import com.hpe.caf.config.file.FileConfigurationSource;
-import com.hpe.caf.naming.ServicePath;
+import com.github.cafapi.common.api.BootstrapConfiguration;
+import com.github.cafapi.common.ciphers.Null.NullCipher;
+import com.github.cafapi.common.codecs.json.JsonCodec;
+import com.github.cafapi.common.config.sources.file.FileConfigurationSource;
+import com.github.cafapi.common.util.naming.ServicePath;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

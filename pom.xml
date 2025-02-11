@@ -339,7 +339,7 @@
             <dependency>
                 <groupId>com.rabbitmq</groupId>
                 <artifactId>amqp-client</artifactId>
-                <version>5.24.0</version>
+                <version>5.25.0</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
@@ -499,7 +499,7 @@
             <dependency>
                 <groupId>jakarta.validation</groupId>
                 <artifactId>jakarta.validation-api</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>
@@ -549,7 +549,7 @@
             <dependency>
                 <groupId>org.checkerframework</groupId>
                 <artifactId>checker-qual</artifactId>
-                <version>3.48.4</version>
+                <version>3.49.0</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.angus</groupId>
@@ -624,7 +624,7 @@
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgi-resource-locator</artifactId>
-                <version>1.0.3</version>
+                <version>3.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.hk2.external</groupId>
@@ -901,8 +901,8 @@
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/oraclelinux-jre21</repository>
-                            <tag>1.1.6</tag>
-                            <digest>sha256:9e595aa80c54e1c1aa2a25d136f6dc8855c77e55561df94f3ac49092974370c7</digest>
+                            <tag>1.1.7</tag>
+                            <digest>sha256:7c3bd6b015456a1dcf7bb3035a5f7486ce9db155fdf00ec165e0f994a093cfdf</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>

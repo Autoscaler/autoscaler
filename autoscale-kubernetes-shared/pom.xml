@@ -27,7 +27,7 @@
     <parent>
         <artifactId>autoscale-aggregator</artifactId>
         <groupId>com.github.autoscaler</groupId>
-        <version>3.1.1-SNAPSHOT</version>
+        <version>3.1.1-1141</version>
     </parent>
 
     <dependencies>

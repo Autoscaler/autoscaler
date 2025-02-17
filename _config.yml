@@ -2,8 +2,8 @@ title: AutoScaler
 email: autoscaler@microfocus.com
 
 description: AutoScaler Description
-#baseurl: ""
-baseurl: ""
+
+baseurl: "/autoscaler"
 
 # Build settings
 exclude: ['node_modules']

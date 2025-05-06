@@ -554,37 +554,37 @@
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-http</artifactId>
-                <version>12.0.19</version>
+                <version>12.0.20</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-io</artifactId>
-                <version>12.0.19</version>
+                <version>12.0.20</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-security</artifactId>
-                <version>12.0.19</version>
+                <version>12.0.20</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
-                <version>12.0.19</version>
+                <version>12.0.20</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-session</artifactId>
-                <version>12.0.19</version>
+                <version>12.0.20</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-util</artifactId>
-                <version>12.0.19</version>
+                <version>12.0.20</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty.ee10</groupId>
                 <artifactId>jetty-ee10-servlet</artifactId>
-                <version>12.0.19</version>
+                <version>12.0.20</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty.toolchain.setuid</groupId>
@@ -896,8 +896,8 @@
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/oraclelinux-jre21</repository>
-                            <tag>1.1.11</tag>
-                            <digest>sha256:dc3121ea4d101bdf87c5336079fbe5291ec741c50bbf36645b60546fd17d46fd</digest>
+                            <tag>1.1.12</tag>
+                            <digest>sha256:8eb5136a2ab064831c855eb4ebaf10e2c09f075aa8c2003b8644a9dbbcbe3ac5</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>

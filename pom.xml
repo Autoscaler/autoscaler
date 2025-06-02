@@ -72,16 +72,7 @@
     </developers>
 
     <modules>
-        <module>docs</module>
         <module>autoscale-api</module>
-        <module>autoscale-core</module>
-        <module>autoscale-kubernetes-container</module>
-        <module>autoscale-kubernetes-shared</module>
-        <module>autoscale-scaler-kubernetes</module>
-        <module>autoscale-source-kubernetes</module>
-        <module>autoscale-workload-rabbit</module>
-        <module>autoscale-acceptance-tests</module>
-        <module>autoscale-email-alert-dispatcher</module>
     </modules>
 
     <dependencyManagement>
@@ -883,41 +874,6 @@
             </plugins>
         </pluginManagement>
         <plugins>
-            <plugin>
-                <groupId>com.github.cafapi.plugins.docker.versions</groupId>
-                <artifactId>docker-versions-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <imageManagement>
-                        <image>
-                            <repository>${dockerHubPublic}/cafapi/doc-site-compiler</repository>
-                            <tag>2.0.0</tag>
-                            <digest>sha256:f86cfd00743cf4c61672313c9fe1f4b955608cec2b19a251f9d3845145f8a2d6</digest>
-                        </image>
-                        <image>
-                            <repository>${dockerHubPublic}/cafapi/oraclelinux-jre21</repository>
-                            <tag>1.1.13</tag>
-                            <digest>sha256:c0e4c7ac7a0bc8dfd378c3d965079c6c6ed8597613521b229ef4d0c7f0d39ac1</digest>
-                        </image>
-                        <image>
-                            <repository>${dockerHubPublic}/library/busybox</repository>
-                            <tag>latest</tag>
-                        </image>
-                        <image>
-                            <repository>${dockerHubPublic}/library/httpd</repository>
-                            <tag>2.4</tag>
-                        </image>
-                        <image>
-                            <repository>${dockerHubPublic}/library/rabbitmq</repository>
-                            <tag>3-management</tag>
-                        </image>
-                        <image>
-                            <repository>${dockerHubPublic}/library/zookeeper</repository>
-                            <tag>3.9.2-jre-17</tag>
-                        </image>
-                    </imageManagement>
-                </configuration>
-            </plugin>           
         </plugins>
     </build>
 

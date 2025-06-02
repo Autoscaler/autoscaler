@@ -918,6 +918,29 @@
                     </imageManagement>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <executions>
+                    <!-- Continue to respect the maven.deploy.skip flag, even though we now use Nexus Staging Maven Plugin -->
+                    <execution>
+                        <id>check-maven-deploy-skip-flag</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <scripts>
+                                <script><![CDATA[
+                                    if (project.properties['maven.deploy.skip']) {
+                                        project.properties.setProperty('skipNexusStagingDeployMojo', 'true');
+                                    }
+                                ]]></script>
+                            </scripts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>            
         </plugins>
     </build>
 

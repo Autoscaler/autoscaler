@@ -23,11 +23,13 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-kubernetes-container</artifactId>
+    <name>autoscale-kubernetes-container</name>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>com.github.autoscaler</groupId>
         <artifactId>autoscale-aggregator</artifactId>
+    <name>autoscale-kubernetes-container</name>
         <version>3.2.0-SNAPSHOT</version>
     </parent>
 
@@ -45,61 +47,73 @@
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-email-alert-dispatcher</artifactId>
+    <name>autoscale-kubernetes-container</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.common</groupId>
             <artifactId>caf-api</artifactId>
+    <name>autoscale-kubernetes-container</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.common</groupId>
             <artifactId>${caf.config.impl}</artifactId>
+    <name>autoscale-kubernetes-container</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.common</groupId>
             <artifactId>decoder-js</artifactId>
+    <name>autoscale-kubernetes-container</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-core</artifactId>
+    <name>autoscale-kubernetes-container</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-kubernetes-shared</artifactId>
+    <name>autoscale-kubernetes-container</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>${caf.autoscale-source.impl}</artifactId>
+    <name>autoscale-kubernetes-container</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>${caf.autoscale-scaler.impl}</artifactId>
+    <name>autoscale-kubernetes-container</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>${caf.autoscale-workload.impl}</artifactId>
+    <name>autoscale-kubernetes-container</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.common</groupId>
             <artifactId>${caf.codec.impl}</artifactId>
+    <name>autoscale-kubernetes-container</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+    <name>autoscale-kubernetes-container</name>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+    <name>autoscale-kubernetes-container</name>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -109,6 +123,7 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
+    <name>autoscale-kubernetes-container</name>
                 <executions>
                     <execution>
                         <id>start</id>

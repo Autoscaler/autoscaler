@@ -23,9 +23,11 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-kubernetes-shared</artifactId>
+    <name>autoscale-kubernetes-shared</name>
     
     <parent>
         <artifactId>autoscale-aggregator</artifactId>
+    <name>autoscale-kubernetes-shared</name>
         <groupId>com.github.autoscaler</groupId>
         <version>3.2.0-SNAPSHOT</version>
     </parent>
@@ -34,30 +36,36 @@
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
+    <name>autoscale-kubernetes-shared</name>
         </dependency>
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-api</artifactId>
+    <name>autoscale-kubernetes-shared</name>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.common</groupId>
             <artifactId>codec-json</artifactId>
+    <name>autoscale-kubernetes-shared</name>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+    <name>autoscale-kubernetes-shared</name>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+    <name>autoscale-kubernetes-shared</name>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
+    <name>autoscale-kubernetes-shared</name>
             <scope>test</scope>
         </dependency>
     </dependencies>

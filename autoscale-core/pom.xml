@@ -23,10 +23,12 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-core</artifactId>
+    <name>autoscale-core</name>
 
     <parent>
         <groupId>com.github.autoscaler</groupId>
         <artifactId>autoscale-aggregator</artifactId>
+    <name>autoscale-core</name>
         <version>3.2.0-SNAPSHOT</version>
     </parent>
 
@@ -34,90 +36,111 @@
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-api</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.common</groupId>
             <artifactId>config-decoder</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.common</groupId>
             <artifactId>bootstrapconfig-system</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.common</groupId>
             <artifactId>cipher-null</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.common</groupId>
             <artifactId>election-null</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.common</groupId>
             <artifactId>util-moduleloader</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-logging</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-healthchecks</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.logging</groupId>
             <artifactId>caf-logging-logback</artifactId>
+    <name>autoscale-core</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.common</groupId>
             <artifactId>util-naming</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.util.dropwizard</groupId>
             <artifactId>caf-substitutor-dropwizard</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-configuration</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.common</groupId>
             <artifactId>caf-api</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
+    <name>autoscale-core</name>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+    <name>autoscale-core</name>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+    <name>autoscale-core</name>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-inline</artifactId>
+    <name>autoscale-core</name>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
+    <name>autoscale-core</name>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -127,6 +150,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+    <name>autoscale-core</name>
                 <configuration>
                     <!-- Workaround https://github.com/powermock/powermock/issues/1094 -->
                     <argLine>

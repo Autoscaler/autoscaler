@@ -23,10 +23,12 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-workload-rabbit</artifactId>
+    <name>autoscale-workload-rabbit</name>
 
     <parent>
         <groupId>com.github.autoscaler</groupId>
         <artifactId>autoscale-aggregator</artifactId>
+    <name>autoscale-workload-rabbit</name>
         <version>3.2.0-SNAPSHOT</version>
     </parent>
 
@@ -34,58 +36,71 @@
         <dependency>
             <groupId>com.github.autoscaler</groupId>
             <artifactId>autoscale-api</artifactId>
+    <name>autoscale-workload-rabbit</name>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.logging</groupId>
             <artifactId>caf-logging-logback</artifactId>
+    <name>autoscale-workload-rabbit</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
+    <name>autoscale-workload-rabbit</name>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
+    <name>autoscale-workload-rabbit</name>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+    <name>autoscale-workload-rabbit</name>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
+    <name>autoscale-workload-rabbit</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
+    <name>autoscale-workload-rabbit</name>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+    <name>autoscale-workload-rabbit</name>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+    <name>autoscale-workload-rabbit</name>
         </dependency>
         <dependency>
             <groupId>com.github.cafapi.common</groupId>
             <artifactId>caf-api</artifactId>
+    <name>autoscale-workload-rabbit</name>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
+    <name>autoscale-workload-rabbit</name>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+    <name>autoscale-workload-rabbit</name>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+    <name>autoscale-workload-rabbit</name>
             <scope>test</scope>
         </dependency>
     </dependencies>

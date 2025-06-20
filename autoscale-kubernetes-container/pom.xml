@@ -23,6 +23,7 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-kubernetes-container</artifactId>
+    <name>autoscale-kubernetes-container</name>
     <packaging>pom</packaging>
 
     <parent>

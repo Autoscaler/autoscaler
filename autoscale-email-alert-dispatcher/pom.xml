@@ -28,6 +28,7 @@
     </parent>
 
     <artifactId>autoscale-email-alert-dispatcher</artifactId>
+    <name>autoscale-email-alert-dispatcher</name>
 
     <dependencies>
         <dependency>

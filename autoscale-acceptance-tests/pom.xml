@@ -23,6 +23,7 @@
     
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-acceptance-tests</artifactId>
+    <name>autoscale-acceptance-tests</name>
     
     <parent>
         <groupId>com.github.autoscaler</groupId>

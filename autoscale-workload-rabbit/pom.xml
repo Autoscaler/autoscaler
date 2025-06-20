@@ -23,6 +23,7 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-workload-rabbit</artifactId>
+    <name>autoscale-workload-rabbit</name>
 
     <parent>
         <groupId>com.github.autoscaler</groupId>

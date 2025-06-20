@@ -23,6 +23,7 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-core</artifactId>
+    <name>autoscale-core</name>
 
     <parent>
         <groupId>com.github.autoscaler</groupId>

@@ -23,6 +23,7 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscaler-docs</artifactId>
+    <name>autoscaler-docs</name>
     <packaging>pom</packaging>
 
     <parent>

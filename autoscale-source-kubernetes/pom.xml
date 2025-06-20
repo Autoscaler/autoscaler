@@ -23,6 +23,7 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-source-kubernetes</artifactId>
+    <name>autoscale-source-kubernetes</name>
     
     <parent>
         <artifactId>autoscale-aggregator</artifactId>

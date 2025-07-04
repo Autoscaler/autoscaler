@@ -29,7 +29,7 @@
     <parent>
         <groupId>com.github.autoscaler</groupId>
         <artifactId>autoscale-aggregator</artifactId>
-        <version>3.1.2-SNAPSHOT</version>
+        <version>3.1.2-1176</version>
     </parent>
 
     <properties>

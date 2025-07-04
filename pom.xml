@@ -23,7 +23,7 @@
 
     <groupId>com.github.autoscaler</groupId>
     <artifactId>autoscale-aggregator</artifactId>
-    <version>3.1.2-SNAPSHOT</version>
+    <version>3.1.2-1176</version>
     <packaging>pom</packaging>
 
     <name>Autoscaler</name>
@@ -174,37 +174,37 @@
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-api</artifactId>
-                <version>3.1.2-SNAPSHOT</version>
+                <version>3.1.2-1176</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-core</artifactId>
-                <version>3.1.2-SNAPSHOT</version>
+                <version>3.1.2-1176</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-email-alert-dispatcher</artifactId>
-                <version>3.1.2-SNAPSHOT</version>
+                <version>3.1.2-1176</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-kubernetes-shared</artifactId>
-                <version>3.1.2-SNAPSHOT</version>
+                <version>3.1.2-1176</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-scaler-kubernetes</artifactId>
-                <version>3.1.2-SNAPSHOT</version>
+                <version>3.1.2-1176</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-source-kubernetes</artifactId>
-                <version>3.1.2-SNAPSHOT</version>
+                <version>3.1.2-1176</version>
             </dependency>
             <dependency>
                 <groupId>com.github.autoscaler</groupId>
                 <artifactId>autoscale-workload-rabbit</artifactId>
-                <version>3.1.2-SNAPSHOT</version>
+                <version>3.1.2-1176</version>
             </dependency>
             <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>

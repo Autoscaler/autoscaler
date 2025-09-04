@@ -198,14 +198,21 @@ public class AutoscaleScheduler implements HealthReporter
             cancel(config.getId());
         }
         governor.register(config);
-        final ScalerThread scalerThread = new ScalerThread(governor, analyser, scaler, config.getId(),
-                                                                                   config.getMinInstances(), config.getMaxInstances(),
-                                                                                   config.getBackoffAmount(),
-                                                                                   config.getScaleUpBackoffAmount(),
-                                                                                   config.getScaleDownBackoffAmount(),
-                                                                                   memoryOverloadAlerter,
-                                                                                   diskSpaceLowAlerter,
-                                                                                   resourceConfig);
+        final ScalerThread scalerThread = new ScalerThread(
+                governor,
+                analyser,
+                scaler,
+                config.getId(),
+                config.getMinInstances(), config.getMaxInstances(),
+                config.getBackoffAmount(),
+                config.getScaleUpBackoffAmount(),
+                config.getScaleDownBackoffAmount(),
+                memoryOverloadAlerter,
+                diskSpaceLowAlerter,
+                resourceConfig,
+                initialDelay,
+                config.getInterval()
+        );
         governor.registerListener(config.getId(), scalerThread);
         final ScheduledFuture future = scheduler.scheduleWithFixedDelay(scalerThread, initialDelay, config.getInterval(),
                                                                         TimeUnit.SECONDS);

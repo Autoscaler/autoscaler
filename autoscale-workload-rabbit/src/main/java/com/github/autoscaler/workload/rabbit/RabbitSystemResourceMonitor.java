@@ -88,8 +88,7 @@ public final class RabbitSystemResourceMonitor
         return new ResourceUtilisation(memoryAllocated, diskFreeMbOpt);
     }
 
-    private boolean shouldIssueRequest()
-    {
+    private boolean shouldIssueRequest() {
         if (lastTime == 0) {
             return true;
         }

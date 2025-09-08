@@ -56,5 +56,4 @@ public interface WorkloadAnalyser
      * @return The email body
      */
     String getDiskSpaceLowWarning(String diskFreeMb);
-
 }

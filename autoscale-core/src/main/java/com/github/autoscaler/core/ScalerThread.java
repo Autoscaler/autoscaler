@@ -81,13 +81,14 @@ public class ScalerThread implements Runnable
     /**
      * Create a new ScalerThread.
      *
-     * @param governor               a Governor instance to prevent one service from starving others
-     * @param workloadAnalyser       the method for this thread to analyse the workload of a service
-     * @param serviceScaler          the method for this thread to scale a service
-     * @param serviceReference       the named reference to the service this thread will analyse and scale
-     * @param minInstances           the minimum number of instances of the service that must be instantiated
-     * @param maxInstances           the maximum number of instances of the service that can be instantiated
-     * @param backoffAmount          the number of analysis runs to skip after a scaling is triggered
+     * @param governor a Governor instance to prevent one service from starving others
+     * @param workloadAnalyser the method for this thread to analyse the workload of a service
+     * @param serviceScaler the method for this thread to scale a service
+     * @param serviceReference the named reference to the service this thread will analyse and scale
+     * @param minInstances the minimum number of instances of the service that must be instantiated
+     * @param maxInstances the maximum number of instances of the service that can be instantiated
+     * @param backoffAmount the number of analysis runs to skip after a scaling is triggered
+     * @param scaleUpBackoffAmount the number of analysis runs to skip after a scaling up is triggered
      * @param scaleUpBackoffAmount   the number of analysis runs to skip after a scaling up is triggered
      * @param scaleDownBackoffAmount the number of analysis runs to skip after a scaling down is triggered
      * @param memoryOverloadAlerter  dispatcher to send memory overload alerts if required
@@ -115,7 +116,7 @@ public class ScalerThread implements Runnable
 
     /**
      * Determine whether to trigger an analysis run or not, depending on the current backoff state.
-      */
+     */
     @Override
     public void run()
     {
@@ -184,7 +185,8 @@ public class ScalerThread implements Runnable
      */
     private boolean handleResourceAnalysis(final InstanceInfo instances) throws ScalerException {
         LOG.debug("Performing resource analysis for service {}", serviceRef);
-        if (instances.getShutdownPriority() == -1) {
+        final int shutdownPriority = instances.getShutdownPriority();
+        if (shutdownPriority == -1) {
             return false;
         }
         final ResourceUtilisation resourceUtilisation = analyser.getCurrentResourceUtilisation();
@@ -193,12 +195,13 @@ public class ScalerThread implements Runnable
         LOG.debug("Resource limit stages reached for service {}: {}", serviceRef, resourceLimitStagesReached);
 
         LOG.debug("Instance info for service {}: {}", serviceRef, instances);
-        return handleResourceLimitReached(instances, resourceUtilisation, resourceLimitStagesReached);
+        return handleResourceLimitReached(instances, resourceUtilisation, resourceLimitStagesReached, shutdownPriority);
     }
 
     /**
      * Perform a scale up
      *
+     * @param instances information on the current number of instances of a service
      * @param amount the requested number of instances to scale up by
      * @throws ScalerException if the scaling operation fails
      */
@@ -243,6 +246,7 @@ public class ScalerThread implements Runnable
     /**
      * Perform a scale down
      *
+     * @param instances information on the current number of instances of a service
      * @param amount the requested number of instances to scale down by
      * @throws ScalerException if the scaling operation fails
      */
@@ -275,10 +279,10 @@ public class ScalerThread implements Runnable
     private boolean handleResourceLimitReached(
             final InstanceInfo instances,
             final ResourceUtilisation resourceUtilisation,
-            final ResourceLimitStagesReached resourceLimitStagesReached)
+            final ResourceLimitStagesReached resourceLimitStagesReached,
+            final int shutdownPriority)
         throws ScalerException
     {
-        final int shutdownPriority = instances.getShutdownPriority();
         handleAlerterDispatch(resourceUtilisation);
 
         final ResourceLimitStage highestResourceLimitStageReached = ResourceLimitStage.max(

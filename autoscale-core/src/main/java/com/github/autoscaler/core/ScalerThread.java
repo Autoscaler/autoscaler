@@ -44,11 +44,10 @@ public class ScalerThread implements Runnable
     private final WorkloadAnalyser analyser;
     private final ServiceScaler scaler;
     private final int backoffAmount;
-    private final long autoscaleInterval;
     private final int scaleDownBackoffAmount;
     private final int scaleUpBackoffAmount;
     private final String serviceRef;
-    private int backoffCount = 0;
+    private int workloadAnalysisBackoffCount = 0;
     private boolean backoff = false;
     private static final Logger LOG = LoggerFactory.getLogger(ScalerThread.class);
 
@@ -56,7 +55,6 @@ public class ScalerThread implements Runnable
     private final ResourceMonitoringConfiguration resourceConfig;
 
     private ScalingOperation lastOperation;
-    private long autoscaleDelayUntil;
 
     /**
      * Create a new ScalerThread.
@@ -76,9 +74,8 @@ public class ScalerThread implements Runnable
                         final Alerter memoryOverloadAlerter, final Alerter diskSpaceLowAlerter,
                         final ResourceMonitoringConfiguration resourceConfig)
     {
-        // DDD this ctor seems to be just setup for tests
         this(governor, workloadAnalyser, serviceScaler, serviceReference, minInstances, maxInstances, backoffAmount, -1, -1,
-                memoryOverloadAlerter, diskSpaceLowAlerter, resourceConfig, 0, 0);
+                memoryOverloadAlerter, diskSpaceLowAlerter, resourceConfig);
     }
 
     /**
@@ -95,13 +92,11 @@ public class ScalerThread implements Runnable
      * @param scaleDownBackoffAmount the number of analysis runs to skip after a scaling down is triggered
      * @param memoryOverloadAlerter  dispatcher to send memory overload alerts if required
      * @param diskSpaceLowAlerter    dispatcher to send disk space low alerts if required
-     * @param initialDelay
-     * @param interval
      */
     public ScalerThread(final Governor governor, final WorkloadAnalyser workloadAnalyser, final ServiceScaler serviceScaler,
                         final String serviceReference, final int minInstances, final int maxInstances, final int backoffAmount,
                         final int scaleUpBackoffAmount, final int scaleDownBackoffAmount, final Alerter memoryOverloadAlerter,
-                        final Alerter diskSpaceLowAlerter, final ResourceMonitoringConfiguration resourceConfig, int initialDelay, int interval)
+                        final Alerter diskSpaceLowAlerter, final ResourceMonitoringConfiguration resourceConfig)
     {
         this.resourceConfig = resourceConfig;
         this.scaleUpBackoffAmount = scaleUpBackoffAmount;
@@ -116,69 +111,18 @@ public class ScalerThread implements Runnable
             throw new IllegalArgumentException("Instance count limits invalid");
         }
         this.backoffAmount = backoffAmount;
-        this.autoscaleInterval = interval;
-        this.autoscaleDelayUntil = System.currentTimeMillis() + initialDelay;
     }
 
     /**
      * Determine whether to trigger an analysis run or not, depending on the current backoff state.
-     */
+      */
     @Override
     public void run()
     {
-        if (isShouldBackoff()) {
-            LOG.debug("Performing resource utilization analysis for service {}", serviceRef);
-            handleAnalysis(false);
-        } else {
-            LOG.debug("Performing workload analysis for service {}", serviceRef);
-            handleAnalysis(true);
-            autoscaleDelayUntil = System.currentTimeMillis() + autoscaleInterval;
-        }
-    }
-
-    /**
-     * Perform an analysis run. This always begins with getting the current information about the service this thread is responsible for,
-     * then taking action. For the very first run, the thread will ensure the current number of instances meets the basic criteria it has
-     * been given. On subsequent runs, recommendations on scaling will be retrieved from the WorkloadAnalyser and acted upon (with
-     * limitations such as min/max instances). Exceptions will fail a single run of this thread, but will not halt subsequent runs.
-     */
-    private void handleAnalysis(final boolean analyseResourceUtilization)
-    {
         try {
-            InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
-            if (analyseResourceUtilization) {
-                final ResourceUtilisation resourceUtilisation = analyser.getCurrentResourceUtilisation();
-                LOG.debug("Resource utilisation for service {}: {}", serviceRef, resourceUtilisation);
-                final ResourceLimitStagesReached resourceLimitStagesReached = establishResourceLimitStagesReached(resourceUtilisation);
-                LOG.debug("Resource limit stages reached for service {}: {}", serviceRef, resourceLimitStagesReached);
-
-                LOG.debug("Instance info for service {}: {}", serviceRef, instances);
-                handleResourceLimitReached(instances, resourceUtilisation, resourceLimitStagesReached, instances.getShutdownPriority());
-            }
-            else {
-                governor.recordInstances(serviceRef, instances);
-                ScalingAction action;
-                LOG.debug("Performing scaling checks for service {}", serviceRef);
-                action = analyser.analyseWorkload(instances);
-                LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
-                        action.getOperation(), serviceRef, action.getAmount());
-                action = governor.govern(serviceRef, action, ResourceLimitStagesReached.noLimitReached);
-                LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
-                        action.getOperation(), serviceRef, action.getAmount());
-                if (action.getAmount() == 0) {
-                    return;
-                }
-                switch (action.getOperation()) {
-                    case SCALE_UP:
-                        scaleUp(action.getAmount());
-                        break;
-                    case SCALE_DOWN:
-                        scaleDown(action.getAmount());
-                        break;
-                    case NONE:
-                    default:
-                        break;
-                }
+            final InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
+            if (!handleResourceAnalysis(instances)) {
+                handleWorkloadAnalysis(instances);
             }
         } catch (final QueueNotFoundException e) {
             LOG.warn("Queue not found {}", serviceRef);
@@ -197,9 +141,64 @@ public class ScalerThread implements Runnable
     }
 
     /**
+     * Perform an analysis run. This always begins with getting the current information about the service this thread is responsible for,
+     * then taking action. For the very first run, the thread will ensure the current number of instances meets the basic criteria it has
+     * been given. On subsequent runs, recommendations on scaling will be retrieved from the WorkloadAnalyser and acted upon (with
+     * limitations such as min/max instances). Exceptions will fail a single run of this thread, but will not halt subsequent runs.
+     */
+    private void handleWorkloadAnalysis(final InstanceInfo instances) throws ScalerException {
+        if (isShouldBackOffWorkloadAnalysis()) {
+            return;
+        }
+        LOG.debug("Performing workload analysis for service {}", serviceRef);
+        governor.recordInstances(serviceRef, instances);
+        ScalingAction action;
+        LOG.debug("Performing scaling checks for service {}", serviceRef);
+        action = analyser.analyseWorkload(instances);
+        LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
+                action.getOperation(), serviceRef, action.getAmount());
+        action = governor.govern(serviceRef, action, ResourceLimitStagesReached.noLimitReached);
+        LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
+                action.getOperation(), serviceRef, action.getAmount());
+        if (action.getAmount() == 0) {
+            return;
+        }
+        switch (action.getOperation()) {
+            case SCALE_UP:
+                scaleUp(action.getAmount());
+                break;
+            case SCALE_DOWN:
+                scaleDown(action.getAmount());
+                break;
+            case NONE:
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Perform an analysis run. This always begins with getting the current information about the service this thread is responsible for,
+     * then taking action. For the very first run, the thread will ensure the current number of instances meets the basic criteria it has
+     * been given. On subsequent runs, recommendations on scaling will be retrieved from the WorkloadAnalyser and acted upon (with
+     * limitations such as min/max instances). Exceptions will fail a single run of this thread, but will not halt subsequent runs.
+     */
+    private boolean handleResourceAnalysis(final InstanceInfo instances) throws ScalerException {
+        LOG.debug("Performing resource analysis for service {}", serviceRef);
+        if (instances.getShutdownPriority() == -1) {
+            return false;
+        }
+        final ResourceUtilisation resourceUtilisation = analyser.getCurrentResourceUtilisation();
+        LOG.debug("Resource utilisation for service {}: {}", serviceRef, resourceUtilisation);
+        final ResourceLimitStagesReached resourceLimitStagesReached = establishResourceLimitStagesReached(resourceUtilisation);
+        LOG.debug("Resource limit stages reached for service {}: {}", serviceRef, resourceLimitStagesReached);
+
+        LOG.debug("Instance info for service {}: {}", serviceRef, instances);
+        return handleResourceLimitReached(instances, resourceUtilisation, resourceLimitStagesReached);
+    }
+
+    /**
      * Perform a scale up
      *
-     * @param instances information on the current number of instances of a service
      * @param amount the requested number of instances to scale up by
      * @throws ScalerException if the scaling operation fails
      */
@@ -244,7 +243,6 @@ public class ScalerThread implements Runnable
     /**
      * Perform a scale down
      *
-     * @param instances information on the current number of instances of a service
      * @param amount the requested number of instances to scale down by
      * @throws ScalerException if the scaling operation fails
      */
@@ -274,17 +272,13 @@ public class ScalerThread implements Runnable
         scaleDown(1);
     }
 
-    private void handleResourceLimitReached(
+    private boolean handleResourceLimitReached(
             final InstanceInfo instances,
             final ResourceUtilisation resourceUtilisation,
-            final ResourceLimitStagesReached resourceLimitStagesReached,
-            final int shutdownPriority)
+            final ResourceLimitStagesReached resourceLimitStagesReached)
         throws ScalerException
     {
-        if (shutdownPriority == -1) {
-            return;
-        }
-
+        final int shutdownPriority = instances.getShutdownPriority();
         handleAlerterDispatch(resourceUtilisation);
 
         final ResourceLimitStage highestResourceLimitStageReached = ResourceLimitStage.max(
@@ -302,6 +296,7 @@ public class ScalerThread implements Runnable
                     resourceLimitStagesReached);
 
             scaleDown(instances.getTotalRunningAndStageInstances());
+            return true;
         } else if (highestResourceLimitStageReached == ResourceLimitStage.STAGE_2 &&
                 shutdownPriority <= resourceConfig.getResourceLimitTwoShutdownThreshold()) {
             LOG.warn("Attempting to scale down service {} due to resource limit stage 2 being reached and " +
@@ -313,6 +308,7 @@ public class ScalerThread implements Runnable
                     resourceLimitStagesReached);
 
             scaleDown(instances.getTotalRunningAndStageInstances());
+            return true;
         } else if (highestResourceLimitStageReached == ResourceLimitStage.STAGE_3 &&
                 shutdownPriority <= resourceConfig.getResourceLimitThreeShutdownThreshold()) {
             LOG.warn("Attempting to scale down service {} due to resource limit stage 3 being reached and " +
@@ -324,7 +320,9 @@ public class ScalerThread implements Runnable
                     resourceLimitStagesReached);
 
             scaleDown(instances.getTotalRunningAndStageInstances());
+            return true;
         }
+        return false;
     }
 
     private void handleAlerterDispatch(final ResourceUtilisation resourceUtilisation) throws ScalerException
@@ -376,20 +374,21 @@ public class ScalerThread implements Runnable
         return new ResourceLimitStagesReached(memoryLimitStageReached, diskLimitStageReached);
     }
 
-    private boolean isShouldBackoff()
+    private boolean isShouldBackOffWorkloadAnalysis()
     {
-        if (System.currentTimeMillis() < autoscaleDelayUntil) {
-            return true;
-        }
-
         if (!backoff) {
+            // will run workload analysis,
+            // if a scaling operation took place
+            // backoff will be true and the backoff sequence will start again.
+            // if no scaling operation took place
+            // backoff will still be false, and it will skip the backoff and go straight to workload analysis.
             return false;
         }
+
         final int backoffLimit;
-        backoffCount++;
         switch (lastOperation) {
             case SCALE_DOWN: {
-                backoffLimit = scaleUpBackoffAmount == -1 ? backoffAmount : scaleDownBackoffAmount;
+                backoffLimit = scaleDownBackoffAmount == -1 ? backoffAmount : scaleDownBackoffAmount;
                 LOG.debug("Last Action was scale down, setting backoff amount to " + backoffLimit);
                 break;
             }
@@ -405,9 +404,9 @@ public class ScalerThread implements Runnable
             }
         }
 
-        if (backoffCount > backoffLimit) {
+        if (++workloadAnalysisBackoffCount > backoffLimit) {
             backoff = false;
-            backoffCount = 0;
+            workloadAnalysisBackoffCount = 0;
             return false;
         }
         return true;

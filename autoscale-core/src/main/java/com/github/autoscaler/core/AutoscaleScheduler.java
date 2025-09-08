@@ -209,13 +209,14 @@ public class AutoscaleScheduler implements HealthReporter
                 config.getScaleDownBackoffAmount(),
                 memoryOverloadAlerter,
                 diskSpaceLowAlerter,
-                resourceConfig,
-                initialDelay,
-                config.getInterval()
+                resourceConfig
         );
         governor.registerListener(config.getId(), scalerThread);
-        final ScheduledFuture future = scheduler.scheduleWithFixedDelay(scalerThread, initialDelay, config.getInterval(),
-                                                                        TimeUnit.SECONDS);
+        final ScheduledFuture future = scheduler.scheduleWithFixedDelay(
+                scalerThread,
+                initialDelay,
+                config.getInterval(),
+                TimeUnit.SECONDS);
         scheduledServices.put(config.getId(), new ScheduledScalingService(config, future));
     }
 

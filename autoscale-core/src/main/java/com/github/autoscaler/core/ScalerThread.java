@@ -47,7 +47,7 @@ public class ScalerThread implements Runnable
     private final int scaleDownBackoffAmount;
     private final int scaleUpBackoffAmount;
     private final String serviceRef;
-    private int workloadAnalysisBackoffCount = 0;
+    private int backoffCount = 0;
     private boolean backoff = false;
     private static final Logger LOG = LoggerFactory.getLogger(ScalerThread.class);
 
@@ -146,6 +146,7 @@ public class ScalerThread implements Runnable
 
     private void handleWorkloadAnalysis(final InstanceInfo instances) throws ScalerException {
         if (isShouldBackOffWorkloadAnalysis()) {
+            LOG.debug("Not performing workload analysis for service {}, backing off", serviceRef);
             return;
         }
         LOG.debug("Performing workload analysis for service {}", serviceRef);
@@ -155,7 +156,7 @@ public class ScalerThread implements Runnable
         action = analyser.analyseWorkload(instances);
         LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
                 action.getOperation(), serviceRef, action.getAmount());
-        action = governor.govern(serviceRef, action, ResourceLimitStagesReached.noLimitReached);
+        action = governor.govern(serviceRef, action, ResourceLimitStagesReached.NO_LIMIT_REACHED);
         LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
                 action.getOperation(), serviceRef, action.getAmount());
         if (action.getAmount() == 0) {
@@ -376,9 +377,10 @@ public class ScalerThread implements Runnable
         }
 
         final int backoffLimit;
+        backoffCount++;
         switch (lastOperation) {
             case SCALE_DOWN: {
-                backoffLimit = scaleDownBackoffAmount == -1 ? backoffAmount : scaleDownBackoffAmount;
+                backoffLimit = scaleUpBackoffAmount == -1 ? backoffAmount : scaleDownBackoffAmount;
                 LOG.debug("Last Action was scale down, setting backoff amount to " + backoffLimit);
                 break;
             }
@@ -394,9 +396,9 @@ public class ScalerThread implements Runnable
             }
         }
 
-        if (++workloadAnalysisBackoffCount > backoffLimit) {
+        if (backoffCount > backoffLimit) {
             backoff = false;
-            workloadAnalysisBackoffCount = 0;
+            backoffCount = 0;
             return false;
         }
         return true;

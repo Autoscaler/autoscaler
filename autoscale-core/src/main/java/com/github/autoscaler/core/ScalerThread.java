@@ -89,10 +89,10 @@ public class ScalerThread implements Runnable
      * @param maxInstances the maximum number of instances of the service that can be instantiated
      * @param backoffAmount the number of analysis runs to skip after a scaling is triggered
      * @param scaleUpBackoffAmount the number of analysis runs to skip after a scaling up is triggered
-     * @param scaleUpBackoffAmount   the number of analysis runs to skip after a scaling up is triggered
+     * @param scaleUpBackoffAmount the number of analysis runs to skip after a scaling up is triggered
      * @param scaleDownBackoffAmount the number of analysis runs to skip after a scaling down is triggered
-     * @param memoryOverloadAlerter  dispatcher to send memory overload alerts if required
-     * @param diskSpaceLowAlerter    dispatcher to send disk space low alerts if required
+     * @param memoryOverloadAlerter dispatcher to send memory overload alerts if required
+     * @param diskSpaceLowAlerter dispatcher to send disk space low alerts if required
      */
     public ScalerThread(final Governor governor, final WorkloadAnalyser workloadAnalyser, final ServiceScaler serviceScaler,
                         final String serviceReference, final int minInstances, final int maxInstances, final int backoffAmount,
@@ -115,7 +115,10 @@ public class ScalerThread implements Runnable
     }
 
     /**
-     * Determine whether to trigger an analysis run or not, depending on the current backoff state.
+     * Perform an analysis run. This always begins with getting the current information about the service this thread is responsible for,
+     * then taking action. For the very first run, the thread will ensure the current number of instances meets the basic criteria it has
+     * been given. On subsequent runs, recommendations on scaling will be retrieved from the WorkloadAnalyser and acted upon (with
+     * limitations such as min/max instances). Exceptions will fail a single run of this thread, but will not halt subsequent runs.
      */
     @Override
     public void run()
@@ -141,12 +144,6 @@ public class ScalerThread implements Runnable
         }
     }
 
-    /**
-     * Perform an analysis run. This always begins with getting the current information about the service this thread is responsible for,
-     * then taking action. For the very first run, the thread will ensure the current number of instances meets the basic criteria it has
-     * been given. On subsequent runs, recommendations on scaling will be retrieved from the WorkloadAnalyser and acted upon (with
-     * limitations such as min/max instances). Exceptions will fail a single run of this thread, but will not halt subsequent runs.
-     */
     private void handleWorkloadAnalysis(final InstanceInfo instances) throws ScalerException {
         if (isShouldBackOffWorkloadAnalysis()) {
             return;
@@ -177,12 +174,6 @@ public class ScalerThread implements Runnable
         }
     }
 
-    /**
-     * Perform an analysis run. This always begins with getting the current information about the service this thread is responsible for,
-     * then taking action. For the very first run, the thread will ensure the current number of instances meets the basic criteria it has
-     * been given. On subsequent runs, recommendations on scaling will be retrieved from the WorkloadAnalyser and acted upon (with
-     * limitations such as min/max instances). Exceptions will fail a single run of this thread, but will not halt subsequent runs.
-     */
     private boolean handleResourceAnalysis(final InstanceInfo instances) throws ScalerException {
         LOG.debug("Performing resource analysis for service {}", serviceRef);
         final int shutdownPriority = instances.getShutdownPriority();

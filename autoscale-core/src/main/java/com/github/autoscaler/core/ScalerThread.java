@@ -372,11 +372,6 @@ public class ScalerThread implements Runnable
     private boolean isShouldBackOffWorkloadAnalysis()
     {
         if (!backoff) {
-            // will run workload analysis,
-            // if a scaling operation took place
-            // backoff will be true and the backoff sequence will start again.
-            // if no scaling operation took place
-            // backoff will still be false, and it will skip the backoff and go straight to workload analysis.
             return false;
         }
 

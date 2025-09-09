@@ -71,7 +71,6 @@ public class ScalerThreadTest
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
         Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.any())).then(returnsSecondArg());
-        ResourceUtilisation utilization = Mockito.mock(ResourceUtilisation.class);
 
         int min = 0;
         int max = 5;
@@ -79,8 +78,8 @@ public class ScalerThreadTest
             new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new Alerter(new HashMap<>(),
                 new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(0)));
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_UP);
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(utilization);
         t.run();
         Mockito.verify(scaler, Mockito.times(1)).scaleUp(SERVICE_REF, 1);
     }
@@ -96,7 +95,6 @@ public class ScalerThreadTest
         Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
         Governor governor = Mockito.mock(Governor.class);
         Mockito.when(governor.govern(Mockito.anyString(), Mockito.any(), Mockito.any())).then(returnsSecondArg());
-        ResourceUtilisation utilization = Mockito.mock(ResourceUtilisation.class);
 
         int min = 0;
         int max = 5;
@@ -104,8 +102,8 @@ public class ScalerThreadTest
             new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new Alerter(new HashMap<>(),
                 new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(0)));
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_DOWN);
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(utilization);
         t.run();
         Mockito.verify(scaler, Mockito.times(1)).scaleDown(SERVICE_REF, 1);
     }

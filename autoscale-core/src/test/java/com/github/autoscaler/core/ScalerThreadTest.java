@@ -111,6 +111,59 @@ public class ScalerThreadTest
     }
 
     @Test
+    public void testScaleDownDueToHighMemoryUsage()
+            throws ScalerException
+    {
+        WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
+        ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), 5, 1);
+        Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
+        Governor governor = Mockito.mock(Governor.class);
+        Alerter memoryOverloadAlerter = Mockito.mock(Alerter.class);
+
+        // Set the current memory used to 90% to reach the stage 3 limit, which should cause a scale down operation
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(90, Optional.empty()));
+
+        int min = 0;
+        int max = 5;
+
+        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0,
+                memoryOverloadAlerter, new Alerter(new HashMap<>(), new AlertDispatchConfiguration()),
+                mockResourceMonitoringConfiguration);
+
+        t.run();
+
+        Mockito.verify(memoryOverloadAlerter, Mockito.times(1)).dispatchAlert(Mockito.any());
+        Mockito.verify(scaler, Mockito.times(1)).scaleDown(SERVICE_REF, 1);
+    }
+
+    @Test
+    public void testScaleDownDueToLowDiskSpace()
+            throws ScalerException
+    {
+        WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
+        ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), 1, 1);
+        Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
+        Governor governor = Mockito.mock(Governor.class);
+        Alerter diskSpaceLowAlerter = Mockito.mock(Alerter.class);
+
+        // Set the current disk space free to be 400MB to reach the stage 1 limit, which should cause a scale down operation
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(400)));
+
+        int min = 0;
+        int max = 5;
+
+        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0,
+                new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), diskSpaceLowAlerter, mockResourceMonitoringConfiguration);
+
+        t.run();
+
+        Mockito.verify(diskSpaceLowAlerter, Mockito.times(1)).dispatchAlert(Mockito.any());
+        Mockito.verify(scaler, Mockito.times(1)).scaleDown(SERVICE_REF, 1);
+    }
+
+    @Test
     public void testNoScale()
             throws ScalerException
     {

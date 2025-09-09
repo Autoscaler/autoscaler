@@ -21,9 +21,6 @@ public final class ResourceLimitStagesReached
 
     private final ResourceLimitStage diskLimitStageReached;
 
-    public static final ResourceLimitStagesReached NO_LIMIT_REACHED = new ResourceLimitStagesReached(
-            ResourceLimitStage.NO_STAGE, ResourceLimitStage.NO_STAGE);
-
     public ResourceLimitStagesReached(final ResourceLimitStage memoryLimitStageReached, final ResourceLimitStage diskLimitStageReached)
     {
         this.memoryLimitStageReached = memoryLimitStageReached;

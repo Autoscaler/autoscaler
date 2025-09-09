@@ -147,7 +147,7 @@ public class ScalerThread implements Runnable
         }
     }
 
-    private void handleWorkloadAnalysis(final InstanceInfo instances, ResourceLimitStagesReached resourceLimitStagesReached) throws ScalerException {
+    private void handleWorkloadAnalysis(final InstanceInfo instances, final ResourceLimitStagesReached resourceLimitStagesReached) throws ScalerException {
         if (isShouldBackOffWorkloadAnalysis()) {
             LOG.debug("Not performing workload analysis for service {}, backing off", serviceRef);
             return;
@@ -159,7 +159,7 @@ public class ScalerThread implements Runnable
         action = analyser.analyseWorkload(instances);
         LOG.debug("Workload Analyser determined that the autoscaler should {} {} by {} instances",
                 action.getOperation(), serviceRef, action.getAmount());
-        action = governor.govern(serviceRef, action, ResourceLimitStagesReached.NO_LIMIT_REACHED);
+        action = governor.govern(serviceRef, action, resourceLimitStagesReached);
         LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
                 action.getOperation(), serviceRef, action.getAmount());
         if (action.getAmount() == 0) {

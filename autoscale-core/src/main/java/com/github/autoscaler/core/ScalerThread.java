@@ -91,7 +91,6 @@ public class ScalerThread implements Runnable
      * @param maxInstances the maximum number of instances of the service that can be instantiated
      * @param backoffAmount the number of analysis runs to skip after a scaling is triggered
      * @param scaleUpBackoffAmount the number of analysis runs to skip after a scaling up is triggered
-     * @param scaleUpBackoffAmount the number of analysis runs to skip after a scaling up is triggered
      * @param scaleDownBackoffAmount the number of analysis runs to skip after a scaling down is triggered
      * @param memoryOverloadAlerter dispatcher to send memory overload alerts if required
      * @param diskSpaceLowAlerter dispatcher to send disk space low alerts if required

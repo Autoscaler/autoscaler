@@ -56,6 +56,8 @@ public class ScalerThread implements Runnable
 
     private ScalingOperation lastOperation;
 
+    private record ResourceAnalysisResult(ResourceLimitStagesReached resourceLimitStagesReached, boolean scaledDown) {}
+
     /**
      * Create a new ScalerThread.
      *
@@ -125,8 +127,9 @@ public class ScalerThread implements Runnable
     {
         try {
             final InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
-            if (!handleResourceAnalysis(instances)) {
-                handleWorkloadAnalysis(instances);
+            final ResourceAnalysisResult resourceAnalysisResult = handleResourceAnalysis(instances);
+            if (!resourceAnalysisResult.scaledDown()) {
+                handleWorkloadAnalysis(instances, resourceAnalysisResult.resourceLimitStagesReached());
             }
         } catch (final QueueNotFoundException e) {
             LOG.warn("Queue not found {}", serviceRef);
@@ -144,7 +147,7 @@ public class ScalerThread implements Runnable
         }
     }
 
-    private void handleWorkloadAnalysis(final InstanceInfo instances) throws ScalerException {
+    private void handleWorkloadAnalysis(final InstanceInfo instances, ResourceLimitStagesReached resourceLimitStagesReached) throws ScalerException {
         if (isShouldBackOffWorkloadAnalysis()) {
             LOG.debug("Not performing workload analysis for service {}, backing off", serviceRef);
             return;
@@ -175,19 +178,17 @@ public class ScalerThread implements Runnable
         }
     }
 
-    private boolean handleResourceAnalysis(final InstanceInfo instances) throws ScalerException {
+    private ResourceAnalysisResult handleResourceAnalysis(final InstanceInfo instances) throws ScalerException {
         LOG.debug("Performing resource analysis for service {}", serviceRef);
         final int shutdownPriority = instances.getShutdownPriority();
-        if (shutdownPriority == -1) {
-            return false;
-        }
-        final ResourceUtilisation resourceUtilisation = analyser.getCurrentResourceUtilisation();
-        LOG.debug("Resource utilisation for service {}: {}", serviceRef, resourceUtilisation);
-        final ResourceLimitStagesReached resourceLimitStagesReached = establishResourceLimitStagesReached(resourceUtilisation);
-        LOG.debug("Resource limit stages reached for service {}: {}", serviceRef, resourceLimitStagesReached);
+        final ResourceUtilisation utilization = analyser.getCurrentResourceUtilisation();
+        LOG.debug("Resource utilisation for service {}: {}", serviceRef, utilization);
+        final ResourceLimitStagesReached limitStagesReached = establishResourceLimitStagesReached(utilization);
+        LOG.debug("Resource limit stages reached for service {}: {}", serviceRef, limitStagesReached);
 
         LOG.debug("Instance info for service {}: {}", serviceRef, instances);
-        return handleResourceLimitReached(instances, resourceUtilisation, resourceLimitStagesReached, shutdownPriority);
+        final boolean scaledDown = handleResourceLimitReached(instances, utilization, limitStagesReached, shutdownPriority);
+        return new ResourceAnalysisResult(limitStagesReached, scaledDown);
     }
 
     /**
@@ -275,6 +276,10 @@ public class ScalerThread implements Runnable
             final int shutdownPriority)
         throws ScalerException
     {
+        if (shutdownPriority == -1) {
+            return false;
+        }
+
         handleAlerterDispatch(resourceUtilisation);
 
         final ResourceLimitStage highestResourceLimitStageReached = ResourceLimitStage.max(

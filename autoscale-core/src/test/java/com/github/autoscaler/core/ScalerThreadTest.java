@@ -24,6 +24,7 @@ import com.github.autoscaler.api.ServiceScaler;
 import com.github.autoscaler.api.WorkloadAnalyser;
 import java.util.HashMap;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -38,6 +39,27 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class ScalerThreadTest
 {
     private final static String SERVICE_REF = "unitTest";
+    private static ResourceMonitoringConfiguration mockResourceMonitoringConfiguration;
+
+    @BeforeAll
+    public static void beforeAll()
+    {
+        mockResourceMonitoringConfiguration = Mockito.mock(ResourceMonitoringConfiguration.class);
+        Mockito.when(mockResourceMonitoringConfiguration.getMemoryUsedPercentLimitStageOne()).thenReturn(70.0);
+        Mockito.when(mockResourceMonitoringConfiguration.getMemoryUsedPercentLimitStageTwo()).thenReturn(80.0);
+        Mockito.when(mockResourceMonitoringConfiguration.getMemoryUsedPercentLimitStageThree()).thenReturn(90.0);
+
+        Mockito.when(mockResourceMonitoringConfiguration.getDiskFreeMbLimitStageOne()).thenReturn(400);
+        Mockito.when(mockResourceMonitoringConfiguration.getDiskFreeMbLimitStageTwo()).thenReturn(200);
+        Mockito.when(mockResourceMonitoringConfiguration.getDiskFreeMbLimitStageThree()).thenReturn(100);
+
+        Mockito.when(mockResourceMonitoringConfiguration.getResourceLimitOneShutdownThreshold()).thenReturn(1);
+        Mockito.when(mockResourceMonitoringConfiguration.getResourceLimitTwoShutdownThreshold()).thenReturn(3);
+        Mockito.when(mockResourceMonitoringConfiguration.getResourceLimitThreeShutdownThreshold()).thenReturn(5);
+
+        Mockito.when(mockResourceMonitoringConfiguration.getMemoryUsedPercentAlertDispatchThreshold()).thenReturn(70);
+        Mockito.when(mockResourceMonitoringConfiguration.getDiskFreeMbAlertDispatchThreshold()).thenReturn(500);
+    }
 
     @Test
     public void testScaleUp()
@@ -100,11 +122,6 @@ public class ScalerThreadTest
         // Set the current memory used to 90% to reach the stage 3 limit, which should cause a scale down operation
         Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(90, Optional.empty()));
 
-        final ResourceMonitoringConfiguration mockResourceMonitoringConfiguration = Mockito.mock(ResourceMonitoringConfiguration.class);
-        Mockito.when(mockResourceMonitoringConfiguration.getMemoryUsedPercentLimitStageThree()).thenReturn(90.0);
-        Mockito.when(mockResourceMonitoringConfiguration.getMemoryUsedPercentAlertDispatchThreshold()).thenReturn(70);
-        Mockito.when(mockResourceMonitoringConfiguration.getResourceLimitThreeShutdownThreshold()).thenReturn(5);
-
         int min = 0;
         int max = 5;
 
@@ -131,17 +148,6 @@ public class ScalerThreadTest
 
         // Set the current disk space free to be 400MB to reach the stage 1 limit, which should cause a scale down operation
         Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(400)));
-
-        final ResourceMonitoringConfiguration mockResourceMonitoringConfiguration = Mockito.mock(ResourceMonitoringConfiguration.class);
-        Mockito.when(mockResourceMonitoringConfiguration.getMemoryUsedPercentLimitStageOne()).thenReturn(70.0);
-        Mockito.when(mockResourceMonitoringConfiguration.getMemoryUsedPercentLimitStageTwo()).thenReturn(80.0);
-        Mockito.when(mockResourceMonitoringConfiguration.getMemoryUsedPercentLimitStageThree()).thenReturn(90.0);
-        Mockito.when(mockResourceMonitoringConfiguration.getMemoryUsedPercentAlertDispatchThreshold()).thenReturn(70);
-        Mockito.when(mockResourceMonitoringConfiguration.getDiskFreeMbLimitStageOne()).thenReturn(400);
-        Mockito.when(mockResourceMonitoringConfiguration.getDiskFreeMbLimitStageTwo()).thenReturn(200);
-        Mockito.when(mockResourceMonitoringConfiguration.getDiskFreeMbLimitStageThree()).thenReturn(100);
-        Mockito.when(mockResourceMonitoringConfiguration.getDiskFreeMbAlertDispatchThreshold()).thenReturn(400);
-        Mockito.when(mockResourceMonitoringConfiguration.getResourceLimitOneShutdownThreshold()).thenReturn(1);
 
         int min = 0;
         int max = 5;
@@ -192,4 +198,93 @@ public class ScalerThreadTest
         Mockito.verify(scaler, Mockito.times(0)).scaleUp(Mockito.any(), Mockito.anyInt());
         Mockito.verify(scaler, Mockito.times(0)).scaleDown(Mockito.any(), Mockito.anyInt());
     }
+
+    @Test
+    public void testScaledDown_Stage_One_FreeDisk_LimitReached() throws ScalerException {
+        testScalingOperation(1, 0, 400, 1, 1);
+    }
+
+    @Test
+    public void testScaledDown_Stage_Two_FreeDisk_LimitReached() throws ScalerException {
+        testScalingOperation(1, 0, 200, 1, 1);
+    }
+
+    @Test
+    public void testScaledDown_Stage_Three_FreeDisk_LimitReached() throws ScalerException {
+        testScalingOperation(1, 0, 100, 1, 1);
+    }
+
+    @Test
+    public void testNotScaledDown_Stage_One_FreeDisk_LimitReached_PriorityTooHigh() throws ScalerException {
+        testScalingOperation(5, 0, 400, 1, 0);
+    }
+
+    @Test
+    public void testNotScaledDown_Stage_Two_FreeDisk_LimitReached_PriorityTooHigh() throws ScalerException {
+        testScalingOperation(5, 0, 200, 1, 0);
+    }
+
+    @Test
+    public void testNotScaledDown_Stage_Three_FreeDisk_LimitReached_PriorityTooHigh() throws ScalerException {
+        testScalingOperation(10, 0, 100, 1, 0);
+    }
+
+    @Test
+    public void testScaledDown_Stage_One_MemoryPercentageLimitReached() throws ScalerException {
+        testScalingOperation(1, 70, 600, 0, 1);
+    }
+
+    @Test
+    public void testScaledDown_Stage_Two_MemoryPercentageLimitReached() throws ScalerException {
+        testScalingOperation(1, 80, 600, 0, 1);
+    }
+
+    @Test
+    public void testScaledDown_Stage_Memory_PercentageDiskLimitReached() throws ScalerException {
+        testScalingOperation(1, 90, 600, 0, 1);
+    }
+
+    @Test
+    public void testNotScaledDown_Stage_One_MemoryPercentageLimitReached_PriorityTooHigh() throws ScalerException {
+        testScalingOperation(5, 70, 600, 0, 0);
+    }
+
+    @Test
+    public void testNotScaledDown_Stage_Two_MemoryPercentageLimitReached_PriorityTooHigh() throws ScalerException {
+        testScalingOperation(5, 80, 600, 0, 0);
+    }
+
+    @Test
+    public void testNotScaledDown_Stage_Memory_PercentageDiskLimitReached_PriorityTooHigh() throws ScalerException {
+        testScalingOperation(10, 90, 600, 0, 0);
+    }
+
+    private void testScalingOperation(
+            final int shutdownPriority, 
+            final int memoryUsedPercent, 
+            final int freeDiskMb,
+            final int wantedDispatchAlertInvocations,
+            final int wantedScaleDownInvocations
+    ) throws ScalerException {
+        WorkloadAnalyser analyser = Mockito.mock(WorkloadAnalyser.class);
+        ServiceScaler scaler = Mockito.mock(ServiceScaler.class);
+        InstanceInfo info = new InstanceInfo(1, 0, new LinkedList<>(), shutdownPriority, 1);
+        Mockito.when(scaler.getInstanceInfo(SERVICE_REF)).thenReturn(info);
+        Governor governor = Mockito.mock(Governor.class);
+        Alerter diskSpaceLowAlerter = Mockito.mock(Alerter.class);
+
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(memoryUsedPercent, Optional.of(freeDiskMb)));
+
+        int min = 0;
+        int max = 5;
+
+        ScalerThread t = new ScalerThread(governor, analyser, scaler, SERVICE_REF, min, max, 0,
+                new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), diskSpaceLowAlerter, mockResourceMonitoringConfiguration);
+
+        t.run();
+
+        Mockito.verify(diskSpaceLowAlerter, Mockito.times(wantedDispatchAlertInvocations)).dispatchAlert(Mockito.any());
+        Mockito.verify(scaler, Mockito.times(wantedScaleDownInvocations)).scaleDown(SERVICE_REF, 1);
+    }
+
 }

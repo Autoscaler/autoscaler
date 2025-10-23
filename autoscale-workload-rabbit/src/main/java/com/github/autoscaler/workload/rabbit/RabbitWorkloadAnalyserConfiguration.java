@@ -196,11 +196,11 @@ public class RabbitWorkloadAnalyserConfiguration
         this.payloadOffloadingMemoryLimitPercent = payloadOffloadingMemoryLimitPercent;
     }
 
-    public boolean isPayloadOffloadingEnabled() {
+    public boolean getIsPayloadOffloadingEnabled() {
         return isPayloadOffloadingEnabled;
     }
 
-    public void setPayloadOffloadingEnabled(boolean payloadOffloadingEnabled) {
+    public void setIsPayloadOffloadingEnabled(boolean payloadOffloadingEnabled) {
         isPayloadOffloadingEnabled = payloadOffloadingEnabled;
     }
 

@@ -94,7 +94,7 @@ public final class RabbitSystemResourceMonitor
                 }
                 ResourceUtilisation utilisation = new ResourceUtilisation(highestMemUsedInCluster, lowestDiskFreeMbInClusterOpt);
                 LOG.info("RABBIT UTIL: {}", utilisation);
-                if (config.isPayloadOffloadingEnabled()) {
+                if (config.getIsPayloadOffloadingEnabled()) {
                     final var offloadingUtilisation = getOffloadingUtilisation();
                     LOG.info("OFFLOADING UTIL: {}", offloadingUtilisation);
                     final var highestMemoryUsed = Math.max(offloadingUtilisation.getMemoryUsedPercent(), highestMemUsedInCluster);

@@ -73,6 +73,23 @@ public class RabbitWorkloadAnalyserConfiguration
 
     private String stagingQueueIndicator;
 
+    /**
+     * The datastore directory.
+     */
+    private String dataStoreDirectory;
+
+    /**
+     * The datastore directory to use for offloading payloads.
+     */
+    private String payloadOffloadingDirectory = "queues";
+
+    /**
+     * The % limit of memory available in the datastore directory to use for offloading payloads.
+     */
+    private int payloadOffloadingMemoryLimitPercent = 60;
+
+    private boolean isPayloadOffloadingEnabled = false;
+
     public RabbitWorkloadAnalyserConfiguration() { }
 
 
@@ -155,17 +172,52 @@ public class RabbitWorkloadAnalyserConfiguration
         this.stagingQueueIndicator = stagingQueueIndicator;
     }
 
+    public String getDataStoreDirectory() {
+        return dataStoreDirectory;
+    }
+
+    public void setDataStoreDirectory(final String dataStoreDirectory) {
+        this.dataStoreDirectory = dataStoreDirectory;
+    }
+
+    public String getPayloadOffloadingDirectory() {
+        return payloadOffloadingDirectory;
+    }
+
+    public void setPayloadOffloadingDirectory(final String payloadOffloadingDirectory) {
+        this.payloadOffloadingDirectory = payloadOffloadingDirectory;
+    }
+
+    public int getPayloadOffloadingMemoryLimitPercent() {
+        return payloadOffloadingMemoryLimitPercent;
+    }
+
+    public void setPayloadOffloadingMemoryLimitPercent(int payloadOffloadingMemoryLimitPercent) {
+        this.payloadOffloadingMemoryLimitPercent = payloadOffloadingMemoryLimitPercent;
+    }
+
+    public boolean isPayloadOffloadingEnabled() {
+        return isPayloadOffloadingEnabled;
+    }
+
+    public void setPayloadOffloadingEnabled(boolean payloadOffloadingEnabled) {
+        isPayloadOffloadingEnabled = payloadOffloadingEnabled;
+    }
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "RabbitWorkloadAnalyserConfiguration{" +
-                "rabbitManagementEndpoint=" + rabbitManagementEndpoint +
-                ", rabbitManagementUser=" + rabbitManagementUser +
-                ", rabbitManagementPassword=<HIDDEN>" +
-                ", vhost=" + vhost +
+                "rabbitManagementEndpoint='" + rabbitManagementEndpoint +
+                ", rabbitManagementUser='" + rabbitManagementUser +
+                ", rabbitManagementPassword='" + rabbitManagementPassword +
+                ", vhost='" + vhost +
                 ", profiles=" + profiles +
                 ", resourceQueryRequestFrequency=" + resourceQueryRequestFrequency +
-                ", stagingQueueIndicator=" + stagingQueueIndicator +
+                ", stagingQueueIndicator='" + stagingQueueIndicator +
+                ", dataStoreDirectory='" + dataStoreDirectory +
+                ", payloadOffloadingDirectory='" + payloadOffloadingDirectory +
+                ", payloadOffloadingMemoryLimitPercent='" + payloadOffloadingMemoryLimitPercent +
+                ", isPayloadOffloadingEnabled='" + isPayloadOffloadingEnabled +
                 '}';
     }
 }

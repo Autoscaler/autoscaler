@@ -25,5 +25,9 @@
             backlogGoal: getenv("CAF_AUTOSCALER_BACKLOG_GOAL") || 300
         }
     },
-    stagingQueueIndicator: getenv("CAF_AUTOSCALER_STAGING_QUEUE_INDICATOR") || null
+    stagingQueueIndicator: getenv("CAF_AUTOSCALER_STAGING_QUEUE_INDICATOR") || null,
+    dataStoreDirectory: getenv("CAF_WORKER_DATASTORE_PATH") || "/mnt/caf-datastore-root",
+    isPayloadOffloadingEnabled: getenv("CAF_WORKER_PAYLOAD_OFFLOADING_ENABLED") || false,
+    payloadOffloadingDirectory: getenv("CAF_WORKER_PAYLOAD_OFFLOADING_DIRECTORY") || "queues",
+    payloadOffloadingMemoryLimitPercent: getenv("CAF_WORKER_PAYLOAD_OFFLOADING_MEMORY_LIMIT_PERCENT") || 60,
 });

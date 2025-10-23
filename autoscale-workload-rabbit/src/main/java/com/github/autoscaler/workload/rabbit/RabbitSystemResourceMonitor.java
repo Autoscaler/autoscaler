@@ -22,10 +22,18 @@ import com.github.autoscaler.api.ScalerException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import jakarta.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class RabbitSystemResourceMonitor
 {
@@ -33,16 +41,22 @@ public final class RabbitSystemResourceMonitor
     private volatile Optional<Integer> diskFreeMbOpt = Optional.empty();
 
     private final RabbitManagementApi rabbitManagementApi;
+    private final RabbitWorkloadAnalyserConfiguration config;
     private final ObjectMapper mapper = new ObjectMapper();
     private volatile long lastTime;
     private final int resourceQueryRequestFrequency;
 
+    private static final Logger LOG = LoggerFactory.getLogger(RabbitSystemResourceMonitor.class);
+
+    private static final int MB_IN_BYTES  = 1_048_576;
+
     public RabbitSystemResourceMonitor(final RabbitManagementApi rabbitManagementApi,
-                                       final int resourceQueryRequestFrequency)
+                                       final RabbitWorkloadAnalyserConfiguration config)
     {
         this.rabbitManagementApi = rabbitManagementApi;
         this.lastTime = 0;
-        this.resourceQueryRequestFrequency = resourceQueryRequestFrequency;
+        this.config = config;
+        this.resourceQueryRequestFrequency = config.getResourceQueryRequestFrequency();
     }
 
     public ResourceUtilisation getCurrentResourceUtilisation() throws ScalerException
@@ -78,14 +92,71 @@ public final class RabbitSystemResourceMonitor
                         }
                     }
                 }
-                memoryAllocated =  highestMemUsedInCluster;
-                diskFreeMbOpt = lowestDiskFreeMbInClusterOpt;
+                ResourceUtilisation utilisation = new ResourceUtilisation(highestMemUsedInCluster, lowestDiskFreeMbInClusterOpt);
+                LOG.info("RABBIT UTIL: {}", utilisation);
+                if (config.isPayloadOffloadingEnabled()) {
+                    final var offloadingUtilisation = getOffloadingUtilisation();
+                    LOG.info("OFFLOADING UTIL: {}", offloadingUtilisation);
+                    final var highestMemoryUsed = Math.max(offloadingUtilisation.getMemoryUsedPercent(), highestMemUsedInCluster);
+                    final var lowestDiskFree = List.of(offloadingUtilisation.getDiskFreeMbOpt(), lowestDiskFreeMbInClusterOpt)
+                            .stream()
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .min(Double::compare);
+                    LOG.info("OVERALL UTIL: {}", new ResourceUtilisation(highestMemoryUsed, lowestDiskFree));
+                    //utilisation = new ResourceUtilisation(highestMemoryUsed, lowestDiskFree);
+                }
+                memoryAllocated =  utilisation.getMemoryUsedPercent();
+                diskFreeMbOpt = utilisation.getDiskFreeMbOpt();
                 lastTime = System.currentTimeMillis();
+                return utilisation;
             } catch (final IOException ex) {
                 throw new ScalerException("Unable to map response to status request.", ex);
             }
         }
         return new ResourceUtilisation(memoryAllocated, diskFreeMbOpt);
+    }
+
+    private ResourceUtilisation getOffloadingUtilisation() throws ScalerException
+    {
+        try {
+            final String datastoreDirectory = config.getDataStoreDirectory();
+            final String offloadingDirectory = config.getPayloadOffloadingDirectory();
+            final Integer payloadOffloadingMemoryLimitPercent = config.getPayloadOffloadingMemoryLimitPercent();
+            final FileStore datastore = Files.getFileStore(Paths.get(datastoreDirectory));
+
+            // the size, in bytes, of the file store
+            // DDD effectively mem_limit?, this would be represent N% of /etc/store available memory
+            //  here we would need to apply a new cfg'd env var.
+            final double offloadingMemoryLimitPercent = payloadOffloadingMemoryLimitPercent / 100d;
+            final double memoryLimit = (datastore.getTotalSpace() * offloadingMemoryLimitPercent);
+
+            // the number of unallocated bytes in the file store
+            // DDD effectively disk_free?
+            final var diskFreeMb = Math.toIntExact((datastore.getUnallocatedSpace() / MB_IN_BYTES));
+
+            // the total size of offloaded files in the offloading directory
+            // DDD effectively mem_used?
+            final double memoryUsed = (offloadedSize(Paths.get(datastoreDirectory, offloadingDirectory)) / memoryLimit) * 100;
+
+            return new ResourceUtilisation(memoryUsed, Optional.of(diskFreeMb));
+        } catch (final Exception ex) {
+            throw new ScalerException("Unable to load datastore resouce utilization.", ex);
+        }
+    }
+
+    private static long offloadedSize(final Path path)
+    {
+        try {
+            if (Files.isRegularFile(path)) {
+                return Files.size(path);
+            }
+            try (final Stream<Path> pathStream = Files.list(path)) {
+                return pathStream.mapToLong(RabbitSystemResourceMonitor::offloadedSize).sum();
+            }
+        } catch (final IOException | SecurityException e) {
+            return 0L;
+        }
     }
 
     private boolean shouldIssueRequest()

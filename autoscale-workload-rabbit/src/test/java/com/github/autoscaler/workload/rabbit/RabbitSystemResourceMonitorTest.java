@@ -46,8 +46,11 @@ public class RabbitSystemResourceMonitorTest {
                 Mockito.mock(RabbitManagementApi.class);
         Mockito.when(mockRabbitManagementApi.getNodeStatus()).thenReturn(mockResponse);
 
+        final RabbitWorkloadAnalyserConfiguration config = Mockito.mock(RabbitWorkloadAnalyserConfiguration.class);
+        Mockito.when(config.getResourceQueryRequestFrequency()).thenReturn(40);
+
         // Act
-        final RabbitSystemResourceMonitor rabbitSystemResourceMonitor = new RabbitSystemResourceMonitor(mockRabbitManagementApi, 60);
+        final RabbitSystemResourceMonitor rabbitSystemResourceMonitor = new RabbitSystemResourceMonitor(mockRabbitManagementApi, config);
         final ResourceUtilisation resourceUtilisation = rabbitSystemResourceMonitor.getCurrentResourceUtilisation();
 
         // Assert
@@ -71,8 +74,11 @@ public class RabbitSystemResourceMonitorTest {
                 Mockito.mock(RabbitManagementApi.class);
         Mockito.when(mockRabbitManagementApi.getNodeStatus()).thenReturn(mockResponse);
 
+        final RabbitWorkloadAnalyserConfiguration config = Mockito.mock(RabbitWorkloadAnalyserConfiguration.class);
+        Mockito.when(config.getResourceQueryRequestFrequency()).thenReturn(60);
+
         // Act
-        final RabbitSystemResourceMonitor rabbitSystemResourceMonitor = new RabbitSystemResourceMonitor(mockRabbitManagementApi, 60);
+        final RabbitSystemResourceMonitor rabbitSystemResourceMonitor = new RabbitSystemResourceMonitor(mockRabbitManagementApi, config);
         final ResourceUtilisation resourceUtilisation = rabbitSystemResourceMonitor.getCurrentResourceUtilisation();
 
         // Assert

@@ -125,19 +125,29 @@ public final class RabbitSystemResourceMonitor
 
             final FileStore datastore = Files.getFileStore(Paths.get(datastoreDirectory));
 
-            // The unallocated bytes in the data store
+            // /etc/store memory usage
+            // |----------others----------|-----/etc/store/queues----|-----unallocated------|
+            // |----------others----------|-----% of this is available to offloading--------|
+            // |----------others----------|- % of total available----|--disk free-----------|
+
+            // /etc/store unallocated
             final var unallocatedSpaceBytes = datastore.getUnallocatedSpace();
 
-            // The bytes taken up by currently offloaded data in the queues directory.
+            // /etc/store/queues
             final var offloadingSpaceUsedBytes = offloadingDiskUsage(Paths.get(datastoreDirectory, offloadingDirectory));
 
             final double memoryLimitPercentMultiplier = config.getPayloadOffloadingMemoryLimitPercent()/100d;
+
+            // % of this is available to offloading
             final double memoryLimitBytes = ((unallocatedSpaceBytes + offloadingSpaceUsedBytes) * memoryLimitPercentMultiplier);
             LOG.info("OFFLOADING LIMIT:{}MB, is {}% of AVAILABLE SPACE:{}MB, TOTAL SPACE:{}MB",
                     memoryLimitBytes/MB_IN_BYTES, config.getPayloadOffloadingMemoryLimitPercent(),
-                    unallocatedSpaceBytes/MB_IN_BYTES, datastore.getTotalSpace()/MB_IN_BYTES);
+                    (unallocatedSpaceBytes + offloadingSpaceUsedBytes)/MB_IN_BYTES, datastore.getTotalSpace()/MB_IN_BYTES);
 
+            // disk free
             final var diskFreeMb = Math.toIntExact(unallocatedSpaceBytes / MB_IN_BYTES);
+
+            // % of total available
             final double percentageOfAvailableMemoryUsed = (offloadingSpaceUsedBytes / memoryLimitBytes) * 100;
 
             return new ResourceUtilisation(percentageOfAvailableMemoryUsed, Optional.of(diskFreeMb));

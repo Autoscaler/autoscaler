@@ -128,10 +128,11 @@ public final class RabbitSystemResourceMonitor
             // the size, in bytes, of the file store
             // DDD effectively mem_limit?, this would be represent N% of /etc/store available memory
             //  here we would need to apply a new cfg'd env var.
-            final double offloadingMemoryLimitPercent = payloadOffloadingMemoryLimitPercent / 100d;
-            final var totalSpace = datastore.getTotalSpace();
-            final double memoryLimit = (totalSpace * offloadingMemoryLimitPercent);
-            LOG.info("OFFLOADING LIMIT: {}, is {}% of TOTAL SPACE:{}", memoryLimit, offloadingMemoryLimitPercent, totalSpace);
+            final double offloadingMemoryLimitPercentMultiplier = payloadOffloadingMemoryLimitPercent / 100d;
+            final var totalSpaceBytes = datastore.getTotalSpace();
+            final double memoryLimitBytes = (totalSpaceBytes * offloadingMemoryLimitPercentMultiplier);
+            LOG.info("OFFLOADING LIMIT:{}MB, is {}% of TOTAL SPACE:{}MB",
+                    memoryLimitBytes/MB_IN_BYTES, payloadOffloadingMemoryLimitPercent, totalSpaceBytes/MB_IN_BYTES);
 
             // the number of unallocated bytes in the file store
             // DDD effectively disk_free?
@@ -139,7 +140,7 @@ public final class RabbitSystemResourceMonitor
 
             // the total size of offloaded files in the offloading directory
             // DDD effectively mem_used?
-            final double memoryUsed = (offloadingDiskUsage(Paths.get(datastoreDirectory, offloadingDirectory)) / memoryLimit) * 100;
+            final double memoryUsed = (offloadingDiskUsage(Paths.get(datastoreDirectory, offloadingDirectory)) / memoryLimitBytes) * 100;
 
             return new ResourceUtilisation(memoryUsed, Optional.of(diskFreeMb));
         } catch (final Exception ex) {

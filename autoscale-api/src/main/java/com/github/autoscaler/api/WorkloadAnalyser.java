@@ -16,6 +16,8 @@
 package com.github.autoscaler.api;
 
 
+import java.util.List;
+
 /**
  * A WorkloadAnalyser examines the workload of a service and makes
  * recommendations upon how to scale it at a given time.
@@ -39,7 +41,7 @@ public interface WorkloadAnalyser
      * @throws ScalerException if it fails to determine resource utilisation due to not being able to connect to messaging
      * platform's api.
      */
-    ResourceUtilisation getCurrentResourceUtilisation() throws ScalerException;
+    List<ResourceUtilisation> getCurrentResourceUtilisation() throws ScalerException;
 
     /**
      * This method will return the content to send in an email when reporting a memory overload issue with the messaging platform.
@@ -47,7 +49,7 @@ public interface WorkloadAnalyser
      * that it can be added to the email body.
      * @return The email body
      */
-    String getMemoryOverloadWarning(String percentageMem);
+    String getMemoryOverloadWarning(ResourceUtilisationSource source, String percentageMem);
 
     /**
      * This method will return the content to send in an email when reporting a disk space low issue with the messaging platform.
@@ -55,5 +57,5 @@ public interface WorkloadAnalyser
      * it can be added to the email body.
      * @return The email body
      */
-    String getDiskSpaceLowWarning(String diskFreeMb);
+    String getDiskSpaceLowWarning(ResourceUtilisationSource source, String diskFreeMb);
 }

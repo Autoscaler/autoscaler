@@ -19,12 +19,22 @@ import java.util.Optional;
 
 public final class ResourceUtilisation
 {
+    private final ResourceUtilisationSource source;
+
     private final double memoryUsedPercent;
 
     private final Optional<Integer> diskFreeMbOpt;
 
     public ResourceUtilisation(final double memoryUsedPercent, final Optional<Integer> diskFreeMbOpt)
     {
+        this(null, memoryUsedPercent, diskFreeMbOpt);
+    }
+
+    public ResourceUtilisation(final ResourceUtilisationSource source,
+                               final double memoryUsedPercent,
+                               final Optional<Integer> diskFreeMbOpt)
+    {
+        this.source = source;
         this.memoryUsedPercent = memoryUsedPercent;
         this.diskFreeMbOpt = diskFreeMbOpt;
     }
@@ -39,14 +49,16 @@ public final class ResourceUtilisation
         return diskFreeMbOpt;
     }
 
-    @Override
-    public String toString()
-    {
-        final String diskFreeMbString = diskFreeMbOpt.isPresent() ? diskFreeMbOpt.get().toString() : "UNKNOWN";
+    public ResourceUtilisationSource getSource() {
+        return source;
+    }
 
+    @Override
+    public String toString() {
         return "ResourceUtilisation{" +
-                "memoryUsedPercent=" + memoryUsedPercent +
-                ", diskFreeMb=" + diskFreeMbString +
+                "source='" + source + '\'' +
+                ", memoryUsedPercent=" + memoryUsedPercent +
+                ", diskFreeMbOpt=" + diskFreeMbOpt +
                 '}';
     }
 }

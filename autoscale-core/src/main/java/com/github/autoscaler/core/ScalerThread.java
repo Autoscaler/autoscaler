@@ -27,6 +27,8 @@ import java.text.DecimalFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -126,9 +128,13 @@ public class ScalerThread implements Runnable
     {
         try {
             final InstanceInfo instances = scaler.getInstanceInfo(serviceRef);
-            final ResourceAnalysisResult resourceAnalysisResult = handleResourceAnalysis(instances);
-            if (!resourceAnalysisResult.scaledDown()) {
-                handleWorkloadAnalysis(instances, resourceAnalysisResult.resourceLimitStagesReached());
+            final List<ResourceAnalysisResult> resourceAnalysisResults = handleResourceAnalysis(instances);
+            for (final ResourceAnalysisResult resourceAnalysisResult : resourceAnalysisResults) {
+                if (!resourceAnalysisResult.scaledDown()) {
+                    if (handleWorkloadAnalysis(instances, resourceAnalysisResult.resourceLimitStagesReached())) {
+                        return;
+                    }
+                }
             }
         } catch (final QueueNotFoundException e) {
             LOG.warn("Queue not found {}", serviceRef);
@@ -146,10 +152,10 @@ public class ScalerThread implements Runnable
         }
     }
 
-    private void handleWorkloadAnalysis(final InstanceInfo instances, final ResourceLimitStagesReached resourceLimitStagesReached) throws ScalerException {
+    private boolean handleWorkloadAnalysis(final InstanceInfo instances, final ResourceLimitStagesReached resourceLimitStagesReached) throws ScalerException {
         if (isShouldBackOffWorkloadAnalysis()) {
             LOG.debug("Not performing workload analysis for service {}, backing off", serviceRef);
-            return;
+            return false;
         }
         LOG.debug("Performing workload analysis for service {}", serviceRef);
         governor.recordInstances(serviceRef, instances);
@@ -162,32 +168,51 @@ public class ScalerThread implements Runnable
         LOG.debug("Governor determined that the autoscaler should {} {} by {} instances",
                 action.getOperation(), serviceRef, action.getAmount());
         if (action.getAmount() == 0) {
-            return;
+            return false;
         }
         switch (action.getOperation()) {
             case SCALE_UP:
                 scaleUp(action.getAmount());
-                break;
+                return true;
             case SCALE_DOWN:
                 scaleDown(action.getAmount());
-                break;
+                return true;
             case NONE:
             default:
                 break;
         }
+        return false;
     }
 
-    private ResourceAnalysisResult handleResourceAnalysis(final InstanceInfo instances) throws ScalerException {
+    private List<ResourceAnalysisResult> handleResourceAnalysis(final InstanceInfo instances) throws ScalerException {
         LOG.debug("Performing resource analysis for service {}", serviceRef);
         final int shutdownPriority = instances.getShutdownPriority();
-        final ResourceUtilisation utilization = analyser.getCurrentResourceUtilisation();
-        LOG.debug("Resource utilisation for service {}: {}", serviceRef, utilization);
-        final ResourceLimitStagesReached limitStagesReached = establishResourceLimitStagesReached(utilization);
-        LOG.debug("Resource limit stages reached for service {}: {}", serviceRef, limitStagesReached);
+        // DDD should this be taking both ResourceUtilisations and
+        //  sending alerts for both?  Would mean doing the merge here, or
+        final List<ResourceAnalysisResult> resourceAnalysisResults = new ArrayList<>();
+        final List<ResourceUtilisation> utilisations = analyser.getCurrentResourceUtilisation();
+        for (final ResourceUtilisation utilization : utilisations) {
+            LOG.debug("Resource utilisation for service {}: {}", serviceRef, utilization);
+            final ResourceLimitStagesReached limitStagesReached = establishResourceLimitStagesReached(utilization);
+            LOG.debug("Resource limit stages reached for service {}: {}", serviceRef, limitStagesReached);
 
-        LOG.debug("Instance info for service {}: {}", serviceRef, instances);
-        final boolean scaledDown = handleResourceLimitReached(instances, utilization, limitStagesReached, shutdownPriority);
-        return new ResourceAnalysisResult(limitStagesReached, scaledDown);
+            LOG.debug("Instance info for service {}: {}", serviceRef, instances);
+            final boolean scaledDown = handleResourceLimitReached(instances, utilization, limitStagesReached, shutdownPriority);
+
+            resourceAnalysisResults.add(new ResourceAnalysisResult(limitStagesReached, scaledDown));
+
+            handleAlerterDispatch(utilization, shutdownPriority);
+
+            if (scaledDown) {
+                // DDD if scaled down, the calling method takes no further action
+                //  and there is no need to process any additional ResourceUtilisations
+                break;
+            } else {
+                // DDD if not scaled down, the calling method takes further action
+                resourceAnalysisResults.add(new ResourceAnalysisResult(limitStagesReached, scaledDown));
+            }
+        }
+        return resourceAnalysisResults;
     }
 
     /**
@@ -279,8 +304,6 @@ public class ScalerThread implements Runnable
             return false;
         }
 
-        handleAlerterDispatch(resourceUtilisation);
-
         final ResourceLimitStage highestResourceLimitStageReached = ResourceLimitStage.max(
                 resourceLimitStagesReached.getMemoryLimitStageReached(),
                 resourceLimitStagesReached.getDiskLimitStageReached());
@@ -325,17 +348,23 @@ public class ScalerThread implements Runnable
         return false;
     }
 
-    private void handleAlerterDispatch(final ResourceUtilisation resourceUtilisation) throws ScalerException
+    private void handleAlerterDispatch(final ResourceUtilisation resourceUtilisation, final int shutdownPriority) throws ScalerException
     {
+        if (shutdownPriority == -1) {
+            return;
+        }
+        // DDD should be sending alerts for both?
         final double memoryUsedPercent = resourceUtilisation.getMemoryUsedPercent();
         if (memoryUsedPercent >= resourceConfig.getMemoryUsedPercentAlertDispatchThreshold()) {
-            final String memoryOverloadWarningEmailBody = analyser.getMemoryOverloadWarning(df.format(memoryUsedPercent));
+            final String memoryOverloadWarningEmailBody = analyser.getMemoryOverloadWarning(
+                    resourceUtilisation.getSource(), df.format(memoryUsedPercent));
             memoryOverloadAlerter.dispatchAlert(memoryOverloadWarningEmailBody);
         }
 
         final Optional<Integer> diskFreeMbOpt = resourceUtilisation.getDiskFreeMbOpt();
         if (diskFreeMbOpt.isPresent() && diskFreeMbOpt.get() <= resourceConfig.getDiskFreeMbAlertDispatchThreshold()) {
-            final String diskLowWarningEmailBody = analyser.getDiskSpaceLowWarning(df.format(diskFreeMbOpt.get()));
+            final String diskLowWarningEmailBody = analyser.getDiskSpaceLowWarning(
+                    resourceUtilisation.getSource(), df.format(diskFreeMbOpt.get()));
             diskSpaceLowAlerter.dispatchAlert(diskLowWarningEmailBody);
         }
     }

@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.toList;
 
 import com.github.autoscaler.api.InstanceInfo;
 import com.github.autoscaler.api.ResourceUtilisation;
+import com.github.autoscaler.api.ResourceUtilisationSource;
 import com.github.autoscaler.api.ScalerException;
 import com.github.autoscaler.api.ScalingAction;
 import com.github.autoscaler.api.ScalingOperation;
@@ -70,7 +71,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
      * @return the current resource utilisation
      */
     @Override
-    public ResourceUtilisation getCurrentResourceUtilisation() throws ScalerException
+    public List<ResourceUtilisation> getCurrentResourceUtilisation() throws ScalerException
     {
         return rabbitResourceMonitor.getCurrentResourceUtilisation();
     }
@@ -214,18 +215,53 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     }
 
     @Override
-    public String getMemoryOverloadWarning(final String percentageMem)
+    public String getMemoryOverloadWarning(final ResourceUtilisationSource source, final String percentageMem)
     {
-        return "To whom it may concern, \n"
-            + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
-            + "RabbitMQ has used " + percentageMem + "% of its high watermark memory allowance.\n";
+        if (ResourceUtilisationSource.OFFLOADING_DATASTORE.equals(source)) {
+            return getDataStoreMemoryOverloadWarning(percentageMem);
+        }
+        return getRabbitMemoryOverloadWarning(percentageMem);
+
     }
 
     @Override
-    public String getDiskSpaceLowWarning(final String diskFreeMb)
+    public String getDiskSpaceLowWarning(final ResourceUtilisationSource source, final String diskFreeMb)
+    {
+        if (ResourceUtilisationSource.OFFLOADING_DATASTORE.equals(source)) {
+            return getDataStoreDiskSpaceLowWarning(diskFreeMb);
+        }
+        return getRabbitDiskSpaceLowWarning(diskFreeMb);
+    }
+
+    private String getRabbitMemoryOverloadWarning(final String percentageMem)
+    {
+        return "To whom it may concern, \n"
+                + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
+                + "RabbitMQ has used " + percentageMem + "% of its high watermark memory allowance.\n";
+    }
+
+    private String getRabbitDiskSpaceLowWarning(final String diskFreeMb)
     {
         return "To whom it may concern, \n"
                 + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
                 + "RabbitMQ has only " + diskFreeMb + "MB of disk space free.\n";
+    }
+
+    private String getDataStoreMemoryOverloadWarning(final String percentageMem)
+    {
+        return "To whom it may concern, \n"
+                + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
+                + "The offloading datastore at " + System.getenv("CAF_WORKER_DATASTORE_PATH") + "/"
+                + System.getenv("CAF_WORKER_PAYLOAD_OFFLOADING_DIRECTORY")
+                + " has used " + percentageMem + "% of its high watermark available memory allowance.\n";
+    }
+
+    private String getDataStoreDiskSpaceLowWarning(final String diskFreeMb)
+    {
+        return "To whom it may concern, \n"
+                + "The RabbitMQ instance running on system " + System.getenv("CAF_RABBITMQ_MGMT_URL") + " is experiencing issues.\n"
+                + "The offloading datastore at " + System.getenv("CAF_WORKER_DATASTORE_PATH") + "/"
+                + System.getenv("CAF_WORKER_PAYLOAD_OFFLOADING_DIRECTORY")
+                + " has only " + diskFreeMb + "MB of available disk space free.\n";
     }
 }

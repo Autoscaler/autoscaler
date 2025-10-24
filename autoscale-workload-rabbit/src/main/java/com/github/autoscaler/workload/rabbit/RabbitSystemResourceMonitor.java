@@ -103,7 +103,7 @@ public final class RabbitSystemResourceMonitor
                             .filter(Optional::isPresent)
                             .map(Optional::get)
                             .min(Double::compare);
-                    LOG.info("OVERALL UTIL: {}", new ResourceUtilisation(highestMemoryUsed, lowestDiskFree));
+                    LOG.info("MERGED UTIL: {}", new ResourceUtilisation(highestMemoryUsed, lowestDiskFree));
                     //utilisation = new ResourceUtilisation(highestMemoryUsed, lowestDiskFree);
                 }
                 memoryAllocated =  utilisation.getMemoryUsedPercent();
@@ -129,7 +129,9 @@ public final class RabbitSystemResourceMonitor
             // DDD effectively mem_limit?, this would be represent N% of /etc/store available memory
             //  here we would need to apply a new cfg'd env var.
             final double offloadingMemoryLimitPercent = payloadOffloadingMemoryLimitPercent / 100d;
-            final double memoryLimit = (datastore.getTotalSpace() * offloadingMemoryLimitPercent);
+            final var totalSpace = datastore.getTotalSpace();
+            final double memoryLimit = (totalSpace * offloadingMemoryLimitPercent);
+            LOG.info("OFFLOADING LIMIT: {}, is {}% of TOTAL SPACE:{}", memoryLimit, offloadingMemoryLimitPercent, totalSpace);
 
             // the number of unallocated bytes in the file store
             // DDD effectively disk_free?
@@ -137,22 +139,33 @@ public final class RabbitSystemResourceMonitor
 
             // the total size of offloaded files in the offloading directory
             // DDD effectively mem_used?
-            final double memoryUsed = (offloadedSize(Paths.get(datastoreDirectory, offloadingDirectory)) / memoryLimit) * 100;
+            final double memoryUsed = (offloadingDiskUsage(Paths.get(datastoreDirectory, offloadingDirectory)) / memoryLimit) * 100;
 
             return new ResourceUtilisation(memoryUsed, Optional.of(diskFreeMb));
         } catch (final Exception ex) {
-            throw new ScalerException("Unable to load datastore resouce utilization.", ex);
+            throw new ScalerException("Unable to load datastore resource utilization.", ex);
         }
     }
 
-    private static long offloadedSize(final Path path)
-    {
+    private static long offloadingDiskUsage(final Path path) {
         try {
+            if (path == null || Files.notExists(path)) {
+                return 0L;
+            }
             if (Files.isRegularFile(path)) {
                 return Files.size(path);
             }
-            try (final Stream<Path> pathStream = Files.list(path)) {
-                return pathStream.mapToLong(RabbitSystemResourceMonitor::offloadedSize).sum();
+            try (final Stream<Path> stream = Files.walk(path)) {
+                return stream
+                        .filter(Files::isRegularFile)
+                        .mapToLong(p -> {
+                            try {
+                                return Files.size(p);
+                            } catch (final IOException | SecurityException e) {
+                                return 0L;
+                            }
+                        })
+                        .sum();
             }
         } catch (final IOException | SecurityException e) {
             return 0L;

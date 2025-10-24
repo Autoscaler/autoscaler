@@ -122,27 +122,25 @@ public final class RabbitSystemResourceMonitor
         try {
             final String datastoreDirectory = config.getDataStoreDirectory();
             final String offloadingDirectory = config.getPayloadOffloadingDirectory();
-            final Integer payloadOffloadingMemoryLimitPercent = config.getPayloadOffloadingMemoryLimitPercent();
+
             final FileStore datastore = Files.getFileStore(Paths.get(datastoreDirectory));
 
-            // the size, in bytes, of the file store
-            // DDD effectively mem_limit?, this would be represent N% of /etc/store available memory
-            //  here we would need to apply a new cfg'd env var.
-            final double offloadingMemoryLimitPercentMultiplier = payloadOffloadingMemoryLimitPercent / 100d;
-            final var totalSpaceBytes = datastore.getTotalSpace();
-            final double memoryLimitBytes = (totalSpaceBytes * offloadingMemoryLimitPercentMultiplier);
-            LOG.info("OFFLOADING LIMIT:{}MB, is {}% of TOTAL SPACE:{}MB",
-                    memoryLimitBytes/MB_IN_BYTES, payloadOffloadingMemoryLimitPercent, totalSpaceBytes/MB_IN_BYTES);
+            // The unallocated bytes in the data store
+            final var unallocatedSpaceBytes = datastore.getUnallocatedSpace();
 
-            // the number of unallocated bytes in the file store
-            // DDD effectively disk_free?
-            final var diskFreeMb = Math.toIntExact((datastore.getUnallocatedSpace() / MB_IN_BYTES));
+            // The bytes taken up by currently offloaded data in the queues directory.
+            final var offloadingSpaceUsedBytes = offloadingDiskUsage(Paths.get(datastoreDirectory, offloadingDirectory));
 
-            // the total size of offloaded files in the offloading directory
-            // DDD effectively mem_used?
-            final double memoryUsed = (offloadingDiskUsage(Paths.get(datastoreDirectory, offloadingDirectory)) / memoryLimitBytes) * 100;
+            final double memoryLimitPercentMultiplier = config.getPayloadOffloadingMemoryLimitPercent()/100d;
+            final double memoryLimitBytes = ((unallocatedSpaceBytes + offloadingSpaceUsedBytes) * memoryLimitPercentMultiplier);
+            LOG.info("OFFLOADING LIMIT:{}MB, is {}% of AVAILABLE SPACE:{}MB, TOTAL SPACE:{}MB",
+                    memoryLimitBytes/MB_IN_BYTES, config.getPayloadOffloadingMemoryLimitPercent(),
+                    unallocatedSpaceBytes/MB_IN_BYTES, datastore.getTotalSpace()/MB_IN_BYTES);
 
-            return new ResourceUtilisation(memoryUsed, Optional.of(diskFreeMb));
+            final var diskFreeMb = Math.toIntExact(unallocatedSpaceBytes / MB_IN_BYTES);
+            final double percentageOfAvailableMemoryUsed = (offloadingSpaceUsedBytes / memoryLimitBytes) * 100;
+
+            return new ResourceUtilisation(percentageOfAvailableMemoryUsed, Optional.of(diskFreeMb));
         } catch (final Exception ex) {
             throw new ScalerException("Unable to load datastore resource utilization.", ex);
         }

@@ -30,6 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.AdditionalAnswers.returnsSecondArg;
@@ -78,7 +79,7 @@ public class ScalerThreadTest
             new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new Alerter(new HashMap<>(),
                 new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(0)));
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(List.of(new ResourceUtilisation(0.0, Optional.of(0))));
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_UP);
         t.run();
         Mockito.verify(scaler, Mockito.times(1)).scaleUp(SERVICE_REF, 1);
@@ -102,7 +103,7 @@ public class ScalerThreadTest
             new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new Alerter(new HashMap<>(),
                 new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(0)));
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(List.of(new ResourceUtilisation(0.0, Optional.of(0))));
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_DOWN);
         t.run();
         Mockito.verify(scaler, Mockito.times(1)).scaleDown(SERVICE_REF, 1);
@@ -120,7 +121,7 @@ public class ScalerThreadTest
         Alerter memoryOverloadAlerter = Mockito.mock(Alerter.class);
 
         // Set the current memory used to 90% to reach the stage 3 limit, which should cause a scale down operation
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(90, Optional.empty()));
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(List.of(new ResourceUtilisation(90, Optional.empty())));
 
         int min = 0;
         int max = 5;
@@ -147,7 +148,7 @@ public class ScalerThreadTest
         Alerter diskSpaceLowAlerter = Mockito.mock(Alerter.class);
 
         // Set the current disk space free to be 400MB to reach the stage 1 limit, which should cause a scale down operation
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(400)));
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(List.of(new ResourceUtilisation(0.0, Optional.of(400))));
 
         int min = 0;
         int max = 5;
@@ -273,7 +274,7 @@ public class ScalerThreadTest
         Governor governor = Mockito.mock(Governor.class);
         Alerter diskSpaceLowAlerter = Mockito.mock(Alerter.class);
 
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(memoryUsedPercent, Optional.of(freeDiskMb)));
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(List.of(new ResourceUtilisation(memoryUsedPercent, Optional.of(freeDiskMb))));
 
         int min = 0;
         int max = 5;

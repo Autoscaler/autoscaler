@@ -70,9 +70,13 @@ public final class RabbitSystemResourceMonitor
     {
         final List<ResourceUtilisation> resourceUtilisations = new ArrayList<>();
         if (shouldIssueRequest()) {
-            resourceUtilisations.add(getRabbitCurrentResourceUtilisation());
+            final ResourceUtilisation rabbitUtil = getRabbitCurrentResourceUtilisation();
+            LOG.info("Current resource utilisation: {}", rabbitUtil);
+            resourceUtilisations.add(rabbitUtil);
             if (config.getIsPayloadOffloadingEnabled()) {
-                resourceUtilisations.add(getDatastoreCurrentResourceUtilisation());
+                final ResourceUtilisation datastoreUtil = getDatastoreCurrentResourceUtilisation();
+                LOG.info("Current resource utilisation: {}", datastoreUtil);
+                resourceUtilisations.add(datastoreUtil);
             }
             lastTime = System.currentTimeMillis();
         } else {
@@ -80,9 +84,6 @@ public final class RabbitSystemResourceMonitor
             if (config.getIsPayloadOffloadingEnabled()) {
                 resourceUtilisations.add(new ResourceUtilisation(OFFLOADING_DATASTORE, dataStoreMemoryAllocated, datastoreDiskFreeMbOpt));
             }
-        }
-        for (final ResourceUtilisation resourceUtilisation : resourceUtilisations) {
-            LOG.info("Current resource utilisation: {}", resourceUtilisation);
         }
         return resourceUtilisations;
     }

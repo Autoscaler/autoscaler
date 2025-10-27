@@ -82,7 +82,7 @@ public final class RabbitSystemResourceMonitor
             }
         }
         for (final ResourceUtilisation resourceUtilisation : resourceUtilisations) {
-            LOG.debug("Current resource utilisation: {}", resourceUtilisation);
+            LOG.info("Current resource utilisation: {}", resourceUtilisation);
         }
         return resourceUtilisations;
     }

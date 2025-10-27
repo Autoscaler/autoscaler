@@ -27,7 +27,6 @@ import java.text.DecimalFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -169,8 +168,10 @@ public class ScalerThread implements Runnable
         switch (action.getOperation()) {
             case SCALE_UP:
                 scaleUp(action.getAmount());
+                break;
             case SCALE_DOWN:
                 scaleDown(action.getAmount());
+                break;
             case NONE:
             default:
                 break;
@@ -185,7 +186,7 @@ public class ScalerThread implements Runnable
 
         // Handle alerter dispatch for both rabbit and offloading.
         if (shutdownPriority > -1) {
-            handleAlerterDispatch(utilisations, shutdownPriority);
+            handleAlerterDispatch(utilisations);
         }
 
         final ResourceUtilisation collatedUtilisation = collateUtilisation(utilisations);
@@ -348,7 +349,7 @@ public class ScalerThread implements Runnable
         return false;
     }
 
-    private void handleAlerterDispatch(final List<ResourceUtilisation> resourceUtilisations, final int shutdownPriority) throws ScalerException
+    private void handleAlerterDispatch(final List<ResourceUtilisation> resourceUtilisations) throws ScalerException
     {
         for (final ResourceUtilisation resourceUtilisation : resourceUtilisations) {
             final double memoryUsedPercent = resourceUtilisation.getMemoryUsedPercent();

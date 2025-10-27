@@ -81,12 +81,7 @@ public class RabbitWorkloadAnalyserConfiguration
     /**
      * The datastore directory to use for offloading payloads.
      */
-    private String payloadOffloadingDirectory = "queues";
-
-    /**
-     * The % limit of memory available in the datastore directory to use for offloading payloads.
-     */
-    private int payloadOffloadingMemoryLimitPercent = 60;
+    private String payloadOffloadingDirectory = "/etc/store/queues";
 
     private boolean isPayloadOffloadingEnabled = false;
 
@@ -188,14 +183,6 @@ public class RabbitWorkloadAnalyserConfiguration
         this.payloadOffloadingDirectory = payloadOffloadingDirectory;
     }
 
-    public int getPayloadOffloadingMemoryLimitPercent() {
-        return payloadOffloadingMemoryLimitPercent;
-    }
-
-    public void setPayloadOffloadingMemoryLimitPercent(int payloadOffloadingMemoryLimitPercent) {
-        this.payloadOffloadingMemoryLimitPercent = payloadOffloadingMemoryLimitPercent;
-    }
-
     public boolean getIsPayloadOffloadingEnabled() {
         return isPayloadOffloadingEnabled;
     }
@@ -216,7 +203,6 @@ public class RabbitWorkloadAnalyserConfiguration
                 ", stagingQueueIndicator='" + stagingQueueIndicator +
                 ", dataStoreDirectory='" + dataStoreDirectory +
                 ", payloadOffloadingDirectory='" + payloadOffloadingDirectory +
-                ", payloadOffloadingMemoryLimitPercent='" + payloadOffloadingMemoryLimitPercent +
                 ", isPayloadOffloadingEnabled='" + isPayloadOffloadingEnabled +
                 '}';
     }

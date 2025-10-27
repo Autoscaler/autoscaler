@@ -24,13 +24,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
@@ -43,8 +41,6 @@ public final class RabbitSystemResourceMonitor
 {
     private volatile double memoryAllocated;
     private volatile Optional<Integer> diskFreeMbOpt = Optional.empty();
-
-    private volatile double dataStoreMemoryAllocated;
     private volatile Optional<Integer> datastoreDiskFreeMbOpt = Optional.empty();
 
     private final RabbitManagementApi rabbitManagementApi;
@@ -82,7 +78,7 @@ public final class RabbitSystemResourceMonitor
         } else {
             resourceUtilisations.add(new ResourceUtilisation(RABBIT_MQ, memoryAllocated, diskFreeMbOpt));
             if (config.getIsPayloadOffloadingEnabled()) {
-                resourceUtilisations.add(new ResourceUtilisation(OFFLOADING_DATASTORE, dataStoreMemoryAllocated, datastoreDiskFreeMbOpt));
+                resourceUtilisations.add(new ResourceUtilisation(OFFLOADING_DATASTORE, 0, datastoreDiskFreeMbOpt));
             }
         }
         return resourceUtilisations;
@@ -131,66 +127,18 @@ public final class RabbitSystemResourceMonitor
     private ResourceUtilisation getDatastoreCurrentResourceUtilisation() throws ScalerException
     {
         try {
-            final String datastoreDirectory = config.getDataStoreDirectory();
-            final String offloadingDirectory = config.getPayloadOffloadingDirectory();
+            final FileStore filestore = Files.getFileStore(Paths.get(config.getDataStoreDirectory(), config.getPayloadOffloadingDirectory()));
 
-            final FileStore datastore = Files.getFileStore(Paths.get(datastoreDirectory));
-
-            // /etc/store memory usage
-            // |----------others----------|-----/etc/store/queues----|-----unallocated------|
-            // |----------others----------|-----% of this is available to offloading--------|
-            // |----------others----------|- % of total available----|--disk free-----------|
-
-            // /etc/store unallocated
-            final var unallocatedSpaceBytes = datastore.getUnallocatedSpace();
-
-            // /etc/store/queues
-            final var offloadingSpaceUsedBytes = offloadingDiskUsage(Paths.get(datastoreDirectory, offloadingDirectory));
-
-            final double memoryLimitPercentMultiplier = config.getPayloadOffloadingMemoryLimitPercent()/100d;
-
-            // % of this is available to offloading
-            final double memoryLimitBytes = ((unallocatedSpaceBytes + offloadingSpaceUsedBytes) * memoryLimitPercentMultiplier);
-            LOG.debug("OFFLOADING LIMIT:{}MB, is {}% of AVAILABLE SPACE:{}MB, TOTAL SPACE:{}MB",
-                    memoryLimitBytes/MB_IN_BYTES, config.getPayloadOffloadingMemoryLimitPercent(),
-                    (unallocatedSpaceBytes + offloadingSpaceUsedBytes)/MB_IN_BYTES, datastore.getTotalSpace()/MB_IN_BYTES);
+            // /etc/store/queues unallocated
+            final var unallocatedSpaceBytes = filestore.getUnallocatedSpace();
 
             // disk free
             final var diskFreeMbOpt = Optional.of(Math.toIntExact(unallocatedSpaceBytes / MB_IN_BYTES));
 
-            // % of total available
-            final double percentageOfAvailableMemoryUsed = (offloadingSpaceUsedBytes / memoryLimitBytes) * 100;
-            dataStoreMemoryAllocated =  percentageOfAvailableMemoryUsed;
             datastoreDiskFreeMbOpt = diskFreeMbOpt;
-            return new ResourceUtilisation(OFFLOADING_DATASTORE, percentageOfAvailableMemoryUsed, diskFreeMbOpt);
+            return new ResourceUtilisation(OFFLOADING_DATASTORE, 0, diskFreeMbOpt);
         } catch (final Exception ex) {
             throw new ScalerException("Unable to load datastore resource utilization.", ex);
-        }
-    }
-
-    private static long offloadingDiskUsage(final Path path)
-    {
-        try {
-            if (path == null || Files.notExists(path)) {
-                return 0L;
-            }
-            if (Files.isRegularFile(path)) {
-                return Files.size(path);
-            }
-            try (final Stream<Path> stream = Files.walk(path)) {
-                return stream
-                        .filter(Files::isRegularFile)
-                        .mapToLong(p -> {
-                            try {
-                                return Files.size(p);
-                            } catch (final IOException | SecurityException e) {
-                                return 0L;
-                            }
-                        })
-                        .sum();
-            }
-        } catch (final IOException | SecurityException e) {
-            return 0L;
         }
     }
 

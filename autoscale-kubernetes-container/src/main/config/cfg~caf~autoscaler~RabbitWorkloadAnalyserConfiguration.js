@@ -26,8 +26,7 @@
         }
     },
     stagingQueueIndicator: getenv("CAF_AUTOSCALER_STAGING_QUEUE_INDICATOR") || null,
-    dataStoreDirectory: getenv("CAF_WORKER_DATASTORE_PATH") || "/mnt/caf-datastore-root",
+    dataStoreDirectory: getenv("CAF_WORKER_DATASTORE_PATH") || "/etc/store",
     isPayloadOffloadingEnabled: getenv("CAF_WORKER_PAYLOAD_OFFLOADING_ENABLED") || false,
     payloadOffloadingDirectory: getenv("CAF_WORKER_PAYLOAD_OFFLOADING_DIRECTORY") || "queues",
-    payloadOffloadingMemoryLimitPercent: getenv("CAF_WORKER_PAYLOAD_OFFLOADING_MEMORY_LIMIT_PERCENT") || 60,
 });

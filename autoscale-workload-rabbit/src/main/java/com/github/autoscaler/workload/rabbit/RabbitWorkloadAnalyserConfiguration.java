@@ -181,15 +181,15 @@ public class RabbitWorkloadAnalyserConfiguration
     @Override
     public String toString() {
         return "RabbitWorkloadAnalyserConfiguration{" +
-                "rabbitManagementEndpoint='" + rabbitManagementEndpoint +
-                ", rabbitManagementUser='" + rabbitManagementUser +
-                ", rabbitManagementPassword='" + rabbitManagementPassword +
-                ", vhost='" + vhost +
+                "rabbitManagementEndpoint=" + rabbitManagementEndpoint +
+                ", rabbitManagementUser=" + rabbitManagementUser +
+                ", rabbitManagementPassword=" + rabbitManagementPassword +
+                ", vhost=" + vhost +
                 ", profiles=" + profiles +
                 ", resourceQueryRequestFrequency=" + resourceQueryRequestFrequency +
-                ", stagingQueueIndicator='" + stagingQueueIndicator +
-                ", payloadOffloadingDirectory='" + payloadOffloadingDirectory +
-                ", isPayloadOffloadingEnabled='" + isPayloadOffloadingEnabled +
+                ", stagingQueueIndicator=" + stagingQueueIndicator +
+                ", payloadOffloadingDirectory=" + payloadOffloadingDirectory +
+                ", isPayloadOffloadingEnabled=" + isPayloadOffloadingEnabled +
                 '}';
     }
 }

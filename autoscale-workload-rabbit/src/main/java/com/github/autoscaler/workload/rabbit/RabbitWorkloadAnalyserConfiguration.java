@@ -179,7 +179,8 @@ public class RabbitWorkloadAnalyserConfiguration
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "RabbitWorkloadAnalyserConfiguration{" +
                 "rabbitManagementEndpoint=" + rabbitManagementEndpoint +
                 ", rabbitManagementUser=" + rabbitManagementUser +

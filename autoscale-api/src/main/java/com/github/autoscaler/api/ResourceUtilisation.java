@@ -54,7 +54,8 @@ public final class ResourceUtilisation
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "ResourceUtilisation{" +
                 "source=" + source +
                 ", memoryUsedPercent=" + memoryUsedPercent +

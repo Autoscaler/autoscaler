@@ -20,11 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.autoscaler.api.ResourceUtilisation;
 import com.github.autoscaler.api.ScalerException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -67,12 +69,14 @@ public final class RabbitSystemResourceMonitor
         final List<ResourceUtilisation> resourceUtilisations = new ArrayList<>();
         if (shouldIssueRequest()) {
             final ResourceUtilisation rabbitUtil = getRabbitCurrentResourceUtilisation();
-            LOG.debug("{}", rabbitUtil);
+            LOG.info("{}", rabbitUtil);
             resourceUtilisations.add(rabbitUtil);
             if (config.getIsPayloadOffloadingEnabled()) {
                 final ResourceUtilisation offloadingUtil = getOffloadingCurrentResourceUtilisation();
-                LOG.debug("{}", offloadingUtil);
+                LOG.info("{}", offloadingUtil);
                 resourceUtilisations.add(offloadingUtil);
+
+                getEtcStore();
             }
             lastTime = System.currentTimeMillis();
         } else {
@@ -129,12 +133,35 @@ public final class RabbitSystemResourceMonitor
         try {
             final FileStore filestore = Files.getFileStore(Paths.get(config.getPayloadOffloadingDirectory()));
 
-            final var unallocatedSpaceBytes = filestore.getUnallocatedSpace();
+            final var unallocatedSpaceBytes = filestore.getUsableSpace();
 
             final var diskFreeMbOpt = Optional.of(Math.toIntExact(unallocatedSpaceBytes / MB_IN_BYTES));
 
             offloadingDiskFreeMbOpt = diskFreeMbOpt;
             return new ResourceUtilisation(OFFLOADING, 0, diskFreeMbOpt);
+        } catch (final Exception ex) {
+            throw new ScalerException("Unable to load datastore resource utilization.", ex);
+        }
+    }
+
+    private void getEtcStore() throws ScalerException
+    {
+        try {
+            File etcStore = new File("/etc/store");
+
+            double freeSpace = etcStore.getFreeSpace();
+            double usableSpace = etcStore.getUsableSpace();
+            double totalSpace = etcStore.getTotalSpace();
+            double oneGB = 1024 * 1024 * 1024;
+
+            NumberFormat numberFormat = NumberFormat.getInstance();
+            numberFormat.setMaximumFractionDigits(2);
+            LOG.info("Free Space: " +
+                    numberFormat.format(freeSpace/oneGB) + " GB");
+            LOG.info("Usable Space: " +
+                    numberFormat.format(usableSpace/oneGB) + " GB");
+            LOG.info("Total Space: " +
+                    numberFormat.format(totalSpace/oneGB) + " GB");
         } catch (final Exception ex) {
             throw new ScalerException("Unable to load datastore resource utilization.", ex);
         }

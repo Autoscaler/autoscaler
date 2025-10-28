@@ -49,7 +49,8 @@ public final class ResourceUtilisation
         return diskFreeMbOpt;
     }
 
-    public ResourceUtilisationSource getSource() {
+    public ResourceUtilisationSource getSource()
+    {
         return source;
     }
 

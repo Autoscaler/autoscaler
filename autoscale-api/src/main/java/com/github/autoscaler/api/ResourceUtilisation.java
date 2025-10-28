@@ -56,10 +56,12 @@ public final class ResourceUtilisation
     @Override
     public String toString()
     {
+        final String diskFreeMbString = diskFreeMbOpt.isPresent() ? diskFreeMbOpt.get().toString() : "UNKNOWN";
+
         return "ResourceUtilisation{" +
                 "source=" + source +
                 ", memoryUsedPercent=" + memoryUsedPercent +
-                ", diskFreeMbOpt=" + diskFreeMbOpt +
+                ", diskFreeMbOpt=" + diskFreeMbString  +
                 '}';
     }
 }

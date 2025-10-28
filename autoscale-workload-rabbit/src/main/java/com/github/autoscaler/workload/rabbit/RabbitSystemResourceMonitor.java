@@ -20,13 +20,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.autoscaler.api.ResourceUtilisation;
 import com.github.autoscaler.api.ScalerException;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -75,8 +73,6 @@ public final class RabbitSystemResourceMonitor
                 final ResourceUtilisation offloadingUtil = getOffloadingCurrentResourceUtilisation();
                 LOG.info("{}", offloadingUtil);
                 resourceUtilisations.add(offloadingUtil);
-
-                getEtcStore();
             }
             lastTime = System.currentTimeMillis();
         } else {
@@ -139,29 +135,6 @@ public final class RabbitSystemResourceMonitor
 
             offloadingDiskFreeMbOpt = diskFreeMbOpt;
             return new ResourceUtilisation(OFFLOADING, 0, diskFreeMbOpt);
-        } catch (final Exception ex) {
-            throw new ScalerException("Unable to load datastore resource utilization.", ex);
-        }
-    }
-
-    private void getEtcStore() throws ScalerException
-    {
-        try {
-            File etcStore = new File("/etc/store");
-
-            double freeSpace = etcStore.getFreeSpace();
-            double usableSpace = etcStore.getUsableSpace();
-            double totalSpace = etcStore.getTotalSpace();
-            double oneGB = 1024 * 1024 * 1024;
-
-            NumberFormat numberFormat = NumberFormat.getInstance();
-            numberFormat.setMaximumFractionDigits(2);
-            LOG.info("Free Space: " +
-                    numberFormat.format(freeSpace/oneGB) + " GB");
-            LOG.info("Usable Space: " +
-                    numberFormat.format(usableSpace/oneGB) + " GB");
-            LOG.info("Total Space: " +
-                    numberFormat.format(totalSpace/oneGB) + " GB");
         } catch (final Exception ex) {
             throw new ScalerException("Unable to load datastore resource utilization.", ex);
         }

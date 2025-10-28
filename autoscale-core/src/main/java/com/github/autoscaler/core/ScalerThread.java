@@ -191,7 +191,7 @@ public class ScalerThread implements Runnable
 
         final ResourceUtilisation collatedUtilisation = collateUtilisation(utilisations);
 
-        LOG.debug("Collated resource utilisation for service {}: {}", serviceRef, collatedUtilisation);
+        LOG.info("Collated resource utilisation for service {}: {}", serviceRef, collatedUtilisation);
         final ResourceLimitStagesReached limitStagesReached = establishResourceLimitStagesReached(collatedUtilisation);
         LOG.debug("Resource limit stages reached for service {}: {}", serviceRef, limitStagesReached);
 

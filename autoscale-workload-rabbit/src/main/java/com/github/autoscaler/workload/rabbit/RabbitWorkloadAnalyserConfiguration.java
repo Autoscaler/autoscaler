@@ -183,7 +183,7 @@ public class RabbitWorkloadAnalyserConfiguration
         return "RabbitWorkloadAnalyserConfiguration{" +
                 "rabbitManagementEndpoint=" + rabbitManagementEndpoint +
                 ", rabbitManagementUser=" + rabbitManagementUser +
-                ", rabbitManagementPassword=" + rabbitManagementPassword +
+                ", rabbitManagementPassword=<HIDDEN>" +
                 ", vhost=" + vhost +
                 ", profiles=" + profiles +
                 ", resourceQueryRequestFrequency=" + resourceQueryRequestFrequency +

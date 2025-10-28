@@ -67,11 +67,11 @@ public final class RabbitSystemResourceMonitor
         final List<ResourceUtilisation> resourceUtilisations = new ArrayList<>();
         if (shouldIssueRequest()) {
             final ResourceUtilisation rabbitUtil = getRabbitCurrentResourceUtilisation();
-            LOG.info("{}", rabbitUtil);
+            LOG.debug("{}", rabbitUtil);
             resourceUtilisations.add(rabbitUtil);
             if (config.getIsPayloadOffloadingEnabled()) {
                 final ResourceUtilisation offloadingUtil = getOffloadingCurrentResourceUtilisation();
-                LOG.info("{}", offloadingUtil);
+                LOG.debug("{}", offloadingUtil);
                 resourceUtilisations.add(offloadingUtil);
             }
             lastTime = System.currentTimeMillis();

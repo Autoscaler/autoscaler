@@ -162,19 +162,23 @@ public class RabbitWorkloadAnalyserConfiguration
         this.stagingQueueIndicator = stagingQueueIndicator;
     }
 
-    public String getPayloadOffloadingDirectory() {
+    public String getPayloadOffloadingDirectory()
+    {
         return payloadOffloadingDirectory;
     }
 
-    public void setPayloadOffloadingDirectory(final String payloadOffloadingDirectory) {
+    public void setPayloadOffloadingDirectory(final String payloadOffloadingDirectory)
+    {
         this.payloadOffloadingDirectory = payloadOffloadingDirectory;
     }
 
-    public boolean getIsPayloadOffloadingEnabled() {
+    public boolean getIsPayloadOffloadingEnabled()
+    {
         return isPayloadOffloadingEnabled;
     }
 
-    public void setIsPayloadOffloadingEnabled(boolean payloadOffloadingEnabled) {
+    public void setIsPayloadOffloadingEnabled(boolean payloadOffloadingEnabled)
+    {
         isPayloadOffloadingEnabled = payloadOffloadingEnabled;
     }
 

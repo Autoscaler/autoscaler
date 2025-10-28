@@ -34,14 +34,14 @@ import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.github.autoscaler.api.ResourceUtilisationSource.OFFLOADING_DATASTORE;
+import static com.github.autoscaler.api.ResourceUtilisationSource.OFFLOADING;
 import static com.github.autoscaler.api.ResourceUtilisationSource.RABBIT_MQ;
 
 public final class RabbitSystemResourceMonitor
 {
     private volatile double memoryAllocated;
     private volatile Optional<Integer> diskFreeMbOpt = Optional.empty();
-    private volatile Optional<Integer> datastoreDiskFreeMbOpt = Optional.empty();
+    private volatile Optional<Integer> offloadingDiskFreeMbOpt = Optional.empty();
 
     private final RabbitManagementApi rabbitManagementApi;
     private final RabbitWorkloadAnalyserConfiguration config;
@@ -67,18 +67,18 @@ public final class RabbitSystemResourceMonitor
         final List<ResourceUtilisation> resourceUtilisations = new ArrayList<>();
         if (shouldIssueRequest()) {
             final ResourceUtilisation rabbitUtil = getRabbitCurrentResourceUtilisation();
-            LOG.info("Current resource utilisation: {}", rabbitUtil);
+            LOG.debug("{}", rabbitUtil);
             resourceUtilisations.add(rabbitUtil);
             if (config.getIsPayloadOffloadingEnabled()) {
-                final ResourceUtilisation datastoreUtil = getDatastoreCurrentResourceUtilisation();
-                LOG.info("Current resource utilisation: {}", datastoreUtil);
-                resourceUtilisations.add(datastoreUtil);
+                final ResourceUtilisation offloadingUtil = getOffloadingCurrentResourceUtilisation();
+                LOG.debug("{}", offloadingUtil);
+                resourceUtilisations.add(offloadingUtil);
             }
             lastTime = System.currentTimeMillis();
         } else {
             resourceUtilisations.add(new ResourceUtilisation(RABBIT_MQ, memoryAllocated, diskFreeMbOpt));
             if (config.getIsPayloadOffloadingEnabled()) {
-                resourceUtilisations.add(new ResourceUtilisation(OFFLOADING_DATASTORE, 0, datastoreDiskFreeMbOpt));
+                resourceUtilisations.add(new ResourceUtilisation(OFFLOADING, 0, offloadingDiskFreeMbOpt));
             }
         }
         return resourceUtilisations;
@@ -124,19 +124,17 @@ public final class RabbitSystemResourceMonitor
         }
     }
 
-    private ResourceUtilisation getDatastoreCurrentResourceUtilisation() throws ScalerException
+    private ResourceUtilisation getOffloadingCurrentResourceUtilisation() throws ScalerException
     {
         try {
-            final FileStore filestore = Files.getFileStore(Paths.get(config.getDataStoreDirectory(), config.getPayloadOffloadingDirectory()));
+            final FileStore filestore = Files.getFileStore(Paths.get(config.getPayloadOffloadingDirectory()));
 
-            // /etc/store/queues unallocated
             final var unallocatedSpaceBytes = filestore.getUnallocatedSpace();
 
-            // disk free
             final var diskFreeMbOpt = Optional.of(Math.toIntExact(unallocatedSpaceBytes / MB_IN_BYTES));
 
-            datastoreDiskFreeMbOpt = diskFreeMbOpt;
-            return new ResourceUtilisation(OFFLOADING_DATASTORE, 0, diskFreeMbOpt);
+            offloadingDiskFreeMbOpt = diskFreeMbOpt;
+            return new ResourceUtilisation(OFFLOADING, 0, diskFreeMbOpt);
         } catch (final Exception ex) {
             throw new ScalerException("Unable to load datastore resource utilization.", ex);
         }

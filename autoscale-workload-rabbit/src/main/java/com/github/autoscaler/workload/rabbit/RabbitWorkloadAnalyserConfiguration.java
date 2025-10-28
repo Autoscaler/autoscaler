@@ -74,11 +74,6 @@ public class RabbitWorkloadAnalyserConfiguration
     private String stagingQueueIndicator;
 
     /**
-     * The datastore directory.
-     */
-    private String dataStoreDirectory;
-
-    /**
      * The datastore directory to use for offloading payloads.
      */
     private String payloadOffloadingDirectory = "/etc/store/queues";
@@ -167,14 +162,6 @@ public class RabbitWorkloadAnalyserConfiguration
         this.stagingQueueIndicator = stagingQueueIndicator;
     }
 
-    public String getDataStoreDirectory() {
-        return dataStoreDirectory;
-    }
-
-    public void setDataStoreDirectory(final String dataStoreDirectory) {
-        this.dataStoreDirectory = dataStoreDirectory;
-    }
-
     public String getPayloadOffloadingDirectory() {
         return payloadOffloadingDirectory;
     }
@@ -201,7 +188,6 @@ public class RabbitWorkloadAnalyserConfiguration
                 ", profiles=" + profiles +
                 ", resourceQueryRequestFrequency=" + resourceQueryRequestFrequency +
                 ", stagingQueueIndicator='" + stagingQueueIndicator +
-                ", dataStoreDirectory='" + dataStoreDirectory +
                 ", payloadOffloadingDirectory='" + payloadOffloadingDirectory +
                 ", isPayloadOffloadingEnabled='" + isPayloadOffloadingEnabled +
                 '}';

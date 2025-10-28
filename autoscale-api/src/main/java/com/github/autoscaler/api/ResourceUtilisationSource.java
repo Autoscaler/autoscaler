@@ -20,5 +20,5 @@ public enum ResourceUtilisationSource
 {
     RABBIT_MQ,
 
-    OFFLOADING_DATASTORE;
+    OFFLOADING;
 }

@@ -217,7 +217,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     @Override
     public String getMemoryOverloadWarning(final ResourceUtilisationSource source, final String percentageMem)
     {
-        if (ResourceUtilisationSource.OFFLOADING_DATASTORE.equals(source)) {
+        if (ResourceUtilisationSource.OFFLOADING.equals(source)) {
             return getDataStoreMemoryOverloadWarning(percentageMem);
         }
         return getRabbitMemoryOverloadWarning(percentageMem);
@@ -227,7 +227,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
     @Override
     public String getDiskSpaceLowWarning(final ResourceUtilisationSource source, final String diskFreeMb)
     {
-        if (ResourceUtilisationSource.OFFLOADING_DATASTORE.equals(source)) {
+        if (ResourceUtilisationSource.OFFLOADING.equals(source)) {
             return getDataStoreDiskSpaceLowWarning(diskFreeMb);
         }
         return getRabbitDiskSpaceLowWarning(diskFreeMb);

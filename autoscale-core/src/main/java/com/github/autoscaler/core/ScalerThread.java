@@ -421,6 +421,6 @@ public class ScalerThread implements Runnable
                 .flatMap(rabbit -> util.getOffloadingDiskFreeMbOpt()
                         .map(offloading -> Math.min(rabbit, offloading))
                         .or(() -> Optional.of(rabbit)))
-                .or(() -> util.getOffloadingDiskFreeMbOpt());
+                .or(util::getOffloadingDiskFreeMbOpt);
     }
 }

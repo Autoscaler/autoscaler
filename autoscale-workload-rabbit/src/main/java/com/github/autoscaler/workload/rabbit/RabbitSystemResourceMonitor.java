@@ -105,7 +105,13 @@ public final class RabbitSystemResourceMonitor
 
     private Optional<Integer> getOffloadingDiskFreeMb() throws ScalerException
     {
+        final String offloadingDir = config.getPayloadOffloadingDirectory();
+        if (offloadingDir == null || offloadingDir.isEmpty()) {
+            throw new ScalerException("Payload offloading directory is not configured.");
+        }
+        
         try {
+            LOG.info("Checking offloading of disk free mb: {}", offloadingDir);
             final FileStore filestore = Files.getFileStore(Paths.get(config.getPayloadOffloadingDirectory()));
 
             final var unallocatedSpaceBytes = filestore.getUsableSpace();

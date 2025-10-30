@@ -67,7 +67,7 @@ Configuration of the AutoScaler is supported through the following environment v
    This should be enabled when payload offloading for workers is enabled.
 
  - `CAF_WORKER_PAYLOAD_OFFLOADING_DIRECTORY`  
-   Default: `""` (Empty String)  
+   Default: `/etc/store/queues`
    Specifies the directory path where offloaded worker payloads will be stored so that the autoscaler can check the 
    free disk space. This is only used if `CAF_WORKER_PAYLOAD_OFFLOADING_ENABLED` is set to `true`.
 

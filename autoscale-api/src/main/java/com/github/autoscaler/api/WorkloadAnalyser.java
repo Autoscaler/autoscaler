@@ -16,8 +16,6 @@
 package com.github.autoscaler.api;
 
 
-import java.util.List;
-
 /**
  * A WorkloadAnalyser examines the workload of a service and makes
  * recommendations upon how to scale it at a given time.

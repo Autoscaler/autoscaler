@@ -25,22 +25,17 @@ import java.io.InputStream;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 
 import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.github.autoscaler.api.ResourceUtilisationSource.OFFLOADING;
-import static com.github.autoscaler.api.ResourceUtilisationSource.RABBIT_MQ;
-
 public final class RabbitSystemResourceMonitor
 {
     private volatile double memoryAllocated;
-    private volatile Optional<Integer> diskFreeMbOpt = Optional.empty();
+    private volatile Optional<Integer> rabbitDiskFreeMbOpt = Optional.empty();
     private volatile Optional<Integer> offloadingDiskFreeMbOpt = Optional.empty();
 
     private final RabbitManagementApi rabbitManagementApi;
@@ -62,79 +57,60 @@ public final class RabbitSystemResourceMonitor
         this.resourceQueryRequestFrequency = config.getResourceQueryRequestFrequency();
     }
 
-    public List<ResourceUtilisation> getCurrentResourceUtilisation() throws ScalerException
+    public ResourceUtilisation getCurrentResourceUtilisation() throws ScalerException
     {
-        final List<ResourceUtilisation> resourceUtilisations = new ArrayList<>();
         if (shouldIssueRequest()) {
-            final ResourceUtilisation rabbitUtil = getRabbitCurrentResourceUtilisation();
-            LOG.debug("{}", rabbitUtil);
-            resourceUtilisations.add(rabbitUtil);
-            if (config.getIsPayloadOffloadingEnabled()) {
-                final ResourceUtilisation offloadingUtil = getOffloadingCurrentResourceUtilisation();
-                LOG.debug("{}", offloadingUtil);
-                resourceUtilisations.add(offloadingUtil);
-            }
-            lastTime = System.currentTimeMillis();
-        } else {
-            resourceUtilisations.add(new ResourceUtilisation(RABBIT_MQ, memoryAllocated, diskFreeMbOpt));
-            if (config.getIsPayloadOffloadingEnabled()) {
-                resourceUtilisations.add(new ResourceUtilisation(OFFLOADING, 0, offloadingDiskFreeMbOpt));
-            }
-        }
-        return resourceUtilisations;
-    }
+            try {
+                final Response response = rabbitManagementApi.getNodeStatus();
+                final JsonNode nodeArray = mapper.readTree(response.readEntity(InputStream.class));
+                final Iterator<JsonNode> iterator = nodeArray.elements();
+                double highestMemUsedInCluster = 0;
+                Optional<Integer> lowestDiskFreeMbInClusterOpt = Optional.empty();
+                while (iterator.hasNext()) {
+                    final JsonNode node = iterator.next();
 
-    private ResourceUtilisation getRabbitCurrentResourceUtilisation() throws ScalerException
-    {
-        try {
-            final Response response = rabbitManagementApi.getNodeStatus();
-            final JsonNode nodeArray = mapper.readTree(response.readEntity(InputStream.class));
-            final Iterator<JsonNode> iterator = nodeArray.elements();
-            double highestMemUsedInCluster = 0;
-            Optional<Integer> lowestDiskFreeMbInClusterOpt = Optional.empty();
-            while (iterator.hasNext()) {
-                final JsonNode node = iterator.next();
+                    final JsonNode memLimitNode = node.get("mem_limit");
+                    final JsonNode memUsedNode = node.get("mem_used");
+                    if (memLimitNode != null && memUsedNode != null) { // These will be null if this node is down
+                        final long memory_limit = memLimitNode.asLong();
+                        final long memory_used = memUsedNode.asLong();
+                        final double memPercentage = ((double) memory_used / memory_limit) * 100;
+                        highestMemUsedInCluster = memPercentage > highestMemUsedInCluster ? memPercentage : highestMemUsedInCluster;
+                    }
 
-                final JsonNode memLimitNode = node.get("mem_limit");
-                final JsonNode memUsedNode = node.get("mem_used");
-                if (memLimitNode != null && memUsedNode != null) { // These will be null if this node is down
-                    final long memory_limit = memLimitNode.asLong();
-                    final long memory_used = memUsedNode.asLong();
-                    final double memPercentage = ((double) memory_used / memory_limit) * 100;
-                    highestMemUsedInCluster = memPercentage > highestMemUsedInCluster ? memPercentage : highestMemUsedInCluster;
-                }
-
-                final JsonNode diskFreeNode = node.get("disk_free");
-                if (diskFreeNode != null) {
-                    final long diskFreeBytes = diskFreeNode.asLong();
-                    final int diskFreeMb = (int) (diskFreeBytes / 1024 / 1024);
-                    if (lowestDiskFreeMbInClusterOpt.isPresent()) {
-                        lowestDiskFreeMbInClusterOpt = Optional.of(
-                                diskFreeMb < lowestDiskFreeMbInClusterOpt.get() ? diskFreeMb : lowestDiskFreeMbInClusterOpt.get());
-                    } else {
-                        lowestDiskFreeMbInClusterOpt = Optional.of(diskFreeMb);
+                    final JsonNode diskFreeNode = node.get("disk_free");
+                    if (diskFreeNode != null) {
+                        final long diskFreeBytes = diskFreeNode.asLong();
+                        final int diskFreeMb = (int) (diskFreeBytes / 1024 / 1024);
+                        if (lowestDiskFreeMbInClusterOpt.isPresent()) {
+                            lowestDiskFreeMbInClusterOpt = Optional.of(
+                                    diskFreeMb < lowestDiskFreeMbInClusterOpt.get() ? diskFreeMb : lowestDiskFreeMbInClusterOpt.get());
+                        } else {
+                            lowestDiskFreeMbInClusterOpt = Optional.of(diskFreeMb);
+                        }
                     }
                 }
+                memoryAllocated = highestMemUsedInCluster;
+                rabbitDiskFreeMbOpt = lowestDiskFreeMbInClusterOpt;
+                if (config.getIsPayloadOffloadingEnabled()) {
+                    offloadingDiskFreeMbOpt = getOffloadingDiskFreeMb();
+                }
+                lastTime = System.currentTimeMillis();
+            } catch (final IOException ex) {
+                throw new ScalerException("Unable to map response to status request.", ex);
             }
-            memoryAllocated = highestMemUsedInCluster;
-            diskFreeMbOpt = lowestDiskFreeMbInClusterOpt;
-            return new ResourceUtilisation(RABBIT_MQ, highestMemUsedInCluster, lowestDiskFreeMbInClusterOpt);
-        } catch (final IOException ex) {
-            throw new ScalerException("Unable to map response to status request.", ex);
         }
+        return new ResourceUtilisation(memoryAllocated, rabbitDiskFreeMbOpt, offloadingDiskFreeMbOpt);
     }
 
-    private ResourceUtilisation getOffloadingCurrentResourceUtilisation() throws ScalerException
+    private Optional<Integer> getOffloadingDiskFreeMb() throws ScalerException
     {
         try {
             final FileStore filestore = Files.getFileStore(Paths.get(config.getPayloadOffloadingDirectory()));
 
             final var unallocatedSpaceBytes = filestore.getUsableSpace();
 
-            final var diskFreeMbOpt = Optional.of(Math.toIntExact(unallocatedSpaceBytes / MB_IN_BYTES));
-
-            offloadingDiskFreeMbOpt = diskFreeMbOpt;
-            return new ResourceUtilisation(OFFLOADING, 0, diskFreeMbOpt);
+            return Optional.of(Math.toIntExact(unallocatedSpaceBytes / MB_IN_BYTES));
         } catch (final Exception ex) {
             throw new ScalerException("Unable to load datastore resource utilization.", ex);
         }

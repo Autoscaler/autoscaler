@@ -41,7 +41,7 @@ public interface WorkloadAnalyser
      * @throws ScalerException if it fails to determine resource utilisation due to not being able to connect to messaging
      * platform's api.
      */
-    List<ResourceUtilisation> getCurrentResourceUtilisation() throws ScalerException;
+    ResourceUtilisation getCurrentResourceUtilisation() throws ScalerException;
 
     /**
      * This method will return the content to send in an email when reporting a memory overload issue with the messaging platform.
@@ -49,7 +49,7 @@ public interface WorkloadAnalyser
      * that it can be added to the email body.
      * @return The email body
      */
-    String getMemoryOverloadWarning(ResourceUtilisationSource source, String percentageMem);
+    String getRabbitMemoryOverloadWarning(String percentageMem);
 
     /**
      * This method will return the content to send in an email when reporting a disk space low issue with the messaging platform.
@@ -57,5 +57,13 @@ public interface WorkloadAnalyser
      * it can be added to the email body.
      * @return The email body
      */
-    String getDiskSpaceLowWarning(ResourceUtilisationSource source, String diskFreeMb);
+    String getRabbitDiskSpaceLowWarning(String diskFreeMb);
+
+    /**
+     * This method will return the content to send in an email when reporting a disk space low issue with the offloading datastore.
+     * @param diskFreeMb The amount of disk space (MB) that is remaining on the offloading datastore. This is passed as a string so that
+     * it can be added to the email body.
+     * @return The email body
+     */
+    String getOffloadingDiskSpaceLowWarning(String diskFreeMb);
 }

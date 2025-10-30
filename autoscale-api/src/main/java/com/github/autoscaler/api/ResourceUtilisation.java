@@ -19,50 +19,45 @@ import java.util.Optional;
 
 public final class ResourceUtilisation
 {
-    private final ResourceUtilisationSource source;
+    private final double rabbitMqMemoryUsedPercent;
 
-    private final double memoryUsedPercent;
+    private final Optional<Integer> rabbitMqDiskFreeMbOpt;
 
-    private final Optional<Integer> diskFreeMbOpt;
+    private final Optional<Integer> offloadingDiskFreeMbOpt;
 
-    public ResourceUtilisation(final double memoryUsedPercent, final Optional<Integer> diskFreeMbOpt)
+    public ResourceUtilisation(final double rabbitMqMemoryUsedPercent,
+                               final Optional<Integer> rabbitMqDiskFreeMbOpt,
+                               final Optional<Integer> offloadingDiskFreeMbOpt)
     {
-        this(null, memoryUsedPercent, diskFreeMbOpt);
+        this.rabbitMqMemoryUsedPercent = rabbitMqMemoryUsedPercent;
+        this.rabbitMqDiskFreeMbOpt = rabbitMqDiskFreeMbOpt;
+        this.offloadingDiskFreeMbOpt = offloadingDiskFreeMbOpt;
     }
 
-    public ResourceUtilisation(final ResourceUtilisationSource source,
-                               final double memoryUsedPercent,
-                               final Optional<Integer> diskFreeMbOpt)
+    public double getRabbitMqMemoryUsedPercent()
     {
-        this.source = source;
-        this.memoryUsedPercent = memoryUsedPercent;
-        this.diskFreeMbOpt = diskFreeMbOpt;
+        return rabbitMqMemoryUsedPercent;
     }
 
-    public double getMemoryUsedPercent()
+    public Optional<Integer> getRabbitMqDiskFreeMbOpt()
     {
-        return memoryUsedPercent;
+        return rabbitMqDiskFreeMbOpt;
     }
 
-    public Optional<Integer> getDiskFreeMbOpt()
-    {
-        return diskFreeMbOpt;
-    }
-
-    public ResourceUtilisationSource getSource()
-    {
-        return source;
+    public Optional<Integer> getOffloadingDiskFreeMbOpt() {
+        return offloadingDiskFreeMbOpt;
     }
 
     @Override
     public String toString()
     {
-        final String diskFreeMbString = diskFreeMbOpt.isPresent() ? diskFreeMbOpt.get().toString() : "UNKNOWN";
+        final String rabbitMqDiskFreeMbString = rabbitMqDiskFreeMbOpt.isPresent() ? rabbitMqDiskFreeMbOpt.get().toString() : "UNKNOWN";
+        final String offloadingDiskFreeMbString = offloadingDiskFreeMbOpt.isPresent() ? offloadingDiskFreeMbOpt.get().toString() : "UNKNOWN";
 
         return "ResourceUtilisation{" +
-                "source=" + source +
-                ", memoryUsedPercent=" + memoryUsedPercent +
-                ", diskFreeMbOpt=" + diskFreeMbString  +
+                ", rabbitMqMemoryUsedPercent=" + rabbitMqMemoryUsedPercent +
+                ", rabbitMqDiskFreeMbOpt=" + rabbitMqDiskFreeMbString  +
+                ", offloadingDiskFreeMbOpt=" + offloadingDiskFreeMbString  +
                 '}';
     }
 }

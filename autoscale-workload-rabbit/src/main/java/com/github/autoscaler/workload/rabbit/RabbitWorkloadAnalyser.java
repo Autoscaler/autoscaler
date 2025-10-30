@@ -213,6 +213,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
         }
     }
 
+    @Override
     public String getRabbitMemoryOverloadWarning(final String percentageMem)
     {
         return "To whom it may concern, \n"
@@ -220,6 +221,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
                 + "RabbitMQ has used " + percentageMem + "% of its high watermark memory allowance.\n";
     }
 
+    @Override
     public String getRabbitDiskSpaceLowWarning(final String diskFreeMb)
     {
         return "To whom it may concern, \n"
@@ -227,6 +229,7 @@ public class RabbitWorkloadAnalyser implements WorkloadAnalyser
                 + "RabbitMQ has only " + diskFreeMb + "MB of disk space free.\n";
     }
 
+    @Override
     public String getOffloadingDiskSpaceLowWarning(final String diskFreeMb)
     {
         return "To whom it may concern, \n"

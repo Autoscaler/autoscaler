@@ -3,7 +3,9 @@
 #### Version Number
 ${version-number}
 
-#### New Features
+#### Breaking Changes
 - US101197: Offloading resource utilization monitoring added.
+
+#### New Features
 
 #### Known Issues

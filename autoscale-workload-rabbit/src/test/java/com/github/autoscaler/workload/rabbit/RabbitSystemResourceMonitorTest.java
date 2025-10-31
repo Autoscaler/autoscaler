@@ -46,15 +46,18 @@ public class RabbitSystemResourceMonitorTest {
                 Mockito.mock(RabbitManagementApi.class);
         Mockito.when(mockRabbitManagementApi.getNodeStatus()).thenReturn(mockResponse);
 
+        final RabbitWorkloadAnalyserConfiguration config = Mockito.mock(RabbitWorkloadAnalyserConfiguration.class);
+        Mockito.when(config.getResourceQueryRequestFrequency()).thenReturn(40);
+
         // Act
-        final RabbitSystemResourceMonitor rabbitSystemResourceMonitor = new RabbitSystemResourceMonitor(mockRabbitManagementApi, 60);
+        final RabbitSystemResourceMonitor rabbitSystemResourceMonitor = new RabbitSystemResourceMonitor(mockRabbitManagementApi, config);
         final ResourceUtilisation resourceUtilisation = rabbitSystemResourceMonitor.getCurrentResourceUtilisation();
 
         // Assert
         assertNotNull(resourceUtilisation);
-        assertEquals(50.0, resourceUtilisation.getMemoryUsedPercent(), 0.01,
+        assertEquals(50.0, resourceUtilisation.getRabbitMqMemoryUsedPercent(), 0.01,
                 "Expected 50% memory used (highest in cluster)");
-        assertEquals(Optional.of(100), resourceUtilisation.getDiskFreeMbOpt(),
+        assertEquals(Optional.of(100), resourceUtilisation.getRabbitMqDiskFreeMbOpt(),
                 "Expected 100MB of disk space free (lowest in cluster)");
     }
 
@@ -71,15 +74,18 @@ public class RabbitSystemResourceMonitorTest {
                 Mockito.mock(RabbitManagementApi.class);
         Mockito.when(mockRabbitManagementApi.getNodeStatus()).thenReturn(mockResponse);
 
+        final RabbitWorkloadAnalyserConfiguration config = Mockito.mock(RabbitWorkloadAnalyserConfiguration.class);
+        Mockito.when(config.getResourceQueryRequestFrequency()).thenReturn(60);
+
         // Act
-        final RabbitSystemResourceMonitor rabbitSystemResourceMonitor = new RabbitSystemResourceMonitor(mockRabbitManagementApi, 60);
+        final RabbitSystemResourceMonitor rabbitSystemResourceMonitor = new RabbitSystemResourceMonitor(mockRabbitManagementApi, config);
         final ResourceUtilisation resourceUtilisation = rabbitSystemResourceMonitor.getCurrentResourceUtilisation();
 
         // Assert
         assertNotNull(resourceUtilisation);
-        assertEquals(0.0, resourceUtilisation.getMemoryUsedPercent(), 0.01,
+        assertEquals(0.0, resourceUtilisation.getRabbitMqMemoryUsedPercent(), 0.01,
                 "Expected 0% memory used as the RabbitMQ response did not contain the mem_limit and mem_used properties");
-        assertEquals(Optional.empty(), resourceUtilisation.getDiskFreeMbOpt(),
+        assertEquals(Optional.empty(), resourceUtilisation.getRabbitMqDiskFreeMbOpt(),
                 "Expected unknown disk space free as the RabbitMQ response did not contain a disk_free property");
     }
 }

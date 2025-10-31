@@ -25,5 +25,7 @@
             backlogGoal: getenv("CAF_AUTOSCALER_BACKLOG_GOAL") || 300
         }
     },
-    stagingQueueIndicator: getenv("CAF_AUTOSCALER_STAGING_QUEUE_INDICATOR") || null
+    stagingQueueIndicator: getenv("CAF_AUTOSCALER_STAGING_QUEUE_INDICATOR") || null,
+    isPayloadOffloadingEnabled: getenv("CAF_WORKER_PAYLOAD_OFFLOADING_ENABLED") || false,
+    payloadOffloadingDirectory: getenv("CAF_WORKER_PAYLOAD_OFFLOADING_DIRECTORY") || "/etc/store/queues",
 });

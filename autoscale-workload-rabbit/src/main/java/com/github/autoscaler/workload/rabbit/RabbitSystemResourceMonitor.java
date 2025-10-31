@@ -22,27 +22,39 @@ import com.github.autoscaler.api.ScalerException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Optional;
 
 import jakarta.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class RabbitSystemResourceMonitor
 {
     private volatile double memoryAllocated;
-    private volatile Optional<Integer> diskFreeMbOpt = Optional.empty();
+    private volatile Optional<Integer> rabbitDiskFreeMbOpt = Optional.empty();
+    private volatile Optional<Integer> offloadingDiskFreeMbOpt = Optional.empty();
 
     private final RabbitManagementApi rabbitManagementApi;
+    private final RabbitWorkloadAnalyserConfiguration config;
     private final ObjectMapper mapper = new ObjectMapper();
     private volatile long lastTime;
     private final int resourceQueryRequestFrequency;
 
+    private static final Logger LOG = LoggerFactory.getLogger(RabbitSystemResourceMonitor.class);
+
+    private static final int MB_IN_BYTES  = 1_048_576;
+
     public RabbitSystemResourceMonitor(final RabbitManagementApi rabbitManagementApi,
-                                       final int resourceQueryRequestFrequency)
+                                       final RabbitWorkloadAnalyserConfiguration config)
     {
         this.rabbitManagementApi = rabbitManagementApi;
         this.lastTime = 0;
-        this.resourceQueryRequestFrequency = resourceQueryRequestFrequency;
+        this.config = config;
+        this.resourceQueryRequestFrequency = config.getResourceQueryRequestFrequency();
     }
 
     public ResourceUtilisation getCurrentResourceUtilisation() throws ScalerException
@@ -69,7 +81,7 @@ public final class RabbitSystemResourceMonitor
                     final JsonNode diskFreeNode = node.get("disk_free");
                     if (diskFreeNode != null) {
                         final long diskFreeBytes = diskFreeNode.asLong();
-                        final int diskFreeMb = (int)(diskFreeBytes / 1024 / 1024);
+                        final int diskFreeMb = (int) (diskFreeBytes / 1024 / 1024);
                         if (lowestDiskFreeMbInClusterOpt.isPresent()) {
                             lowestDiskFreeMbInClusterOpt = Optional.of(
                                     diskFreeMb < lowestDiskFreeMbInClusterOpt.get() ? diskFreeMb : lowestDiskFreeMbInClusterOpt.get());
@@ -78,14 +90,36 @@ public final class RabbitSystemResourceMonitor
                         }
                     }
                 }
-                memoryAllocated =  highestMemUsedInCluster;
-                diskFreeMbOpt = lowestDiskFreeMbInClusterOpt;
+                memoryAllocated = highestMemUsedInCluster;
+                rabbitDiskFreeMbOpt = lowestDiskFreeMbInClusterOpt;
+                if (config.getIsPayloadOffloadingEnabled()) {
+                    offloadingDiskFreeMbOpt = getOffloadingDiskFreeMb();
+                }
                 lastTime = System.currentTimeMillis();
             } catch (final IOException ex) {
                 throw new ScalerException("Unable to map response to status request.", ex);
             }
         }
-        return new ResourceUtilisation(memoryAllocated, diskFreeMbOpt);
+        return new ResourceUtilisation(memoryAllocated, rabbitDiskFreeMbOpt, offloadingDiskFreeMbOpt);
+    }
+
+    private Optional<Integer> getOffloadingDiskFreeMb() throws ScalerException
+    {
+        final String offloadingDir = config.getPayloadOffloadingDirectory();
+        if (offloadingDir == null || offloadingDir.isEmpty()) {
+            throw new ScalerException("Payload offloading directory is not configured.");
+        }
+        
+        try {
+            LOG.info("Checking offloading of disk free mb: {}", offloadingDir);
+            final FileStore filestore = Files.getFileStore(Paths.get(config.getPayloadOffloadingDirectory()));
+
+            final var unallocatedSpaceBytes = filestore.getUsableSpace();
+
+            return Optional.of(Math.toIntExact(unallocatedSpaceBytes / MB_IN_BYTES));
+        } catch (final Exception ex) {
+            throw new ScalerException("Unable to load datastore resource utilization.", ex);
+        }
     }
 
     private boolean shouldIssueRequest()

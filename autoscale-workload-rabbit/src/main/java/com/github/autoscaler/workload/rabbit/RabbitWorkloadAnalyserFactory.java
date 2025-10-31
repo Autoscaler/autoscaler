@@ -57,7 +57,7 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
             config.getRabbitManagementEndpoint(),
             config.getRabbitManagementUser(),
             config.getRabbitManagementPassword());
-        this.rabbitResourceMonitor = new RabbitSystemResourceMonitor(rabbitManagementApi, config.getResourceQueryRequestFrequency());
+        this.rabbitResourceMonitor = new RabbitSystemResourceMonitor(rabbitManagementApi, config);
         this.defaultProfile = config.getProfiles().get(RabbitWorkloadAnalyserConfiguration.DEFAULT_PROFILE_NAME);
         this.objectMapper = new ObjectMapper();
         this.nodeStatusEndpoint = config.getRabbitManagementEndpoint() + "/api/nodes/";

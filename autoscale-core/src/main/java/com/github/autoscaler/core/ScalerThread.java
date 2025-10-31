@@ -327,22 +327,29 @@ public class ScalerThread implements Runnable
 
     private void handleAlerterDispatch(final ResourceUtilisation resourceUtilisation) throws ScalerException
     {
-        final double memoryUsedPercent = resourceUtilisation.getMemoryUsedPercent();
+        final double memoryUsedPercent = resourceUtilisation.getRabbitMqMemoryUsedPercent();
         if (memoryUsedPercent >= resourceConfig.getMemoryUsedPercentAlertDispatchThreshold()) {
-            final String memoryOverloadWarningEmailBody = analyser.getMemoryOverloadWarning(df.format(memoryUsedPercent));
+            final String memoryOverloadWarningEmailBody = analyser.getRabbitMemoryOverloadWarning(df.format(memoryUsedPercent));
             memoryOverloadAlerter.dispatchAlert(memoryOverloadWarningEmailBody);
         }
 
-        final Optional<Integer> diskFreeMbOpt = resourceUtilisation.getDiskFreeMbOpt();
-        if (diskFreeMbOpt.isPresent() && diskFreeMbOpt.get() <= resourceConfig.getDiskFreeMbAlertDispatchThreshold()) {
-            final String diskLowWarningEmailBody = analyser.getDiskSpaceLowWarning(df.format(diskFreeMbOpt.get()));
+        final Optional<Integer> rabbitMqDiskFreeMbOpt = resourceUtilisation.getRabbitMqDiskFreeMbOpt();
+        if (rabbitMqDiskFreeMbOpt.isPresent() && rabbitMqDiskFreeMbOpt.get() <= resourceConfig.getDiskFreeMbAlertDispatchThreshold()) {
+            final String diskLowWarningEmailBody = analyser.getRabbitDiskSpaceLowWarning(df.format(rabbitMqDiskFreeMbOpt.get()));
+            diskSpaceLowAlerter.dispatchAlert(diskLowWarningEmailBody);
+        }
+
+        final Optional<Integer> offloadingDiskFreeMbOpt = resourceUtilisation.getOffloadingDiskFreeMbOpt();
+        if (offloadingDiskFreeMbOpt.isPresent() && offloadingDiskFreeMbOpt.get() <= resourceConfig.getDiskFreeMbAlertDispatchThreshold()) {
+            final String diskLowWarningEmailBody = analyser.getOffloadingDiskSpaceLowWarning(
+                    df.format(offloadingDiskFreeMbOpt.get()));
             diskSpaceLowAlerter.dispatchAlert(diskLowWarningEmailBody);
         }
     }
 
     private ResourceLimitStagesReached establishResourceLimitStagesReached(final ResourceUtilisation resourceUtilisation)
     {
-        final double memoryUsedPercent = resourceUtilisation.getMemoryUsedPercent();
+        final double memoryUsedPercent = resourceUtilisation.getRabbitMqMemoryUsedPercent();
         final ResourceLimitStage memoryLimitStageReached;
         if (memoryUsedPercent >= resourceConfig.getMemoryUsedPercentLimitStageThree()) {
             memoryLimitStageReached = ResourceLimitStage.STAGE_3;
@@ -354,7 +361,7 @@ public class ScalerThread implements Runnable
             memoryLimitStageReached = ResourceLimitStage.NO_STAGE;
         }
 
-        final Optional<Integer> diskFreeMbOpt = resourceUtilisation.getDiskFreeMbOpt();
+        final Optional<Integer> diskFreeMbOpt = getLowestDiskFreeOpt(resourceUtilisation);
         final ResourceLimitStage diskLimitStageReached;
         if (diskFreeMbOpt.isPresent()) {
             final int diskFreeMb = diskFreeMbOpt.get();
@@ -406,5 +413,14 @@ public class ScalerThread implements Runnable
             return false;
         }
         return true;
+    }
+
+    public static Optional<Integer> getLowestDiskFreeOpt(final ResourceUtilisation util)
+    {
+        return util.getRabbitMqDiskFreeMbOpt()
+                .flatMap(rabbit -> util.getOffloadingDiskFreeMbOpt()
+                        .map(offloading -> Math.min(rabbit, offloading))
+                        .or(() -> Optional.of(rabbit)))
+                .or(util::getOffloadingDiskFreeMbOpt);
     }
 }

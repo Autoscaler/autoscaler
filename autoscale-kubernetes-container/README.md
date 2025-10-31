@@ -57,6 +57,20 @@ Configuration of the AutoScaler is supported through the following environment v
     Default: `INFO`  
     Used to specify the required level of logging.
 
+ - `CAF_AUTOSCALER_STAGING_QUEUE_INDICATOR`  
+   Default: `""` (Empty String)  
+   Used to specify an indicator or pattern for identifying staging queues.
+
+ - `CAF_WORKER_PAYLOAD_OFFLOADING_ENABLED`  
+   Default: `false`  
+   Enables or disables resource checking of the location specified by `CAF_WORKER_PAYLOAD_OFFLOADING_DIRECTORY`.
+   This should be enabled when payload offloading for workers is enabled.
+
+ - `CAF_WORKER_PAYLOAD_OFFLOADING_DIRECTORY`  
+   Default: `/etc/store/queues`
+   Specifies the directory path where offloaded worker payloads will be stored so that the autoscaler can check the 
+   free disk space. This is only used if `CAF_WORKER_PAYLOAD_OFFLOADING_ENABLED` is set to `true`.
+
 ## Messaging platform based back off configuration
 
 This functionality will only work on services that have the label `autoscale.shutdownPriority` set in their app definitions. These labels are then used to determine which application should be shutdown when the messaging platform begins to run low on resources.

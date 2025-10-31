@@ -78,7 +78,8 @@ public class ScalerThreadTest
             new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new Alerter(new HashMap<>(),
                 new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(0)));
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(
+                0.0, Optional.of(0), Optional.empty()));
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_UP);
         t.run();
         Mockito.verify(scaler, Mockito.times(1)).scaleUp(SERVICE_REF, 1);
@@ -102,7 +103,8 @@ public class ScalerThreadTest
             new Alerter(new HashMap<>(), new AlertDispatchConfiguration()), new Alerter(new HashMap<>(),
                 new AlertDispatchConfiguration()), new ResourceMonitoringConfiguration());
         t.run();
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(0)));
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(
+                0.0, Optional.empty(), Optional.of(0)));
         Mockito.when(analyser.analyseWorkload(info)).thenReturn(ScalingAction.SCALE_DOWN);
         t.run();
         Mockito.verify(scaler, Mockito.times(1)).scaleDown(SERVICE_REF, 1);
@@ -120,7 +122,8 @@ public class ScalerThreadTest
         Alerter memoryOverloadAlerter = Mockito.mock(Alerter.class);
 
         // Set the current memory used to 90% to reach the stage 3 limit, which should cause a scale down operation
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(90, Optional.empty()));
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(
+                90, Optional.empty(), Optional.empty()));
 
         int min = 0;
         int max = 5;
@@ -147,7 +150,8 @@ public class ScalerThreadTest
         Alerter diskSpaceLowAlerter = Mockito.mock(Alerter.class);
 
         // Set the current disk space free to be 400MB to reach the stage 1 limit, which should cause a scale down operation
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(0.0, Optional.of(400)));
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(
+                0.0, Optional.of(400), Optional.empty()));
 
         int min = 0;
         int max = 5;
@@ -200,69 +204,100 @@ public class ScalerThreadTest
     }
 
     @Test
-    public void testScaledDown_Stage_One_FreeDisk_LimitReached() throws ScalerException {
-        testScalingOperation(1, 0, 400, 1, 1);
+    public void testScaledDown_Stage_One_FreeDisk_LimitReachedForRabbitMQ() throws ScalerException {
+        testScalingOperation(1, 0, 400, 600,1, 1);
     }
 
     @Test
-    public void testScaledDown_Stage_Two_FreeDisk_LimitReached() throws ScalerException {
-        testScalingOperation(1, 0, 200, 1, 1);
+    public void testScaledDown_Stage_One_FreeDisk_LimitReachedForOffloading() throws ScalerException {
+        testScalingOperation(1, 0, 600, 400,1, 1);
     }
 
     @Test
-    public void testScaledDown_Stage_Three_FreeDisk_LimitReached() throws ScalerException {
-        testScalingOperation(1, 0, 100, 1, 1);
+    public void testScaledDown_Stage_Two_FreeDisk_LimitReachedForRabbitMQ() throws ScalerException {
+        testScalingOperation(1, 0, 200, 600, 1, 1);
     }
 
     @Test
-    public void testNotScaledDown_Stage_One_FreeDisk_LimitReached_PriorityTooHigh() throws ScalerException {
-        testScalingOperation(5, 0, 400, 1, 0);
+    public void testScaledDown_Stage_Two_FreeDisk_LimitReachedForOffloading() throws ScalerException {
+        testScalingOperation(1, 0, 600, 200, 1, 1);
     }
 
     @Test
-    public void testNotScaledDown_Stage_Two_FreeDisk_LimitReached_PriorityTooHigh() throws ScalerException {
-        testScalingOperation(5, 0, 200, 1, 0);
+    public void testScaledDown_Stage_Three_FreeDisk_LimitReachedForRabbitMQ() throws ScalerException {
+        testScalingOperation(1, 0, 100, 600,1, 1);
     }
 
     @Test
-    public void testNotScaledDown_Stage_Three_FreeDisk_LimitReached_PriorityTooHigh() throws ScalerException {
-        testScalingOperation(10, 0, 100, 1, 0);
+    public void testScaledDown_Stage_Three_FreeDisk_LimitReachedForOffloading() throws ScalerException {
+        testScalingOperation(1, 0, 600, 100,1, 1);
+    }
+
+    @Test
+    public void testNotScaledDown_Stage_One_FreeDisk_LimitReached_PriorityTooHighForRabbitMQ() throws ScalerException {
+        testScalingOperation(5, 0, 400, 600,1, 0);
+    }
+
+    @Test
+    public void testNotScaledDown_Stage_One_FreeDisk_LimitReached_PriorityTooHighForOffloading() throws ScalerException {
+        testScalingOperation(5, 0, 600, 400,1, 0);
+    }
+
+    @Test
+    public void testNotScaledDown_Stage_Two_FreeDisk_LimitReached_PriorityTooHighForRabbitMQ() throws ScalerException {
+        testScalingOperation(5, 0, 200, 600,1, 0);
+    }
+
+    @Test
+    public void testNotScaledDown_Stage_Two_FreeDisk_LimitReached_PriorityTooHighForOffloading() throws ScalerException {
+        testScalingOperation(5, 0, 600, 200,1, 0);
+    }
+
+    @Test
+    public void testNotScaledDown_Stage_Three_FreeDisk_LimitReached_PriorityTooHighForRabbitMQ() throws ScalerException {
+        testScalingOperation(10, 0, 100, 600,1, 0);
+    }
+
+    @Test
+    public void testNotScaledDown_Stage_Three_FreeDisk_LimitReached_PriorityTooHighForOffloading() throws ScalerException {
+        testScalingOperation(10, 0, 600, 100,1, 0);
     }
 
     @Test
     public void testScaledDown_Stage_One_MemoryPercentageLimitReached() throws ScalerException {
-        testScalingOperation(1, 70, 600, 0, 1);
+        testScalingOperation(1, 70, 600, 800,0, 1);
     }
 
     @Test
     public void testScaledDown_Stage_Two_MemoryPercentageLimitReached() throws ScalerException {
-        testScalingOperation(1, 80, 600, 0, 1);
+        testScalingOperation(1, 80, 600, 800,0, 1);
     }
 
     @Test
     public void testScaledDown_Stage_Memory_PercentageDiskLimitReached() throws ScalerException {
-        testScalingOperation(1, 90, 600, 0, 1);
+        testScalingOperation(1, 90, 600, 600,0, 1);
     }
 
     @Test
     public void testNotScaledDown_Stage_One_MemoryPercentageLimitReached_PriorityTooHigh() throws ScalerException {
-        testScalingOperation(5, 70, 600, 0, 0);
+        testScalingOperation(5, 70, 600, 600, 0, 0);
     }
 
     @Test
     public void testNotScaledDown_Stage_Two_MemoryPercentageLimitReached_PriorityTooHigh() throws ScalerException {
-        testScalingOperation(5, 80, 600, 0, 0);
+        testScalingOperation(5, 80, 600, 600, 0, 0);
     }
 
     @Test
     public void testNotScaledDown_Stage_Memory_PercentageDiskLimitReached_PriorityTooHigh() throws ScalerException {
-        testScalingOperation(10, 90, 600, 0, 0);
+        testScalingOperation(10, 90, 600, 600, 0, 0);
     }
 
     private void testScalingOperation(
             final int shutdownPriority, 
             final int memoryUsedPercent, 
-            final int freeDiskMb,
+            final int rabbitDiskFreeMb,
+            final int offloadingDiskFreeMb,
             final int wantedDispatchAlertInvocations,
             final int wantedScaleDownInvocations
     ) throws ScalerException {
@@ -273,7 +308,8 @@ public class ScalerThreadTest
         Governor governor = Mockito.mock(Governor.class);
         Alerter diskSpaceLowAlerter = Mockito.mock(Alerter.class);
 
-        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(memoryUsedPercent, Optional.of(freeDiskMb)));
+        Mockito.when(analyser.getCurrentResourceUtilisation()).thenReturn(new ResourceUtilisation(
+                memoryUsedPercent, Optional.of(rabbitDiskFreeMb), Optional.of(offloadingDiskFreeMb)));
 
         int min = 0;
         int max = 5;

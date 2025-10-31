@@ -19,34 +19,45 @@ import java.util.Optional;
 
 public final class ResourceUtilisation
 {
-    private final double memoryUsedPercent;
+    private final double rabbitMqMemoryUsedPercent;
 
-    private final Optional<Integer> diskFreeMbOpt;
+    private final Optional<Integer> rabbitMqDiskFreeMbOpt;
 
-    public ResourceUtilisation(final double memoryUsedPercent, final Optional<Integer> diskFreeMbOpt)
+    private final Optional<Integer> offloadingDiskFreeMbOpt;
+
+    public ResourceUtilisation(final double rabbitMqMemoryUsedPercent,
+                               final Optional<Integer> rabbitMqDiskFreeMbOpt,
+                               final Optional<Integer> offloadingDiskFreeMbOpt)
     {
-        this.memoryUsedPercent = memoryUsedPercent;
-        this.diskFreeMbOpt = diskFreeMbOpt;
+        this.rabbitMqMemoryUsedPercent = rabbitMqMemoryUsedPercent;
+        this.rabbitMqDiskFreeMbOpt = rabbitMqDiskFreeMbOpt;
+        this.offloadingDiskFreeMbOpt = offloadingDiskFreeMbOpt;
     }
 
-    public double getMemoryUsedPercent()
+    public double getRabbitMqMemoryUsedPercent()
     {
-        return memoryUsedPercent;
+        return rabbitMqMemoryUsedPercent;
     }
 
-    public Optional<Integer> getDiskFreeMbOpt()
+    public Optional<Integer> getRabbitMqDiskFreeMbOpt()
     {
-        return diskFreeMbOpt;
+        return rabbitMqDiskFreeMbOpt;
+    }
+
+    public Optional<Integer> getOffloadingDiskFreeMbOpt() {
+        return offloadingDiskFreeMbOpt;
     }
 
     @Override
     public String toString()
     {
-        final String diskFreeMbString = diskFreeMbOpt.isPresent() ? diskFreeMbOpt.get().toString() : "UNKNOWN";
+        final String rabbitMqDiskFreeMbString = rabbitMqDiskFreeMbOpt.isPresent() ? rabbitMqDiskFreeMbOpt.get().toString() : "UNKNOWN";
+        final String offloadingDiskFreeMbString = offloadingDiskFreeMbOpt.isPresent() ? offloadingDiskFreeMbOpt.get().toString() : "UNKNOWN";
 
         return "ResourceUtilisation{" +
-                "memoryUsedPercent=" + memoryUsedPercent +
-                ", diskFreeMb=" + diskFreeMbString +
+                ", rabbitMqMemoryUsedPercent=" + rabbitMqMemoryUsedPercent +
+                ", rabbitMqDiskFreeMbOpt=" + rabbitMqDiskFreeMbString  +
+                ", offloadingDiskFreeMbOpt=" + offloadingDiskFreeMbString  +
                 '}';
     }
 }

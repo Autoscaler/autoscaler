@@ -47,7 +47,7 @@ public interface WorkloadAnalyser
      * that it can be added to the email body.
      * @return The email body
      */
-    String getMemoryOverloadWarning(String percentageMem);
+    String getRabbitMemoryOverloadWarning(String percentageMem);
 
     /**
      * This method will return the content to send in an email when reporting a disk space low issue with the messaging platform.
@@ -55,5 +55,13 @@ public interface WorkloadAnalyser
      * it can be added to the email body.
      * @return The email body
      */
-    String getDiskSpaceLowWarning(String diskFreeMb);
+    String getRabbitDiskSpaceLowWarning(String diskFreeMb);
+
+    /**
+     * This method will return the content to send in an email when reporting a disk space low issue with the offloading datastore.
+     * @param diskFreeMb The amount of disk space (MB) that is remaining on the offloading datastore. This is passed as a string so that
+     * it can be added to the email body.
+     * @return The email body
+     */
+    String getOffloadingDiskSpaceLowWarning(String diskFreeMb);
 }

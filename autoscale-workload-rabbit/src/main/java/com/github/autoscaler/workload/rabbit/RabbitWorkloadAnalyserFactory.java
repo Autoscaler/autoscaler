@@ -103,7 +103,7 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
         }
     }
 
-    private boolean offloadingDirectoryExists() throws ScalerException
+    private boolean offloadingDirectoryExists()
     {
         final String offloadingDir = config.getPayloadOffloadingDirectory();
 

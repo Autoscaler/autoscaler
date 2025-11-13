@@ -28,8 +28,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 
 import jakarta.ws.rs.core.Response;
 
@@ -84,18 +88,36 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
     public HealthResult healthCheck()
     {
         try {
-            if (atLeastOneNodeRunning()) {
-                return HealthResult.RESULT_HEALTHY;
-            } else {
+            if (!atLeastOneNodeRunning()) {
                 final String message = "RabbitMQ management API reports 0 nodes are running: " + nodeStatusEndpoint;
                 LOG.warn(message);
                 return new HealthResult(HealthStatus.UNHEALTHY, message);
+            } else if (config.getIsPayloadOffloadingEnabled() && !offloadingDirectoryExists()) {
+                final String message = "Payload offloading directory is not configured or does not exist.";
+                LOG.warn(message);
+                return new HealthResult(HealthStatus.UNHEALTHY, message);
             }
+            return HealthResult.RESULT_HEALTHY;
         } catch (final IOException | ScalerException e) {
             final String message = "Failed to contact RabbitMQ management API: " + nodeStatusEndpoint;
             LOG.warn(message, e);
             return new HealthResult(HealthStatus.UNHEALTHY, message);
         }
+    }
+
+    private boolean offloadingDirectoryExists() throws ScalerException
+    {
+        final String offloadingDir = config.getPayloadOffloadingDirectory();
+
+        if (offloadingDir == null || offloadingDir.isEmpty()) {
+            return false;
+        }
+
+        if (!Files.exists(Paths.get(offloadingDir))) {
+            return false;
+        }
+
+        return true;
     }
 
     private boolean atLeastOneNodeRunning() throws ScalerException, IOException

@@ -118,7 +118,7 @@ public final class RabbitSystemResourceMonitor
         
         try {
             LOG.debug("Checking offloading of disk free mb: {}", offloadingDir);
-            final FileStore filestore = Files.getFileStore(Paths.get(config.getPayloadOffloadingDirectory()));
+            final FileStore filestore = Files.getFileStore(offloadingPath);
 
             final var unallocatedSpaceBytes = filestore.getUsableSpace();
 

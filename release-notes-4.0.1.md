@@ -5,7 +5,7 @@ ${version-number}
 - None
 
 #### Bug Fixes
-- US1041197: Do not throw exception when queues directory does not exist
+- US1041197: Health check added for offloading directory.
 
 #### Known Issues
 - None

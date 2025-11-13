@@ -111,11 +111,7 @@ public class RabbitWorkloadAnalyserFactory implements WorkloadAnalyserFactory
             return false;
         }
 
-        if (!Files.exists(Paths.get(offloadingDir))) {
-            return false;
-        }
-
-        return true;
+        return Files.exists(Paths.get(offloadingDir));
     }
 
     private boolean atLeastOneNodeRunning() throws ScalerException, IOException

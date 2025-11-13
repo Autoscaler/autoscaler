@@ -109,6 +109,11 @@ public final class RabbitSystemResourceMonitor
         if (offloadingDir == null || offloadingDir.isEmpty()) {
             throw new ScalerException("Payload offloading directory is not configured.");
         }
+
+        if (!Files.exists(Paths.get(offloadingDir))) {
+            LOG.debug("Payload offloading directory {} does not exist.",  offloadingDir);
+            return Optional.empty();
+        }
         
         try {
             LOG.info("Checking offloading of disk free mb: {}", offloadingDir);

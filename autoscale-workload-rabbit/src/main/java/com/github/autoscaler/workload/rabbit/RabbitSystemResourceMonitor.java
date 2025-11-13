@@ -110,7 +110,8 @@ public final class RabbitSystemResourceMonitor
             throw new ScalerException("Payload offloading directory is not configured.");
         }
 
-        if (!Files.exists(Paths.get(offloadingDir))) {
+        final Path offloadingPath = Paths.get(offloadingDir);
+        if (!Files.exists(offloadingPath)) {
             LOG.debug("Payload offloading directory {} does not exist.",  offloadingDir);
             return Optional.empty();
         }

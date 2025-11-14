@@ -109,16 +109,10 @@ public final class RabbitSystemResourceMonitor
         if (offloadingDir == null || offloadingDir.isEmpty()) {
             throw new ScalerException("Payload offloading directory is not configured.");
         }
-
-        final Path offloadingPath = Paths.get(offloadingDir);
-        if (!Files.exists(offloadingPath)) {
-            LOG.debug("Payload offloading directory {} does not exist.",  offloadingDir);
-            return Optional.empty();
-        }
         
         try {
-            LOG.debug("Checking offloading of disk free mb: {}", offloadingDir);
-            final FileStore filestore = Files.getFileStore(offloadingPath);
+            LOG.info("Checking offloading of disk free mb: {}", offloadingDir);
+            final FileStore filestore = Files.getFileStore(Paths.get(config.getPayloadOffloadingDirectory()));
 
             final var unallocatedSpaceBytes = filestore.getUsableSpace();
 

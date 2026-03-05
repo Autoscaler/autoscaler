@@ -609,37 +609,37 @@
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-http</artifactId>
-                <version>12.1.6</version>
+                <version>12.1.7</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-io</artifactId>
-                <version>12.1.6</version>
+                <version>12.1.7</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-security</artifactId>
-                <version>12.1.6</version>
+                <version>12.1.7</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
-                <version>12.1.6</version>
+                <version>12.1.7</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-session</artifactId>
-                <version>12.1.6</version>
+                <version>12.1.7</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-util</artifactId>
-                <version>12.1.6</version>
+                <version>12.1.7</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty.ee10</groupId>
                 <artifactId>jetty-ee10-servlet</artifactId>
-                <version>12.1.6</version>
+                <version>12.1.7</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty.toolchain.setuid</groupId>
@@ -939,7 +939,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.45.1</version>
+                    <version>0.48.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -957,8 +957,8 @@
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/oraclelinux-jre21</repository>
-                            <tag>2.1.3</tag>
-                            <digest>sha256:4ebb5b39bd1d8547299d028d6dc3faaf3b1977b536f5ca1544aeccbe20a1445a</digest>
+                            <tag>2.1.4</tag>
+                            <digest>sha256:56fb264a5274fed8f31570e96afb35ab4a34953f64e46f1d05ee5c5a6ff28dd1</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>

@@ -144,7 +144,7 @@
                             <alias>autoscale-container</alias>
                             <name>${dockerAutoscalerOrg}autoscale-kubernetes-rabbit${dockerProjectVersion}</name>
                             <build>
-                                <from>${projectDockerRegistry}/cafapi/oraclelinux-jre25</from>
+                                <from>${projectDockerRegistry}/cafapi/oraclelinux-jre25-otel</from>
                                 <cmd>
                                     <exec>
                                         <args>/maven/scaler.sh</args>

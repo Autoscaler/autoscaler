@@ -26,7 +26,12 @@ then
 fi
 
 cd /maven
-java $CAF_AUTOSCALER_JAVA_OPTS \
+if [ "$OTEL_JAVAAGENT_ENABLED" = "true" ]
+then
+  export OTEL_SERVICE_NAME=kubernetes-autoscaler
+fi
+java $(${OTEL_GET_JAVA_TOOL_OPTIONS}) \
+    $CAF_AUTOSCALER_JAVA_OPTS \
     -Dpolyglot.engine.WarnInterpreterOnly=false \
     -cp "*" \
     com.github.autoscaler.core.AutoscaleApplication \

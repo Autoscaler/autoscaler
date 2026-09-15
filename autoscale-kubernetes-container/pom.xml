@@ -145,6 +145,9 @@
                             <name>${dockerAutoscalerOrg}autoscale-kubernetes-rabbit${dockerProjectVersion}</name>
                             <build>
                                 <from>${projectDockerRegistry}/cafapi/oraclelinux-jre25-otel</from>
+                                <env>
+                                    <OTEL_SERVICE_NAME>kubernetes-autoscaler</OTEL_SERVICE_NAME>
+                                </env>
                                 <cmd>
                                     <exec>
                                         <args>/maven/scaler.sh</args>

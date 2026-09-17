@@ -26,7 +26,8 @@ then
 fi
 
 cd /maven
-java $CAF_AUTOSCALER_JAVA_OPTS \
+java $(${OTEL_GET_JAVA_TOOL_OPTIONS}) \
+    $CAF_AUTOSCALER_JAVA_OPTS \
     -Dpolyglot.engine.WarnInterpreterOnly=false \
     -cp "*" \
     com.github.autoscaler.core.AutoscaleApplication \

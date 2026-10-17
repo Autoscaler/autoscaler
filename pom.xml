@@ -109,7 +109,7 @@
             <dependency>
                 <groupId>com.fasterxml</groupId>
                 <artifactId>classmate</artifactId>
-                <version>1.7.3</version>
+                <version>1.8.0</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -209,7 +209,7 @@
             <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
-                <version>3.3.0</version>
+                <version>3.3.1</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.common</groupId>
@@ -564,12 +564,12 @@
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>1.18.14-jdk5</version>
+                <version>1.18.15-jdk5</version>
             </dependency>
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy-agent</artifactId>
-                <version>1.18.14-jdk5</version>
+                <version>1.18.15-jdk5</version>
             </dependency>
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
@@ -822,7 +822,7 @@
             <dependency>
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
-                <version>8.0.5.Final</version>
+                <version>8.0.6.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.javassist</groupId>
@@ -957,8 +957,8 @@
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/oraclelinux-jre25-otel</repository>
-                            <tag>2.4.2</tag>
-                            <digest>sha256:b21dcb1a91e7799a1097ab0681d6a3f49b9cc964a878ae97237d404533205e0b</digest>
+                            <tag>2.4.3</tag>
+                            <digest>sha256:8ef75d56357dae6a884d5fa8bc9feae312760848d0b0d6fb6939a7458d4646dc</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>
